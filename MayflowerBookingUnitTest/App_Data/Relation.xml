@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mayflower>
+  <Relationship default="--Please Select--">
+    <relation relationcode="P" Name="Parent" />
+    <relation relationcode="F" Name="Friend" />
+  </Relationship>	
+</Mayflower>

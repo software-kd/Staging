@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mayflower>
+  <SortingList default="--Please Select--">
+    <sorting sortingcode="E" Name="Earliest" />
+    <sorting sortingcode="M" Name="Multiple" />
+  </SortingList>	
+</Mayflower>

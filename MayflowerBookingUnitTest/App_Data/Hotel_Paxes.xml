@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ItemsList path="~/Hotel_PaxIcons/" DefaultImage="unknown-icon.png">
+  <item id="1" image="1pax.png">1 Pax</item>
+  <item id="2" image="2pax.png">2 Paxes</item>
+  <item id="3" image="3pax.png">3 Paxes</item>
+  <item id="4" image="4pax.png">4 Paxes</item>
+  <item id="5" image="5pax.png">5 Paxes</item>
+  <item id="6" image="6pax.png">6 Paxes</item>
+  <item id="7" image="7pax.png">7 Paxes</item>
+  <item id="8" image="8pax.png">8 Paxes</item>
+  <item id="9" image="9pax.png">9 Paxes</item>
+  <item id="10" image="10pax.png">10 Paxes</item>
+  <item id="10+" image="10pluspax.png">10+ Paxes</item>
+</ItemsList>
