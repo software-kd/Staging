@@ -1,0 +1,130 @@
+﻿@model Alphareds.Module.Model.SearchFlightResultViewModel
+@using Alphareds.Module.Common;
+
+@{
+    //string airportname1 = Model.DepartureStationCode;
+    //string airportname2 = Model.ArrivalStationCode;
+    //string airportfullname1 = UtilitiesService.GetAirportName(airportname1);
+    //string airportfullname2 = UtilitiesService.GetAirportName(airportname2);
+    //bool isRoundTrip = Model.TripType != "OneWay";
+}
+
+<div class="step2_informationbox step2_informationbox2">
+    <div class="s3_1_fdb_inner mobileonly2">
+        <div class="s3_1_fdb_inner_b2">
+            <div class="planeIcone">
+                <div class="s3_1_fdb_flight_name">
+                    <span class="s3_1_fdb_big">@UtilitiesService.GetAirportName(Model.DepartureStationCode) </span>
+                </div>
+                <div class="s3_1fdb_arrow"><img src="@Url.Content("~/images/red_arrow.png")" alt=""></div>
+                <div class="s3_1_fdb_flight_name">
+                    <span class="s3_1_fdb_big">@UtilitiesService.GetAirportName(Model.ArrivalStationCode) </span>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="s3_1_fdb_inner_b3">
+
+            <div class="s3_1_fdb_i3_inner">
+                <div class="s3_1_fdb_i3_da_lable">
+                    <div class="dep">Depart</div>
+                </div>
+                <div class="s3_1_fdb_i3_da_timing">
+                    <span class="s2span_rightgap font-weight-bold">@Model.BeginDate.Value.ToString(" dd-MMM-yyyy, ddd")</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="s3_1_fdb_i3_da_lable">
+                    <div class="ret">Return</div>
+                </div>
+                <div class="s3_1_fdb_i3_da_timing">
+                    @if (Model.isReturn)
+                    {
+                        <span class="s2span_leftgap font-weight-bold">@Model.EndDate.Value.ToString(" dd-MMM-yyyy, ddd")</span>
+                    }
+                    else
+                    {
+                        <span class="s2span_leftgap">-</span>
+                    }
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="s3_1_fdb_inner_b4">
+            <div class="s3_1_fdb4_inner">
+                <div class="destoponly" style="float: right;margin-left: 1em;font-size: 15px;"><span class="cabin-name">@UtilitiesService.GetCabinNameByCode(Model.CabinClass)</span></div>
+
+                @{
+                    string adl = Model.Adults > 1 ? "Adults" : "Adult";
+                    string child = Model.Childrens > 1 ? "Children" : "Child";
+                    string inf = Model.Infants > 1 ? "Infants" : "Infant";
+                }
+                @if (Model.Infants > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@Model.Infants</span> @inf</div>
+                }
+                @if (Model.Childrens > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@Model.Childrens</span> @child</div>
+                }
+                @if (Model.Adults > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@Model.Adults</span> @adl</div>
+                }
+                <div class="clear"></div>
+            </div>
+            @if (!Model.IsFixedPrice)
+            {
+                <div class="s3_1_fdb_modify_icon s2_ml_20"><a href="javascript:;" class="ModifySearchButton">Modify Search</a></div>
+            }
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="s2_ib_inner mobileonly">
+        <div class="planeIcone">
+            <div class="s3_1_fdb_inner_b2 s3_1_fdb_inner_b33">
+                <div class="s3_1_fdb_i3_da_lable s3_1_fdb_i3_da_lable2">
+                    <div class="dep">Depart</div>
+                    <div class="s3_1_fdb_flight_name" style="float:none">
+                        <span class="s3_1_fdb_big">@Model.DepartureStation (</span><span class="s3_1_fdb_small">@Model.DepartureStationCode</span><span class="s3_1_fdb_big">)</span>
+                    </div>
+                    <div class="date_L font-weight-bold">@Model.BeginDate.Value.ToString(" dd-MMM-yyyy, ddd")</div>
+                </div>
+            </div>
+            <div class="s3_1_fdb_inner_b3 s3_1_fdb_inner_b33">
+                <div class="s3_1_fdb_i3_da_lable s3_1_fdb_i3_da_lable2">
+                    <div class="ret">Return</div>
+                    <div class="s3_1_fdb_flight_name" style="float:none">
+                        <span class="s3_1_fdb_big">@Model.ArrivalStation (</span><span class="s3_1_fdb_small">@Model.ArrivalStationCode</span>
+                    </div>
+                    @if (Model.isReturn)
+                    {
+                        <div class="date_L font-weight-bold">@Model.EndDate.Value.ToString(" dd-MMM-yyyy, ddd")</div>
+                    }
+                    else
+                    {
+                        <span class="s2span_leftgap">-</span>
+                    }
+                </div>
+            </div>
+            <div class="mob_passengerdetails">
+                <div class="s3_1_fdb_child_det s3_1_fdb_child_det3" style="margin-left: 2px;"><span>@Model.Adults</span> @adl</div>
+                @if (Model.Childrens > 0)
+                {
+                    <div class="s3_1_fdb_child_det s3_1_fdb_child_det3"><span>@Model.Childrens</span> @child</div>
+                }
+                @if (Model.Infants > 0)
+                {
+                    <div class="s3_1_fdb_child_det s3_1_fdb_child_det3"><span>@Model.Infants</span> @inf</div>
+                }
+                <div class="clear"></div>
+                <div class="s3_1_fdb_class_det s3_1_fdb_class_det2">@UtilitiesService.GetCabinNameByCode(Model.CabinClass) </div>
+            </div>
+            <div class="s2_ib_inr_right s2_ib_inr_right2">
+                <div class="s3_1_fdb_modify_icon s2_ml_20"><a href="javascript:;" class="ModifySearchButton">Modify Search</a></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+﻿@using Mayflower.Areas.InternalApps.Models;
+@model TestSMTPModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Test SMTP</title>
+    <style>
+        body {
+            margin: 1em;
+        }
+
+        label:after {
+            content: "\A";
+            white-space: pre;
+        }
+
+        .input-group {
+            margin-top: 2em;
+        }
+
+        input[type=text], textarea {
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Test SMTP</h3>
+    <div>
+        @using (Html.BeginForm("SMTP", "Configure", new { area = "internalapps" }, FormMethod.Post, new { }))
+        {
+            <div class="input-group">
+                @Html.LabelFor(m => m.SendTo)
+                @Html.TextBoxFor(m => m.SendTo)
+            </div>
+
+            <div class="input-group">
+                @Html.LabelFor(m => m.Subject)
+                @Html.TextBoxFor(m => m.Subject)
+            </div>
+
+            <div class="input-group">
+                @Html.LabelFor(m => m.Body)
+                @Html.TextAreaFor(m => m.Body, 5, 1, new { })
+            </div>
+
+            <button type="submit">Submit</button>
+        }
+    </div>
+</body>
+</html>

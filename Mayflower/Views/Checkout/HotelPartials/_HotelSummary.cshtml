@@ -1,0 +1,262 @@
+﻿@using Alphareds.Module.Model;
+@using System.Globalization;
+@using Alphareds.Module.ServiceCall;
+@using WebGrease.Css.Extensions;
+@using Alphareds.Module.Common;
+@model ProductHotel
+
+@{
+    string tripid = ViewBag.tripid;
+
+    int hotelstar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(Model.HotelSelected.FirstOrDefault(x => x.hotelId == Model.RoomDetails.FirstOrDefault().HotelId)?.hotelRating ?? "0")));
+    List<RoomDetail> roomFromGuestRoomModel = Model.RoomDetails;
+
+    DateTime arrivalDate = DateTime.MaxValue;
+    DateTime departureDate = DateTime.MaxValue;
+
+    if (Model.RoomAvailabilityResponse.HotelRoomInformationList.Length > 0)
+    {
+        arrivalDate = Model.RoomAvailabilityResponse.HotelRoomInformationList.First().arrivalDate.ToDateTime();
+        departureDate = Model.RoomAvailabilityResponse.HotelRoomInformationList.First().departureDate.ToDateTime();
+    }
+
+    var hotelHeader = Model.HotelSelected.FirstOrDefault(x => Model.RoomAvailabilityResponse.HotelRoomInformationList.Any(y => y.hotelId == x.hotelId)) ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation();
+    var locationNearby = hotelHeader.locationDescription;
+    TimeSpan stayDay = departureDate.Subtract(arrivalDate);
+    var suppliername = Model.RoomAvailabilityResponse.HotelRoomInformationList[0].hotelSupplier.ToString();
+}
+
+<!-- HOTEL DETAILS STARTS -->
+<div>
+    <div class="s3_hotel_topline">
+        <div class="s3_blt_heading_hotels hotel">Hotel Itinerary</div>
+        <div class="s3_hoteltop_dates">@arrivalDate.ToString("dd-MMM-yy, ddd") to @departureDate.ToString("dd-MMM-yy, ddd") | <span>@(stayDay.TotalDays + 1) Days @(stayDay.TotalDays) Nights</span></div>
+
+        @foreach (var hotel in Model.RoomSelected.HotelRoomInformationList.Take(1))
+        {
+            var grpRoomList = hotel.roomAvailabilityDetailsList.GroupBy(x => new { x.rateCode, x.roomTypeCode });
+
+            List<string> addressList = new List<string>();
+            addressList.Add(hotel.hotelAddress);
+            addressList.Add(hotel.hotelCity);
+            addressList.Add(hotel.hotelCountry);
+
+            string supplierCode = hotel.hotelSupplierCode ?? "";
+            string encSupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(supplierCode);
+
+            <div class="s3_hotel_details_box s3_hotel_dhotel.hotelStaretails_box">
+                <div class="s3_hotel_name_portion1">@hotel.hotelName</div>
+                <div class="secondrow">
+                    <div class="s3_hotel_name_portion2">
+                        @for (int i = 0; i < hotelstar; i++)
+                        {
+                            <img src="@Url.Content("~/images/hotel_star_am.png")" width="10" height="10" alt="">
+                        }
+                    </div>
+                    <div class="s3_hotel_name_portion3 ShowHotelInfo" data-hotelid="@hotel.hotelId" data-sr="@encSupplierCode"><a href="javascript:;" style="color: inherit"><div class="h2_mhdb2_heading2"></div></a></div>
+                </div>
+                <div class="clear"></div>
+                <div class="s3_hinfo_lgra">@string.Join(" ", addressList)</div>
+                <div class="h2_mhdb2_mapbox">@(locationNearby != null ? WebUtility.HtmlDecode(locationNearby) + ", " : "")@hotel.hotelCity <span class="add-cursor-pointer ShowMap" data-name="@hotel.hotelName" data-city="@hotel.hotelCity"><a>View Map</a></span></div>
+                @Html.Partial("~/Views/Hotel/_GoogleMap.cshtml")
+                @if (hotel.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.JacTravel)
+                {
+                    foreach (var roomtype in hotel.roomAvailabilityDetailsList)
+                    {
+                        roomtype.roomTypeCode = roomtype.jacTravelPropertyRoomTypeID != "0" ? roomtype.jacTravelPropertyRoomTypeID : roomtype.jacTravelBookingToken;
+                    }
+                }
+                <div class="s3_hinfo_twobox_cont">
+                    @foreach (var room in grpRoomList.OrderByDescending(x => x.Count()))
+                    {
+                        var roomRateInfo = room.First().RateInfos.First();
+
+                        bool isNumeric = room.Key.roomTypeCode.All(char.IsDigit);
+                        int roomCounter = roomFromGuestRoomModel == null ? 1 : (room.FirstOrDefault().propertyId == null || isNumeric ? roomFromGuestRoomModel.Count(x => x.RateCode == room.Key.rateCode && x.RoomTypeCode == room.Key.roomTypeCode) : roomFromGuestRoomModel.Count(x => x.RoomTypeCode == room.Key.roomTypeCode || x.TravelBookingToken == room.Key.roomTypeCode));
+                        if (roomCounter != 0)
+                        {
+                            int featureCouter = 0;
+                            int valueAddCounter = room.FirstOrDefault() != null && room.FirstOrDefault().ValueAdds != null ? room.First().ValueAdds.Length : 0;
+
+                            string bundleDesc = null;
+                            List<string> listBundle = new List<string>();
+                            var roomResult = room.FirstOrDefault();
+                            bool containPlusChar = roomResult != null && roomResult.rateDescription != null && roomResult.rateDescription.Contains('+');
+
+                            if (Model.SearchHotelInfo.BundleType() == BundleTypes.TPConcert || containPlusChar)
+                            {
+                                bundleDesc = room.First().rateDescription;
+                                listBundle = bundleDesc.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                            }
+
+                            <div class="s3_hinfo_tc_left">
+                                <div class="s3_hinfo_tc_inner">
+                                    <div class="s3_hinfo_tc_inner_left"><img src="@Url.Content("~/images/hotel_r_icon.png")" width="47" height="47" alt=""></div>
+                                    <div class="s3_hinfo_tc_inner_right">
+                                        <div class="s3_hinfo_tcir_heading"><span>@(roomCounter)x</span> @room.First().description</div>
+                                        <div class="s3_hinfo_icoinfo">
+                                            <h3>Includes</h3>
+                                            @foreach (var bundleItem in listBundle)
+                                            {
+                                                <div class="vmicr_allicons_cont">
+                                                    <div class="vmicr_allicons_cont_lable">
+                                                        + @(bundleItem.ToLower().Contains("ticket") ? (room.Sum(x => x.quotedOccupancy.ToDecimal()) * roomCounter) + " x " : null) @bundleItem
+                                                    </div>
+                                                </div>
+                                            }
+                                            @for (int i = 0; i < valueAddCounter; i++)
+                                            {
+                                                string xmlFilePath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Hotel_ValueAdds.xml");
+                                                string Desc = room.First().ValueAdds[i].description;
+                                                string ImagePath = "";
+                                                ExpediaHotelsServiceCall.GetImagesFromXML(xmlFilePath, Alphareds.Module.ServiceCall.SearchImageColumn.ID, room.First().ValueAdds[i].id, ref Desc, ref ImagePath);
+
+                                                <div class="vmicr_allicons_cont">
+                                                    <div class="vmicr_allicons_cont_img"><img src="@(ImagePath == "~/images_hotel/" ? Url.Content("~/images/unknown-icon.png") : Url.Content(ImagePath))" alt="" width="22" height="20"></div>
+                                                    <div class="vmicr_allicons_cont_lable">@room.First().ValueAdds[i].description</div>
+                                                    <div class="clear"></div>
+                                                </div>
+                                                featureCouter++;
+                                                if (featureCouter % 2 == 0)
+                                                {
+                                                    <div class="clear"></div>
+                                                }
+                                            }
+                                            @if (valueAddCounter == 0 && listBundle.Count == 0)
+                                            {
+                                                <div class="vmicr_allicons_cont">
+                                                    <div class="vmicr_allicons_cont_lable"> - </div>
+                                                    <div class="clear"></div>
+                                                </div>
+                                            }
+
+                                            <div class="clear"></div>
+
+                                            <h3 class="mt10">Features</h3>
+
+                                            <div class="vmicr_allicons_cont">
+                                                @if (room.First().BetTypes != null)
+                                                {
+                                                    <div class="vmicr_allicons_cont_img"><img src="@Url.Content("~/images_hotel/hotel_amenities/bed.png")" alt="" width="20" height="20"></div>
+                                                    <div class="vmicr_allicons_cont_lable">
+                                                        @string.Join(" or", room.First().BetTypes.Select(x => x.description))
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="vmicr_allicons_cont_lable">-</div>
+                                                }
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="clear"></div>
+                                            <h3 class="mt10">Max Guest</h3>
+                                            <div class="vmicr_allicons_cont">
+                                                @{
+                                                    if (room.First().rateOccupancyPerRoom != null)
+                                                    {
+                                                        string xmlFile_Pax = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Hotel_Paxes.xml");
+                                                        string desc_Pax = "", image_Pax = "";
+                                                        ExpediaHotelsServiceCall.GetImagesFromXML(xmlFile_Pax, Alphareds.Module.ServiceCall.SearchImageColumn.ID, room.First().rateOccupancyPerRoom, ref desc_Pax, ref image_Pax);
+                                                        <div class="vmicr_allicons_cont_img"><img src="@Url.Content(image_Pax)" alt="" width="22" height="20"></div>
+                                                        <div class="vmicr_allicons_cont_lable">@room.First().rateOccupancyPerRoom Guests</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="vmicr_allicons_cont_lable">-</div>
+                                                    }
+                                                }
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="clear"></div>
+                                            <h3 class="mt10">Room Amenities</h3>
+                                            @{ int roomAmenitiesCounter = 0; }
+                                            @if (room.First().roomAmenities != null)
+                                            {
+                                                foreach (var roomAmenities in room.First().roomAmenities.Take(6))
+                                                {
+                                                    string xmlFilePath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Hotel_Amenities.xml");
+                                                    string Desc = roomAmenities.amenity;
+                                                    string ImagePath = "";
+                                                    ExpediaHotelsServiceCall.GetImagesFromXML(xmlFilePath, Alphareds.Module.ServiceCall.SearchImageColumn.ID, roomAmenities.amenityId, ref Desc, ref ImagePath);
+
+                                                    <div class="vmicr_allicons_cont">
+
+                                                        <div class="vmicr_allicons_cont_img"><img src="@(ImagePath == "~/images_hotel/" ? Url.Content("~/images/unknown-icon.png") : Url.Content(ImagePath))" alt="" width="20" height="20"></div>
+                                                        <div class="vmicr_allicons_cont_lable">@roomAmenities.amenity</div>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                    roomAmenitiesCounter++;
+                                                    if (roomAmenitiesCounter % 2 == 0)
+                                                    {
+                                                        <div class="clear"></div>
+                                                    }
+                                                }
+                                                foreach (var roomAmenities in room.First().roomAmenities.Skip(6))
+                                                {
+                                                    string xmlFilePath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Hotel_Amenities.xml");
+                                                    string Desc = roomAmenities.amenity;
+                                                    string ImagePath = "";
+                                                    ExpediaHotelsServiceCall.GetImagesFromXML(xmlFilePath, Alphareds.Module.ServiceCall.SearchImageColumn.ID, roomAmenities.amenityId, ref Desc, ref ImagePath);
+
+                                                    <div class="vmicr_allicons_cont loadAmenities">
+
+                                                        <div class="vmicr_allicons_cont_img"><img src="@(ImagePath == "~/images_hotel/" ? Url.Content("~/images/unknown-icon.png") : Url.Content(ImagePath))" alt="" width="20" height="20"></div>
+                                                        <div class="vmicr_allicons_cont_lable">@roomAmenities.amenity</div>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                    roomAmenitiesCounter++;
+                                                    if (roomAmenitiesCounter % 2 == 0)
+                                                    {
+                                                        <div class="clear"></div>
+                                                    }
+                                                }
+                                                <div class="clear"></div>
+                                                if (room.First().roomAmenities.Count() > 6)
+                                                {
+                                                    <div class="show_more_Room_Ammenity">Show more room amenities</div>
+                                                }
+                                            }
+                                        </div>
+
+                                        @if (roomRateInfo != null && roomRateInfo.nonRefundable)
+                                        {
+                                            <div class="s3_hinfo_freecancelation add-cursor-pointer"
+                                                    style="background-image: none; color: #000; padding-left: 0; font-style: italic; text-decoration: underline">
+                                                @*@roomRateInfo.cancellationPolicy*@
+                                                Non-refundable
+                                            </div>
+                                            <div id="cancelPolicyDtl" class="hidden">
+                                                @Html.Raw(HttpUtility.HtmlDecode(roomRateInfo.cancellationPolicy))
+                                            </div>
+                                        }
+                                        else if (roomRateInfo != null && !roomRateInfo.nonRefundable)
+                                        {
+                                            int nightCount = -1;
+                                            var earliestCancel = roomRateInfo.CancelPolicyInfoList != null ? roomRateInfo.CancelPolicyInfoList.OrderByDescending(x => x.nightCount).First() : null;
+
+                                            if (earliestCancel != null)
+                                            {
+                                                int.TryParse(earliestCancel.nightCount, out nightCount);
+                                                DateTime minCancelDate = arrivalDate.AddDays(nightCount);
+                                            }
+                                            <div class="s3_hinfo_freecancelation add-cursor-pointer" style="text-decoration: underline">
+                                                Cancellation Policy
+                                            </div>
+                                            <div id="cancelPolicyDtl" class="hidden" style="text-decoration: underline">
+                                                @Html.Raw(HttpUtility.HtmlDecode(roomRateInfo.cancellationPolicy))
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="clear"></div>
+                </div>
+            </div>
+        }
+        <div class="clear"></div>
+    </div>
+</div>
+<!-- HOTEL DETAILS END -->

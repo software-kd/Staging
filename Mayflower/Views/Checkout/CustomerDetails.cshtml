@@ -1,0 +1,442 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    string previousAction = Request.QueryString["previousUrl"];
+    string returnAction = "";
+    ViewBag.tripid = tripid;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    if (!string.IsNullOrEmpty(previousAction))
+    {
+        if (previousAction == "SavedSearch")
+        {
+            returnAction = Url.Action("SavedSearch", "Account");
+        }
+        else
+        {
+            returnAction = Url.Action("NotFound", "Error", new { tripid, affiliationId });
+        }
+    }
+    else
+    {
+        if (Model.Flight != null && !Model.IsDynamic)
+        {
+            returnAction = Url.Action("Search", "Flight", new { tripid, affiliationId });
+        }
+        else if ((Model.Flight == null || Model.IsDynamic) && Model.Hotel != null)
+        {
+            returnAction = Url.Action("Search", "Hotel", new { tripid, affiliationId });
+        }
+        else
+        {
+            returnAction = Url.Action("NotFound", "Error", new { tripid, affiliationId });
+        }
+    }
+
+    ViewBag.Title = "Guest Details";
+    ViewBag.HeaderRed = true;
+    ViewBag.DisplayFooter = true;
+    //ViewBag.CheckSession = true;
+    ViewBag.ReturnAction = returnAction;
+    ViewBag.UsePopupLoginBox = true;
+    ViewBag.IsHotelonly = Model.Flight == null && Model.Hotel != null;
+    ViewBag.IsFlightonly = Model.Flight != null && Model.Hotel == null;
+    ViewBag.IsCarRental = Model.Flight == null && Model.Hotel == null && Model.CarRental != null;
+    ViewBag.IsFlightBooking = Model.Flight != null && Model.Products.OrderBy(x => x.ProductSeq).FirstOrDefault().ProductType == ProductTypes.Flight;
+    ViewBag.SubmitBtnId = "btnSubmitForm";
+    if (ViewBag.IsFlightBooking)
+    {
+        ViewBag.FlightSupplier = Model.Flight.FlightInfo.Supplier;
+        ViewBag.IsDomestic = Model.Flight.SearchFlightInfo.isDomesticFlight;
+    }
+
+    bool isEventBundle = Model.Hotel == null && Model.Flight == null && Model.TourPackage == null && Model.AddOnProduct != null;
+    int counter = 0;
+}
+
+@section style{
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        .tab-pane.booking-form {
+            padding-top: 0;
+        }
+    </style>
+}
+
+<div id="fareRulesClass" style="display: none;">
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+</div>
+
+<div class="booker-details m-u-20">
+    <div class="container">
+        <div class="row">
+            @using (Html.BeginForm("GuestDetails", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { @id = "checkoutDetailForm" }))
+            {
+                <div class="col-lg-8">
+                    @if (Model.PromoCodeFunctions.GetFrontendFunction.ForeignPurchase)
+                    {
+                        <p style="color: #eb1c24;font-size: 15px;">
+                            * This package is only applicable to non-Malaysian. Mayflower reserves the right to validate passport details before accepting and confirming this booking.
+                        </p>
+                    }
+                    <div class="booker-details-left">
+                        <div class="booker-header">
+                            <ul>
+                                <li class="active">@(Model.CheckoutStep >= 3 ? Html.Raw($"<a href='{Url.Action("guestdetails", "checkout", new { tripid })}' class='text-white'>") : null)@(ViewBag.IsCarRental ? "1. Contact Details" : "1. Contact/guest Details")@(Model.CheckoutStep >= 3 ? Html.Raw("</a>") : null)</li>
+                                <li>@(Model.CheckoutStep >= 4 ? Html.Raw($"<a href='{Url.Action("addon", "checkout", new { tripid })}' class='text-white'>") : null)@(ViewBag.IsCarRental ? "2. Accessories" : "2. Addons")@(Model.CheckoutStep >= 4 ? Html.Raw("</a>") : null)</li>
+                                <li>@(Model.CheckoutStep >= 5 ? Html.Raw($"<a href='{Url.Action("payment", "checkout", new { tripid })}' class='text-white'>") : null)3. Payment@(Model.CheckoutStep >= 5 ? Html.Raw("</a>") : null)</li>
+                                <li>4. Confirmation</li>
+                            </ul>
+                        </div>
+                        <div class="booker-body shadow bg-white">
+                            <div class="contact-details">
+                                @if (!ViewBag.IsCarRental)
+                                {
+                                    <nav style="height: auto">
+                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                            <a class="nav-item nav-link active" id="nav-booker-tab" data-toggle="tab" href="#nav-booker" value="contactform" role="tab" aria-controls="nav-booker" aria-selected="true">Contact Details</a>
+                                            @if (ViewBag.IsHotelonly == true)
+                                            {
+                                                List<RoomDetail> roomList = Model.Hotel.RoomDetails;
+                                                foreach (var item in roomList)
+                                                {
+                                                    <a class="nav-item nav-link" id="nav-guest-tab" data-toggle="tab" href="#nav-guest-@counter" value="guest@(counter + 1)form" role="tab" aria-controls="nav-guest" aria-selected="false">Room @(counter + 1) Guest</a>
+                                                    counter += 1;
+                                                }
+                                            }
+                                            @if (ViewBag.IsFlightonly == true || ViewBag.IsFlightBooking == true)
+                                            {
+                                                List<string> guestValue = new List<string>();
+                                                foreach (var item in Model.Flight.FlightInfo.SupplierFlightInfo.PricingInfo.FareBreakDown.Where(x => x.PassengerTypeQuantity > 0))
+                                                {
+                                                    for (int i = 0; i < item.PassengerTypeQuantity; i++)
+                                                    {
+                                                        guestValue.Add(item.PassengerTypeCode);
+                                                    }
+                                                }
+
+                                                foreach (var item in guestValue)
+                                                {
+                                                    <a class="nav-item nav-link" id="nav-guest-tab" data-toggle="tab" href="#nav-guest-@counter" value="nav-guest-@counter" role="tab" aria-controls="nav-guest" aria-selected="false">Guest @(counter + 1) @UtilitiesService.GetPassengerTypeName(item)</a>
+                                                    counter += 1;
+                                                }
+                                                counter = 0;
+                                            }
+                                        </div>
+                                    </nav>
+                                }
+                                <div class="tab-content" id="nav-tabContent">
+                                    @Html.Partial("~/Views/Checkout/SharedPartials/_FormContactDetail_v2.cshtml", Model ?? new CheckoutProduct())
+
+                                    @if ((Model.Flight != null && Model.Hotel == null) || ViewBag.IsFlightBooking == true)
+                                    {
+                                        // Flight Only Form Here
+                                        @Html.Partial("~/Views/Checkout/SharedPartials/_FormFlightDetail_v2.cshtml", Model ?? new CheckoutProduct())
+                                    }
+
+                                    @if (Model.Flight == null && Model.Hotel != null)
+                                    {
+                                        // Hotel Only Form Here
+                                        @Html.Partial("~/Views/Checkout/SharedPartials/_FormRoomDetail_v2.cshtml", Model.Hotel ?? new ProductHotel())
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            Model.IsRegister = true;
+                            //bool isEventBundle = Model.Hotel == null && Model.Flight == null && Model.TourPackage == null && Model.AddOnProduct != null;
+                            <div class="booker-body shadow pad-15 bg-white s3_optional_register">
+                                <div class="form-wrapper">
+                                    @*<div class="form-group custom-checkbox">*@
+                                    @if (isEventBundle)
+                                    {
+                                        <div class="form-group">
+                                            <label id="pw-box">
+                                                <input type="hidden" id="registerCheckBox" name="IsRegister" value="@Model.IsRegister.ToString()" @(Model.IsRegister ? "checked" : "")>
+                                                <span>Create account instanly</span>
+                                                <input type="hidden" name="IsRegister" value="@Model.IsRegister.ToString()" />
+                                            </label>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-group custom-checkbox">
+                                            <label id="pw-box">
+                                                <input type="checkbox" id="registerCheckBox" name="IsRegister" value="@Model.IsRegister.ToString()" @(Model.IsRegister ? "checked" : "")>
+                                                <span>Create account instanly</span>
+                                            </label>
+                                        </div>
+                                    }
+                                    @*<label id="pw-box">
+                                            <input type="checkbox" id="registerCheckBox" name="IsRegister" value="@Model.IsRegister.ToString()" @(Model.IsRegister ? "checked" : "")>
+                                            <span>Create account instanly</span>
+                                        </label>*@
+                                    @*</div>*@
+                                    <div class="pw-wrap" style="@(Model.IsRegister ? "" : "display:none")">
+                                        <div class="row">
+                                            <div class="col-md-6 col-6">
+                                                <div class="field_error_msg">@Html.ValidationMessageFor(model => model.MemberRegisterModels.Email, null)</div>
+                                                <div class="form-group">
+                                                    <label>Password</label>
+                                                    <div>@Html.PasswordFor(model => model.MemberRegisterModels.Password, new { @class = "form-control" })</div>
+                                                    <div class="field_error_msg">@Html.ValidationMessageFor(model => model.MemberRegisterModels.Password, null)</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-6">
+                                                <div class="form-group">
+                                                    <label>Confirm Password</label>
+                                                    <div>@Html.PasswordFor(model => model.MemberRegisterModels.ConfirmPassword, new { @class = "form-control" })</div>
+                                                    <div class="field_error_msg">@Html.ValidationMessageFor(model => model.MemberRegisterModels.ConfirmPassword, null)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group custom-checkbox">
+                                            <label>
+                                                <input type="checkbox" id="checkbox_news" name="subscribeNews" value="1">
+                                                <span style="display: block">Yes, I expressly agree for you to process, disclose and share my personal data to/with your Group of Companies for the purpose of promoting your Group of Companies and/or your products and services. <a href="https://www.mayflower.com.my/pdpa" target="_blank">(Personal Data Protection Act 2010)</a></span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group custom-checkbox">
+                                            <label>
+                                                <input id="MemberRegisterModels_AgreeTnC" name="MemberRegisterModels.AgreeTnC" value="1" type="checkbox">
+                                                <span style="display: block">
+                                                    I confirm that the above information provided by me is true and accurate. I have read and hereby agree to the <a href="https://www.mayflower.com.my/tnc" target="_blank">Terms &amp; Conditions</a> of Mayflower Holidays Sdn Bhd, which shall be binding on me.
+                                                    @*Reminder: Please ensure that all of your contact information are correct, then click “Complete form to continue” to continue.
+                                                        You then be taken to the payment page.<br>
+                                                        A verification email will be sent to your inbox to complete your registration.*@
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="field_error_msg">@Html.ValidationMessageFor(model => model.MemberRegisterModels.AgreeTnC, null)</div>
+
+                                        <span style="display: block">
+                                            Reminder: Please ensure that all of your contact information are correct, then click “Confirm & Continue” to continue.
+                                            You then be taken to the payment page.<br>
+                                            A verification email will be sent to your inbox to complete your registration.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+                @*use shared layout for product summary*@
+                @Html.Partial("~/Views/Checkout/SharedPartials/v2/_ReservationDetails.cshtml", Model ?? new CheckoutProduct())
+            }
+        </div>
+    </div>
+</div>
+@Html.Partial("~/Views/Checkout/SharedPartials/v2/_FrequentFlyerPopOut.cshtml", UtilitiesService.GetAllAirlines)
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+@if (!User.Identity.IsAuthenticated && isEventBundle)
+{
+    @Html.Partial("~/Views/Checkout/SharedPartials/v2/_RegistedPopOutLoginModal.cshtml", new Alphareds.Module.Model.LoginModel())
+}
+
+<div class="modal fade" id="promptMsg" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 0">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Info</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                @*<button type="button" id="confirm-paylater" class="btn btn-primary">Proceed</button>*@
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section scripts{
+    <!-- Date Rangepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    @Html.Partial("~/Views/Checkout/_checkoutScripts.cshtml")
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ars-customize.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/checkout_validation_v2.js?v=1.1")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/v3.0/hotel-search/page-search.js")"></script>
+
+    @if (Core.IsForStaging)
+    {
+        <script>
+            $('.assign-trv').on('click', function (e) {
+                if ($(this).parent('li').hasClass('s3-1_activli')) {
+                    $.ajax({
+                        url: '/checkout/getlasttraveldetails',
+                        dataType: 'json',
+                        method: 'post',
+                        beforeSend: function () { $('#loading-modal').show(); },
+                        complete: function (e) {
+                            $('#loadingModal').hide();
+                            if (e.responseJSON.count > 0) {
+                                alert('[BETA] Select traveller.');
+                            }
+                            else {
+                                alert('[BETA] No recent book traveller.');
+                            }
+                        },
+                    });
+                }
+            });
+        </script>
+    }
+    <script>
+        $(document).on("change", "[name='ContactPerson.TravellerGrpID']", function (e) {
+            var GrpID = $(this).val();
+            if (GrpID != "") {
+                $.getTravellerGrp(GrpID);
+            }
+        });
+        $(document).on("change", "[name*='TravellerDetails'][name$='FrequentTravellerID']", function (e) {
+            var TravellerID = $(this).val();
+            var prefix = $(this).attr('name');
+            var GuestValue = prefix.split('[').pop().split(']').shift();
+            if (TravellerID != "") {
+                $.getTravellerFlyer(TravellerID, GuestValue);
+            }
+        });
+
+        $.getTravellerGrp = function (GrpID) {
+            return $.ajax({
+                type: "GET",
+                url: '/checkout/getTravellerGrpdetails',
+                data: { GrpID: GrpID },
+                dataType: 'html',
+                beforeSend: function () {
+                    $('#loadingModal').show();
+                    $("select[name*='TravellerDetails'][name$='FrequentTravellerID'] option").hide();
+                },
+                complete: function () {
+                    $('#loadingModal').hide();
+                },
+            }).then(function (res) {
+                if (res != null) {
+                    var result = JSON.parse(res);
+                    var i = 0;
+                    result.forEach(function (element) {
+                        $("[name*='TravellerDetails'][name$='FrequentTravellerID'] option[value=" + element + "]").show();
+                        if (element != 0 && i < $('.booking-form').length - 1) {
+                            $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(i).val(element);
+                            $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(i).trigger('change');
+                        }
+                        i++;
+                    });
+                }
+            }, function (res) {
+                dynamicModal('', res.statusText, false).modal();
+                //promptSvMsg(res.statusText);
+            }).promise();
+        };
+
+        $.getTravellerFlyer = function (TravellerID, GuestValue) {
+            return $.ajax({
+                type: "GET",
+                url: '/checkout/getTravellerFlyerdetails',
+                data: { TravellerID: TravellerID, GuestValue: GuestValue },
+                dataType: 'html',
+                beforeSend: function () {
+                    $('#loadingModal').show();
+                },
+                complete: function () {
+                    $('#loadingModal').hide();
+                },
+            }).then(function (res) {
+                if (res != null) {
+                    var result = JSON.parse(res);
+                    var dob = result.DOBYears + "/" + result.DOBMonths + "/" + result.DOBDays;
+                    var passexp = result.PassportExpiryDateYears + "/" + result.PassportExpiryDateMonths + "/" + result.PassportExpiryDateDays;
+                    $("[name*='TravellerDetails'][name$='Title']").eq(GuestValue).val(result.Title);
+                    $("[name*='TravellerDetails'][name$='GivenName']").eq(GuestValue).val(result.GivenName);
+                    $("[name*='TravellerDetails'][name$='Surname']").eq(GuestValue).val(result.Surname);
+                    $("[name*='TravellerDetails'][name$='PassportNumber']").eq(GuestValue).val(result.PassportNumber);
+                    $("[name*='TravellerDetails'][name$='DOB']").eq(GuestValue).val(dob);
+                    $("[name*='TravellerDetails'][name$='PassportExpiryDate']").eq(GuestValue).val(passexp);
+                    $("[name*='TravellerDetails'][name$='DOB']").eq(GuestValue).data('daterangepicker').setStartDate(moment(dob, 'DD-MMM-YYYY'));
+                    $("[name*='TravellerDetails'][name$='PassportExpiryDate']").eq(GuestValue).data('daterangepicker').setStartDate(moment(dob, 'DD-MMM-YYYY'));
+                    $("select[name*='TravellerDetails'][name$='Nationality']").eq(GuestValue).val(result.Nationality);
+                    $("select[name*='TravellerDetails'][name$='PassportIssueCountry']").eq(GuestValue).val(result.PassportIssueCountry);
+                    $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(GuestValue).val(result.FrequentTravellerID);
+                    $("[name^='TravellerDetails'][name$='Surname']").eq(GuestValue).trigger('change');
+                    $("select[name*='TravellerDetails'][name$='Nationality']").eq(GuestValue).trigger('change');
+                    $("[name*='TravellerDetails'][name$='DOB']").eq(GuestValue).trigger('change');
+                }
+            }, function (res) {
+                dynamicModal('', res.statusText, false).modal();
+                //promptSvMsg(res.statusText);
+            }).promise();
+        };
+
+        var promptSvMsg = function (msg) {
+            var c = $('#promptMsg .modal-body');
+            c.html('');
+            c.append('<p>');
+            c.append(msg);
+            c.prepend('</p>')
+            $('#promptMsg').modal({
+                show: true,
+            });
+        };
+
+        $(document).ready(function () {
+            $.fn.datepicker.defaults.autoclose = true;
+            $.fn.datepicker.defaults.format = 'dd-mmm-yyyy';
+
+            var dtCMin = moment(ServerDateTime).subtract(100, 'years');
+            var dtCMax = moment(ServerDateTime).subtract(18, 'years');
+            var dtTrip = $('#tripBeginDate').val();
+            if (!moment($('#tripBeginDate').val(), 'YYYY-MM-DD').isValid()) {
+                dtTrip = moment($('#tripBeginDate').val(), "DD-MMM-YYYY").format("YYYY-MM-DD");
+            }
+            dtTrip = new Date(dtTrip);
+
+            var arTrip = $('#tripEndDate').val();
+            if (!moment($('#tripEndDate').val(), 'YYYY-MM-DD').isValid()) {
+                arTrip = moment($('#tripEndDate').val(), "DD-MMM-YYYY").format("YYYY-MM-DD");
+            }
+            arTrip = new Date(arTrip);
+
+            initCal('.datepicker2.carcontact', moment(ServerDateTime).subtract(75, 'years'), moment(ServerDateTime).subtract(21, 'years'));
+            initCal('.datepicker2.contact', dtCMin, dtCMax);
+            initCal('.datepicker2.license', moment(ServerDateTime).add(1, 'days'), moment(ServerDateTime).add(10, 'years'));
+            initCal('.datepicker2.guest', moment(ServerDateTime).subtract(100, 'years'), moment(ServerDateTime).subtract(17, 'years'));
+            initCal('.datepicker3.adt', moment(dtTrip).subtract(100, 'years'), moment(dtTrip).subtract(12, 'years'));
+            initCal('.datepicker3.cnn', moment(dtTrip).subtract(12, 'years'), moment(dtTrip).subtract(2, 'years'));
+            initCal('.datepicker3.inf', moment(arTrip).subtract(2, 'years'), moment(arTrip));
+            initCal('.datepicker3.exp', moment(dtTrip), moment(dtTrip).add(15, 'years'));
+
+            $('#loginModal').modal('show');
+        });
+
+        var initCal = function (el, minDate, maxDate) {
+            $(el).daterangepicker({
+                "autoUpdateInput": false,
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "minYear": parseInt(moment(minDate).format('YYYY')),
+                "maxYear": parseInt(moment(maxDate).format('YYYY')),
+                "startDate": maxDate,
+                "endDate": maxDate,
+                "minDate": moment(minDate, 'DD-MMM-YYYY'),
+                "maxDate": moment(maxDate, 'DD-MMM-YYYY')
+            }, function (start, end, label) {
+            });
+        }
+
+        $('.datepicker2, .datepicker3').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD-MMM-YYYY'));
+            $(this).trigger('change');
+        });
+    </script>
+
+}

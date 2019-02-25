@@ -1,0 +1,414 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.FrequentFlyerInsert
+
+@{
+    ViewBag.Title = "Frequent Flyer";
+    ViewBag.RenderSideBar = true;
+    ViewBag.RenderRedLine = true;
+    string returnUrl = Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString());
+
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+    object NationalityAttr = new { data_val_required = "Nationality is required.", data_val = "true" };
+    object PassportCountryAttr = new { data_val_required = "Passport Issuing Country is required.", data_val = "true" };
+}
+
+@if (Request.QueryString["themes"] == "v1" && !Request.IsAjaxRequest())
+{
+    //Layout = "~/Views/Shared/_SMCLayout.cshtml";
+}
+else
+{
+    ViewBag.TableContent = true;
+}
+
+@if (Request.IsAjaxRequest())
+{
+    Layout = null;
+}
+
+@functions{
+    private IEnumerable<SelectListItem> SetSelectedItem(IEnumerable<SelectListItem> list, string value)
+    {
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = a.Text,
+                   Value = a.Value,
+                   Selected = a.Value == value
+               };
+    }
+}
+
+@section style{
+    <style>
+        .s3-1_fi_flying_icon input[type=checkbox]:not(old) + label {
+            font-size: 15px;
+            color: black;
+        }
+
+        .s3-1_full_textbox_name_com:disabled {
+            background-color: #d3d3d3;
+            cursor: no-drop;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: red;
+        }
+
+        .s3-1_flyer_newedit {
+            float: left;
+            width: 8%;
+            height: 30px;
+            margin-left: 2%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 30px;
+            color: transparent;
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .s3-1_flyer_newplus {
+            width: 4%;
+            line-height: 30px;
+        }
+
+        .s3-1_flyer_right {
+            width: 70%;
+        }
+
+        .ff-img-container {
+            position: absolute;
+            height: 55px;
+            width: 60px;
+            padding-left: 5px;
+        }
+
+        select.s3-1_flyer_left_dupinput {
+            background: none;
+            padding-left: 4em;
+            padding-top: 0;
+        }
+
+        .ff-img-container > img {
+            height: 55px;
+        }
+
+        .s3-1_fi_row1 {
+            border: none;
+            height: auto;
+            float: left;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .s3-1_contactform_title_first_row {
+            width: 14%;
+            float: left;
+        }
+
+        .s3-1_contactform_firstname_first_row {
+            width: 49%;
+            float: left;
+        }
+
+        .s3-1_contactform_familyname_first_row {
+            width: 49%;
+            float: right;
+        }
+
+        .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+            width: 100%;
+            float: left;
+            padding-left: 0%;
+        }
+
+        .s3_1_contactform_name {
+            width: 84%;
+            float: right;
+        }
+
+        .s3-1_fi_row1-right {
+            margin-top: 28px;
+        }
+
+        .s3-1_fir1_b1 select {
+            font-family: 'Conv_Ubuntu-Light';
+            height: 56px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url(../images/drop_down_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border: 1px solid #000;
+            width: 100%;
+            font-size: 16px;
+            padding-left: 15%;
+        }
+
+        .s3-1_full_textbox_name_com {
+            width: 100%;
+            height: 56px;
+            background-color: transparent;
+            border: 1px solid #000;
+            font-size: 16px;
+            padding-left: 24px;
+        }
+
+        @@media screen and (max-width: 500px) {
+            .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+                width: 105% !important;
+            }
+
+            .ndphoneno {
+                line-height: 0;
+            }
+        }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">New Frequent Traveller</div>
+    <div class="mphc_t2">Add New Frequent Traveller</div>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+<div class="s3-1_form" id="bookingDetailForm">
+    <div class="s3-1_form_inner">
+        @using (Html.BeginForm("NewFrequentFlyer", "Tools", FormMethod.Post, new { @id = "newFrequentFlyerForm" }))
+        {
+            <div id="contactform" class="booking-form">
+                @if (IsAgent)
+                {
+                    <div class="s3-1_fi_flying_icon">
+                        @Html.StyledCheckBoxFor(model => Model.FlyerDetail.IsShared, "Share traveller info with other agents", "checkbox2")
+                    </div>
+                }
+
+                <div class="s3-1_fi_row1">
+                    <div class="s3-1_contactform_title_first_row">
+                        <div class="s3-1_cf_lable_text">Title<span>*</span></div>
+                        <div class="s3-1_fir1_b1">
+                            <div>
+                                @Html.DropDownListFor(model => Model.FlyerDetail.TitleCode, titleList, new { @class = "s3-1_title" })
+                                @*@Html.DropDownListFor(model => Model.FlyerDetail.TravellerDetails[counter].Title, titleList, new { @class = "s3-1_title" })*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="s3_1_contactform_name">
+                        <div class="s3-1_contactform_firstname_first_row">
+                            <div class="s3-1_cf_lable_text">First Name<span>*</span>(As per passport)</div>
+                            <div class="s3-1_fir1_b2">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.FlyerDetail.FirstName, new { @class = "s3-1_full_textbox_name_com" })
+                                    @Html.ValidationMessageFor(model => Model.FlyerDetail.FirstName, null, new { @class = "textforerrormsg" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s3-1_contactform_familyname_first_row">
+                            <div class="s3-1_cf_lable_text">Family Name<span>*</span></div>
+                            <div class="s3-1_fir1_b3">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.FlyerDetail.FamilyName, new { @class = "s3-1_full_textbox_name_com" })
+                                    @Html.ValidationMessageFor(model => Model.FlyerDetail.FamilyName, null, new { @class = "textforerrormsg" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="s3-1_fullform_left">
+                    <div class="s3-1_contactform_left">
+                        <div class="s3-1_cf_lable_text">D.O.B<span>*</span></div>
+                        <div class="s3-1_ff_black_border_box">
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Day</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.DOBDays, Mayflower.General.Utilities.DaysDropList, "-", new { @class = "s3-1_dob day", required = "required" })
+                                </div>
+                            </div>
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Month</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.DOBMonths, Mayflower.General.Utilities.MonthsDropList2(1), "-", new { @class = "s3-1_dob month", required = "required" })
+                                </div>
+                            </div>
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Year</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.DOBYears, Mayflower.General.Utilities.DOBYearsDropList.Where(x => Convert.ToInt32(x.Value) <= DateTime.Now.Year - 16), "-", new { @class = "s3-1_dob year", required = "required" })
+                                </div>
+                            </div>@Html.HiddenFor(model => Model.FlyerDetail.DOB)                     
+                            <div class="clear"></div> 
+                        </div>
+                        @Html.ValidationMessageFor(model => Model.FlyerDetail.DOB, null, new { @class = "textforerrormsg doberror" })
+                        
+                    </div>
+
+                    <div class="s3-1_contactform_right">
+                        <div class="s3-1_cf_lable_text label_month">Age </div>
+                        @Html.TextBoxFor(model => Model.FlyerDetail.Age, new { @class = "s3-1_full_textbox_name_com", disabled = "true" })
+                    </div> 
+                    <div class="clear"></div>
+
+                    <div class="clear"></div>
+                </div>
+
+                <div class="s3-1_fullform_left">
+                    <div class="s3-1_contactform_left">
+                        <div class="s3-1_cf_lable_text">Nationality <span>*</span></div>
+                        <div>
+                            @Html.DropDownListFor(model => Model.FlyerDetail.Nationality, Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })
+                            @Html.HiddenFor(model => Model.FlyerDetail.Nationality, NationalityAttr)
+                            @Html.ValidationMessageFor(model => Model.FlyerDetail.Nationality, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                    <div class="s3-1_contactform_right switch-able">
+                        <div class="passport-field">
+                            <div class="s3-1_cf_lable_text">
+                                Passport Number<span>*</span>
+                            </div>
+                            @Html.TextBoxFor(model => Model.FlyerDetail.Passport, new { @class = "s3-1_full_textbox_com" })
+                            @Html.ValidationMessageFor(model => Model.FlyerDetail.Passport, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="s3-1_fullform_left passport-field">
+                    <div class="s3-1_contactform_left">
+                        <div class="s3-1_cf_lable_text">
+                            Passport Expiry date<span>*</span>
+                        </div>
+                        <div class="s3-1_ff_black_border_box">
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Day</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.PassportExpiryDateDays, Mayflower.General.Utilities.DaysDropList, "-", new { @class = "s3-1_dob day", required = "required" })
+                                </div>
+                            </div>
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Month</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.PassportExpiryDateMonths, Mayflower.General.Utilities.MonthsDropList2(1), "-", new { @class = "s3-1_dob month", required = "required" })
+                                </div>
+                            </div>
+                            <div class="s3-1_dob_container">
+                                <div class="s3-1_b1_lable">Year</div>
+                                <div>
+                                    @Html.DropDownListFor(model => Model.FlyerDetail.PassportExpiryDateYears, Mayflower.General.Utilities.ExpiredYearsDropList(15), "-", new { @class = "s3-1_dob year", required = "required" })
+                                </div>
+                            </div>
+                            @Html.HiddenFor(model => Model.FlyerDetail.PassportExpiryDate, new { })
+                            <div class="clear"></div>
+                        </div>
+                        @Html.ValidationMessageFor(model => Model.FlyerDetail.PassportExpiryDate, null, new { @class = "textforerrormsg passporterror" })
+                    </div>
+                    <div class="s3-1_contactform_right">
+                        <div class="s3-1_cf_lable_text">Passport Issuing country<span>*</span></div>
+                        <div>
+                            @Html.DropDownListFor(model => Model.FlyerDetail.PassportIssuePlace, Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })
+                            @Html.HiddenFor(model => Model.FlyerDetail.PassportIssuePlace, PassportCountryAttr)
+                            @Html.ValidationMessageFor(model => Model.FlyerDetail.PassportIssuePlace, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div>
+                <button name="" type="submit" class="s3-1_form_button add-cursor-pointer">Submit</button>
+                @*<input name="" type="@buttonType" value="Complete form to continue" class="s3-1_form_button add-cursor-pointer">*@
+            </div>
+        }
+    </div>
+</div>
+}
+else
+{
+    Response.Redirect(string.Format("{0}{1}{2}", Url.Action("Login", "Account"), "?returnUrl=", returnUrl));
+}
+@section scripts{
+     <script>
+
+         $("[name*='FlyerDetail'][name$='DOBDays'],[name*='FlyerDetail'][name$='DOBMonths'],[name*='FlyerDetail'][name$='DOBYears']").change(function () {
+             //var DOBInput = $("input[name='FlyerDetail.DOB']");
+             if ($('#FlyerDetail_DOBDays').val() == "" || $('#FlyerDetail_DOBMonths').val() == "" || $('#FlyerDetail_DOBYears').val() == "") {
+                 //DOBInput.rules('add', {
+                 //    required: true,
+                 //    messages: {
+                 //        required: "Please fill in complete date",
+                 //    }
+                 //});
+
+                 //find error location append error message in
+                 $(".doberror").find("span").remove();
+                 $(".doberror").removeClass("field-validation-valid");
+                 if (!$(".doberror").hasClass("field-validation-error"))
+                 {
+                     $(".doberror").addClass("field-validation-error");
+                 } 
+                 $(".doberror").append("<span>Please Fill in full Date of Birth</span>");
+             }
+             else {
+                 //remove error message
+                 $(".doberror").find("span").remove();
+                 $(".doberror").removeClass("field-validation-error");
+                 if (!$(".doberror").hasClass("field-validation-valid")) {
+                     $(".doberror").addClass("field-validation-valid");
+                 }
+             }
+         });
+
+         $("[name*='FlyerDetail'][name$='PassportExpiryDateDays'],[name*='FlyerDetail'][name$='PassportExpiryDateMonths'],[name*='FlyerDetail'][name$='PassportExpiryDateYears']").change(function () {
+
+             if ($('#FlyerDetail_PassportExpiryDateDays').val() == "" || $('#FlyerDetail_PassportExpiryDateMonths').val() == "" || $('#FlyerDetail_PassportExpiryDateYears').val() == "") {
+                 //find error location append error message in
+                 $(".passporterror").find("span").remove();
+                 $(".passporterror").removeClass("field-validation-valid");
+                 if (!$(".passporterror").hasClass("field-validation-error")) {
+                     $(".passporterror").addClass("field-validation-error");
+                 }
+                 $(".passporterror").append("<span>Please Fill in full Passpoer Expiry Date</span>");
+             }
+             else {
+                 //remove error message
+                 $(".passporterror").find("span").remove();
+                 $(".passporterror").removeClass("field-validation-error");
+                 if (!$(".passporterror").hasClass("field-validation-valid")) {
+                     $(".passporterror").addClass("field-validation-valid");
+                 }
+             }
+         });
+
+         $(".s3-1_form_button").click(function () {
+             if ($('#FlyerDetail_DOBDays').val() == "" || $('#FlyerDetail_DOBMonths').val() == "" || $('#FlyerDetail_DOBYears').val() == "") {
+                 $(".doberror").find("span").remove();
+                 $(".doberror").removeClass("field-validation-valid");
+                 if (!$(".doberror").hasClass("field-validation-error")) {
+                     $(".doberror").addClass("field-validation-error");
+                 }
+                 $(".doberror").append("<span>Please Fill in full Date of Birth</span>");
+             }
+             if ($('#FlyerDetail_PassportExpiryDateDays').val() == "" || $('#FlyerDetail_PassportExpiryDateMonths').val() == "" || $('#FlyerDetail_PassportExpiryDateYears').val() == "") {
+                 $(".passporterror").find("span").remove();
+                 $(".passporterror").removeClass("field-validation-valid");
+                 if (!$(".passporterror").hasClass("field-validation-error")) {
+                     $(".passporterror").addClass("field-validation-error");
+                 }
+                 $(".passporterror").append("<span>Please Fill in full Passpoer Expiry Date</span>");
+             }
+         });
+</script>
+}
+    

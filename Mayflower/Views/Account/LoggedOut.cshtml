@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "LoggedOut";
+    ViewBag.RenderRedLine = true;
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+@section style{
+    <style>
+    .registration_page_container {
+            max-width: 820px;
+     }
+    </style>
+}
+
+@if (Request.IsAuthenticated)
+{
+    if (!isEnableCMS) {
+        Response.Redirect("~/");
+    }
+    else
+    {
+        //Response.Redirect(@System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"]);
+        @Html.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "SessionTransfer" });
+    }
+}
+
+<script>
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function (event) {
+        history.pushState(null, document.title, location.href);
+    });
+</script> 
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="registration_page_container">
+    <div class="rpc_inner">
+        <h2>So long, my friend!</h2>
+        <div class="member_fp_text mem_text_center">
+            You have successfully logged out.
+        </div>
+        <br>
+        <div class="mem_text_center">
+            @if (!isEnableCMS)
+            {
+                <button type="button" class="s5_pl_button mt20 add-cursor-pointer" style="width:40%"
+                        onclick="window.location = '@Url.Action("Index", "Home")'">
+                    Back to Homepage
+                </button>
+            }
+            else
+            {
+                <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })'>
+                    <input class="s5_pl_button mt20 add-cursor-pointer" style="width:40%; text-align:center;" value="Back to Homepage" />
+                </a>
+            }
+        </div>
+        <br><br>
+    </div>
+</div>
+<!-- MAIN CONTENT PORTION END -->

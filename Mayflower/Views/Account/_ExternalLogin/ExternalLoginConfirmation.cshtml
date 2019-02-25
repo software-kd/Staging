@@ -1,0 +1,128 @@
+﻿@model Alphareds.Module.Model.ExternalLoginConfirmationViewModel
+@{
+    ViewBag.Title = "Register";
+    ViewBag.RenderRedLine = true;
+}
+
+@section style{
+<link href="@Url.Content("~/CSS/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<style>
+    .box-context {
+        max-width: 620px;
+        margin: 0 auto;
+        margin-bottom: 3em;
+        margin-top: 3em;
+        background-color: #f1f1f3;
+        padding: 1em 4em;
+        font-family: 'Conv_Ubuntu-Light';
+        font-size: 14px;
+    }
+
+    .footer {
+        margin-top: 0;
+    }
+
+    .main-body {
+        min-height: 275px;
+    }
+
+    .provider-heading {
+        padding: 23px 0;
+        font-size: 20px;
+        color: #eb2329;
+        text-align: center;
+    }
+
+    .provider-lg-info {
+        font-family: 'Conv_Ubuntu-Light';
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin: 1em 0;
+    }
+
+        .form-group label {
+            font-family: 'Conv_Ubuntu-Light';
+            height: 28px;
+            line-height: 28px;
+            font-size: 13px;
+        }
+
+        .form-group input[type=text] {
+            padding-right: 24px
+        }
+
+        .form-group button {
+            width: 100%;
+            background-color: #eb1c24;
+            height: 60px;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 45px;
+            border-radius: 30px;
+            border: 0px;
+            cursor: pointer;
+        }
+
+            .form-group button:hover {
+                background-color: #ef3239;
+            }
+
+        @@media screen and (max-width: 500px){
+            .box-context {
+                padding: 1em;
+            }
+        }
+</style>
+}
+
+
+<div class="box-context">
+    <h2 class="provider-heading">
+        @if (ViewBag.LoginProvider == "Facebook")
+        {
+            <i class="fa fa-facebook-official" aria-hidden="true" style="color: #4774cc;margin-right: 0.5em;"></i>
+        }
+        Associate your @ViewBag.LoginProvider account
+    </h2>
+
+    @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p class="text-info provider-lg-info">
+            You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
+            Please enter a user name for this site below and click the Register button to finish
+            logging in.
+        </p>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control s3-1_full_textbox_com" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "textforerrormsg" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Referral Code</label>
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.ReferralCode, new { @class = "form-control s3-1_full_textbox_com" })
+                @Html.ValidationMessageFor(m => m.ReferralCode, "", new { @class = "textforerrormsg" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="provider-btn">Register</button>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+
+}

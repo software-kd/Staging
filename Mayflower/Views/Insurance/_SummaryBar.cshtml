@@ -1,0 +1,344 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.BookedProductView
+
+@functions{
+
+
+    #region Global Variable
+    string returnUrl;
+    bool hasFlight;
+    bool hasHotel;
+    bool hasEventProduct;
+    bool hasInsurance;
+    Alphareds.Module.Model.Database.BookingHotel hotelInfo;
+    int itemCounter = 0;
+    string superPNRNo = null;
+
+    // Flight Start
+    SearchFlightResultViewModel searchCriteria;
+    FlightMasterInfo flightInfo;
+    bool isDomestic;
+    bool isOneWay;
+    string cabinClass;
+    string adl;
+    string child;
+    string inf;
+    int adlC;
+    int childC;
+    int infC;
+    int tripCount = 1;
+    List<List<Alphareds.Module.Model.Database.FlightSegment>> flightSegmentGroupList = new List<List<Alphareds.Module.Model.Database.FlightSegment>>();
+    // Flight End
+
+    // Hotel Start
+    int totalRoom = 0;
+    string room = null;
+    int totalDays = 0;
+    string dayDisplay = null;
+    string totalNight = null;
+    string numOfDays = null;
+    string numOfNights = null;
+    DateTime hotelArrivalDate = new DateTime();
+    DateTime hotelDepartureDate = new DateTime();
+    #endregion
+}
+
+@{
+    var superPNR = Model.Flight.ConfirmationOutputDb.SuperPNR;
+    superPNRNo = superPNR.SuperPNRNo;
+    returnUrl = Url.Action("Index", "Home", new { @ref = Url.RequestContext.RouteData.Values["action"].ToString() }, Request.Url.Scheme);
+    string tripid = ViewBag.tripid;
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.ReturnAction))
+    {
+        returnUrl = ViewBag.ReturnAction;
+    }
+
+    #region Global Variable
+    hasFlight = superPNR.Bookings.Any();
+    hasHotel = superPNR.BookingHotels.Any();
+    hasEventProduct = superPNR.EventBookings.Any();
+    hasInsurance = superPNR.BookingInsurances.Any();
+
+
+    var flightSegmentOutBound = Model.Flight.BookingFlightSegment.Where(x => x.SegmentOrder.Contains("O")).OrderBy(x => x.SegmentNumber).ToList();
+    var flightSegmentInBound = Model.Flight.BookingFlightSegment.Where(x => x.SegmentOrder.Contains("I")).OrderBy(x => x.SegmentNumber).ToList();
+
+    flightSegmentGroupList.Add(flightSegmentOutBound);
+    flightSegmentGroupList.Add(flightSegmentInBound);
+
+    if (hasHotel)
+    {
+        hotelInfo = superPNR.BookingHotels.FirstOrDefault();
+        hotelArrivalDate = hotelInfo.CheckInDateTime;
+        hotelDepartureDate = hotelInfo.CheckOutDateTime;
+
+        //copy from order history
+        Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxChargeCode = (x => x.ChargeCode == "BRATE");
+        var roomPax = hotelInfo.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value);
+        var roomPaxCharge = roomPax.SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxChargeCode);
+        var grpRoom = roomPax.GroupBy(x => new { x.RoomTypeDescription, x.ItineraryNumber });
+        var itineraryNoList = roomPax.GroupBy(x => new { x.ItineraryNumber }).Select(x => x.Key.ItineraryNumber).ToList();
+
+        foreach(var room in grpRoom)
+        {
+            totalRoom += room.Count();
+        }
+
+        room = totalRoom > 1 ? "Rooms" : "Room";
+        totalDays = (hotelDepartureDate - hotelArrivalDate).Days;
+        dayDisplay = (totalDays + 1) > 1 ? "Days" : "Day";
+        totalNight = (totalDays) > 1 ? "Nights" : "Night";
+        numOfDays = (totalDays + 1).ToString("n0");
+        numOfNights = (totalDays).ToString("n0");
+    }
+
+    if (hasFlight)
+    {
+        isDomestic = Model.Flight.ConfirmationOutputDb.IsDomesticFlight;
+        isOneWay = !Model.Flight.ConfirmationOutputDb.IsReturn;
+        cabinClass = Model.Flight.ConfirmationOutputDb.FlightSegments.FirstOrDefault().CabinType.CabinType1;
+        tripCount = isOneWay ? 1 : 2;
+
+        adlC = Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.Any(x => x.PassengerType == "ADT") ? Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.FirstOrDefault(x => x.PassengerType == "ADT").NoOfPax : 0 ;
+        childC = Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.Any(x => x.PassengerType == "CNN") ? Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.FirstOrDefault(x => x.PassengerType == "CNN").NoOfPax : 0;
+        infC = Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.Any(x => x.PassengerType == "INF") ? Model.Flight.ConfirmationOutputDb.FlightSegmentPaxTypes.FirstOrDefault(x => x.PassengerType == "INF").NoOfPax : 0;
+
+        adl = adlC > 1 ? "Adults" : "Adult";
+        child = childC > 1 ? "Children" : "Child";
+        inf = infC > 1 ? "Infants" : "Infant";
+    }
+    #endregion
+}
+
+<div class="s3_1_flight_details_box s3_1_flight_details_box2">
+    <div class="s3_1_fdb_inner">
+        @if (hasFlight)
+        {
+            @RenderPaymentSummaryBar("flight");
+        }
+        @if (hasHotel)
+        {
+            @RenderPaymentSummaryBar("hotel");
+        }
+        @RenderPaymentSummaryBar("SuperPNR")
+        <div class="clear"></div>
+    </div>
+</div>
+
+@helper RenderPaymentSummaryBar(string type)
+{
+    <div class="row flex">
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-10">
+
+                    @if (type == "flight")
+                    {
+                        @RenderFlightInformation()
+                    }
+                    
+                    @if (type == "hotel")
+                    {
+                        @RenderHotelInformation(hotelInfo, false)
+                    }
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4 ars-block-border">
+            @if (type == "flight")
+            {
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                Depart
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @Model.Flight.ConfirmationOutputDb.FlightSegments.FirstOrDefault(x => x.SegmentOrder == "O1").DepartureDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                &nbsp;>&nbsp;
+                                @Model.Flight.ConfirmationOutputDb.FlightSegments.FirstOrDefault(x => x.SegmentOrder == "O1").ArrivalDateTime.ToString("HHmm")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                Return
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @if (!isOneWay)
+                                {
+                                    @Model.Flight.ConfirmationOutputDb.FlightSegments.FirstOrDefault(x => x.SegmentOrder == "I1").DepartureDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                    @:&nbsp;>&nbsp;
+                                    @Model.Flight.ConfirmationOutputDb.FlightSegments.FirstOrDefault(x => x.SegmentOrder == "I1").ArrivalDateTime.ToString("HHmm")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (type == "hotel")
+            {
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                Check In
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @hotelArrivalDate.ToString("dd-MMM-yy, ddd")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                Check Out
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @hotelDepartureDate.ToString("dd-MMM-yy, ddd")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="s3_1_fdb4_inner">
+                @if (type == "flight")
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room">
+                            @if (adlC > 0)
+                            {
+                                <span>@adlC</span> @adl
+                            }
+                            @if (childC > 0)
+                            {
+                                <span>@childC</span> @child
+                            }
+                            @if (infC > 0)
+                            {
+                                <span>@infC</span> @inf
+                            }
+                            | @cabinClass
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                }
+
+                @if (type == "hotel")
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room"><span>@totalRoom</span> @room <span>@numOfDays</span> @dayDisplay <span>@numOfNights</span> @totalNight</div>
+                    </div>
+                }
+
+                @if(type == "SuperPNR")
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room">
+                            Reference Number : <span>@superPNRNo</span>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+
+//itemCounter++;
+}
+
+@helper RenderFlightInformation()
+{
+    <div class="hotelpart">
+        <div class="">
+            <img class="pull-left" src="@Url.Content("~/Images/fl_t_ico.png")" />
+            <div class="s3_1_fdb_hotel_name bolder-size">
+                @for (int i = 0; i < flightSegmentGroupList.Count(); i++)
+                {
+                    var trip = flightSegmentGroupList[i];
+                    string airlineList = string.Empty;
+                    for (int a = 0; a < trip.Count; a++)
+                    {
+                        var seg = trip[a];
+                        airlineList += string.Format("{0}{1}{2}", seg.AirlineCode
+                                        , seg.FlightNumber
+                                        , (a + 1 == trip.Count ? "" : ", "));
+                        <span>@seg.DepartureAirportLocationCode</span>
+                        <span> > </span>
+
+                        if (a + 1 == trip.Count)
+                        {
+                            <span>@seg.ArrivalAirportLocationCode</span>
+
+                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                @airlineList
+                            </span>
+                        }
+                    }
+                    <br />
+                }
+
+            </div>
+        </div>
+    </div>
+}
+
+@helper RenderHotelInformation(Alphareds.Module.Model.Database.BookingHotel hotelInfo, bool includeCheckInOutInfo)
+{
+DateTime? hotelArrivalDate = null;
+DateTime? hotelDepartureDate = null;
+    <div class="hotelpart">
+        <div class="">
+            @{ 
+                int hotelstar = hotelInfo.HotelRating.ToInt();
+                if (includeCheckInOutInfo)
+                {
+                    hotelArrivalDate = hotelInfo.CheckInDateTime;//hotel.arrivalDate.ToDateTimeNullable();
+                    hotelDepartureDate = hotelInfo.CheckOutDateTime;//hotel.departureDate.ToDateTimeNullable();
+                }
+                <img class="pull-left" src="@Url.Content("../../Images/ht_t_ico.png")" />
+                <div class="s3_1_fdb_hotel_name bolder-size">
+                    @hotelInfo.HotelName
+                    <div class="hidden-xs hidden-sm hstar-rating">
+                        @for (int i = 0; i < hotelstar; i++)
+                        {
+                            <img src="/images/hotel_star_am.png" width="10" height="10" alt="star-rating">
+                        }
+                    </div>
+                </div>
+            }
+            @if (includeCheckInOutInfo && hotelArrivalDate != null && hotelDepartureDate != null)
+            {
+                <div class="s3_1_fdb_inner_b4 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkin">
+                    <div class="check_in bolder-size">
+                        Check In
+                    </div>
+                    <div class="tim_box1">@hotelArrivalDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                </div>
+                <div class="s3_1_fdb_inner_b3 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkout">
+                    <div class="check_out bolder-size">
+                        Check Out
+                    </div>
+                    <div class="tim_box2">@hotelDepartureDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                </div>
+            }
+        </div>
+    </div>
+}

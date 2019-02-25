@@ -1,0 +1,153 @@
+﻿@model Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelListResponse
+@using Alphareds.Module.Common
+@using Alphareds.Module.ESBHotelComparisonWebService.ESBHotel
+@{
+    Mayflower.General.CustomPrincipal customPrincipal = (Mayflower.General.CustomPrincipal)User;
+
+    // Process empty result here
+    var hotelList = Model?.HotelList ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation[] { };
+    bool hasError = Model?.Errors != null;
+    string sessionID = ViewBag.TripID ?? Guid.NewGuid().ToString();
+}
+
+@functions{
+    string[] supplierReflec = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.Suppliers).GetEnumNames();
+}
+
+@foreach (var hotel in hotelList.Take(10))
+{
+    List<string> hotelAddress = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(hotel.locationDescription))
+    {
+        hotelAddress.Add(HttpUtility.HtmlDecode(hotel.locationDescription));
+    }
+
+    if (!string.IsNullOrWhiteSpace(hotel.Addresses?.city))
+    {
+        hotelAddress.Add(HttpUtility.HtmlDecode(hotel.Addresses.city));
+    }
+
+    if (hotelAddress.Count == 0)
+    {
+        hotelAddress.Add("-");
+    }
+
+    List<string> imgRespository = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(hotel.imagesURL.Big_350x350))
+    {
+        imgRespository.Add(hotel.imagesURL.Big_350x350);
+    }
+
+    if (hotel.imagesURLmore != null && hotel.imagesURLmore.Length > 0)
+    {
+        foreach (var img in hotel.imagesURLmore)
+        {
+            imgRespository.Add(img);
+        }
+    }
+
+    if (imgRespository.Count == 0)
+    {
+        imgRespository.Add("~/Images_hotel/no-img-01.png");
+    }
+
+    int _counter = 0;
+    <!-- Item single -->
+    <div class="search-item bg-white">
+        <div class="search-item-top shadow">
+            <div class="slider-wrap">
+                <div id="carousel-1" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        @foreach (var img in imgRespository)
+                        {
+                            <li data-target="#carousel-1" data-slide-to="@_counter" class="@(_counter == 0 ? "active" : "")"></li>
+                            _counter = _counter == imgRespository.Count ? 0 : _counter++;
+
+                        }
+                    </ol>
+                    <div class="carousel-inner">
+                        @foreach (var img in imgRespository)
+                        {
+                            <div class="carousel-item @(_counter == 0 ? "active" : "")">
+                                <img class="d-block w-100" src="@img" alt="img_slide_@_counter">
+                            </div>
+                            _counter = _counter == imgRespository.Count ? 0 : _counter++;
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="mid-content">
+                <div class="mid-top">
+                    <div class="mid-left">
+                        <h2>@Html.Raw(hotel.name)</h2>
+                        <div class="rating-display">
+                            @for (int i = 0; i < hotel.hotelRating.ToDecimal(); i++)
+                            {
+                                <i class="fa fa-star"></i>
+                            }
+                            @if (Core.IsForStaging)
+                            {
+                                <small class="text-muted font-italic">&nbsp;&nbsp;(@hotel.hotelSupplier.ToString())</small>
+                            }
+                        </div>
+                        @*<span class="tag">Special 75% OFF</span>*@
+                    </div>
+                </div>
+                <div class="mid-bottom">
+                    <div>@(hotel.tripAdvisor?.tripAdvisorRating.ToString("n1") ?? "-") </div>
+                    <div>
+                        @*Excellent<br />*@ @(hotel.tripAdvisor?.tripAdvisorReviewCount.ToString() ?? "-") reviews
+                    </div>
+                    <div>
+                        Location<br /> @Html.Raw(string.Join(", ", hotelAddress))
+                    </div>
+                </div>
+            </div>
+            @*<div class="mid-right map-wrapper type-2 text-left">
+                    <ul>
+                        <li><span><img src="assets/images/icon_pets_allowed.png" alt=""></span> Pets allowed</li>
+                        <li><span><img src="assets/images/icon_spa.png" alt=""></span> Spa</li>
+                        <li><span><img src="assets/images/icon_gym.png" alt=""></span> Gym</li>
+                        <li><span><img src="assets/images/icon_restaurant.png" alt=""></span> Restaurant</li>
+                    </ul>
+                </div>*@
+            @*<div class="map-wrapper" id="google-map"></div>*@
+            <div class="price-div">
+                <h3>from <span>MYR @(hotel.lowRate.ToString("n2"))</span>/night</h3>
+                <p>tax excluded</p>
+                @GenerateSupplierPriceList(hotel.hotelSupplier.ToString(), hotel, customPrincipal.IsAgent)
+            </div>
+        </div>
+
+        <div class="room-container">
+
+        </div>
+    </div>
+    <!-- ./Item single -->
+}
+
+<script>
+    history.pushState(null, "Hotel Search Result", "/Hotel/Search?tripid=@sessionID");
+</script>
+
+@helper GenerateSupplierPriceList(string supplier, Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo, bool isAgent)
+{
+    if (isAgent)
+    {
+        foreach (var item in supplierReflec)
+        {
+            var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(item);
+            <li class="@(supplier == item ? "active ShowMoreRoom": "disabled")" data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">
+                <img src="@Url.Content($"~/Images/ht-supp/{item.Replace(" ", "").ToLower()}.png")" alt="@displayTxt">
+            </li>
+        }
+    }
+    else
+    {
+        var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(supplier);
+        <a href="#" class="room-trigger btn btn-primary btn--red"
+           data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">Show Rooms</a>
+    }
+}

@@ -1,0 +1,242 @@
+﻿@model Alphareds.Module.Model.AgentProfileEditModel
+
+@{
+    ViewBag.Title = "My Profile";
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = null;
+    }
+
+    //string text = Model.JoinFirstLastName;
+    //string firstLetters = "";
+
+    //foreach (var part in text.Split(' '))
+    //{
+    //    if (part.Any(x => x != ' ' && firstLetters.Length != 2))
+    //    {
+    //        firstLetters += part.First();
+    //    }
+    //}
+}
+
+@* Whole page reload method. *@
+@*<a href="@Url.Action("UpdateProfile", "User")"><span class="pull-right">Edit</span></a>*@
+@* AjaxReplaceLoad Method. *@
+@*<a id="btnLoad" href="javascript:;" data-url="@Url.Action("UpdateProfile", "User")"><span class="pull-right">Edit</span></a>*@
+@* Popout Method. *@
+@*<a class="popout-content" href="javascript:;" data-url='@Url.Action("UpdateProfile", "User")' data-toggle="modal" data-target="#PopModal"><span class="pull-right">Edit</span></a>*@
+@*<div class="mpm_editprofile"><a href="@Url.Action("UpdateProfile", "User" )">Edit Profile</a></div>*@
+
+<div class="mpm_editprofile"><a href="@Url.Action("AgentUpdateProfile", "Agent" )">Edit Profile</a></div>
+<div class="clear"></div>
+
+<div class="mpm_content_container">
+    <div class="mpm_cc_left">
+        <ul>
+            <li class="mpm_cc_icon1 mpm_cc_icon1_active">Agent Details</li>
+            <li class="mpm_cc_icon2">Contact Details</li>
+            <li class="mpm_cc_icon3">Support Documents</li>
+        </ul>
+    </div>
+    <div class="mpm_cc_right">
+        <div class="mpjm_ccr_inner">
+            <div class="mpjmhdans_mobile_tab mpg_mt_minus mobileonly">
+                <div class="mpj_personal_details">Agent Details</div>
+            </div>
+            <!-- AGENT DETAIL START -->
+            <div id="personaldetail">
+                <div class="mpjm_pd_heading_right"><span>Agents details</span></div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Name</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.OrganizationName) ? Model.OrganizationName : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Email Address</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Email) ? Model.Email : "-")</div>
+                </div>
+
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Registration Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.RegistrationNo) ? Model.RegistrationNo : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's GST Registration Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.TaxRegistrationNo) ? Model.TaxRegistrationNo : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">KPL Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.KPLNo) ? Model.KPLNo : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Fax Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.FaxNoCountryCode) && !string.IsNullOrEmpty(Model.ContactNo3) ? "(" + Alphareds.Module.Common.UtilitiesService.GetPhoneCode(Model.FaxNoCountryCode) + ")" + Model.ContactNo3 : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Phone Number (Office)</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.OfficeNoCountryCode) && !string.IsNullOrEmpty(Model.ContactNo1) ? "(" + Alphareds.Module.Common.UtilitiesService.GetPhoneCode(Model.OfficeNoCountryCode) + ")" + Model.ContactNo1 : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Phone Number (Mobile)</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.MobileNoCountryCode) && !string.IsNullOrEmpty(Model.ContactNo2) ? "(" + Alphareds.Module.Common.UtilitiesService.GetPhoneCode(Model.MobileNoCountryCode) + ")" + Model.ContactNo2 : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Address Line1</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Address1) ? Model.Address1 : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Address Line2</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Address2) ? Model.Address2 : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's City</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.City) ? Model.City : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Postal Code</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.PostCode) ? Model.PostCode : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's State</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.ProvinceState) ? Model.ProvinceState : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Country</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CountryCode) ? Alphareds.Module.Common.UtilitiesService.GetCountryName(Model.CountryCode) : "-")</div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!-- AGENT DETAIL END -->
+
+            <div class="mpjmhdans_mobile_tab  mobileonly">
+                <div class="mpj_contact_details">Contact Details</div>
+            </div>
+            <!-- CONTACT DETAIL START -->
+            <div id="contactdetail">
+                <div class="mpjm_pd_heading_right"> <span>Contact details</span></div>
+                <div class="clear"></div>
+
+                <div class="first-contact">
+                    <div class="contact_heading">Contact Person 1</div>
+                    <div class="mpjm_pd_heading_left">@*@firstLetters.ToUpper()*@</div>
+                    <div class="mpjm_pd_heading_right">
+                        @*@(!string.IsNullOrEmpty(Model.TitleCode) ? Model.TitleCode : "")*@<br><span>@*@Html.DisplayTextFor(model => model.FirstName)*@<br> @*@Html.DisplayTextFor(model => model.LastName)*@</span>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Phone (Office)</div>
+                        <div class="mpjmhd_ans">@*@(Model.DOB != null ? Model.DOB.Value.ToShortDateString() : "-")*@-</div>
+                    </div>
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Phone (Mobile)</div>
+                        <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Designation</div>
+                        <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.PassportNo) ? Model.PassportNo : "-")*@-</div>
+                    </div>
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Email Address</div>
+                        <div class="mpjmhd_ans">@*@(Model.PassportExpiryDate != null ? Model.PassportExpiryDate.Value.ToShortDateString() : "-")*@-</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="second-contact">
+                    <div class="contact_heading">Contact Person 2</div>
+                    <div class="mpjm_pd_heading_left">@*@firstLetters.ToUpper()*@</div>
+                    <div class="mpjm_pd_heading_right">
+                        @*@(!string.IsNullOrEmpty(Model.TitleCode) ? Model.TitleCode : "")*@<br><span>@*@Html.DisplayTextFor(model => model.FirstName)*@<br> @*@Html.DisplayTextFor(model => model.LastName)*@</span>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Phone (Office)</div>
+                        <div class="mpjmhd_ans">@*@(Model.DOB != null ? Model.DOB.Value.ToShortDateString() : "-")*@-</div>
+                    </div>
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Phone (Mobile)</div>
+                        <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Designation</div>
+                        <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.PassportNo) ? Model.PassportNo : "-")*@-</div>
+                    </div>
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Email Address</div>
+                        <div class="mpjmhd_ans">@*@(Model.PassportExpiryDate != null ? Model.PassportExpiryDate.Value.ToShortDateString() : "-")*@-</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="emergency-contact">
+                    <div class="contact_heading">Emergency Contact After Office Hours</div>
+                    <div class="mpjm_pd_heading_left">@*@firstLetters.ToUpper()*@</div>
+                    <div class="mpjm_pd_heading_right">
+                        @*@(!string.IsNullOrEmpty(Model.TitleCode) ? Model.TitleCode : "")*@<br><span>@*@Html.DisplayTextFor(model => model.FirstName)*@<br> @*@Html.DisplayTextFor(model => model.LastName)*@</span>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Phone (Mobile)</div>
+                        <div class="mpjmhd_ans">@*@(Model.DOB != null ? Model.DOB.Value.ToShortDateString() : "-")*@-</div>
+                    </div>
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Designation</div>
+                        <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <!-- CONTACT DETAIL END -->
+
+            <div class="mpjmhdans_mobile_tab  mobileonly">
+                <div class="mpj_company_details">Support Documents</div>
+            </div>
+            <!-- COMPANY DETAIL START -->
+            <div id="companydetail">
+                <div class="mpjm_pd_heading_right"><span>Support Documents</span></div>
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">KPL (Ministry of Tourism)</div>
+                    <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                </div>
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Business Registration</div>
+                    <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                </div>
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Borang 9</div>
+                    <div class="mpjmhd_ans">@*@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")*@-</div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!-- COMPANY DETAIL END -->
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+

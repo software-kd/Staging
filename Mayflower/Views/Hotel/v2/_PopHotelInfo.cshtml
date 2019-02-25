@@ -1,0 +1,243 @@
+﻿@model Alphareds.Module.ExpediaHotelsWebService.ExpediaHotels.GetHotelInformationResponse
+
+@{
+    var hotelInfo = Model?.hotelInformation ?? new HotelBiodata()
+    {
+        hotelDetails = new HotelDetails(),
+        HotelImages = new HotelImage[] { },
+        hotelSummary = new HotelSummary(),
+        PropertyAmenities = new Amenity[] { },
+    };
+    var imgRespository = hotelInfo.HotelImages?
+        .Where(x => x.TypesOfImage != null)
+        .Select(x => x.TypesOfImage.Big_350x350)?.ToList() ?? new List<string>();
+
+    int _counter = 0;
+    if (imgRespository.Count == 0)
+    {
+        imgRespository.Add("~/Images_hotel/no-img-01.png");
+    }
+}
+
+<div>
+    <div id="carousel-ht-prompt" class="carousel slide carousel-fade" data-ride="carousel">
+        @*@if (imgRespository.Count > 1)
+            {
+                <ol class="carousel-indicators">
+                    @foreach (var img in imgRespository)
+                    {
+                        <li data-target="#carousel-ht-prompt" data-slide-to="@_counter" class="@(_counter == 0 ? "active" : "")"></li>
+                        _counter = _counter == imgRespository.Count ? 0 : _counter++;
+                    }
+                </ol>
+            }*@
+        <div class="carousel-inner">
+            @foreach (var img in imgRespository)
+            {
+                string _url = Url.IsLocalUrl(img) ? Url.Content(img) : img;
+                <div class="carousel-item ht-img-pop-slider @(_counter == 0 ? "active" : "")">
+                    <img class="d-block mx-auto" src="@_url" alt="img_slide_@_counter">
+                </div>
+                _counter++;
+            }
+        </div>
+        <a class="carousel-control-prev" href="#carousel-ht-prompt" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carousel-ht-prompt" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+    @*<div class="accordion" id="accordionExample">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAmm" aria-expanded="true" aria-controls="collapseAmm">
+                            Collapsible Group Item #1
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="collapseAmm" class="collapse show" aria-labelledby="headingOne">
+                    <div class="card-body">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseLocation" aria-expanded="false" aria-controls="collapseThree">
+                            Hotel Amenities
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseLocation" class="collapse" aria-labelledby="headingThree">
+                    <div class="card-body">
+                        @foreach (var item in hotelInfo.PropertyAmenities ?? new Amenity[] { })
+                        {
+                            <p>@item.amenity</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    <div class="container ht-pop-info">
+        <div class="row">
+            <div class="col-lg-6 col-xs-12 col-sm-12">
+                <div class="ht-pop-info-title mt-3">Location</div>
+                @{
+                    List<string> addressList = new List<string>();
+
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.address1))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.address1);
+                    }
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.address2))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.address2);
+                    }
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.address3))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.address3);
+                    }
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.postalCode))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.postalCode);
+                    }
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.city))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.city);
+                    }
+                    if (!string.IsNullOrWhiteSpace(hotelInfo.hotelSummary.countryCode))
+                    {
+                        addressList.Add(hotelInfo.hotelSummary.countryCode);
+                    }
+                    string _addressMerge = string.Join(", ", addressList);
+                }
+                <p>@(_addressMerge.Length > 0 ? _addressMerge : "-")</p>
+
+            </div>
+            <div class="col-lg-6 col-xs-12 col-sm-12">
+                <div class="ht-pop-info-title mt-3">Guest Rating</div>
+                <p>
+                    @if (hotelInfo.hotelSummary?.tripAdvisor?.tripAdvisorRating != null)
+                    {
+                        @:@hotelInfo.hotelSummary.tripAdvisor.tripAdvisorRating / 5(@hotelInfo.hotelSummary.tripAdvisor.tripAdvisorReviewCount Reviews)
+                    }
+                    else
+                    {
+                        @:-
+                    }
+                </p>
+            </div>
+            <div class="col-lg-6 col-xs-12 col-sm-12">
+                <div class="ht-pop-info-title mt-3">Check-In/Out Time</div>
+                <p>Check In Time: @(string.IsNullOrEmpty(hotelInfo.hotelDetails.checkInTime) ? "-" : hotelInfo.hotelDetails.checkInTime)</p>
+                <p>Check Out Time: @(string.IsNullOrEmpty(hotelInfo.hotelDetails.checkOutTime) ? "-" : hotelInfo.hotelDetails.checkOutTime)</p>
+            </div>
+            <div class="col-lg-6 col-xs-12 col-sm-12"></div>
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Check-In Instruction</div>
+                <p>@Html.Raw(string.IsNullOrEmpty(hotelInfo.hotelDetails.checkInInstructions) ? "-" : hotelInfo.hotelDetails.checkInInstructions)</p>
+
+            </div>
+
+            <div class="col-lg-6 col-xs-12 col-sm-12"></div>
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Special Check-In Instruction</div>
+                <p>@Html.Raw(string.IsNullOrEmpty(hotelInfo.hotelDetails.specialCheckInInstructions) ? "-" : hotelInfo.hotelDetails.specialCheckInInstructions)</p>
+            </div>
+
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Policies</div>
+                <ul>
+                    @if (string.IsNullOrEmpty(hotelInfo.hotelDetails.hotelPolicy) && string.IsNullOrEmpty(hotelInfo.hotelDetails.propertyInformation))
+                    {
+                        <li>n/a</li>
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(hotelInfo.hotelDetails.hotelPolicy))
+                        {
+                            <li>@Html.Raw(hotelInfo.hotelDetails.hotelPolicy)</li>
+                        }
+                        if (!string.IsNullOrEmpty(hotelInfo.hotelDetails.propertyInformation))
+                        {
+                            foreach (var item in hotelInfo.hotelDetails.propertyInformation.Split(new string[] { "  " }, StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <li>@Html.Raw(item)</li>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Description</div>
+                <div class="ht-pop-info-desc">
+                    @if (string.IsNullOrWhiteSpace(hotelInfo.hotelDetails.propertyDescription) && string.IsNullOrWhiteSpace(hotelInfo.hotelDetails.locationDescription))
+                    {
+                        <p>-</p>
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrWhiteSpace(hotelInfo.hotelDetails.propertyDescription))
+                        {
+                            <p>
+                                @Html.Raw(hotelInfo.hotelDetails.propertyDescription.Replace("&lt;", "<").Replace("&gt;", ">"))
+                            </p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(hotelInfo.hotelDetails.locationDescription))
+                        {
+                            <p>
+                                @Html.Raw(hotelInfo.hotelDetails.locationDescription.Replace("&lt;", "<").Replace("&gt;", ">"))<br />
+                            </p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(hotelInfo.hotelDetails.areaInformation))
+                        {
+                            <p>
+                                @Html.Raw(hotelInfo.hotelDetails.areaInformation.Replace("&lt;", "<").Replace("&gt;", ">"))
+                            </p>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Hotel Amenities</div>
+                <ul>
+                    @{ 
+                        var _htAmenities = hotelInfo.PropertyAmenities?.Select(x => x.amenity)?.Distinct()?
+                            .OrderBy(x => x)?.ToList() ?? new List<string>() { "n/a" };
+                    }
+                    @foreach (var item in (_htAmenities.Count > 0 ? _htAmenities : new List<string>() { "n/a" }))
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">You need to know</div>
+                <p>
+                    @Html.Raw(string.IsNullOrEmpty(hotelInfo.hotelDetails.knowBeforeYouGoDescription) ? "-" : hotelInfo.hotelDetails.knowBeforeYouGoDescription)
+                </p>
+            </div>
+
+            <div class="col-12">
+                <div class="ht-pop-info-title mt-3">Fees</div>
+                @{
+                    string _fees = (string.IsNullOrEmpty(hotelInfo.hotelDetails.mandatoryFeesDescription) ? "" : hotelInfo.hotelDetails.mandatoryFeesDescription + "<br />");
+                    _fees = (string.IsNullOrEmpty(hotelInfo.hotelDetails.roomFeesDescription) ? "" : hotelInfo.hotelDetails.roomFeesDescription);
+                }
+                @Html.Raw(string.IsNullOrEmpty(_fees) ? "-" : _fees)
+            </div>
+        </div>
+    </div>
+</div>

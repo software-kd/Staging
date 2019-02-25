@@ -1,0 +1,128 @@
+﻿@model Mayflower.Models.AgentLoginModels
+
+<style>
+    .mem_text_center2 {
+        padding-top: 10%;
+    }
+
+    .s3-1_submit_button {
+        width: 100%;
+        background-color: #eb1c24;
+        height: 60px;
+        font-size: 14px;
+        color: #fff;
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        border-radius: 30px;
+        border: 0px;
+    }
+
+    .notice-msg {
+        text-align: center;
+        margin-bottom: 10px;
+        font-family: "Conv_Ubuntu-Light";
+        font-size: 13px;
+    }
+
+    #cssmenu > ul > li > a {
+        color: #ea0512 !important;
+        text-decoration: none;
+        font-family: 'UbuntuMedium';
+    }
+
+    @@media screen and (max-width : 900px) {
+        .footer {
+            margin-top: 0px;
+        }
+
+        .member_login_container {
+            margin-top: 0px;
+            width: 100%;
+            max-width: none;
+        }
+
+        .footer_inner {
+            margin-top: 0px;
+        }
+    }
+</style>
+
+@{
+    ViewBag.Title = "Login to Mayflower | Cheap Holidays, Hotels & Flights | Travel Agent Malaysia ";
+    ViewBag.MetaDescription = "Login to Mayflower to view your booking or book your holiday easily using your saved details.";
+    ViewBag.RenderRedLine = true;
+    var routeValues = HttpContext.Current.Request.RequestContext.RouteData.Values;
+    object style;
+    if (routeValues["action"]?.ToString().ToLower() == "login")
+    { style = "display:block; margin-top: 15px"; }
+    else { style = "display:none; margin-top: 15px"; }
+}
+
+@using (Html.BeginForm("login", "Agent", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post,
+                                                    new { @Id = "login-form", @role = "form", @class = "form-border", style }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Request.QueryString["status"] != null)
+    {
+        string msg = "";
+        string status = Request.QueryString["status"] != null ? Request.QueryString["status"].ToString() : "";
+        switch (status)
+        {
+            case "link-expired":
+                msg = "The reset link is expired. Please request again.";
+                break;
+            default:
+                break;
+        }
+        if (msg != "")
+        {
+            <div class="notice-msg textforerrormsg">
+                @msg
+            </div>
+        }
+    }
+    <div class="member_login_container">
+        <div class="mem_login_inner">
+            <h2>Welcome Agent!</h2>
+            <div class="member_fp_text mem_text_center">Please key in Username / Trading ID and password to log into our site.</div>
+            @if (!string.IsNullOrEmpty(ViewBag.UserNotAuthorized))
+            {
+            <div class="notice-msg textforerrormsg">
+                @ViewBag.UserNotAuthorized
+            </div>
+            }
+            <div class="form-group float-label-control">
+                <div class="s3-1_cf_lable_text">Trading ID / Username</div>
+                @Html.TextBoxFor(m => m.UserLoginID, new { @class = "s3-1_full_textbox_com", @required = "required", @style = "padding-right:24px" })
+                @Html.ValidationMessageFor(m => m.UserLoginID, null, new { @class = "textforerrormsg" })
+            </div>
+            @*@Html.ValidationMessageFor(m => m.Email, null, new { @class = "validation" })*@
+            <div class="form-group float-label-control">
+                <div class="s3-1_cf_lable_text mt20">Password</div>
+                @Html.PasswordFor(m => m.Pwd, new { @class = "s3-1_full_textbox_com", @required = "required", @style = "padding-right:24px" })
+                @Html.ValidationMessageFor(m => m.Pwd, null, new { @class = "textforerrormsg" })
+            </div>
+            @*@Html.ValidationMessageFor(m => m.Pwd, null, new { @class = "validation" })*@
+            @*<div class="checkbox">
+                    <label><input type="checkbox" value="" checked>Remember Me</label>
+                </div>*@
+            <div class="member_login_text">
+                <a href="@Url.Action("AgentResetPassword", "Agent")">Retrieve / Reset Password</a><br>
+                Not an Agent yet? <a href="~/Agent/AgentRegister">Register Now</a>
+            </div>
+            <div class="mem_text_center mem_text_center2">
+                <button type="submit" value="Login" name="btnLogin" class="s3-1_submit_button mem_marbotzero add-cursor-pointer">Login Now</button>
+            </div>
+        </div>
+    </div>
+    @*<h5>or</h5>
+        <div class="row">
+            <div class="col-xs-6">
+                <button class="btn btn-facebook"><i class="fa fa-facebook"></i> | Connect with Facebook</button>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-google"><i class="fa fa-google"></i> | Connect with Google</button>
+            </div>
+        </div>*@
+}

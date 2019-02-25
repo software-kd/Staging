@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title - SMC Travels</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        @Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")
+    </head>
+    <body>
+        <header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title">@Html.ActionLink("Mayflower", "Index", "Home")</p>
+                </div>
+                <div class="float-right">
+                    <section id="login">
+                        @Html.Partial("_LoginPartial")
+                    </section>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <nav>
+                            <ul id="menu">
+                                @if (User.IsInRole("System Admin"))
+                                {
+                                    <li>@Html.ActionLink("Organization", "Index", "Organization")</li>
+                                }
+                                @*<li>@Html.ActionLink("Home", "Index", "Home")</li>*@
+                               @if (User.IsInRole("System Admin") || User.IsInRole("Company Admin"))
+                               {
+                                    <li>@Html.ActionLink("Agent", "Index", "Agent")</li>
+                                  
+                               }
+                                @if (User.IsInRole("Company Admin"))
+                                {
+                                    <li>@Html.ActionLink("Person", "Index", "Person")</li>
+                                }
+                                
+                                @if (!User.IsInRole("System Admin"))
+                                {
+                                    <li>@Html.ActionLink("Flight Search", "Index", "SearchFlight")</li>
+                                }
+                                
+
+                                @*<li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                            </ul>
+                        </nav>
+                    }
+                   
+                </div>
+            </div>
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: false)
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>
+        <footer>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p>&copy; @DateTime.Now.Year - SMC Travels</p>
+                </div>
+            </div>
+        </footer>
+
+        @Scripts.Render("~/bundles/jquery")
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

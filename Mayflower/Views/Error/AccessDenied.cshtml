@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "AccessDenied";
+
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+    else
+    {
+    Layout = "~/Views/Shared/_SMCLayout.cshtml";
+    }
+}
+
+@*<div class="post-404page style3 body-blank">
+        <div id="page-wrapper" class="wrapper-blank">
+            <div class="wrapper">
+                <section id="content">
+                    <div class="container">
+                        <div id="main">
+                            <div class="error-message-404"><strong>Error XXX:</strong> Access Denied!</div>
+                        </div>
+                        <img class="girl animated" src="http://placehold.it/468x360" alt="" data-animation-type="fadeInRight">
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>*@
+
+<section id="content">
+    <div class="container">
+        @*style="position: fixed; top: 50%; left: 50%; margin-top: -100px; margin-left: -100px;"*@
+        <div id="main" class="post-404page text-center" style="margin-top: 5%">
+            <div class="error-message">
+                <p>
+                    <strong>Error :</strong>
+                    <br/>
+                    Access Denied!
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

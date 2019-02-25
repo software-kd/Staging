@@ -1,0 +1,308 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    var carRental = Model.CarRental != null;
+    List<SelectListItem> contactTitleList = UtilitiesService.GetTitleList(true, "ADT", Model.ContactPerson.Title ?? string.Empty);
+    List<SelectListItem> TravellerGrpList = new List<SelectListItem>();
+
+    Mayflower.General.CustomPrincipal customPrincipal = User as Mayflower.General.CustomPrincipal;
+    bool displayTravellerGrp = User.Identity.IsAuthenticated && !customPrincipal.IsAgent && Model.Flight != null;
+    if (displayTravellerGrp)
+    {
+        TravellerGrpList = UtilitiesService.GetTravellerGrpList(customPrincipal.UserId, Model.ContactPerson.TravellerGrpID);
+    }
+}
+@functions{
+    private IEnumerable<SelectListItem> SetSelectedItem(IEnumerable<SelectListItem> list, string value)
+    {
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = a.Text,
+                   Value = a.Value,
+                   Selected = a.Value == value
+               };
+    }
+
+    private IDictionary<string, object> SetRequiredHTMLObj(string name, object additionalHTMLAttritube = null)
+    {
+        string valMsg = name.AddSpacingAfterUpCase().ToTitleCase() + " is required.";
+
+        var pushObj = new System.Dynamic.ExpandoObject() as IDictionary<string, Object>;
+
+        pushObj.Add("data-val-required", valMsg);
+        pushObj.Add("data-val", "true");
+
+        if (additionalHTMLAttritube != null)
+        {
+            foreach (var prop in additionalHTMLAttritube.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+            {
+                pushObj.Add(prop.Name.Replace("_", "-"), prop.GetValue(additionalHTMLAttritube));
+            }
+        }
+
+        return pushObj;
+    }
+}
+
+<!-- contact form start -->
+@if (Model.Hotel != null)
+{
+    @Html.Hidden("Supplier", Model.Hotel.RoomSelected.HotelRoomInformationList.FirstOrDefault().hotelSupplier)
+}
+
+<div class="tab-pane fade show active" id="nav-booker" role="tabpanel" aria-labelledby="nav-booker-tab" style="padding-top: 0">
+    <div class="form-wrapper booking-form" id="contactform">
+        @if (Model.Hotel != null && Model.Flight == null)
+        {
+            int j = 1;
+            IEnumerable<SelectListItem> roomDropDown = from a in Model.Hotel.RoomDetails
+                                                       select new SelectListItem
+                                                       {
+                                                           Text = "Room " + (j++).ToString("D2") + " " + a.RoomTypeName,
+                                                           Value = a.RoomTypeName,
+                                                           Selected = (Model.Hotel.RoomChoise == a.RoomTypeName),
+                                                       };
+            var ischecked = Model.ImFlying ? "checked=checked" : "";
+            <div class="form-group custom-checkbox">
+                <label><input type="checkbox" name="ImFlying" id="checkbox3" value="true" @ischecked /><span>I’m traveling, use my information</span></label>
+                @Html.DropDownListFor(model => model.Hotel.RoomChoise, roomDropDown, new { @class = "s3-1_title roomChoise", @id = "roomChoise" })
+            </div>
+            @Html.Hidden("tripBeginDate", Model.Hotel.SearchHotelInfo.DepartureDate.ToString("dd-MMM-yyyy"))
+        }
+        <div class="row mb-3">
+            @if (!carRental)
+            {
+                if (Model.Flight != null)
+                {
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <div class="form-inline" style="height: calc(2.25rem + 2px);">
+                            <div class="custom-checkbox">
+                                <label><input type="checkbox" name="ImFlying" id="checkbox2" value="true" /><span>I'm Travelling, use my information</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.Hidden("tripBeginDate", Model.Flight.SearchFlightInfo.BeginDate.Value.ToString("dd-MMM-yyyy"))
+                    @Html.Hidden("tripEndDate", Model.Flight.SearchFlightInfo.EndDate.HasValue ? Model.Flight.SearchFlightInfo.EndDate.Value.AddDays(1).ToString("dd-MMM-yyyy") : Model.Flight.SearchFlightInfo.BeginDate.Value.AddDays(1).ToString("dd-MMM-yyyy"))
+                }
+                if (displayTravellerGrp && TravellerGrpList.Count > 0)
+                {
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <div class="form-inline">
+                            @Html.LabelFor(model => Model.ContactPerson.TravellerGrpID, "Select Traveller Group", new { style = "margin-right: 1.5em;" })
+                            @Html.DropDownListFor(model => Model.ContactPerson.TravellerGrpID, TravellerGrpList, "-", new { @class = "form-control", style = "flex:auto;" })
+                        </div>
+                    </div>
+                }
+            }
+            @{
+                object Address1Attr = null;
+                object PostcodeAttr = null;
+                object CountrycodeAttr = null;
+                object DOBAttr = null;
+                MvcHtmlString _rentalrequired = new MvcHtmlString("");
+                if (carRental)
+                {
+                    _rentalrequired = new MvcHtmlString("<span>*</span>");
+                    Address1Attr = new { @class = "form-control", data_val_required = "Address1 is required.", data_val = "true" };
+                    PostcodeAttr = new { @class = "form-control", data_val_required = "Postal Code is required.", data_val = "true" };
+                    CountrycodeAttr = new { @class = "form-control", data_val_required = "Country Code is required.", data_val = "true" };
+                    DOBAttr = new { @class = "form-control datepicker2 carcontact", data_val_required = "DOB is required.", data_val = "true", placeholder = "DD-MMM-YYYY", autocomplete = "off" };
+                }
+                else
+                {
+                    Address1Attr = new { @class = "form-control" };
+                    PostcodeAttr = new { @class = "form-control" };
+                    CountrycodeAttr = new { @class = "form-control" };
+                    DOBAttr = new { @class = "form-control datepicker2 contact", placeholder = "DD-MMM-YYYY", autocomplete = "off" };
+                }
+            }
+        </div>
+        <span class="pb-2 color_red">Mandatory fields (*) are required.</span>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-12">
+                <div class="form-group">
+                    <label>Title <span>*</span></label>
+                    <div class="row">
+                        <div class="col-12">
+                            @Html.DropDownListFor(model => Model.ContactPerson.Title, contactTitleList, "-", new { @class = "form-control" })
+                            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Title, null)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-4 col-6">
+                <div class="form-group">
+                    <label class="type-2">First Name <span>* (Same as passport)</span>@Html.Partial("~/Views/Shared/Theme_3/_NameGuideTooltip.cshtml")</label>
+                    @Html.TextBoxFor(model => Model.ContactPerson.GivenName, new { @class = "form-control" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.GivenName, null)</div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-4 col-6">
+                <div class="form-group">
+                    <label class="type-2">Last Name <span>* (Same as passport)</span></label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.Surname, new { @class = "form-control" })</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Surname, null)</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Email <span>*</span></label>
+                    @{ bool isLogin = Request.IsAuthenticated; }
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.Email, isLogin ? (object)new { @class = "form-control", @readonly = true } : new { @class = "form-control" })</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Email, null)</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>D.O.B @_rentalrequired</label>
+                    @Html.HiddenFor(model => model.ContactPerson.DOBDays)
+                    @Html.HiddenFor(model => model.ContactPerson.DOBMonths)
+                    @Html.HiddenFor(model => model.ContactPerson.DOBYears)
+                    @Html.TextBoxFor(model => Model.ContactPerson.DOB, "{0:dd-MMM-yyyy}", DOBAttr)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(x => x.ContactPerson.DOB, null)</div>
+                </div>
+            </div>
+            @Html.Hidden("PassportNo", ViewData["PASSPORTNO"] != null ? ViewData["PASSPORTNO"].ToString() : null)
+            @Html.Hidden("PassportCountry", ViewData["PASSPORTCOUNTRY"] != null ? ViewData["PASSPORTCOUNTRY"].ToString() : null)
+            @Html.Hidden("PassportExpdate", ViewData["PASSPORTEXP"] != null ? Convert.ToDateTime(ViewData["PASSPORTEXP"].ToString()).ToString("dd-MMM-yyyy") : null)
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Primary phone number <span>*</span></label>
+                    <div class="row">
+                        <div class="col-3">
+                            @Html.DropDownListFor(x => x.ContactPerson.Phone1LocationCode, Mayflower.General.Utilities.PhoneCodeList("MYS").OrderBy(x => x.Text), new { @class = "form-control" })
+                        </div>
+                        <div class="col-9">
+                            @Html.TextBoxFor(x => x.ContactPerson.Phone1, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(x => x.ContactPerson.Phone1LocationCode, null)</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(x => x.ContactPerson.Phone1, null)</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Secondary phone number</label>
+                    <div class="row">
+                        <div class="col-3">
+                            @Html.DropDownListFor(x => x.ContactPerson.Phone2LocationCode, Mayflower.General.Utilities.PhoneCodeList().OrderBy(x => x.Text), "-", new { @class = "form-control" })
+                        </div>
+                        <div class="col-9">
+                            @Html.TextBoxFor(x => x.ContactPerson.Phone2, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="field_error_msg hpnoerror2">@Html.ValidationMessageFor(x => x.ContactPerson.Phone2LocationCode, null)</div>
+                    <div class="field_error_msg hpnoerror">@Html.ValidationMessageFor(x => x.ContactPerson.Phone2, null)</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Address Line 1 @_rentalrequired</label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.Address1, Address1Attr)</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Address1, null)</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.Address2, new { @class = "form-control" })</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Address2, null)</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="form-group">
+                    <label>City</label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.City, new { @class = "form-control" })</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.City, null)</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="form-group">
+                    <label>State</label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.State, new { @class = "form-control" })</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.State, null)</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="form-group">
+                    <label>Postal Code @_rentalrequired</label>
+                    <div>@Html.TextBoxFor(model => Model.ContactPerson.PostalCode, PostcodeAttr)</div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.PostalCode, null)</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="form-group">
+                    <label>Country @_rentalrequired</label>
+                    @Html.DropDownListFor(model => Model.ContactPerson.CountryCode, Mayflower.General.Utilities.CountryDropList(), "-", CountrycodeAttr)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.CountryCode, null)</div>
+                </div>
+            </div>
+            @if (Model.CarRental != null)
+            {
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Passport Number</label>
+                        @Html.TextBoxFor(model => Model.ContactPerson.IdentityDocuments.PassportNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.IdentityDocuments.PassportNumber, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Driving License No</label>
+                        @Html.TextBoxFor(model => Model.ContactPerson.LicenseInfo.DrivingLicenseNo, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.LicenseInfo.DrivingLicenseNo, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Driving License Expiry date</label>
+                        @Html.TextBoxFor(model => Model.ContactPerson.LicenseInfo.ExpiryDate, new { @class = "form-control datepicker2 license", placeholder = "DD-MMM-YYYY" })
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.LicenseInfo.ExpiryDate, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+
+            }
+            @if (Model.PromoCodeFunctions.GetFrontendFunction.ForeignPurchase)
+            {
+                var _required = new MvcHtmlString("<span>*</span>");
+                bool hvPassportExpValue = !string.IsNullOrWhiteSpace(Model.ContactPerson.IdentityDocuments.PassportNumber);
+                bool hvPassportIssueCountryValue = !string.IsNullOrWhiteSpace(Model.ContactPerson.IdentityDocuments.PassportIssueCountry);
+                bool hvNationalityValue = !string.IsNullOrWhiteSpace(Model.ContactPerson.IdentityDocuments.Nationality);
+                <div class="col-12 dropdown-divider"></div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nationality @_required</label>
+                        @Html.DropDownListFor(model => Model.ContactPerson.IdentityDocuments.Nationality, SetSelectedItem(Mayflower.General.Utilities.CountryDropList().Where(x => x.Value != "MYS"), (hvNationalityValue ? Model.ContactPerson.IdentityDocuments.Nationality.ToString() : null)), "-", SetRequiredHTMLObj("Nationality", new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.IdentityDocuments.Nationality, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Passport Number @_required</label>
+                        @Html.TextBoxFor(model => Model.ContactPerson.IdentityDocuments.PassportNumber, SetRequiredHTMLObj("PassportNumber", new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.IdentityDocuments.PassportNumber, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Passport Expiry date @_required</label>
+                        @Html.TextBoxFor(model => Model.ContactPerson.IdentityDocuments.PassportExpiryDate, new { @class = "form-control datepicker2", placeholder = "DD-MMM-YYYY" })
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.IdentityDocuments.PassportExpiryDate, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Passport Issuing country @_required</label>
+                        @Html.DropDownListFor(model => Model.ContactPerson.IdentityDocuments.PassportIssueCountry, SetSelectedItem(Mayflower.General.Utilities.CountryDropList(), (hvPassportIssueCountryValue ? Model.ContactPerson.IdentityDocuments.PassportIssueCountry.ToString() : null)), "-", SetRequiredHTMLObj("PassportIssueCountry", new { @class = "form-control" }))
+                        @Html.ValidationMessageFor(model => Model.ContactPerson.IdentityDocuments.PassportIssueCountry, null, new { @class = "textforerrormsg" })
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- contact form end -->

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ItemsList path="~/images_hotel/hotel_amenities/" DefaultImage="unknown-icon.png">
+  <item id="1" image="Bed.png">1 single</item>
+  <item id="2" image="Bed.png">1 single</item>
+  <item id="3" image="Bed.png">1 single</item>
+  <item id="4" image="Bed.png">1 single</item>
+  <item id="5" image="Bed.png">1 single</item>
+  <item id="6" image="Bed.png">1 single</item>
+  <item id="7" image="Bed.png">1 single</item>
+  <item id="8" image="Bed.png">1 single</item>
+  <item id="9" image="Bed.png">1 single</item>
+  <item id="10" image="Bed.png">1 single</item>
+  <item id="13" image="Bed.png">1 double</item>
+  <item id="14" image="Bed.png">1 king</item>
+  <item id="15" image="Bed.png">1 queen</item>
+  <item id="18" image="Bed.png">One Twin Bed</item>
+  <item id="21" image="Bed.png">2 double</item>
+  <item id="22" image="Bed.png">2 king</item>
+  <item id="23" image="Bed.png">2 queen</item>
+  <item id="25" image="Bed.png">Two Twin Beds</item>
+  <item id="30" image="Bed.png">Three Twin Beds</item>
+  <item id="34" image="Bed.png">Four Twin Beds</item>
+  <item id="40" image="Bed.png">1 bed</item>
+  <item id="41" image="Bed.png">2 beds</item>
+  <item id="42" image="Bed.png">1 single</item>
+  <item id="43" image="Bed.png">2 single</item>
+  <item id="44" image="Bed.png">3 single</item>
+  <item id="45" image="Bed.png">4 single</item>
+  <item id="46" image="Bed.png">1 full</item>
+  <item id="47" image="Bed.png">2 full</item>
+  <item id="48" image="Bed.png">1 trundle bed</item>
+  <item id="49" image="Bed.png">1 murphy bed</item>
+  <item id="50" image="Bed.png">1 bunk bed</item>
+  <item id="51" image="Bed.png">1 sofa bed</item>
+  <item id="52" image="Bed.png">2 sofa beds</item>
+  <item id="53" image="Bed.png">3 sofa beds</item>
+  <item id="54" image="Bed.png">1 Japanese futon</item>
+  <item id="55" image="Bed.png">3 beds</item>
+  <item id="56" image="Bed.png">3 king</item>
+  <item id="57" image="Bed.png">3 queen</item>
+  <item id="58" image="Bed.png">4 beds</item>
+  <item id="59" image="Bed.png">4 king</item>
+  <item id="60" image="Bed.png">4 queen</item>
+  <item id="61" image="Bed.png">1 king and 1 single</item>
+  <item id="62" image="Bed.png">1 queen and 1 single</item>
+  <item id="63" image="Bed.png">1 double and 1 single</item>
+  <item id="64" image="Bed.png">1 king and 2 single</item>
+  <item id="65" image="Bed.png">1 queen and 2 single</item>
+  <item id="66" image="Bed.png">1 double and 2 single</item>
+  <item id="67" image="Bed.png">1 king and 1 sofa bed</item>
+  <item id="68" image="Bed.png">1 queen and 1 sofa bed</item>
+  <item id="69" image="Bed.png">1 double and 1 sofa bed</item>
+  <item id="70" image="Bed.png">Two Twin and One Sofa Bed</item>
+  <item id="71" image="Bed.png">2 single and 1 sofa bed</item>
+  <item id="72" image="Bed.png">1 king and 1 queen</item>
+  <item id="73" image="Bed.png">2 double and 1 single</item>
+  <item id="74" image="Bed.png">2 king and 1 single</item>
+  <item id="75" image="Bed.png">One Double and One Twin Bed</item>
+  <item id="76" image="Bed.png">6 beds</item>
+  <item id="77" image="Bed.png">5 beds</item>
+  <item id="78" image="Bed.png">2 extra-long double</item>
+  <item id="79" image="Bed.png">1 semi-double</item>
+  <item id="80" image="Bed.png">One Pullout Bed</item>
+  <item id="81" image="Bed.png">4 double and 1 queen sofa bed</item>
+  <item id="82" image="Bed.png">2 king and 1 queen sofa bed</item>
+  <item id="83" image="Bed.png">2 double and 1 sofa bed</item>
+  <item id="84" image="Bed.png">4 double</item>
+  <item id="85" image="Bed.png">3 double</item>
+  <item id="86" image="Bed.png">2 double and 2 single</item>
+  <item id="87" image="Bed.png">1 queen and 1 double</item>
+  <item id="88" image="Bed.png">2 queen and 1 sofa bed</item>
+  <item id="89" image="Bed.png">4 double and 1 sofa bed</item>
+  <item id="90" image="Bed.png">2 king and 1  sofa bed</item>
+  <item id="91" image="Bed.png">Quadruple Occupancy</item>
+  <item id="92" image="Bed.png">Triple Occupancy</item>
+  <item id="93" image="Bed.png">Double Occupancy</item>
+  <item id="94" image="Bed.png">Single Occupancy</item>
+  <item id="95" image="Bed.png">One Double or Two Twins</item>
+  <item id="96" image="Bed.png">One Double or Two Twin beds</item>
+  <item id="97" image="Bed.png">One Double or One Twin Bed</item>
+  <item id="98" image="Bed.png">1 king and 1 double</item>
+  <item id="99" image="Bed.png">1 double and 1 bunk bed</item>
+  <item id="100" image="Bed.png">1 double and 2 bunk beds</item>
+  <item id="101" image="Bed.png">1 double and 2 single sofa beds</item>
+  <item id="102" image="Bed.png">1 double and 2 sofa beds</item>
+  <item id="103" image="Bed.png">1 double and 3 single</item>
+  <item id="104" image="Bed.png">1 double and 3 sofa beds</item>
+  <item id="105" image="Bed.png">1 double, 1 single, and 1 bunk bed</item>
+  <item id="106" image="Bed.png">1 double, 1 single, and 1 sofa bed</item>
+  <item id="107" image="Bed.png">1 double, 1 sofa, and 1 bunk bed</item>
+  <item id="108" image="Bed.png">1 double, 2 single, and 1 double sofa bed</item>
+  <item id="109" image="Bed.png">1 double, 2 single, and 1 sofa bed</item>
+  <item id="110" image="Bed.png">1 double, 3 single, and 1 sofa bed</item>
+  <item id="111" image="Bed.png">1 double, 3 twin, and 3 queen</item>
+  <item id="112" image="Bed.png">1 king and 1 bunk bed</item>
+  <item id="113" image="Bed.png">1 king and 2 queen</item>
+  <item id="114" image="Bed.png">1 king and 4 single</item>
+  <item id="115" image="Bed.png">1 king, 1 queen, and 1 sofa bed</item>
+  <item id="116" image="Bed.png">1 king, 1 queen, and 3 single</item>
+  <item id="117" image="Bed.png">1 king, 1 sofa bed, and 1 murphy bed</item>
+  <item id="118" image="Bed.png">1 king, 2 double, and 1 sofa bed</item>
+  <item id="119" image="Bed.png">1 king, 2 single, and 1 sofa bed</item>
+  <item id="120" image="Bed.png">1 queen and 1 bunk bed</item>
+  <item id="121" image="Bed.png">1 queen and 1 murphy bed</item>
+  <item id="122" image="Bed.png">1 queen and 2 bunk beds</item>
+  <item id="123" image="Bed.png">1 queen and 2 double</item>
+  <item id="124" image="Bed.png">1 queen and 2 sofa beds</item>
+  <item id="125" image="Bed.png">1 queen and 3 single</item>
+  <item id="126" image="Bed.png">1 queen and 4 single</item>
+  <item id="127" image="Bed.png">1 queen, 1 bunk bed, and 1 sofa bed</item>
+  <item id="128" image="Bed.png">1 queen, 1 murphy bed, and 1 sofa bed</item>
+  <item id="129" image="Bed.png">1 single and 1 sofa bed</item>
+  <item id="130" image="Bed.png">1 sofa bed and 1 bunk bed</item>
+  <item id="131" image="Bed.png">2 bunk beds</item>
+  <item id="133" image="Bed.png">2 double and 2 sofa beds</item>
+  <item id="134" image="Bed.png">2 Japanese futons</item>
+  <item id="135" image="Bed.png">2 king and 1 sofa bed</item>
+  <item id="136" image="Bed.png">2 king and 2 queen</item>
+  <item id="137" image="Bed.png">2 king, 2 single and 1 bunk bed</item>
+  <item id="138" image="Bed.png">2 king, 2 single, and 1 sofa bed</item>
+  <item id="139" image="Bed.png">2 queen and 1 bunk bed</item>
+  <item id="140" image="Bed.png">2 queen and 1 single</item>
+  <item id="142" image="Bed.png">2 queen and 1 trundle bed</item>
+  <item id="143" image="Bed.png">2 queen and 2 single</item>
+  <item id="144" image="Bed.png">2 single and 1 bunk bed</item>
+  <item id="146" image="Bed.png">2 single and 2 bunk beds</item>
+  <item id="147" image="Bed.png">2 single and 2 sofa beds</item>
+  <item id="148" image="Bed.png">2 single and 3 sofa beds</item>
+  <item id="149" image="Bed.png">3 double and 1 sofa bed</item>
+  <item id="150" image="Bed.png">3 Japanese futons</item>
+  <item id="151" image="Bed.png">3 queen and 1 sofa bed</item>
+  <item id="152" image="Bed.png">3 queen and 2 single</item>
+  <item id="153" image="Bed.png">3 queen, 2 single, and 2 bunk beds</item>
+  <item id="154" image="Bed.png">4 Japanese futons</item>
+  <item id="155" image="Bed.png">4 single and 1 sofa bed</item>
+  <item id="156" image="Bed.png">4 single and 2 sofa beds</item>
+  <item id="157" image="Bed.png">5 Japanese futons</item>
+  <item id="158" image="Bed.png">5 queen and 4 single</item>
+  <item id="159" image="Bed.png">6 Japanese futons</item>
+  <item id="160" image="Bed.png">7 Japanese futons</item>
+  <item id="161" image="Bed.png">8 Japanese futons</item>
+  <item id="162" image="Bed.png">1 double, 1 sofa bed, and 1 bunk bed</item>
+  <item id="163" image="Bed.png">3 queen, 1 double, and 3 single</item>
+  <item id="164" image="Bed.png">3 bunk beds</item>
+  <item id="165" image="Bed.png">4 bunk beds</item>
+  <item id="166" image="Bed.png">1 queen, 1 double and 1 sofa bed</item>
+  <item id="167" image="Bed.png">1 queen, 2 single and 2 sofa beds</item>
+  <item id="168" image="Bed.png">1 king, 1 queen, and 1 twin bed</item>
+  <item id="169" image="Bed.png">1 king, 1 queen, and 2 twin beds</item>
+  <item id="170" image="Bed.png">1 king, 2 queen, and 2 twin beds</item>
+  <item id="171" image="Bed.png">1 king, 4 single and 1 sofa bed</item>
+  <item id="172" image="Bed.png">2 king, 4 single and 1 sofa bed</item>
+  <item id="173" image="Bed.png">2 king, 2 queen and 2 twin beds</item>
+  <item id="174" image="Bed.png">2 king, 2 double and 1 sofa bed</item>
+  <item id="175" image="Bed.png">1 king, 1 queen, 4 single and 1 sofa bed</item>
+  <item id="176" image="Bed.png">1 king, 2 double, 1 twin and 2 sofa beds</item>
+  <item id="177" image="Bed.png">1 double, 2 single and 1 bunk bed</item>
+  <item id="178" image="Bed.png">1 king, 1 queen and 6 twin beds</item>
+  <item id="179" image="Bed.png">1 king, 2 queen, 2 full, 3 twin and 1 bunk bed</item>
+  <item id="180" image="Bed.png">1 king, 3 queen and 1 sofa bed</item>
+  <item id="181" image="Bed.png">2 double, 2 single and 1 sofa bed</item>
+  <item id="182" image="Bed.png">2 king and 4 single</item>
+  <item id="183" image="Bed.png">2 king, 2 queen and 1 sofa bed</item>
+  <item id="184" image="Bed.png">2 queen, 2 single and 2 sofa beds</item>
+  <item id="185" image="Bed.png">8 single beds</item>
+  <item id="186" image="Bed.png">1 double and 4 bunk beds</item>
+  <item id="187" image="Bed.png">1 double, 1 bunk and 1 sofa bed</item>
+  <item id="188" image="Bed.png">1 double, 1 sofa bed and 1 trundle bed</item>
+  <item id="189" image="Bed.png">1 double, 2 single, 1 sofa bed and 1 trundle bed</item>
+  <item id="190" image="Bed.png">1 king and 1 murphy bed</item>
+  <item id="191" image="Bed.png">1 king, 1 queen, 2 full and 1 bunk bed</item>
+  <item id="192" image="Bed.png">1 king, 1 single and 1 sofa bed</item>
+  <item id="193" image="Bed.png">1 queen, 1 full and 2 sofa beds</item>
+  <item id="194" image="Bed.png">1 queen, 1 full, 1 single and 1 sofa bed</item>
+  <item id="195" image="Bed.png">1 single and 1 bunk bed</item>
+  <item id="196" image="Bed.png">2 queen, 1 full and 1 bunk bed</item>
+  <item id="197" image="Bed.png">2 queen, 2 full, 4 bunk bed and 1 sofa bed</item>
+  <item id="198" image="Bed.png">3 queen and 1 single</item>
+  <item id="199" image="Bed.png">3 single and 1 sofa bed</item>
+  <item id="200" image="Bed.png">4 single and 3 double beds</item>
+  <item id="201" image="Bed.png">2 king and 2 sofa beds</item>
+  <item id="202" image="Bed.png">1 king and 2 full beds</item>
+  <item id="203" image="Bed.png">1 single and 1 trundle</item>
+  <item id="204" image="Bed.png">1 double and 12 single beds</item>
+  <item id="205" image="Bed.png">1 double, 2 bunk and 1 sofa bed</item>
+  <item id="206" image="Bed.png">1 double, 2 single and 4 sofa beds</item>
+  <item id="207" image="Bed.png">1 double, 4 single and 1 sofa bed</item>
+  <item id="208" image="Bed.png">1 double, 5 single and 2 sofa beds</item>
+  <item id="209" image="Bed.png">1 king and 2 double beds</item>
+  <item id="210" image="Bed.png">1 king and 3 bunk beds</item>
+  <item id="211" image="Bed.png">1 king and 3 queen bed</item>
+  <item id="212" image="Bed.png">1 king, 1 full and 2 bunk beds</item>
+  <item id="213" image="Bed.png">1 king, 1 full, 1 single and 1 sofa bed</item>
+  <item id="214" image="Bed.png">1 king, 2 full, 2 single and 1 sofa bed</item>
+  <item id="215" image="Bed.png">1 king, 2 queen and 1 murphy bed</item>
+  <item id="216" image="Bed.png">1 king, 2 queen, 2 single and 2 sofa beds</item>
+  <item id="217" image="Bed.png">1 queen, 1 full, 2 single and 1 sofa bed</item>
+  <item id="218" image="Bed.png">1 queen, 1 single and 1 sofa bed</item>
+  <item id="219" image="Bed.png">1 queen, 2 double and 1 single</item>
+  <item id="220" image="Bed.png">1 queen, 2 single and 1 sofa bed</item>
+  <item id="221" image="Bed.png">1 sofa bed and 1 murphy bed</item>
+  <item id="222" image="Bed.png">12 single beds</item>
+  <item id="223" image="Bed.png">2 double and 2 bunk beds</item>
+  <item id="224" image="Bed.png">2 double, 1 single and 1 sofa bed</item>
+  <item id="225" image="Bed.png">2 king, 1 queen and 1 sofa bed</item>
+  <item id="226" image="Bed.png">2 king, 1 queen and 4 single beds</item>
+  <item id="227" image="Bed.png">2 king, 2 queen and 1 single bed</item>
+  <item id="228" image="Bed.png">2 king, 2 queen and 4 single beds</item>
+  <item id="229" image="Bed.png">2 queen , 2 single and 1 sofa bed</item>
+  <item id="230" image="Bed.png">2 queen and 1 murphy bed</item>
+  <item id="231" image="Bed.png">2 queen and 2 sofa bed</item>
+  <item id="232" image="Bed.png">2 queen, 2 double and 2 single beds</item>
+  <item id="233" image="Bed.png">3 double and 1 single bed</item>
+  <item id="234" image="Bed.png">3 king, 4 single and 3 sofa beds</item>
+  <item id="235" image="Bed.png">4 double and 1 bunk bed</item>
+  <item id="236" image="Bed.png">4 double and 1 single bed</item>
+  <item id="237" image="Bed.png">4 single and 2 bunk bed</item>
+  <item id="238" image="Bed.png">1 queen, 1 double and 1 murphy bed</item>
+  <item id="239" image="Bed.png">1 queen, 1 sofa bed and 1 japanese futon</item>
+  <item id="240" image="Bed.png">1 queen and 1 japanese futon</item>
+  <item id="241" image="Bed.png">1 king and 3 double beds</item>
+  <item id="242" image="Bed.png">2 king and 3 double beds</item>
+  <item id="243" image="Bed.png">2 king and 5 double beds</item>
+  <item id="244" image="Bed.png">2 king, 5 double and 2 single beds</item>
+  <item id="245" image="Bed.png">2 king, 6 double and 2 single beds</item>
+  <item id="246" image="Bed.png">4 double, 2 single and 1 sofa bed</item>
+  <item id="247" image="Bed.png">2 double, 2 single and 2 sofa beds</item>
+  <item id="248" image="Bed.png">3 double and 2 sofa beds</item>
+  <item id="249" image="Bed.png">3 double, 5 single and 1 sofa bed</item>
+  <item id="250" image="Bed.png">3 single and 1 bunk bed</item>
+  <item id="251" image="Bed.png">2 double and 3 single beds</item>
+  <item id="252" image="Bed.png">2 queen and 4 single beds</item>
+  <item id="253" image="Bed.png">3 queen and 4 single beds</item>
+  <item id="254" image="Bed.png">4 single and 1 double bed</item>
+  <item id="255" image="Bed.png">2 king and 1 double bed</item>
+</ItemsList>

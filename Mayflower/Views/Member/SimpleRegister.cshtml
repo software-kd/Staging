@@ -1,0 +1,417 @@
+﻿@model Alphareds.Module.Model.MemberRegisterModels
+
+@{
+    ViewBag.Title = "Register with Mayflower | Cheap Holidays, Hotels & Flights | Travel Agent Malaysia";
+    ViewBag.MetaDescription = "Register with Mayflower to make the booking process faster next time you book with us. Receive exclusive travel deals direct to your inbox, too.";
+    ViewBag.RenderRedLine = true;
+
+    if (Request.IsAuthenticated)
+    {
+        Response.Redirect("~/");
+    }
+}
+
+
+@section style{
+    <style>
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .rpc_redtabs {
+            cursor: pointer;
+        }
+
+        button.add-cursor-pointer {
+            width: 100%;
+            background-color: #eb1c24;
+            height: 60px;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 45px;
+            border-radius: 30px;
+            border: 0px;
+        }
+
+        select.s3-1_flyer_left_dupinput {
+            background: none;
+            padding-left: 4em;
+            padding-top: 0;
+        }
+
+        .ff-img-container > img {
+            height: 55px;
+        }
+
+        .ff-img-container {
+            position: absolute;
+            height: 55px;
+            width: 60px;
+            padding-left: 5px;
+        }
+
+        .mr_form_confirm > label {
+            text-align: justify;
+        }
+
+        .s3-1_fi_row1 {
+            border: none;
+            height: auto;
+            float: left;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .s3-1_contactform_title_first_row {
+            width: 14%;
+            float: left;
+        }
+
+        .s3-1_contactform_firstname_first_row {
+            width: 49%;
+            float: left;
+        }
+
+        .s3-1_contactform_familyname_first_row {
+            width: 49%;
+            float: right;
+        }
+
+        .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+            width: 100%;
+            float: left;
+            padding-left: 0%;
+        }
+
+        .s3_1_contactform_name {
+            width: 84%;
+            float: right;
+        }
+
+        .s3-1_fi_row1-right {
+            margin-top: 28px;
+        }
+
+        .s3-1_fir1_b1 select {
+            font-family: 'Conv_Ubuntu-Light';
+            height: 56px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url(../images/drop_down_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border: 1px solid #000;
+            width: 100%;
+            font-size: 16px;
+            padding-left: 15%;
+        }
+
+        .s3-1_full_textbox_com{
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .s3-1_full_textbox_name_com {
+            width: 100%;
+            height: 56px;
+            background-color: transparent;
+            border: 1px solid #000;
+            font-size: 16px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .s3-1_flyer_right {
+            width: 70%;
+        }
+
+        .s3-1_contactform_right {
+            float: right;
+        }
+
+        #cssmenu > ul > li > a {
+            color: #ea0512 !important;
+            text-decoration: none;
+            font-family: 'UbuntuMedium';
+        }
+
+        .optional-label {
+            font-size: 15px;
+            font-family: 'Conv_Ubuntu-Light';
+        }
+
+        .code-msg {
+            font-family: 'UbuntuMedium';
+            font-size: 13px;
+        }
+
+        @@media screen and (max-width : 500px) {
+            .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3{
+                width: 105%!important;
+            }
+        }
+
+        @@media screen and (max-width : 900px) {
+            .fcd_white3_op {
+                position: relative;
+                top: 25%;
+            }
+        }
+
+        button:disabled {
+            background-color: #b1a9a9 !important;
+            cursor: default;
+        }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="registration_page_container registration_page_container2">
+    <div class="rpc_inner">
+        <h2>Create an Account</h2>
+        <h3>Register for a Mayflower account now for speedier bookings in the future.</h3>
+        @if (ViewBag.StatusMessage != null)
+        {
+            <noscript>
+                <h3 style="color:#ff0000">@ViewBag.StatusMessage</h3>
+            </noscript>
+        }
+        @Html.Partial("_SimpleRegisterPartial")
+    </div>
+
+</div>
+<!-- MAIN CONTENT PORTION END -->
+@Html.Partial("~/Views/Shared/MasterThemes/_OopsBox.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    
+    <script>
+        $(document).ready(function (e) {
+            var url = window.location.href;
+            var split = url.toLowerCase().split("message=");
+            var qparam = split[1];
+            if (qparam != undefined && qparam.toLowerCase() == "registerfail") {
+                $('#oops-msg').text('We are very sorry but we seem to have encountered an issue with your registration. Our administrator is looking into this as soon as possible. We would greatly appreciate if you can try again later.');
+                $('.fullcover_div4').show();
+            }
+
+            $("[name*=PassportExpiryDate]").rules("remove", "date");
+            $("[name*=DOB]").rules("remove", "date");
+            $("[name*=PassportExpiryDate]").rules("add", "passportValid");
+            $("[name*=DOB]").rules("add", "dobValid");
+            $("select[name*='passport_expire']").each(function (index, element) {
+                $(element).rules("add", "passportValid");
+            });
+            $("select[name*='user_dob']").each(function (index, element) {
+                $(element).rules("add", "dobValid");
+            });
+        });
+
+        $(function () {
+            var form = $('#register-form');
+            var formValidator = form.validate();
+            $.validator.setDefaults({
+                ignore: [],
+            });// validate hidden fields
+            //formValidator.settings.ignore = '';
+            //var errors = formValidator.numberOfInvalids();
+
+            var focusError = function (element) {
+                $('html, body').animate({
+                    scrollTop: $(element).offset().top
+                }, 300);
+            };
+
+            var validateForm = function () {
+                var isExpend = false;
+                if (formValidator.errorList.length > 0) {
+                    var dfd = $.Deferred();
+
+                    for (x = 0; x < formValidator.errorList.length; x++) {
+                        if (!isExpend) {
+                            var element = formValidator.errorList[x].element;
+                            $('.rpc_redtabs').next().each(function (index, e) {
+                                var fi = $(e).find(element);
+                                var fiVisible = fi.is(':visible');
+                                if (fiVisible) {
+                                    isExpend = true;
+                                }
+                                if (fi.length > 0 && x == 0 && !fiVisible) {
+                                    isExpend = true;
+                                    $(e).slideToggle();
+                                    $(e).prev().toggleClass('rpc_minustab');
+                                    dfd.resolve();
+                                }
+                            });
+                        }
+                    }
+                    dfd.done(function (e) {
+                        formValidator.focusInvalid();
+                    });
+                }
+            }
+
+            var tncChkBox = function () {
+                if ($("#checkbox_tnc").is(':checked') == false) {
+                    $('[data-valmsg-for=agreeTnc]').addClass('textforerrormsg').html('<span>Please check the terms and condition to register.</span>');
+                }
+                else {
+                    $('[data-valmsg-for=agreeTnc]').removeClass('textforerrormsg').empty();
+                }
+            }
+
+            $("#checkbox_tnc").on('change', function (e) {
+                tncChkBox();
+            })
+
+            $('#ActivationCode').keydown(function (e) {
+                $('.code-msg').text('');
+            });
+
+            $('#ActivationCode').on('keyup keydown', function (e) {
+                if (e.keyCode == 32) {
+                    this.value = this.value.replace(' ', '');
+                }
+            });
+
+            $('#ActivationCode').on('blur', function (e) {
+                this.value = this.value.toUpperCase().replace(' ', '');
+                if ($('#ActivationCode').valid()) {
+                    $.chkCode(this.value);
+                }
+            });
+
+            $('#Email').on('blur', function (e) {
+                $.chkCode($('#ActivationCode').val());
+            });
+
+            $(document).ready(function (e) {
+                if ($('#ActivationCode').length) {
+                    $.chkCode($('#ActivationCode').val());
+                }
+            });
+
+            $.chkCode = function (e) {
+                var deferred = $.Deferred();
+                if (e.length) {
+                    var params = { ActivationCode: e };
+                    var result = false;
+                    $.ajax({
+                        url: '/Member/ValidActivationCode' + '?' + $.param(params),
+                        method: 'POST',
+                        async: true,
+                        cache: false,
+                        beforeSend: function () {
+                            $('.code-msg').text('');
+                            $('.code-checking').show();
+                        },
+                        contentType: "json",
+                    }).then(function (res) {
+                        var css = res.status ? '' : 'textforerrormsg';
+                        var msg = '<div class="' + css + '">' + (res.result != null ? res.result : '') + '</div>';
+                        $('.code-checking').hide();
+                        $('#codeToken').val(res.status);
+                        $('.code-msg').html(msg);
+                        deferred.resolve();
+                    }, function () {
+                        $('.code-checking').hide();
+                        $('.code-msg').text('Unexpected error. Please try again later.');
+                        deferred.reject();
+                    });
+                }
+                else {
+                    $('#codeToken').val(true);
+                }
+                return deferred.promise();
+            };
+
+            form.on('submit', function (e) {
+                tncChkBox();
+
+                if ($('#Email').valid()) {
+                    $.chkCode($('#ActivationCode').val()).done(function (res) {
+                        if ($("#codeToken").val() == 'false') {
+                            focusError(".mem-refprog");
+                            e.preventDefault();
+                            $('#popup-modal').show();
+                            unloadScrollBars();
+                            $('#modal-container').html("<div class='session_lb_text'>Important</div><div class='session_lb_text1'>Invalid activation code entered, please confirm your code and try again!</div><a href='javascript:;' class='modal-close' style='text-decoration:none'><div class='redbacktohome_button'>Close</div></a>");
+                            return false;
+                        }
+                    });
+
+                    var isValid = $(this).valid();
+
+                    if (!isValid || ($("#ActivationCode").val().length != 0
+                        && ($("#codeToken").val() == '' || $("#codeToken").val() == 'false'))) {
+                        e.preventDefault();
+                        validateForm();
+                    }
+                    else {
+                        if ($("#checkbox_tnc").is(':checked') == false) {
+                            e.preventDefault();
+                            focusError("#checkbox_tnc");
+                            $('#popup-modal').show();
+                            unloadScrollBars();
+                            $('#modal-container').html("<div class='session_lb_text'>Important</div><div class='session_lb_text1'>Please accept the Terms & Conditions.</div><a href='javascript:;' class='modal-close' style='text-decoration:none'><div class='redbacktohome_button'>Close</div></a>");
+                            return false;
+                        }
+                        else {
+                            $('#btnSubmit').attr('disabled', 'disabled');
+                            $('#btnSubmit span').text('Please wait...');
+                            $('form .btn-loadstate').show();
+                        }
+                    }
+                }
+                else {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        $(function () {
+            $(".s3-1_flyer_left_dupinput").click(function () {
+                //$(".ffn_inputbox ul").toggle();
+                $(this).parent().find(".ffn_inputboxulli_container ul").toggle();
+            });
+        });
+
+        $(document).on('change', 'select.s3-1_flyer_left_dupinput', function (e) {
+            var selectedAirlineCode = $(this).val();
+            airImg(selectedAirlineCode).done(function (res) {
+                $('.ff-img-container > img').attr('src', res.ImagePath);
+            });
+        });
+
+        $('input[name="SecondaryPhone"], select[name="PhoneCode2"]').on('change', function (e) {
+            phoneValidation();
+            $('select[name="PhoneCode2"]').valid();
+            $('input[name="SecondaryPhone"]').valid();
+        });
+
+        var phoneValidation = function () {
+            //if($(element).val().length == 0){
+            if ($('input[name="SecondaryPhone"]').val().length == 0 && $('select[name="PhoneCode2"]').val().length == 0) {
+                $('input[name="SecondaryPhone"]').rules('remove', 'required');
+                $('select[name="PhoneCode2"]').rules('remove', 'required');
+                $('[data-valmsg-for="PhoneCode2"]').empty();
+            }
+            else {
+                $('input[name="SecondaryPhone"]').rules('add', 'required');
+                $('select[name="PhoneCode2"]').rules('add', 'required');
+            }
+        }
+    </script>
+}
+
+
+
+
+
+

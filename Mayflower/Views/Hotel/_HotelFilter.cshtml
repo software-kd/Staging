@@ -1,0 +1,554 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    FilterHotelResultModel FilterResult = new FilterHotelResultModel();
+    if (Core.GetSession(Enumeration.SessionName.FilterHotelResult, tripid) != null)
+    {
+        FilterResult = (FilterHotelResultModel)Core.GetSession(Enumeration.SessionName.FilterHotelResult, tripid);
+    }
+
+    if (Core.GetSession(Enumeration.SessionName.HotelList, tripid) != null)
+    {
+        SearchHotelModel baseResult = (SearchHotelModel)Core.GetSession(Enumeration.SessionName.HotelList, tripid);
+        if (baseResult.Result != null)
+        {
+            if (baseResult.Result.HotelList != null && baseResult.Result.HotelList.Count() > 0)
+            {
+                ViewData.Add("MINPRICE", baseResult.Result.HotelList.Min(r => r.lowRate).ToString());
+                ViewData.Add("MAXPRICE", baseResult.Result.HotelList.Max(r => r.lowRate).ToString());
+                ViewData.Add("STARRATING", baseResult.Result.HotelList.OrderByDescending(r => Convert.ToDecimal(r.hotelRating)).First().hotelRating);
+            }
+            else
+            {
+                ViewData.Add("MINPRICE", "100");
+                ViewData.Add("MAXPRICE", "1000");
+                ViewData.Add("STARRATING", "5");
+            }
+        }
+        else
+        {
+            ViewData.Add("MINPRICE", "100");
+            ViewData.Add("MAXPRICE", "1000");
+            ViewData.Add("STARRATING", "5");
+        }
+
+        ViewData.Add("CITY", baseResult.Destination);
+    }
+    else
+    {
+        ViewData.Add("MINPRICE", "100");
+        ViewData.Add("MAXPRICE", "1000");
+        ViewData.Add("STARRATING", "5");
+    }
+
+    int stars = Model.Star;
+}
+
+<style>
+    .destinationClear {
+        top: 0%;
+        right: 2%;
+        background-size:12px !important; 
+    }
+
+    .h2_mainhoteldetail_box5 {
+        padding-top: 10px;
+        padding-left: 10px;
+        color: #ec1c24;
+        width: 70%;
+        display: inline-block;
+    }
+
+    .h2_mainhoteldetail_box4 {
+        width: 27%;
+        display: inline-block;
+        padding-top: 5px;
+        float: left;
+    }
+
+    .hs2_rfcl_starblog {
+        width: 16.66%;
+        float: left;
+        cursor: pointer;
+    }
+
+    .fft_right span a {
+        font-family: 'UbuntuMedium';
+        color: #e61c1f;
+        text-decoration: none;
+    }
+
+    .hotel_s2_rating_fc {
+        max-width: 540px;
+    }
+
+    .hs2_rfc_left {
+        width: 56%;
+    }
+
+    .hs2_rfc_right {
+        width: 44%;
+        display: flex;
+    }
+
+    .allstars {
+        width: 49%;
+        float: right;
+        padding: 2px;
+        padding-top: 12px;
+        margin-bottom: 3px;
+        border: 1px solid #54BAE6;
+        color: #54BAE6;
+        font-family: 'UbuntuRegular';
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .update_star {
+        width: 49%;
+        float: right;
+        padding: 2px;
+        padding-top: 6px;
+        margin-bottom: 3px;
+        margin-left: 5px;
+        border: 1px solid #54BAE6;
+        color: #54BAE6;
+        font-family: 'UbuntuRegular';
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex: 1;
+    }
+
+    .hs2_rfcl_starblog:hover {
+        opacity: 0.7;
+    }
+
+    .reset_filter {
+        font-family: 'UbuntuMedium';
+        color: #e61c1f !important;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .mbdconr_left {
+        margin-top: 0;
+    }
+
+    @@media screen and (max-width: 900px) {
+        .desktoponly {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width: 570px) {
+        .update_star {
+            padding-top: 2px;
+        }
+    }
+
+    @@media screen and (max-width: 500px) {
+        .update_star {
+            font-size: 3.0vw;
+            padding-top: 0px;
+        }
+    }
+
+    @@media screen and (max-width: 570px) {
+        .allstars {
+            padding-top: 12px;
+        }
+    }
+
+    @@media screen and (max-width: 500px) {
+        .allstars {
+            font-size: 3.0vw;
+            padding-top: 6px;
+        }
+    }
+</style>
+@{
+    if (Core.GetSession(Enumeration.SessionName.HotelList, tripid) != null)
+    {
+        SearchHotelModel model = (SearchHotelModel)Core.GetSession(Enumeration.SessionName.HotelList, tripid);
+        if (model.Result == null || model.Result.HotelList == null || model.Result.HotelList.Count() == 0) { goto last; }
+        bool isTPBundle = model.BundleType() == BundleTypes.TPConcert && model.BundleInfo != null;
+
+        string SortBy_Deal = "", SortBy_Rating = "", SortBy_TripAdvisor = "";
+        if (Core.GetSession(Enumeration.SessionName.Sorting, tripid) == null)
+        {
+            SortBy_TripAdvisor = "selected";
+        }
+        else
+        {
+            SortBy_TripAdvisor = (Core.GetSession(Enumeration.SessionName.Sorting, tripid).ToString().Equals("1") ? "selected" : "");
+            SortBy_Deal = (Core.GetSession(Enumeration.SessionName.Sorting, tripid).ToString().Equals("2") ? "selected" : "");
+            SortBy_Rating = (Core.GetSession(Enumeration.SessionName.Sorting, tripid).ToString().Equals("3") ? "selected" : "");
+        }
+        if (!isTPBundle)
+        {
+            <div class="s2_filer_container">
+                <div class="s2_filter_inner">
+                    <!-- mobile filter tag start -->
+                    <div class="flight_filter_tag filtertag">
+                        <div class="fft_left">Filter</div>
+                        <div class="fft_right"><span>@Html.ActionLink("Reset Filter >", "ResetFilter", "Hotel", new { tripid }, null)</span></div>
+                        @*<div class="fft_right"><span class="reset_filter">Reset Filter ></span></div>*@
+                        <div class="clear"></div>
+                    </div>
+                    <!-- mobile filter tag end -->
+                    <div class="s2_fil_in_left_hotel">
+                        <div class="s2_fil_inl_filboxes1_hotel s2_fil_redfont">Hotel filter by:<span>@Html.ActionLink("Reset Filter >", "ResetFilter", "Hotel", new { tripid }, null)</span></div>
+                        @*this only reset rating filter, cause reset filter not working
+                            <div class="s2_fil_inl_filboxes1_hotel s2_fil_redfont">Hotel filter by:<span class="reset_filter">Reset Filter ></span></div>*@
+                        <div class="s2_fil_inl_filboxes_hotel fillink  tabfil1" value="filter-airlines " colorline="Bottom_blue" hideicon="Bottom_blue_bg">
+                            <div class="s2fil_filboxes_inner filterico1_hotel s2fill_icofontblue">
+                                Rating
+                            </div>
+                        </div>
+                        <div class="s2_fil_inl_filboxes_hotel fillink  tabfil2" value="times-filter" colorline="Bottom_green" hideicon="Bottom_green_bg">
+                            <div class="s2fil_filboxes_inner filterico_hotel2 s2fill_icofontgreen">
+                                Property Name
+                            </div>
+                        </div>
+                        @*<div class="s2_fil_inl_filboxes_hotel fillink  tabfil3" value="stop_filter" colorline="Bottom_pink" hideicon="Bottom_pink_bg">
+                                <div class="s2fil_filboxes_inner filterico_hotel3 s2fill_icofontpink">
+                                    Attractions
+                                </div>
+                            </div>*@
+                        <div class="s2_fil_inl_filboxes_hotel fillink tabfil4" value="price-filter" colorline="Bottom_yellow" hideicon="Bottom_yellow_bg">
+                            <div class="s2fil_filboxes_inner filterico_hotel4 s2fill_icofontyello">
+                                Price
+                            </div>
+                        </div>
+                        <div class="mbdconr_right">
+                        @using (Html.BeginForm("Sorting", "Hotel", FormMethod.Post, new { @id = "formSort" }))
+                        {
+                            <select name="ddlSorting" id="ddlSorting" onchange="filterNow();">
+                                <option value="1" @SortBy_TripAdvisor>TripAdvisor Rating</option>
+                                <option value="2" @SortBy_Deal>Best Deal</option>
+                                <option value="3" @SortBy_Rating>Property Ratings</option>
+                            </select>
+                        }
+                    </div>
+                        @*<div class="s2_fil_inl_filboxes_hotel fillink tabfil5" value="price-filter" colorline="Bottom_yellow" hideicon="Bottom_yellow_bg">
+                                <div class="s2fil_filboxes_inner filterico_hotel5 s2fill_icofontviolet">
+                                    Amenities
+                                </div>
+                            </div>*@
+                        <div class="clear"></div>
+                    </div>                   
+                    <div class="clear"></div>
+                </div>
+            </div>
+        }
+        <div id="filter">
+            @using (Html.BeginForm("FilterResult", "Hotel", new { tripid }, FormMethod.Post, new { @id = "formRate" }))
+            {
+                <div class="tabsformobile1">Rating</div>
+                <div class="newcontainer1">
+                    <div class="s2filter_cc_inner">
+                        <!-- RATING START -->
+                        <div class="hotel_s2_rating_fc">
+                            <div class="hs2_rfc_left">
+                                @{
+                                    if (FilterResult != null)
+                                    {
+                                        List<string> ratings = (FilterResult.Rating == null ? new List<string>() : FilterResult.Rating.Split(',').ToList());
+                                        for (int i = 1; i <= 5; i++)
+                                        {
+                                            string imageName = "";
+                                            if (ratings.All(r => r.Equals("")))
+                                            {
+                                                if (i == stars || stars == 10)
+                                                {
+                                                    imageName = i + "-Star-Selected.png";
+                                                }
+                                                else
+                                                {
+                                                    imageName = i + "-Star-Default.png";
+                                                }
+                                            }
+                                            else if (ratings.Where(r => r.Equals(i.ToString())).Count() > 0 /*|| ratings.All(r => r.Equals(""))*/)
+                                            {
+                                                imageName = i + "-Star-Selected.png";
+                                            }
+                                            else
+                                            {
+                                                imageName = i + "-Star-Default.png";
+                                            }
+
+                                            <div class="hs2_rfcl_starblog"><img class="StarImage" data-rates="@i" src="@Url.Content("~/images_hotel/" + imageName)"></div>
+                                        }
+                                    }
+                                }
+                                @Html.Hidden("hidRating", FilterResult.Rating, new { @id = "hidRating" })
+                                <div class="clear"></div>
+                            </div>
+                            <div class="hs2_rfc_right">
+                                @*<div class="allstars" data-rates="10" style="cursor: pointer;"><img src="../images_hotel/All-Stars.png" /></div>*@
+                                <div class="allstars" data-rates="10" style="cursor: pointer;">All Star</div>
+                                <div class="update_star">Update Stars Filter</div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="hs2_rfcl_text">@(FilterResult.Result != null ? FilterResult.Result.Count : model.Result.HotelList.Length) properties from MYR <span>@Math.Round(Convert.ToDouble(FilterResult.PriceFrom), 2)</span></div>
+                        </div>
+                        <!-- RATING END -->
+                    </div>
+                </div>
+
+                <div class="tabsformobile2">Property Name</div>
+                <div class="s2_filter_content_container newcontainer2">
+                    <div class="s2filter_cc_inner">
+                        <!-- PROPERTY START -->
+                        <div class="hs2_rfc_property">
+                            <div class="hs2_rfcp_left">
+                                <div class="clearTxt_wrap">
+                            @Html.TextBox("Property", FilterResult.PropertyName, new { @placeholder = "Enter property name", @onfocus = "this.placeholder = ''", @onblur = "this.placeholder = 'Enter property name'", @id = "PropertyName" })
+                                    <span class="clearTxt propertyClear" style="display: none;"></span>
+                                </div>
+                            </div>
+                            <div class="hs2_rfcp_right"><input id="SearchProperty" type="button" value="Search" style="cursor: pointer"></div>
+                            <div class="clear"></div>
+                        </div>
+                        <!-- PROPERTY END -->
+                    </div>
+                </div>
+
+                @*<!--START: hide first -->
+                    <div class="tabsformobile3">Attractions</div>
+                        <div class="s2_filter_content_container  newcontainer3">
+                            <div class="hs2_rfc_attraction">
+                                <!-- STOPS START -->
+                                <div class="hs2_rfcatt_boxes">
+                                    <input id="checkbox2" type="checkbox" name="checkbox" value="2"><label for="checkbox2">Batu Caves</label>
+                                </div>
+                                <div class="hs2_rfcatt_boxes">
+                                    <input id="checkbox3" type="checkbox" name="checkbox" value="2"><label for="checkbox3">Kuala Lumpur Tower</label>
+                                </div>
+                                <div class="hs2_rfcatt_boxes">
+                                    <input id="checkbox4" type="checkbox" name="checkbox" value="2"><label for="checkbox4">Jamek Mosque</label>
+                                </div>
+                                <div class="clear"></div>
+                                <!-- STOPS END -->
+                            </div>
+                        </div>
+                    <!--END: hide first -->*@
+
+                <div class="tabsformobile4">Price</div>
+                <div class="s2_filter_content_container  newcontainer4">
+                    <div class="s2filter_cc_inner">
+                        <!-- PRICE START -->
+                        <div id="price-filter" class="filcont">
+                            <div class="s2_pf_left"><p id="amount"></p></div>
+                            <div class="s2_pf_right" style="cursor:pointer;">
+                                <div id="slider-range"></div>
+                            </div>
+                            @Html.Hidden("MinPrice", ViewData["MINPRICE"].ToString(), new { @id = "MinPrice" })
+                            @Html.Hidden("MaxPrice", ViewData["MAXPRICE"].ToString(), new { @id = "MaxPrice" })
+                            @Html.Hidden("SelectedMinPrice", FilterResult.MinPrice, new { @id = "SelectedMinPrice" })
+                            @Html.Hidden("SelectedMaxPrice", FilterResult.MaxPrice, new { @id = "SelectedMaxPrice" })
+                            @Html.Hidden("StartFilter", null, new { @id = "StartFilter" })
+                            <div class="clear"></div>
+                        </div>
+                        <!-- PRICE END -->
+                    </div>
+                </div>
+
+        <!--START: hide first-->
+                @*<div class="tabsformobile5">Amenities</div>
+                    <div class="s2_filter_content_container  newcontainer5">
+                        <div class="hs2_rfc_attraction">
+                            <!-- STOPS START -->
+                            <div class="hs2_rfcamen_boxes">
+                                <input id="checkbox2a" type="checkbox" name="checkbox" value="2"><label for="checkbox2a">Batu Caves</label>
+                            </div>
+                            <div class="hs2_rfcamen_boxes">
+                                <input id="checkbox3a" type="checkbox" name="checkbox" value="2"><label for="checkbox3a">Kuala Lumpur Tower</label>
+                            </div>
+                            <div class="hs2_rfcamen_boxes">
+                                <input id="checkbox41a" type="checkbox" name="checkbox" value="2"><label for="checkbox41a">Jamek Mosque</label>
+                            </div>
+                            <div class="clear"></div>
+                            <!-- STOPS END -->
+                        </div>
+                    </div>*@
+        <!--END: hide first-->
+            }
+        </div>
+        <div class="hidefilter_icon">
+            <div class="hidden_icon_for_color"><img src="../images_hotel/hide_arrow_white.png" width="19" height="12" alt=""></div>
+            Hide Filter
+        </div>
+        if (!isTPBundle)
+        {
+        <!-- mobile sorting tag start -->
+            <div class="flight_filter_tag sorttag1">
+                <div class="fft_left">Sort by</div>
+                <div class="fft_right"> </div>
+                <div class="clear"></div>
+            </div>
+        }
+        <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight TripAdvisor @SortBy_TripAdvisor">TripAdvisor Rating</div>
+    <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight Best @SortBy_Deal">Best Deal</div>
+    <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight Property @SortBy_Rating">Property Ratings</div>
+
+        @*<div class="s2_fil_in_right_sm">
+            <!-- Caused duplicate ID, and return wrong sorting value to serialize form -->
+                @using (Html.BeginForm("Sorting", "Hotel", FormMethod.Post, new { @id = "formSort" }))
+                {
+                    <select name="ddlSorting" id="ddlSorting" onchange="filterNow();">
+                        <option value="1" @SortBy_TripAdvisor>TripAdvisor Rating</option>
+                        <option value="2" @SortBy_Deal>Best Deal</option>
+                        <option value="3" @SortBy_Rating>Property Ratings</option>
+                    </select>
+                }
+            </div>*@
+        <!-- mobile sorting tag end -->
+        if (!isTPBundle)
+        {
+            <div class="flight_filter_tag sorttag_price">
+                <div class="fft_left">Price settings</div>
+                <div class="fft_right"> </div>
+                <div class="clear"></div>
+            </div>
+        }
+        
+        if (model.DynamicStationCode != null)
+        {
+            using (Html.BeginForm("GetDPHotelSearch", "Hotel", new { tripid }, FormMethod.Post))
+            {
+                SearchHotelModel modelResult = (SearchHotelModel)Core.GetSession(Enumeration.SessionName.HotelList, tripid);
+                <div class="hotel">
+                    <div id="search_hotel" class="dpmodifydiv">
+                        <div class="ttcc_text1_lb dpmodifytitle"><b>Can't find hotel you want? Search here</b></div>
+                        <div class="hotel_form_container1">
+                            <div class="ffc1_left1 dpmodifylbl"><b>Going to</b></div>
+                            <div class="ffc1_right1">
+                                <div class="clearTxt_wrap">
+                                    @Html.TextBox("DPDestination", "", new { @id = "DPdestination", @placeholder = "Enter Destination" })
+                                    <span class="clearTxt destinationClear" style="display: none;"></span>
+                                </div>
+                                <ul class="list-group to_from_ul" id="from_locations"></ul>
+                                <input type="hidden" id="project-id">
+                            </div>
+                            <div class="dpmodifybtn">
+                                <button name="dpmodifiySubBtn" type="submit" value="OK,show me!">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="map_bestdeal_container">
+            <span class="desktoponly" style="color: grey;margin-top: 20px;min-height: 49px;line-height: 39px;">@Model.Destination : @(FilterResult.Result != null ? FilterResult.Result.Count : model.Result.HotelList.Length) properties</span>
+            @if (Core.IsForLocalHost)
+            {
+                <br />
+                <small>ESB Service Respond - @(model.Result.ResponseTime)ms </small><br />
+                <small>FrontEnd Service Respond - @(Session["frontendhoteltimewatch"] ?? 0)ms</small>
+            }
+
+            <div class="mbdcon_right">
+                <div class="mbdconr_left">
+                    @using (Html.BeginForm("IncludeTax", "Hotel", FormMethod.Post, new { @id = "formCheckBox" }))
+                    {
+                        SearchHotelModel modelResult = (SearchHotelModel)Core.GetSession(Enumeration.SessionName.HotelList, tripid);
+                        int totalNights = Convert.ToInt32(modelResult.totalDays);
+                        string CheckboxAttr = "";
+                        string labeltotalpcss = "";
+                        //int TotalNights = Convert.ToInt16(ViewData["TOTALNIGHTS"] != null ? ViewData["TOTALNIGHTS"].ToString() : "1");
+                        if (totalNights == 1)
+                        {
+                            CheckboxAttr = "checked disabled";
+                            labeltotalpcss = "opacity:0.6";
+                        }
+                        else if (FilterResult.IncludeAllNights)
+                        {
+                            CheckboxAttr = "checked";
+                        }
+
+                        <div class="mbdconrl_right" style="cursor: pointer;">
+                            <span style="color: #676767; font-size: 14px; display: flex;">Price setting: </span><input id="tax" type="checkbox" name="checkbox" value="" checked="@FilterResult.IncludeTax"><label for="tax">Include Tax</label>
+                            @Html.Hidden("hidTax", "", new { @id = "hidTax" })
+                            <input id="totalp" type="checkbox" name="checkbox" @CheckboxAttr><label for="totalp" style="@labeltotalpcss">Total price (all nights)</label>
+                            @Html.Hidden("hidAllNights", "", new { @id = "hidAllNights" })
+                        </div>
+                        <div class="clear"></div>
+                    }
+                </div>
+                @*<div class="mbdconr_right">
+                @using (Html.BeginForm("Sorting", "Hotel", FormMethod.Post, new { @id = "formSort" }))
+                {
+                    <select name="ddlSorting" id="ddlSorting" onchange="filterNow();">
+                        <option value="1" @SortBy_TripAdvisor>TripAdvisor Rating</option>
+                        <option value="2" @SortBy_Deal>Best Deal</option>
+                        <option value="3" @SortBy_Rating>Property Ratings</option>
+                    </select>
+                }
+            </div>*@
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+
+            <div class="s2_ib_inner desktoponly">
+                @if (!string.IsNullOrEmpty(FilterResult.Rating) && FilterResult.Rating != "1,2,3,4,5")
+                {
+                    <div class="fillter_tags Bottom_blue_bg star1">@(FilterResult.Rating.Contains("1") ? "Rating: 1 Star X" : "")</div>
+                    <div class="fillter_tags Bottom_blue_bg star2">@(FilterResult.Rating.Contains("2") ? "Rating: 2 Stars X" : "")</div>
+                    <div class="fillter_tags Bottom_blue_bg star3">@(FilterResult.Rating.Contains("3") ? "Rating: 3 Stars X" : "")</div>
+                    <div class="fillter_tags Bottom_blue_bg star4">@(FilterResult.Rating.Contains("4") ? "Rating: 4 Stars X" : "")</div>
+                    <div class="fillter_tags Bottom_blue_bg star5">@(FilterResult.Rating.Contains("5") ? "Rating: 5 Stars X" : "")</div>
+                }
+                <div class="fillter_tags Bottom_green_bg">@(!string.IsNullOrEmpty(FilterResult.PropertyName) ? "Property name: " + FilterResult.PropertyName + " X" : "")</div>
+                <div class="fillter_tags Bottom_yellow_bg"></div>
+                <div class="clear"></div>
+            </div>
+            @{
+        if (ViewData["CITY"] != null)
+        {
+            @*<div class="mbdcon_left ShowMap" data-name="" data-city="@ViewData["CITY"].ToString()">View on Map</div>*@
+        }
+            }
+
+            @if (isTPBundle)
+            {
+                <div class="s2_mc_border_conainer2 desktoponly">
+                    <!--  Inner all detail start -->
+                    <img src="@Url.Content("~/Images/BundleItems/" + model.BundleInfo.BundleID + "_" + model.BundleInfo.EventDesc + "_1024px.jpg")" />
+                    <!-- Inner all detail end -->
+                </div>
+            }
+            <div class="clear"></div>
+
+            @if (model.DynamicStationCode == null)
+            {
+                <h4 style="text-align: center;">Step 1: Choose a hotel</h4>
+            }
+        </div>
+        <span class="mobileonly" style="color: grey; margin-left: 2%; font-family: 'UbuntuMedium';">@Model.Destination : @(FilterResult.Result != null ? FilterResult.Result.Count() : model.Result.HotelList.Count()) properties</span>
+        <div class="s2_ib_inner mobileonly">
+            @if (!string.IsNullOrEmpty(FilterResult.Rating) && FilterResult.Rating != "1,2,3,4,5")
+            {
+                <div class="fillter_tags Bottom_blue_bg star1">@(FilterResult.Rating.Contains("1") ? "Rating: 1 Star X" : "")</div>
+                <div class="fillter_tags Bottom_blue_bg star2">@(FilterResult.Rating.Contains("2") ? "Rating: 2 Stars X" : "")</div>
+                <div class="fillter_tags Bottom_blue_bg star3">@(FilterResult.Rating.Contains("3") ? "Rating: 3 Stars X" : "")</div>
+                <div class="fillter_tags Bottom_blue_bg star4">@(FilterResult.Rating.Contains("4") ? "Rating: 4 Stars X" : "")</div>
+                <div class="fillter_tags Bottom_blue_bg star5">@(FilterResult.Rating.Contains("5") ? "Rating: 5 Stars X" : "")</div>
+            }
+            <div class="fillter_tags Bottom_green_bg">@(!string.IsNullOrEmpty(FilterResult.PropertyName) ? "Property name: " + FilterResult.PropertyName + " X" : "")</div>
+            <div class="fillter_tags Bottom_yellow_bg"></div>
+            @if (isTPBundle)
+            {
+                <div class="s2_mc_border_conainer3">
+                </div>
+            }
+
+            <div class="clear"></div>
+        </div>
+        last: ;
+    }
+}

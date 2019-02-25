@@ -1,0 +1,124 @@
+﻿@model Alphareds.Module.Model.CheckoutProduct
+@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@{ 
+    string tripid = Request.QueryString["tripid"];
+    bool passCrossSalesHotel = ViewBag.HasCrossSell == true; //(ViewBag.HideSummaryHotelItinerarySection == null || ViewBag.HideSummaryHotelItinerarySection == false) && tripid != null && Session[Enumeration.SessionName.HotelList + tripid] != null;
+    bool isHotelOnly = Model.Flight == null && Model.Hotel != null;
+    var actionRoute = ViewContext.RouteData.Values["action"];
+    string actionName = actionRoute != null ? actionRoute.ToString() : "";
+    string actionDesc = getActionDesc(actionName);
+}
+
+<section class="clearfix addons">
+    <div class="container">
+
+        @if (actionDesc != null)
+        {
+            <h4 style="text-align: center;@(Model.IsDynamic ? "" : "margin-bottom: -20px;")">@actionDesc</h4>
+        }
+
+        <div class="clearfix section-tabs">
+            <div class="col-md-10 col-lg-8 col-lg-offset-2 col-md-offset-1 col-xs-12 col-sm-10 col-sm-offset-1 centerStepBar">
+                <ul class="nav nav-pills nav-wizard@(passCrossSalesHotel ? " nav-size-addon" : " nav-size")">               
+                    @if (Model.IsDynamic)
+                    {
+                        <li class="@setClassIfActive(actionName, "SearchFlight")">
+                            <a>
+                                <span class="visible-lg visible-md visible-sm navZoom">@(isHotelOnly ? "Select Room" : "Select Flight")</span>
+                                <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/search.png")" height="20" width="20" alt="Select"></span>
+                            </a>
+                        </li>
+                        <li class="@setClassIfActive(actionName, "Search")">
+                            <a>
+                                <span class="visible-lg visible-md visible-sm navZoom">Select Hotel</span>
+                                <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/search.png")" height="20" width="20" alt="SelectHotel"></span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="@setClassIfActive(actionName, "Search")">
+                            <a>
+                                <span class="visible-lg visible-md visible-sm navZoom">@(isHotelOnly ? "Select Room" : "Select Flight")</span>
+                                <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/search.png")" height="20" width="20" alt="Select"></span>
+                            </a>
+                        </li>
+                    }
+                    <li class="@setClassIfActive(actionName, "GuestDetails")">
+                        <a aria-controls="addons">
+                            <span class="visible-lg visible-md visible-sm navZoom">Contact Details</span>
+                            <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/contactdetails.png")" height="20" width="20" alt="" title="Contact Details"></span>
+
+                        </a>
+                    </li>
+                    @if (true || passCrossSalesHotel || Model.Products.Count > 1)
+                    {
+                        <li class="@setClassIfActive(actionName, "AddOn")">
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Add On</span>
+                                <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/add-on.png")" height="20" width="20" alt="" title="Add On"></span>
+                            </a>
+                        </li>
+                    }
+                    <li class="@setClassIfActive(actionName, "Payment")">
+                        <a aria-controls="addons">
+                            <span class="visible-lg visible-md visible-sm navZoom">Payment</span>
+                            <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/payment.png")" height="20" width="20" alt="" title="Payment"></span>
+
+                        </a>
+                    </li>
+                    <li class="@setClassIfActive(actionName, "OrderHistory")">
+                        <a aria-controls="confirm">
+                            <span class="visible-lg visible-md visible-sm">Confirmation</span>
+                            <span class="visible-xs"><img src="@Url.Content("~/Images_hotel/confirmation.png")" height="20" width="20" alt="" title="Confirmation"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        @if (setClassIfActive(actionName, "AddOn") != "")
+        {
+            <div class="pg-title">Add-ons</div>
+            <div class="text-center">
+                @Html.ValidationMessage("Error", new { style = "font-size: 22px;font-style: italic;" })
+            </div>
+        }
+    </div>
+</section>
+
+
+@functions{
+    string setClassIfActive(string currentActionName, string tabAction)
+    {
+        if (currentActionName.ToLower() == (tabAction ?? "").ToLower())
+        {
+            return " active ";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    string getActionDesc(string currentActionName)
+    {
+        int stepPlus = Model.IsDynamic ? 1 : 0;
+        switch (currentActionName.ToLower())
+        {
+            case "searchflight":
+                return $"Step 1: Choose a flight";
+            case "search":
+                return $"Step {1 + stepPlus}: Choose a hotel";
+            case "guestdetails":
+                return $"Step {2 + stepPlus}: Fill in contact details";
+            case "addon":
+                return $"Step {3 + stepPlus}: Add-on";
+            case "payment":
+                return $"Step {4 + stepPlus}: Checkout";
+            default:
+                return null;
+        }
+    }
+}

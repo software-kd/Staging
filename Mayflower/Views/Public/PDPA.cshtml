@@ -1,0 +1,720 @@
+﻿@{
+    ViewBag.Title = "Personal Data Protection Act";
+    ViewBag.RenderRedLine = true;}
+
+@section style{
+    <style type="text/css">
+        #page_1 {
+            /*Alvinloo 8/12/2016 start*/
+            overflow: hidden;
+            margin-left: 40px;
+            /*margin: 30px 10px 40px 120px;*/
+            padding: 0px;
+            border: none;
+            width: 95%;
+        }
+
+        #page_2 {
+            overflow: hidden;
+            margin: 99px 0px 255px 96px;
+            padding: 0px;
+            border: none;
+            width: 698px;
+        }
+
+        .ft0 {
+            max-width: 80%;
+            font: bold 15px 'Calibri';
+            line-height: 18px;
+        }
+        /*Alvinloo 8/12/2016 end*/
+        .ft1 {
+            font: 14px 'Calibri';
+            line-height: 19px;
+        }
+
+        .ft2 {
+            font: 15px 'Calibri';
+            line-height: 18px;
+        }
+
+        .ft3 {
+            font: 15px 'Calibri';
+            margin-left: 4px;
+            line-height: 18px;
+        }
+
+        .ft4 {
+            font: 15px 'Calibri';
+            margin-left: 7px;
+            line-height: 18px;
+        }
+
+        .ft5 {
+            font: 14px 'Calibri';
+            line-height: 17px;
+        }
+
+        .ft6 {
+            font: 15px 'Calibri';
+            margin-left: 3px;
+            line-height: 18px;
+        }
+
+        .ft7 {
+            font: 14px 'Calibri';
+            margin-left: 3px;
+            line-height: 17px;
+        }
+
+        .ft8 {
+            font: 15px 'Calibri';
+            margin-left: 6px;
+            line-height: 18px;
+        }
+
+        .p0 {
+            text-align: left;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .p1 {
+            text-align: justify;
+            padding-right: 99px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p2 {
+            text-align: justify;
+            padding-right: 97px;
+            margin-top: 42px;
+            margin-bottom: 0px;
+        }
+
+        .p3 {
+            text-align: justify;
+            padding-right: 102px;
+            margin-top: 44px;
+            margin-bottom: 0px;
+        }
+
+        .p4 {
+            text-align: justify;
+            padding-right: 98px;
+            margin-top: 46px;
+            margin-bottom: 0px;
+        }
+
+        .p5 {
+            text-align: left;
+            margin-top: 13px;
+            margin-bottom: 0px;
+        }
+
+        .p6 {
+            text-align: left;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p7 {
+            text-align: left;
+            padding-right: 128px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p8 {
+            text-align: left;
+            padding-right: 118px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p9 {
+            text-align: left;
+            margin-top: 14px;
+            margin-bottom: 0px;
+        }
+
+        .p10 {
+            text-align: left;
+            padding-right: 140px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p11 {
+            text-align: left;
+            padding-right: 97px;
+            margin-top: 43px;
+            margin-bottom: 0px;
+        }
+
+        .p12 {
+            text-align: left;
+            padding-right: 136px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .p13 {
+            text-align: left;
+            margin-top: 44px;
+            margin-bottom: 0px;
+        }
+
+        .p14 {
+            text-align: left;
+            margin-top: 11px;
+            margin-bottom: 0px;
+        }
+
+        .p15 {
+            text-align: justify;
+            padding-right: 96px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+        }
+
+        .p16 {
+            text-align: left;
+            padding-right: 105px;
+            margin-top: 46px;
+            margin-bottom: 0px;
+        }
+
+        .p17 {
+            text-align: left;
+            padding-right: 115px;
+            margin-top: 50px;
+            margin-bottom: 0px;
+        }
+
+        .p18 {
+            text-align: left;
+            margin-top: 43px;
+            margin-bottom: 0px;
+        }
+
+        .p19 {
+            text-align: left;
+            padding-right: 104px;
+            margin-top: 42px;
+            margin-bottom: 0px;
+        }
+
+        .p20 {
+            text-align: left;
+            padding-right: 108px;
+            margin-top: 43px;
+            margin-bottom: 0px;
+        }
+
+        .p21 {
+            text-align: justify;
+            padding-right: 99px;
+            margin-top: 5px;
+            margin-bottom: 0px;
+        }
+
+        .p22 {
+            text-align: justify;
+            padding-right: 99px;
+            margin-top: 20px;
+            margin-bottom: 0px;
+        }
+
+        table{
+            padding-top:5px;
+            border-collapse:collapse; 
+            width:60%;
+        }
+
+        td {
+            padding:10px;
+            border: 1px solid;
+        }
+
+        ol {
+            counter-reset: item;
+        }
+        ol li ol{
+            padding-right:0px;
+        }
+            ol li {
+                font-weight: bold;
+                counter-increment: item;
+                list-style-position: outside;
+                /*display: block;*/
+                /*margin-left: 12px;*/
+                display: inline-table;
+            }
+
+            ol li:before {
+                content: counters(item,".") ". ";
+                display:table-cell;
+            }
+
+            ol li ol li {
+                font-weight: normal;
+                text-transform: none;
+                /*margin-left:40px;*/
+            }
+
+                ol li ol li ol li {
+                    margin-left: 2.5em;
+                    list-style-type: lower-alpha;
+                    display:list-item;
+                }
+
+                    ol li ol li ol li:before {
+                        content: none;
+                    }
+                ol li ol li ol li ol li{
+                    margin-left: 2.5em;
+                    list-style-type: lower-roman;
+                    display: list-item;
+                }
+                    ol li ol li ol li ol li:before {
+                        content: none;
+                    }
+            ol.p1.ft1{
+                padding-right:50px;
+            }
+        ul.p1.ft1 {
+            padding-right: 50px;
+        }
+    </style>
+}
+
+<div class="document container-wrapper">
+    <div id="page_1">
+
+
+        @*<p class="p0 ft0">NOTICE UNDER THE PERSONAL DATA PROTECTION ACT 2010</p>
+        <p class="p1 ft1">Your access and use of this Site (as defined hereinafter below) is subject to the following terms of use (“<span class="ft0">Terms</span>”). Please take a moment and read these Terms carefully. By accessing and/or using this Site, you hereby agree to be bound by the Terms without limitation or qualification. If you do not agree with these Terms, please immediately discontinue the access to and/or use of this Site.</p>
+        <p class="p1 ft1">We reserve the right to amend, revise or modify these Terms at any time at our absolute discretion without prior notice to you, and such amended, revised or modified Terms shall be effective upon their publication on this Site. Please visit this Site regularly and check these Terms to ensure that you are aware of all the terms governing your use of this Site. Your continued access and/or use of this Site constitute your agreement to and acceptance of the amended, revised or modified Terms.</p>
+        <p class="p1 ft1">For the purposes of these Terms:-</p>
+        <ul class="p1 ft1" style="padding-left:35px">
+            <li class="p1 ft1">The terms “<span class="ft0">Mayflower</span>”, “<span class="ft0">us</span>”, “<span class="ft0">we</span>”, “<span class="ft0">our</span>” shall mean Mayflower Holiday Sdn. Bhd. (Company No.: 843960-T/ KPK 7367).</li>
+            <li class="p1 ft1">The term “<span class="ft0">Site</span>” shall mean this website (<a href="http://www.mayflower.com.my/">www.mayflower.com.my</a>) and the other pages hereof.</li>
+            <li class="p1 ft1">The terms “<span class="ft0">you</span>”, “<span class="ft0">your</span>” and “<span class="ft0">yours</span>” shall mean you, the person(s) accessing this Site and the party on whose behalf you are doing so.</li>
+        </ul>*@
+        
+        @*note (format for the list at below)*@
+        @*<ol class="p1 ft1">
+            <li>
+                <u> 1.(header) </u>
+                <ol class="p1 ft1">
+                    <li>
+                        1.1. (sub from header) 
+                        <ol>
+                            <li>
+                                a.
+                                <ol> 
+                                    <li> i. </li>
+                                    <li> ii. </li>
+                                </ol>
+                            </li>
+                            <li> b. </li>
+                        </ol>
+                    </li>
+                    <li> 1.2 </li>
+                </ol>
+            </li>
+            <li> <u> 2. </u> </li>
+        </ol>*@
+        
+        @*<ol class="p1 ft1">
+            <li>
+                <u>Services</u>
+                <ol class="p1 ft1">
+                    <li>
+                        Mayflower offers an online platform through this Site (“<span class="ft0">Services</span>”), where you can browse for, reserve and purchase any and/or all of the following, which are offered by the respective vendors listed on this Site:-
+                        <ol>
+                            <li>airlines;</li>
+                            <li>temporary accommodation and lodging;</li>
+                            <li>travel packages;</li>
+                            <li>rental vehicles (coming soon); </li>
+                            <li>travel insurance (coming soon); and/or</li>
+                            <li>event and/or attraction tickets (coming soon); and/or</li>
+                            <li>wifi dongle (coming soon).</li>
+                        </ol>
+                    </li>
+                    <li>Mayflower will be the merchant on record in respect of the Services. </li>
+                    <li>Mayflower reserves the absolute discretion to change, suspend or discontinue all or any part of the Services at any time without prior notice to you.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Vendor</u>
+                <ol class="p1 ft1">
+                    <li>The vendors listed on this Side (“<span class="ft0">Vendors</span>”) are independent contractors and not agents or employees of Mayflower. This Site does not make any representation and should not be construed as making any recommendations or suggestions to the level of service or rating of the Vendors. Mayflower shall not be held liable for any omissions, breach of representations, warranties, breaches or negligence of any Vendors or for any personal injuries, death, property damage or other damages or expenses as may be suffered and/or incurred by you resulting there from.</li>
+                    <li>The products and services available through this Site are subject to the published conditions of the respective Vendor (“<span class="ft0">Vendor’s Terms</span>”), including but not limited to the conditions of purchase and policies relating to subsequent changes, cancellation and refund. Please read the Vendor’s Terms carefully before confirming your purchase.</li>
+                    <li>Any violation of the Vendor’s Terms may result in the cancellation of your reservation, in you being denied access to the applicable product/ services, in the forfeiture of any your monies paid for such reservation, and/or in our debiting your account for any cots we may incur as a result of such violation by you.</li>
+                    <li>By making a booking or purchasing the product and/or services of the Vendors, you are deemed to have read, understood and agreed to be bound by the Vendor’s Terms.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Additional terms </u>
+                <ol class="p1 ft1">
+                    <li>Further and in addition to the Vendor’s Terms, certain sections or pages on this Site may contain additional and/or separate terms and conditions, which are different from these Terms. In the event of a conflict, the additional and/or specific terms and conditions shall prevail for those sections or pages.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>User’s representation & warranties:</u>
+                <ol class="p1 ft1">
+                    <li>
+                        By using the Services offered via this Site, you hereby warrant that:-
+                        <ol>
+                            <li>You are at least eighteen (18) years of age;</li>
+                            <li>You possess the legal capacity and authority to form a binding contract; </li>
+                            <li>You will use these Services in accordance with the Terms herein; and</li>
+                            <li>All information supplied by you to the Site is true, accurate, current and complete.</li>
+                        </ol>
+                    </li>
+                    <li>You hereby agree to indemnify Mayflower from any loss, damage, cots, expense, liability and claims which may be suffered and/or incurred by Mayflower resulting from your use of this Site in breach of any of these Terms.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Permissible use and prohibited use</u>
+                <ol class="p1 ft1">
+                    <li>You may only use this Site to make legitimate reservations, purchases or requests to purchase the products or services rendered by the respective Vendors.</li>
+                    <li>You shall not:
+                        <ol>
+                            <li>Use this Site for commercial purposes without Mayflower’s permission;</li>
+                            <li>Use the Site to make any speculative, false or fraudulent reservation or purchase and/or any purchase in anticipation of demand;</li>
+                            <li>Take any action which may impose an unreasonable or disproportionately large load on the Site;</li>
+                            <li>Use this Site in any manner which could damage, disable, overburden or impair or otherwise interfere with the other users’ use of this Site or other users’ computer equipment, or cause damage, disruption or limit the functioning of any software, hardware or telecommunication equipment;</li>
+                            <li>Attempt to gain unauthorized access to this Site, other accounts, computer system, or networks connected to this Site, through hacking, password mining or any other means;</li>
+                            <li>Deliver any unlawful postings to or through this Site, or any postings which advocate illegal activity. </li>
+                            <li>Post anything which contain material that could be considered harmful, obscene, lewd, indecent, violent, abusive, insulting, threatening, harassing, hateful or otherwise objectionable; </li>
+                            <li>Post anything that contain any defamatory, false or libelous material; </li>
+                            <li>Post anything that infringes or violates any intellectual property or any other rights of any third party.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Intellectual Property Rights</u>
+                <ol class="p1 ft1">
+                    <li>The content, text, images, graphics, sound files, animation files, video files, and their arrangement on this Site are all subject to copyright and other intellectual property protection. </li>
+                    <li>The copyright in the materials contained on this Site (including but not limited to the software, text, data , html codes and other codes on this Site) belongs to Mayflower or its licensors. These materials may not be copied for commercial use or distribution, nor may these materials be modified, transmitted, displayed, reproduced, published, or reposted to other sites or otherwise used for any public or commercial use without the prior express written permission of Mayflower. You may print, copy, download or temporarily store extracts from this Site for your personal use only.</li>
+                    <li>All the trademarks, service marks and logos displayed on this Site are the registered, pending registration and/or unregistered trademarks of Mayflower or Mayflower’s affiliates or the respective third party proprietors as identified in the Site. Unless the express prior written consent of Mayflower or the relevant Mayflower’s affiliate or third party proprietor has been obtained, nothing contained on the Site shall be construed as granting any license or right for you to use, copy or modify such trademarks, service marks or logos. </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Links to third party Sites</u>
+                <ol class="p1 ft1">
+                    <li>This Site may contain links to other sites that are independently owned, maintained or operated by third parties that are not under the control and/or supervision of Mayflower (“<span class="ft0">Linked Sites</span>”). The links are provided for your convenience only and shall not be interpreted as a recommendation and/or endorsement by Mayflower of the contents of the Linked Sites and/or any products and/or services appearing on and/or provided through such Linked Sites.</li>
+                    <li>The use of a Linked Site shall be subject to the terms of use and privacy policies stipulated by the operator of each Linked Site that you should review.</li>
+                    <li>Mayflower hereby expressly disclaims any responsibilities and makes no warranties (express or implied) in respect of the contents, materials, products or services posted or offered at any of the Linked Sites. Your access and use of any such Linked Sites and their content, materials, products or services is solely at your own risk. Mayflower shall not be responsible or liable, directly or indirectly, for any loss, expense or damage suffered by you resulting from your use or reliance on such content, materials, products or services of the Linked Sites.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Disclaimer & Limitation of Liability</u>
+                <ol class="p1 ft1">
+                    <li>
+                        All contents or materials, information and functions contained on this Site are provided on an “<span class="ft0">AS IS</span>” and “<span class="ft0">AS AVAILABLE</span>” basis. To the fullest extent permitted by law, Mayflower disclaims all warranties, endorsements or representations, whether express or implied, including but not limited to the following:-
+                        <ol>
+                            <li>The correctness, accuracy, adequacy, reliability, completeness and usefulness of any contents, materials or information contained on this Site;</li>
+                            <li>The merchantability, fitness for use, fitness for a particular purpose and/or non-infringement of third party rights of any contents, materials or information contained on this Site;</li>
+                            <li>That the access to this Site will be uninterrupted or that there will be no downtime, delays, failures, errors or omissions or loss of information as this Site is transmitted to you; and</li>
+                            <li>That no viruses or other contaminating or destructive materials or elements will be transmitted or that your computer system will not be damaged from accessing and/or using this Site.  </li>
+                        </ol>
+                    </li>
+                    <li>To the fullest extent permitted by law, Mayflower shall not in any manner be held responsible or liable, whether directly or indirectly, for any losses, damage or expenses as may be suffered by you resulting from or in connection with:- 
+                        <ol>
+                            <li>Your reliance on any of the contents, materials or information on this Site;</li>
+                            <li>Your access or use of, or inability to access or use this Site and/or the products or services obtained through this Site; </li>
+                            <li>Any failure of performance, error, omission, interruption, defect, delay in operation or transmission, computer virus or line or system failure to this Site.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        In the event where Mayflower is found to be liable to you, to the maximum extent permitted by law, Mayflower’s liability shall be limited, at our sole option, to either of the following:-
+                        <ol>
+                            <li>Resupply of the Services; or</li>
+                            <li>payment in lieu to the cost of resupplying the Services</li>
+                        </ol>
+                    </li>
+                    <li>Without prejudice to the above, the total aggregate liability of Mayflower to you, whether in contract, tort (including negligence) or otherwise for any loss or damage of any kind shall, to the maximum extent permitted by law, be limited to the maximum sum of <span class="ft0">RM5,000.00</span> only. </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Reservation</u>
+                <ol class="p1 ft1">
+                    <li>You must check the reservation details thoroughly each time before you make a reservation.</li>
+                    <li>Mayflower reserves the right not to accept any user or reservation (or in some cases, cancel the reservation confirmation) at our sole discretion and for any cause without giving reasons for the rejection/ refusal/ cancellation. The causes may include but not limited to the following:
+                        <ol>
+                            <li>Breach of the Terms by you; </li>
+                            <li>Suspicion of criminal activity (including but not limited to unauthorized use of a credit or debit card), fraud or theft;</li>
+                            <li>Product/ services not being available or no longer being made available by the Vendor, or where the Vendor has provided inaccurate price and/or information relating to their products/services; </li>
+                            <li>The provision of inaccurate, erroneous or misleading information by you; </li>
+                            <li>Problems with credit card electronic communications, information or transactions.</li>
+                        </ol>
+                    </li>
+                    <li>In certain cases, we may require additional information or verification to validate and confirm the booking. If you choose not to submit the required additional information, reservations will not be completed and will be voided.</li>
+                    <li>
+                        Your reservations are not confirmed until you have received a confirmation email from Mayflower and/or the relevant Vendor. The confirmation email will only be sent to you upon:-
+                        <ol>
+                            <li>The complete provision of all information which are necessary for the reservation of the selected products and/or services by you; and</li>
+                            <li>Mayflower’s receipt of the full payment for the selected products and/or services.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Prices & payment</u>
+                <ol class="p1 ft1">
+                    <li>All prices on the Site are shown in <span class="ft0">Malaysian Ringgit (“RM”)</span>, unless otherwise specifically denoted.</li>
+                    <li>Prices shown on this Site may vary depending on the availability of the products and/or services and other factors. The Vendors may update the prices of their respective products and/or services from time to time. Available prices may also include taxes and other charges, and the respective Vendor may also impose additional charges pursuant to any special requests as may be made by you.</li>
+                    <li>You shall be solely responsible for verifying the total costs to be paid for the selected product and/or services, and such other Vendor’s Terms as may be notified to you when the confirmation email is sent.</li>
+                    <li>For all forms of reservation, you must payment within the stipulated time limit, failing which Mayflower shall reserve the right to cancel your reservation.</li>
+                    <li>Available payment methods:
+                        <ol>
+                            <li>Credit card: Mastercard and Visa card, in which case your use of the credit card shall also be subject to such terms and conditions as may be stipulated by the respective bank;</li>
+                            <li>FPX online payment gateway, in which case your use of the payment gateway shall also be subject to their terms and conditions of use; and/or</li>
+                            <li>Where you are a registered member of the Site, you may pay for the selected products and/or services using the “travel credit” feature.</li>
+                        </ol>
+                        Mayflower reserves the right to not accept certain credit cards, and Mayflower can add or remove other payment methods at our sole discretion.
+                    </li>
+                    <li>Where payment is made via credit card:-
+                        <ol>
+                            <li>You shall ensure that you have sufficient credit on your credit card account to meet all charges for the products and/or services that you booked/ purchased through this Site.</li>
+                            <li>For payment of bookings placed through this Site, and where Mayflower is the merchant on record, your credit card will be billed by Mayflower for the full price at the time of booking and confirmation of the booking.</li>
+                            <li>Please note that as and when any price is converted from a foreign currency to RM, your card issuer may charge a conversion fee. Your card issuer may impose a processing fee at the rate of 1.5% from the total amount of the transaction in concerned.  </li>
+                            <li>In the case of credit card fraud or unauthorized use of your credit card by a third party, you must contact your card issuer immediately after realizing such unauthorized use. Mayflower shall bear no responsibility over any case of credit card fraud or unauthorized use of your credit card by a third party, and Mayflower is not obliged to make refunds or repayments to you as a result of such fraud. As part of our goodwill, we may provide a form of compensation to you subject to review and approval by us. Mayflower shall accept no liability of the fraud or unauthorized use of your credit card if it was done through applications or servers other than our own or if it is as a result of a fault or negligence of your own. </li>
+                            <li>By using credit card as your method of payment, you are deemed to have authorized and/or consented to the following:-
+                                <ol>
+                                    <li>charge all fees incurred to the credit card designated by you;</li>
+                                    <li>Mayflower’s and/or the respective Vendor’s disclosure of your credit card details to, and/or the procurement of information from, your card issuer to verify the credit card and identification details that you have provided;</li>
+                                    <li>The verification by Mayflower and/or the respective Vendor that there is sufficient credit on your account to meet the fees incurred;</li>
+                                    <li>Mayflower supplying your billing, payment and identification information (including but not limited to personal information) to those Vendors who will be supplying the selected products and/or services to you.</li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </li>
+                    <li>Where payment is made using the “travel credit” feature:- 
+                        <ol>
+                            <li>
+                                You may obtain travel credit from Mayflower via any one or more of the following methods:-
+                                <ol>
+                                    <li>Through your purchase of such travel credit from Mayflower, in which case the duration of validity of such travel credit will be stipulated in the terms of purchase;</li>
+                                    <li>Through exclusive members-only promotion as may be held by Mayflower from time to time, in which case the duration of validity of such travel credit will be stipulated in the terms of such promotion; </li>
+                                    <li>Through refund of your purchase made via the Site, in which case there will be <span class="ft0">no expiry date</span> to such travel credit. For the avoidance of doubt, you are entitled to elect the method in which your refund should be given: either by way of cash, or by way of travel credit into your account. </li>
+                                </ol>
+                                Where there is a fixed duration of validity to your travel credit, you will receive a reminder from Mayflower when such travel credit is approaching its date of expiry.   
+                            </li>
+                            <li>If you select to make payment for your purchase via the Site using the travel credit, you will be required to enter the amount of travel credit that you wish to utilize from your account. The said amount of travel credit will then be deducted from your account towards payment of your purchase.</li>
+                            <li>Where the travel credit in your account is insufficient to fully settle the amount of purchase made by you, you will be required to settle the balance outstanding amount either via your credit card or FPX online payment gateway.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Requests for changes, cancellation & refund</u>
+                <ol class="p1 ft1">
+                    <li>All requests for changes, cancellation and/or refund in respect of any reservation made via the Site shall be made to Mayflower during our office hours from 9:00a.m. to 6:00p.m., every Monday to Friday.</li>
+                    <li>Any changes and/or cancellation of your reservation shall be subject to the Vendor’s Terms of the respective Vendor.</li>
+                    <li>Some Vendors may impose certain fees for processing your request to change and/or cancel the reservation (as may be indicated in the Vendor’s Terms), and you hereby agree to pay any such fees as may be imposed by the Vendor that you incur.</li>
+                    <li>
+                        For <u><i>travel packages</i></u>:- 
+                        <ol>
+                            <li>You are generally not allowed to make any changes and/or cancellation to the package purchased. Any change and/or cancellation of the whole or part of the package will render the initial amount paid forfeited, and you may also lose whatsoever benefit(s) that you may initially be entitled to from the original package (including but not limited to any savings made from the package).</li>
+                            <li>In the event a Vendor were to cancel an element of a travel package, Mayflower may at its absolute discretion either choose to cancel that particular package as a whole, or substitute it with another element which is substantially equivalent to the cancelled element. Mayflower shall not be liable to any cancellation of a travel package by a Vendor and/or the consequences of that particular element cancellation.</li>
+                        </ol>
+                    </li>
+                    <li>Subject to the imposition of the Administration Fees (as defined in Clause 12.1 below), Mayflower may assist in liaising with the respective Vendor(s) to process your request for change, cancellation and/or refund. In the event of any refund by the Vendor(s), Mayflower reserves the right to set-off the Administration Fees and/or such other fees as may be due and owing by you to Mayflower from the Vendor(s)’ refunds before the balance sum is remitted to you.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Mayflower’s fees</u>
+                <ol class="p1 ft1">
+                    <li>
+                        Mayflower may impose the following fees upon you in the provision of the Services:-
+                        <ol>
+                            <li>Mayflower may charge a sum which to be determined as administration fees to process any of your requests for amendment, cancellation and/or refund (“<span class="ft0">Administration Fees</span>”). Please note that this Administration Fees is <span class="ft0"><u>not</u></span> inclusive of any amendment or cancellation charges as may be imposed by the respective Vendors.</li>
+                            <li>(b)	In the event where you require Mayflower’s assistance in booking any of the products and/or services offered by the respective Vendor via the Site, you may be charged a booking fee for the processing of each request by Mayflower (“<span class="ft0">Booking Fees</span>”).</li>
+                        </ol>
+                    </li>
+                    <li>
+                        Mayflower reserves the absolute discretion to: 
+                        <ol>
+                            <li>revise the Administration Fees and/or Booking Fees; and/or</li>
+                            <li>impose such other fees and at such rate as it may deem fit for the provision of the Services</li>
+                        </ol>
+                        from time to time. The revision of the fees and/or the imposition of any new fees by Mayflower shall be effective upon the date of their publication on these Terms. All the request of changes/ booking will only be proceeded upon requestor’s agreement to the fees may apply.
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Reviews, comments and other submissions </u>
+                <ol class="p1 ft1">
+                    <li>Should any part of this Site offer you the opportunity to join in or read from a forum, please be aware that any communications posted on the forum represent the views of the individual who posted such communication and are not to be taken as the views of Mayflower. Mayflower accepts no responsibility or liability for anything posted on a forum by any user of the forum.</li>
+                    <li>Although Mayflower is under no obligation to review or monitor the submissions to the Site, Mayflower reserves the absolute rights to do so in its sole discretion. Mayflower further reserves the right to edit, reject or remove any submission, in whole or in part, for any reason or for no reason.</li>
+                    <li>By submitting, transmitting, posting or otherwise providing any contents (including but not limited to photographs, information, text, images, videos, suggestions and ideas) to Mayflower via the Site (collectively, the “<span class="ft0">Submissions</span>”), you hereby expressly waive any and all rights that may subsist in your Submissions and agree that you have no objection to the publication, use, modification, deletion or otherwise exploitation of your Submissions by Mayflower for any purpose (including but not limited to advertising, marketing and promotional purposes).</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Ratings</u>
+                <ol class="p1 ft1">
+                    <li>The rating system on this Site is provided for your reference only, and Mayflower does not guarantee the accuracy of the ratings. The existing ratings are based on information given by third parties such as suppliers, users or other review websites.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Travel requirements</u>
+                <ol class="p1 ft1">
+                    <li>
+                        You shall be solely responsible in ensuring that:-
+                        <ol>
+                            <li>your travel documents are in order; and</li>
+                            <li>you meet the foreign entry requirements as may be imposed by the country that you are traveling from, into, over or transiting in.</li>
+                        </ol>
+                        Mayflower shall accept no liability whatsoever if you are refused entry onto the flight or into any destination due to failure on your part to carry the correct passport, visa or other documents as may be required by the relevant airline, authority or country.
+                    </li>
+                    <li>By offering or facilitating travel to a particular destination, Mayflower does not represent or warrant that travel to such destination is advisable or without risk, and Mayflower shall not be liable for any injury, damages or losses that may be suffered and/or incurred by you resulting from your travel to such destinations.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Promotions etc.</u>
+                <ol class="p1 ft1">
+                    <li>Mayflower may offer promotions on this Site from time to time. Please note that these promotions may involve different conditions and requirements, as may be stipulated by Mayflower.</li>
+                    <li>Promo codes promotion:
+                        <ol>
+                            <li>Promo codes may be made available by Mayflower from time to time to offer additional savings on selected product and/or service offered by selected Vendor.</li>
+                            <li>Such promo code promotion may be subjected to a minimum spending requirement, or such other terms and conditions as may be stipulated by Mayflower on this Site. The promo code promotion may also be subject to availability and made available on a first-come-first-served basis.</li>
+                            <li>Promo codes are valid for the duration of the respective promotion only and only one promo code may be used for each booking. In the event where multiple promo codes are available at the same time, they are not cumulative and it is at your discretion to select the coupon code that you wish to apply.</li>
+                            <li>Promo codes are not exchangeable for cash, non-transferable and non-refundable.</li>
+                            <li>Mayflower reserves the absolute right to amend or withdraw a promo code promotion at any time without prior notice and without assigning any reason whatsoever.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Registration as member</u>
+                <ol class="p1 ft1">
+                    <li>
+                        As a member of the Site, you will be entitled to enjoy the following non-exhaustive list of benefits:- 
+                        <ol>
+                            <li>First to receive updates on any promotion available under the Site;</li>
+                            <li>Exclusive members-only promotion which may be held and notified to you from time to time by Mayflower;</li>
+                            <li>Availability of the “travel credit” function to pay for the purchases made via this Site (please refer to Clause 10); </li>
+                            <li>The ability to view your travel history stored on this Site as well as your upcoming trips.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        You may register yourself as a member of this Site by providing us with the current, complete and accurate information of yourself, as may be requested by the online registration form <a href="http://book.mayflower.com.my/register">here</a>. 
+                    </li>
+                    <li>
+                        If you are registering as :
+                        <ol>
+                            <li>an individual, you must be at least eighteen (18) years of age and is capable of entering into a legally binding agreement.</li>
+                            <li>a company, you must be a legally incorporated company in Malaysia.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        Upon your submission of the required information via the online registration form, your registration process will be completed. You will be then given an account to access the Site, whereby you will then need to set your log-in ID and password to access the account (collectively referred to as the “<span class="ft0">Log-In Credentials</span>”).
+                    </li>
+                    <li>
+                        You shall be responsible for maintaining the confidentiality, security and use of your Log-In Credentials:-
+                        <ol>
+                            <li>You shall be solely responsible to Mayflower for all activities that occur under your account.</li>
+                            <li>You shall be fully responsible for any accidental or unauthorized disclosure of your Log-In Credentials to any other person and shall bear the risk of any unauthorized usage of your Log-In Credentials. </li>
+                            <li>If there has been any unauthorized access to your account, you shall notify Mayflower as soon as practicable. Until Mayflower actually receives such notification, you shall remain responsible for any access and all use of the Site by the unauthorized person. Mayflower shall reserve the right to impose any administration fees in disabling and/or re-programming your Log-In Credentials.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        Mayflower reserves the absolute rights and discretion to suspend and/or terminate your account, if Mayflower determines or reasonably suspects that:-
+                        <ol>
+                            <li>you have violated any of these Terms;</li>
+                            <li>you have provided false information and/or documentation to Mayflower;</li>
+                            <li>you are or may be engaged in any unauthorized and/or dishonest and/or fraudulent account activity or behavior.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Privacy Protection</u>
+                <ol class="p1 ft1">
+                    <li>Mayflower may use and disclose any personal information collected by us about you in accordance with our privacy policy, which is available at https://book.mayflower.com.my/public/pdpa. Mayflower may also provide such personal information to the Vendors as may be required to complete your reservation and/or purchase. You accept that the recipients of this disclosure may not have in place privacy policies equivalent to Mayflower’s.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Governing law, jurisdiction & limitation of action</u>
+                <ol class="p1 ft1">
+                    <li>These Terms are governed exclusively by and are to be interpreted in accordance with the laws of Malaysia. Any and all actions, disputes or controversies arising out of or in relation to these Terms and/or the use of this Site shall be submitted to the exclusive jurisdiction of the court of Malaysia.</li>
+                    <li>You agree that you will bring any claim or cause of action arising from or relating your access or use of this Site <span class="ft0"><u>within two (2) years</u></span> from the date on which such claim or action shall arise or accrued, failing which you shall be deemed to have irrevocably waived your cause of action against Mayflower.</li>
+                </ol>
+            </li>
+            <li style="padding-top:19px">
+                <u>Miscellaneous</u>
+                <ol class="p1 ft1">
+                    <li>Mayflower shall not be held liable for any non-performance or violation of these Terms, or any damage or harm to users caused by act or condition beyond its reasonable control (“Force Majeure Event”). Force Majeure Event shall include but not limited to natural disaster, epidemic, riot, war, embargo, sanctions, changes in laws or regulations, civil disorder, labor strikes and so forth.</li>
+                    <li>If any one or more of the provisions of these Terms is invalid, illegal or unenforceable in any respect, the validity, legality and enforceability of the remaining provisions hereof shall not be affected in any way or impaired thereby.</li>
+                    <li>Failure by Mayflower to enforce any provision of these Terms at any time shall not be construed as a waiver of Mayflower’s right to enforce the breach of such provision or any other provision in these Terms, or as a waiver of any continuing, succeeding or subsequent breach of any provision or other provisions of these Terms. </li>
+                    <li>
+                        All notices, demands or other communications required to be given or made to Mayflower shall be made in writing and delivered by personal service, prepaid registered post or email at the address, facsimile and/or email address as set out hereunder (or to such other address and/or email address as may be notified by Mayflower to you from time to time):-
+                        <table class="ft5">
+                            <tr><td style="width:30%">Address</td><td>:</td><td style="width:90%">Menara Mayflower, No. 1, Jalan Metro Pudu 1,Fraser Business Park, Off Jalan Yew,55100 Kuala Lumpur, Malaysia.</tdstyle="width:50%"></tr>
+                            <tr><td style="width:30%">Phone number</td><td>:</td><td>+603-9232-1888</td></tr>
+                            <tr><td style="width:30%">E-mail address</td><td>:</td><td>cs@mayflower-group.com</td></tr>
+                        </table>
+                    </li>
+                </ol>
+            </li>
+        </ol>*@
+
+
+        <p class="p0 ft0">NOTICE UNDER THE PERSONAL DATA PROTECTION ACT 2010</p>
+        <p class="p1 ft1">The <span class="ft0">Personal Data Protection Act 2010 </span> (hereinafter referred to as the “<span class="ft0">PDPA</span>”), which regulates the processing of personal data in commercial transactions, applies to Mayflower Holidays Sdn. Bhd. (hereinafter referred to as “<span class="ft0">Mayflower</span>”, “<span class="ft0">our</span>”, “<span class="ft0">us</span>” or “<span class="ft0">we</span>”). This written notice ("<span class="ft0">Notice</span>") is issued pursuant to the requirements of the PDPA. For the purposes of this written Notice, the terms “<span class="ft0">personal data</span>” and “<span class="ft0">processing</span>” shall have the same meaning as prescribed in the PDPA.</p>
+        <p class="p1 ft1"><span class="ft2">1.</span><span class="ft3">This Notice serves to inform you how your personal data will be processed and managed by Mayflower.</span></p>
+        <p class="p1 ft1"><span class="ft2">2.</span><span class="ft4">The personal data that may be processed by us may include, but not limited to, your name, national registration identity card number, passport details, contact particulars (phone number, address, email address etc.), credit/ debit card information, and bank account details. </span></p>
+        <p class="p1 ft1"><span class="ft2">3.</span><span class="ft3">Your personal data is and/or will be collected from the following sources, which shall include but not limited to:  </span></p>
+        <p class="p22 ft1"><span class="ft5">(a)</span><span class="ft6">any agreements that you may have signed and executed with us;</span></p>
+        <p class="p21 ft1"><span class="ft5">(b)</span><span class="ft6">any application and/or registration forms submitted by you to us;</span></p>
+        <p class="p21 ft1"><span class="ft5">(c)</span><span class="ft3">any forms submitted by you to us during any contest and/or any promotional or marketing events;</span></p>
+        <p class="p21 ft1"><span class="ft5">(d)</span><span class="ft6">your use of and/or registration with our official website <a href="http://www.mayflower.com.my/">(www.mayflower.com.my)</a>;</span></p>
+        <p class="p21 ft1"><span class="ft5">(e)</span><span class="ft3">any emails or correspondences sent by you to us which includes your personal data;</span></p>
+        <p class="p21 ft1"><span class="ft5">(f)</span><span class="ft3">any other documents that are submitted to us for any of the Purposes set out in Clause 4 below; and</span></p>
+        <p class="p21 ft1"><span class="ft5">(g)</span><span class="ft6">third parties such as credit reporting agencies, law enforcement agencies, fraud prevention agencies and other government entities.</span></p>
+        <p class="p22 ft1"><span class="ft2">4.</span><span class="ft4">We are processing your personal data for the following non-exhaustive purposes (“<span class="ft0">Purposes</span>”):-</span></p>
+        <p class="p22 ft1"><span class="ft5">(a)</span><span class="ft6">verification of your identity and payment details;</span></p>
+        <p class="p21 ft1"><span class="ft5">(b)</span><span class="ft6">communicating with you and responding to your enquiries;  </span></p>
+        <p class="p21 ft1"><span class="ft5">(c)</span><span class="ft6">processing, confirming and completing your requests and/or transactions for the products and/or services offered by us, including but not limited to air ticket reservation, hotel reservation, tour packages reservation, car rental, purchase of insurance and/or purchasing of event and/or attraction tickets;</span></p>
+        <p class="p21 ft1"><span class="ft5">(d)</span><span class="ft6">processing your request for any changes or cancellation of the products and/or services purchased; processing of your request for refund;</span></p>
+        <p class="p21 ft1"><span class="ft5">(e)</span><span class="ft6">for our day-to-day operations and administrative purposes, including but not limited to file management, billing and collection, audits and reporting;</span></p>
+        <p class="p21 ft1"><span class="ft5">(f)</span><span class="ft6">if you have elected to register as a member of our website <a href="http://www.mayflower.com.my/">(www.mayflower.com.my/)</a>, your personal data will also be used to administer your membership and offer you the perks which you may be eligible for under the membership;</span></p>
+        <p class="p21 ft1"><span class="ft5">(g)</span><span class="ft6">facilitating or enabling any checks that may be conducted on you by us or by any other lawful third party from time to time;</span></p>
+        <p class="p21 ft1"><span class="ft5">(h)</span><span class="ft6">assisting any government agencies or bureaus or bodies, including for the purposes of police and/ or regulatory investigations;</span></p>
+        <p class="p21 ft1"><span class="ft5">(i)</span><span class="ft6">for our compliance with the applicable laws;</span></p>
+        <p class="p21 ft1"><span class="ft5">(j)</span><span class="ft6">facilitating your compliance with any laws or regulations that may be applicable to you;</span></p>
+        <p class="p21 ft1"><span class="ft5">(k)</span><span class="ft6">providing you with information relating to the products and/or services offered by us and/or our parent company, subsidiaries, related or associated companies and/or members of Tan Chong Motor Holdings Berhad, Warisan TC Holdings Berhad, APM Automotive Holdings Berhad and their subsidiaries (collectively, “<span class="ft0">Group of Companies</span>”), including promotional and direct marketing materials. If you do not wish to receive any promotional or direct marketing materials, please notify us via our contact details as stated in Clause 6 below;</span></p>
+        <p class="p21 ft1"><span class="ft5">(l)</span><span class="ft6">to establish and better manage any business relationship we may have with you;</span></p>
+        <p class="p21 ft1"><span class="ft5">(m)</span><span class="ft6">conducting our internal activities, internal market surveys and trend analysis; and/or</span></p>
+        <p class="p21 ft1"><span class="ft5">(n)</span><span class="ft6">such other purposes as may be related to the foregoing.</span></p>
+        <p class="p1 ft1"><span class="ft2">Please note that if you fail to provide to us with your personal data, or do not consent to our processing of your personal data, we will not be able to process your personal data for any of the above Purposes, and we will also not be able to provide you with our products and/or services.</span></p>
+        <p class="p1 ft1"><span class="ft2">5.</span><span class="ft3">Personal data of third party individuals:-</span></p>
+        <p class="p22 ft1"><span class="ft5">(a)</span><span class="ft6">If you have provided us the personal data of any third party individuals while engaging our services, you are required to obtain the individual's prior consent and you represent and warrant that you had or have their consent or are otherwise entitled to provide their personal information to us.</span></p>
+        <p class="p21 ft1"><span class="ft5">(b)</span><span class="ft7">By providing us personal data of third party individual(s) to Mayflower, you also warrant that the individual(s) is informed of and consents to the terms of this Notice</span></p>
+        <p class="p21 ft1"><span class="ft5">(c)</span><span class="ft7">You hereby agree to indemnify Mayflower from any claims, liabilities, costs, damages and/or losses that may be suffered by Mayflower as a result of your breach of this Clause 5.</span></p>
+        <p class="p22 ft1"><span class="ft2">6.</span><span class="ft4">You may request for access to and/or correction of your personal data and to contact us with any enquiries or complaints in respect of the use of your personal data as follows:</span></p>
+        <table class="ft5" >
+            <tr><td>Phone number</td><td>:</td><td>+603-9232-1888</td></tr>
+            <tr><td>E-mail address</td><td>:</td><td>cs@mayflower-group.com</td></tr>
+        </table>
+        <p class="p22 ft1"><span class="ft4">In accordance with the PDPA:</span></p>
+        <p class="p22 ft1"><span class="ft5">(a)</span><span class="ft6">We may charge a prescribed fee for processing your request to access and/ or correct your personal data; and</span></p>
+        <p class="p21 ft1"><span class="ft5">(b)</span><span class="ft6">We may refuse to comply with your request to access to and/ or correct your personal data and if we refuse to comply with such request, we will inform you of our refusal and the reason(s) for our refusal.</span></p>
+        <p class="p1 ft1"><span class="ft2">7.</span><span class="ft3">Your hereby understand and agree that Mayflower may disclose your personal data to the following third parties, whether located within or outside of Malaysia, for any of the above Purposes, which shall include but not limited to:</span></p>
+        <p class="p21 ft1"><span class="ft5">(a)</span><span class="ft8">The third party vendors from which you have purchased the relevant travel products and/or services offered through Mayflower;</span></p>
+        <p class="p21 ft1"><span class="ft5">(b)</span><span class="ft8">banks, credit check companies, credit bureaus or credit reporting agencies and fraud prevention agencies;</span></p>
+        <p class="p21 ft1"><span class="ft5">(c)</span><span class="ft8">governmental departments and/or agencies, regulatory and/or statutory bodies;</span></p>
+        <p class="p21 ft1"><span class="ft5">(d)</span><span class="ft8">our Group of Companies;</span></p>
+        <p class="p21 ft1"><span class="ft5">(e)</span><span class="ft8">our third party providers, including but not limited to information technology service providers, data entry service providers, insurance providers, professional advisors and auditors; and</span></p>
+        <p class="p21 ft1"><span class="ft5">(f)</span><span class="ft8">any such third party as may be requested or authorised by you.</span></p>
+        <p class="p1 ft1"><span class="ft2">8.</span><span class="ft4">You further understand and agree that it is your sole responsibility to ensure that the personal data that you have provided to us is accurate, complete and not misleading and that such personal data is kept up to date.</span></p>
+        <p class="p1 ft1"><span class="ft2">9.</span><span class="ft4">In the event of any inconsistency between the English version and the Malay version of this Notice, the English version shall prevail.</span></p>
+    </div>
+</div>

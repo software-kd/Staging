@@ -1,0 +1,94 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.ProductTourPackage
+@{
+    List<TourHotelRoomCatalog> HotelRoomCatList = UtilitiesService.GetTourHotelRoomCat(Model.TourPackageDetails, Model.TourPackagesInfo.ExtensionNight);
+    int roomcolno = HotelRoomCatList.GroupBy(x => x.RoomTypeName).Count();
+    int rowspan = Model.TourPackagesInfo.ExtensionNight > 0 ? 4 : 3;
+    var transport = Model.TourPackageDetails.TransportPackages.ToList();
+}
+    @Html.HiddenFor(Model => Model.TourPackagesInfo.NoOfPax)
+    <div class="booker-body shadow bg-white mb-0 pb-3">
+        <div class="px-4">
+            <div class="row">
+                <div class="col-sm">
+                    <h4 class="tour-title">Hotel Rate</h4>
+                </div>
+            </div>
+            @foreach(var minToGoPackage in HotelRoomCatList.GroupBy(x => x.MinToGo))
+            {
+            <div class="row tourtblouter">
+                <div class="col-sm">
+                    <table id="tourhoteltbl" class="mt-3 w-100">
+                        <tr>
+                            <th rowspan="2">Hotel</th>
+                            @*<th rowspan="2">Room</th>*@
+                            <th colspan="@roomcolno">Room Type (@(minToGoPackage.Key)-to-go Ground Package)</th>
+                            <th rowspan="2">Book</th>
+                        </tr>
+                        <tr>
+                            @foreach (var room in minToGoPackage.GroupBy(x=>x.RoomTypeName))
+                            {
+                                <th class="smallfont font-weight-normal">@room.Key</th>
+                            }
+                        </tr>
+                        @foreach (var hotel in minToGoPackage.GroupBy(x=>x.HotelID))
+                        {
+                            var roomList = hotel.GroupBy(x => x.RoomTypeName);
+                            <tr>
+                                <td rowspan="@rowspan">@hotel.FirstOrDefault().HotelName <br />
+                                @for (int i = 0; i < hotel.FirstOrDefault().HotelRating; i++)
+                                {
+                                    <i class="fa fa-star" style="color:rgb(252,127,125)"></i>
+                                }
+                                <br /> or similar</td>@*<td class="text-right">ROH</td>*@
+                                @foreach (var room in roomList)
+                                {
+                                    <td class="text-right">@(room.FirstOrDefault().isAvailable ? room.FirstOrDefault().SellingPrice.ToString("n2") : "-")</td>
+                                }
+                                <td rowspan="@rowspan"><button type="button" data-min="@minToGoPackage.Key" data-hotel="@hotel.FirstOrDefault().HotelID" data-hname="@hotel.FirstOrDefault().HotelName" class="btn bookbtn tourbookbtn">Select</button></td>
+                            </tr>
+                             if(Model.TourPackagesInfo.ExtensionNight > 0)
+                             {
+                                <tr>
+                                    @*<td class="text-right">Extension</td>*@
+                                    @foreach (var room in roomList)
+                                    {
+                                        <td class="text-right smallfont">@(@room.FirstOrDefault().isAvailable ? room.FirstOrDefault().ExtensionPrice.ToString("n2") : "-")</td>
+                                    }
+                                </tr>
+                             }
+                            <tr>
+                                @*<td class="text-right tourbookqty default-red" data-hotel="@hotel.FirstOrDefault().HotelID" data-min="@minToGoPackage.Key">Quantity</td>*@
+                                @foreach (var room in roomList)
+                                {
+                                    <td class="tourbookqty" data-hotel="@hotel.FirstOrDefault().HotelID" data-min="@minToGoPackage.Key">
+                                    @if (room.FirstOrDefault().isAvailable)
+                                    {
+                                        int noOfRoom = 10 / room.FirstOrDefault().NoOfPax;
+                                        <select data-roomid="@room.FirstOrDefault().RoomTypeID" data-hotel="@hotel.FirstOrDefault().HotelID" data-priceid="@room.FirstOrDefault().RoomPriceID" data-min="@minToGoPackage.Key" data-price="@room.FirstOrDefault().SellingPrice" data-pax="@room.FirstOrDefault().NoOfPax">
+                                            @for (int i = 0; i <= noOfRoom; i++){
+                                                <option value="@i">@i</option>
+                                            }
+                                        </select>
+                                    }
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                @*<td class="text-right remarkrow">Remarks</td>*@
+                                <td colspan="@roomcolno" class="remarkrow">&nbsp;</td>
+                            </tr>
+                        }
+                        <tr>
+
+                        </tr>
+                    </table>
+                 </div>
+            </div>
+            }
+            <div class="row pt-2">
+                <i class="col default-red">*Peak season, surcharge may apply.</i>
+            </div>
+        </div>
+    </div>

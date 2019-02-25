@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Lookup" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/TCG.Entities" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ILookupService_AllowCurrency_InputMessage">
+    <wsdl:part name="parameters" element="tns:AllowCurrency" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_AllowCurrency_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AllowCurrencyResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetSSRDetails_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSSRDetails" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetSSRDetails_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSSRDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetRouteList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRouteList" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetRouteList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRouteListResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetAllStations_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllStations" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetAllStations_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllStationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetExternalRateList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExternalRateList" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetExternalRateList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExternalRateListResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetCodeName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCodeName" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetCodeName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCodeNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetFeeDetails_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFeeDetails" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetFeeDetails_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFeeDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetPaymentMethod_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPaymentMethod" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetPaymentMethod_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPaymentMethodResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetCreditBalance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCreditBalance" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetCreditBalance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCreditBalanceResponse" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetPackageSummary_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPackageSummary" />
+  </wsdl:message>
+  <wsdl:message name="ILookupService_GetPackageSummary_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPackageSummaryResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ILookupService">
+    <wsdl:operation name="AllowCurrency">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/AllowCurrency" message="tns:ILookupService_AllowCurrency_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/AllowCurrencyResponse" message="tns:ILookupService_AllowCurrency_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSSRDetails">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetSSRDetails" message="tns:ILookupService_GetSSRDetails_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetSSRDetailsResponse" message="tns:ILookupService_GetSSRDetails_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRouteList">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetRouteList" message="tns:ILookupService_GetRouteList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetRouteListResponse" message="tns:ILookupService_GetRouteList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllStations">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetAllStations" message="tns:ILookupService_GetAllStations_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetAllStationsResponse" message="tns:ILookupService_GetAllStations_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExternalRateList">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetExternalRateList" message="tns:ILookupService_GetExternalRateList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetExternalRateListResponse" message="tns:ILookupService_GetExternalRateList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCodeName">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetCodeName" message="tns:ILookupService_GetCodeName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetCodeNameResponse" message="tns:ILookupService_GetCodeName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFeeDetails">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetFeeDetails" message="tns:ILookupService_GetFeeDetails_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetFeeDetailsResponse" message="tns:ILookupService_GetFeeDetails_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPaymentMethod">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetPaymentMethod" message="tns:ILookupService_GetPaymentMethod_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetPaymentMethodResponse" message="tns:ILookupService_GetPaymentMethod_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCreditBalance">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetCreditBalance" message="tns:ILookupService_GetCreditBalance_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetCreditBalanceResponse" message="tns:ILookupService_GetCreditBalance_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPackageSummary">
+      <wsdl:input wsaw:Action="http://tempuri.org/ILookupService/GetPackageSummary" message="tns:ILookupService_GetPackageSummary_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ILookupService/GetPackageSummaryResponse" message="tns:ILookupService_GetPackageSummary_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="basicHttpLookupService" type="tns:ILookupService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AllowCurrency">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/AllowCurrency" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSSRDetails">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetSSRDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRouteList">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetRouteList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllStations">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetAllStations" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetExternalRateList">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetExternalRateList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCodeName">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetCodeName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFeeDetails">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetFeeDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPaymentMethod">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetPaymentMethod" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCreditBalance">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetCreditBalance" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPackageSummary">
+      <soap:operation soapAction="http://tempuri.org/ILookupService/GetPackageSummary" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Lookup">
+    <wsdl:port name="basicHttpLookupService" binding="tns:basicHttpLookupService">
+      <soap:address location="http://23.97.52.180/TCG_Malindo/LookupService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

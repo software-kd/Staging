@@ -1,0 +1,42 @@
+﻿@model Alphareds.Module.Model.CrossSellItemsAvailable.InsuranceInformation
+<div class="addon-single addon_filter INS">
+    <div class="item-left">
+        <img src="@Url.Content("~/Images/addon-bg/insurance2.jpg")" alt="">
+    </div>
+    <div class="item-right">
+        <h2>
+            Chubb Travel Protection       
+        </h2>
+        <div class="insurance_desc">
+            Add travel insurance and protect everyone from
+            <ul>
+                <li class="tick">Personal Accident</li>
+                <li class="tick">Overseas Medical </li>
+                <li class="tick">Flight/baggage delay</li>
+            </ul>
+        </div>
+        <div><a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/ScheduleOfBenefits.pdf" target="_blank" style="color: #00A651; font-size: 12px;">Click to view Full Coverage</a></div>  
+        <div class="insurance_desc font-italic">I confirm I have read, understood and accepted the <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/PolicyWording.pdf" target="_blank">Terms & Conditions</a> and <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/Declaration.pdf" target="_blank">Declaration</a>.</div><br />
+        <div class="item-bottom">
+            <div>
+                <p class="insurance-price">
+                    + @Model.PricingDetail.Currency @(Model.PricingDetail.ProductTotalAmount.ToString("n2")) <br />
+                    @*<span>per set</span>*@
+                </p>
+                @if (Model.QuotedInformations.FirstOrDefault().PlanType.Contains("Domestic"))
+                {
+                    <p style="font-size:x-small">Premium is inclusive of 6% Sales and Service Tax (SST) for all Malaysia Domestic flights</p>
+                }
+                
+            </div>
+            <div>
+                <div class="custom-unit">
+                    <select id="requireInsurance" name="requireInsurance" class="cuntom-unit-inner">
+                        <option value="true" selected>Yes, I need this</option>
+                        <option value="false">No, thanks</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

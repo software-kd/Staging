@@ -1,0 +1,424 @@
+﻿@using Alphareds.Module.Common
+
+@functions{
+    string destinationUrl = new UriBuilder(System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"]).Uri.ToString();
+}
+
+@{
+    string AuthUserName = string.Empty;
+    string rolename = string.Empty;
+    string creditAmt = "0.00";
+    string cashCreditAmt = "0.00";
+    string logoUrl = "";
+    bool isLocalHost = Core.IsForLocalHost;
+    bool isB2BEnabled = Core.IsEnableB2B;
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+    string OrganizationLogo = null;
+    string logoColorImg = ViewBag.HeaderRed == true ? "~/images/Mayflower-with-flower-symbolic-in-White.png" : "~/images/Mayflower-with-flower-symbolic-in-Red.png";
+    var creditExp = new Alphareds.Module.Model.CreditExpList();
+    var cashcreditExp = new Alphareds.Module.Model.CreditExpList();
+
+    if (User.Identity.IsAuthenticated)
+    {
+        AuthUserName = customPrincipal.FirstName;
+
+        if (User.IsInRole("Company Admin"))
+        { rolename = "Company Admin"; }
+        else if (User.IsInRole("Traveller"))
+        { rolename = "Traveller"; }
+        else if (User.IsInRole("System Admin"))
+        { rolename = "System Admin"; }
+
+        System.Data.SqlClient.SqlCommand sqlCommand = new System.Data.SqlClient.SqlCommand();
+        creditAmt = Alphareds.Module.MemberController.MemberServiceController.ChkCreditAmtRemain.ByUserId(customPrincipal.UserId, customPrincipal.UserTypeCode, sqlCommand).ToString("n2");
+        cashCreditAmt = Alphareds.Module.MemberController.MemberServiceController.GetUserCashCredit(customPrincipal.UserId, sqlCommand).ToString("n2");
+        sqlCommand.Connection.Close();
+
+        if (customPrincipal.IsAgent)
+        {
+            OrganizationLogo = string.IsNullOrWhiteSpace(customPrincipal.OrganizationLogo) ? logoColorImg : customPrincipal.OrganizationLogo;
+            OrganizationLogo = File.Exists(Server.MapPath(OrganizationLogo)) ? OrganizationLogo : logoColorImg;
+        }
+        creditExp = Alphareds.Module.MemberController.MemberServiceController.GetCreditExp(customPrincipal.UserId, Alphareds.Module.Model.DiscountType.TC);
+        cashcreditExp = Alphareds.Module.MemberController.MemberServiceController.GetCreditExp(customPrincipal.UserId, Alphareds.Module.Model.DiscountType.TW);
+    }
+
+    if (!Alphareds.Module.Common.Core.EnableCMS)
+    {
+        logoUrl = ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index" &&
+            ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "home"
+            ? Url.Action("Index", "Home") : Url.Action("Index", "Home");
+        //? "https://www.mayflower.com.my" : Url.Action("Index", "Home");
+    }
+    else
+    {
+        logoUrl = Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl, type = "MenuTransfer" });
+    }
+
+    string logoDropIcon = ViewBag.HeaderRed == true ? "/images/arrow_d_w.png" : "/images/arrow_d.png";
+    string burgerMenuImg = ViewBag.HeaderRed == true ? "~/images/menu1.png" : "~/images/menu.png";
+    string redLineCss = "";
+    if (ViewBag.RenderRedLine == true)
+    {
+        redLineCss = "top_logo_link_area_outer";
+    }
+    List<Alphareds.Module.Model.GetMenuModel> MenusArr = new List<Alphareds.Module.Model.GetMenuModel>();
+    object obj = System.Web.HttpContext.Current.Cache.Get(Enumeration.SessionName.MenuAPI.ToString());
+    if (obj == null)
+    {
+        try
+        {
+            var GetMenuUrl = Core.GetAppSettingValueEnhanced("MenuItemAPIUrl");
+            if (!string.IsNullOrEmpty(GetMenuUrl))
+            {
+                var getMenujson = new WebClient().DownloadString(GetMenuUrl);
+                MenusArr = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Alphareds.Module.Model.GetMenuModel>>(getMenujson).ToList();
+                if (MenusArr.Count > 0)
+                {
+                    System.Web.HttpContext.Current.Cache.Insert(Alphareds.Module.Common.Enumeration.SessionName.MenuAPI.ToString(),
+                                                                MenusArr);
+                }
+            }
+        }
+        catch
+        {
+        }
+    }
+    else
+    {
+        MenusArr = (List<Alphareds.Module.Model.GetMenuModel>)obj;
+    }
+    string tabbar = "";
+    if (ViewBag.RenderTabBar == true)
+    {
+        <div class="sai_inner_right sai_inner_right2" style="width:65%">
+            <div class="sir_tab_container2">
+                <div class="sir_tc_tabs" style="padding-right:2px">
+                    <div class="sir_tc_tabs_inner sir_tc_ti_center searchtab2">Flight</div>
+                </div>
+                <div class="sir_tc_tabs">
+                    <div class="sir_tc_tabs_inner searchtab1" data-location="https://www.mayflower.com.my/index.php?route=product/hotel_avail&destination=Seoul%2C+Korea%2C+Republic+Of">Hotel</div>
+                </div>
+                <div class="sir_tc_tabs">
+                    <div class="sir_tc_tabs_inner sir_tc_ti_right searchtab3" data-location="https://www.mayflower.com.my/">Package</div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    }
+}
+
+<div id="ars-header1" class="@redLineCss">
+
+    @if (ViewBag.HeaderRed == true)
+    {
+        @Html.Raw("<div class='top_red_portion'>")
+    }
+    @{
+        bool IsAgent = customPrincipal.IsAgent;
+    }
+    <div class="top_red_portion">
+        <div class="top_logo_links_area">
+            <div class="tlla_left" style="padding-top:10px;"><a href="@logoUrl"><img src="@Url.Content(OrganizationLogo ?? logoColorImg)" width="197" height="45" alt=""></a></div>
+            <div class="newlinks_mid_container">
+                <!-- nav start -->
+                <div id='cssmenu'>
+                    <ul style="width: 115%">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="mobileonly llm_gray">
+                                <div class="login_ltop_mob">Hi, <span>@AuthUserName</span></div>
+                                <div class="login_ltop_mob1"><a href="javascript:;" onclick="document.getElementById('logoutForm').submit();" style="text-decoration:none; color:#ea2127">Log Out</a></div>
+                                <div class="clear"></div>
+                                <div style="padding-left: 10px;padding-bottom: 10px;font-family: UbuntuBold;">Travel Credit : RM @creditAmt 
+                                @if (creditExp != null) { <br /><span class="credit_exp_text">RM @creditExp.CreditAmt (Expires in @creditExp.CreditExp.ToString("dd/MM/yyyy"))</span> }
+                                </div>
+                                @if (cashCreditAmt != "0.00")
+                                {
+                                    <div style="padding-left: 10px;padding-bottom: 10px;font-family: UbuntuBold;">Travel Wallet : RM @cashCreditAmt
+                                    @if (cashcreditExp != null) { <br /><span class="credit_exp_text">RM @cashcreditExp.CreditAmt (Expires in @cashcreditExp.CreditExp.ToString("dd/MM/yyyy"))</span> }
+                                    </div>
+                                }
+                                <div class="clear"></div>
+                            </li>
+                            <li class="mobileonly">
+                                <a href='#'>Profile</a>
+                                <ul>
+                                    <li><a href='@Url.Action("ManageProfile", "Member")'>View/Update profile</a></li>
+                                    @if (customPrincipal.IsLoginPasswordNotSetup)
+                                    {
+                                        <li><a href="@Url.Action("SetupPassword", "Account")">Set a Password</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li><a href="@Url.Action("ManagePassword", "Account")">Change Password</a></li>
+                                    }
+                                    <li><a href="@Url.Action("UpcomingTrips", "Account")">My Upcoming Trips</a></li>
+                                    <li><a href="@Url.Action("TravelHistory", "Account")">My Travel History</a></li>
+                                    <li><a href="@Url.Action("FrequentFlyer", "Tools")">Frequent Traveller</a></li>
+                                    @if (!IsAgent)
+                                {
+                                        <li><a href="@Url.Action("TravellerGroup", "Tools")">Traveller Group</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="mobileonly"></li>
+                        }
+                        @if (true)
+                        {
+                            if (MenusArr != null)
+                            {
+                                var CMSUrl = Alphareds.Module.Common.Core.EnableCMS ? System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"] : "https://www.mayflower.com.my";
+                                foreach (var menu in MenusArr)
+                                {
+                                    if (menu.Child == null)
+                                    {
+                                        var destinationUrl = CMSUrl + menu.URL;
+                                        <li><a href='@destinationUrl' target="@menu.Target">@menu.Name</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a href='#'>@menu.Name</a>
+                                            <ul>
+                                                @foreach (var item in menu.Child)
+                                                {
+                                                    var destinationUrl = (item.URL.Contains("http") ? "" : CMSUrl) + item.URL;
+                                                    <li><a href='@destinationUrl' target="@item.Target">@item.Name</a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            @*<li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl, type = "MenuTransfer" })'>Home</a></li>*@
+                            <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/flight-deals", type = "MenuTransfer" })'>Flight</a></li>
+                            <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/hotel-deals", type = "MenuTransfer" })'>Hotel</a></li>
+                            @*<li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/btw", type = "MenuTransfer" })'>#BTW</a></li>*@
+                            <li>
+                                <a href='#'>Packages</a>
+                                <ul>
+                                    <li>@GenerateCMSUrl("ground-package", "Ground Packages")</li>
+                                    <li>@GenerateCMSUrl("group-packages-super-value", "Group Tours")</li>
+                                    <li>@GenerateCMSUrl("cruise-fun-packages", "Cruise Fun Packages")</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href='#'>Deals</a>
+                                <ul>
+                                    <li>@GenerateCMSUrl("scb", "Standard Chartered Promotion")</li>
+                                    @*<li>@GenerateCMSUrl("wiyo-mobile-wifi", "WIYO Mobile WIFI")</li>*@
+                                    <li>@GenerateCMSUrl("flexiroam-data-roaming", "Flexiroam Data Roaming")</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href='#'>Partners</a>
+                                <ul>
+                                    <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/travel-flan", type = "MenuTransfer" })'>Travel Flan</a></li>
+                                    <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/chubb", type = "MenuTransfer" })'>CHUBB</a></li>
+                                    <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = "https://www.mayflower.com.my/renault", type = "MenuTransfer" })'>Renault</a></li>
+                                </ul>
+                            </li>
+                            @*<li>@GenerateCMSUrl("mice", "MICE")</li>*@
+                            <li>
+                                <a href='#'>About Us</a>
+                                <ul>
+                                    <li><a href='http://www.mayflower-group.com/' target="_blank">Corporate Information</a></li>
+                                    <li>@GenerateCMSUrl("contactus", "Contact Us")</li>
+                                    <li><a href='http://www.warisantc.com.my/index.php/rtl-demos?id=97' target="_blank">Career</a></li>
+                                    <li>@GenerateCMSUrl("csr", "Corporate Social Responsibility")</li>
+                                </ul>
+                            </li>
+                            <li>@GenerateCMSUrl("faq", "FAQ")</li>
+                            @*<li>
+                                    <a href='#'>Contest</a>
+                                    <ul>
+                                        <li><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl + "2017MaydayFBContest", type = "MenuTransfer" })'>Mayday 2017 Facebook Contest</a></li>
+                                    </ul>
+                                </li>*@
+
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="mobileonly"></li>
+                        }
+                        else
+                        {
+                            <li class="mobileonly">
+                                <a href="#">Login</a>
+                                <ul>
+                                    <li><a href='@Url.Action("Login", "Account")'>Member</a></li>
+                                    <li><a href='@(isB2BEnabled ? Url.Action("Login", "Agent") : "http://ecom.mayflower.com.my/eanb2b")'>Agency</a></li>
+                                </ul>
+                            </li>
+                            <li class="mobileonly">
+                                @if (isB2BEnabled)
+                                {
+                                    <a href='#'>Register</a>
+                                    <ul>
+                                        @*<li><a href='@Url.RouteUrl("Register")'>Member Register</a></li>*@
+                                        <li><a href='/Member/SimpleRegister'>Member Register</a></li>
+                                        <li><a href='@(isB2BEnabled ? Url.Action("AgentRegister", "Agent") : "")'>Agent Registration</a></li>
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <a href='@Url.RouteUrl("Register")'>Register</a>
+                                }
+                            </li>
+                        }
+                        <li class="mobileonly">
+                            <div class="followus_mob">
+                                Follow us on<br>
+                                <a href='https://www.facebook.com/mayflowerholidaysMH' style=" display: inline-block; width: 15%;"><img src="@Url.Content("~/images/fb_mo.jpg")" width="37" height="37" alt=""></a>
+                                <a href='https://www.instagram.com/mayflowerholidays/' style=" display: inline-block; width: 15%;"><img src="@Url.Content("~/images/ins_mo.jpg")" width="37" height="37" alt=""></a>
+                                <a href='https://twitter.com/mayflowerhdays' style=" display: inline-block; width: 15%;"><img src="@Url.Content("~/images/tw_mo.jpg")" width="37" height="37" alt=""></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- nav end -->
+            </div>
+            <div class="tlla_right mobileview">
+                @*<div class="mob_menu_username">Hi, <strong>@AuthUserName</strong><img src="@Url.Content("~/images/arrow_d.jpg")" width="15" height="9" alt=""></div>*@
+                <div class="mobile_menu_button" style="margin-right:2%">
+                    <img src="@Url.Content(burgerMenuImg)" alt="">
+                </div>
+                <div class="dekstop_menu">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <ul>
+                            <li>
+                                <div id="menu_name">Hi, <strong>@AuthUserName</strong> &nbsp;<img src="@Url.Content(logoDropIcon)" width="15" height="9" alt=""></div>
+                                <div class="gray_toll_tip hidden">
+                                    @*<div class="ttt"><img src="@Url.Content("~/images/toll_tip_top.png")" width="215" height="13" alt=""></div>*@
+                                    <div class="gtt1 tlla_R">
+                                        <ul>
+                                            @if (IsAgent)
+                                            {
+                                                <li style="margin-bottom: 1em;"><div style="font-family: UbuntuBold;">Agent Credit : RM @creditAmt
+                                                    @if (creditExp != null){ <br /><span class="credit_exp_text">RM @creditExp.CreditAmt (Expires in @creditExp.CreditExp.ToString("dd/MM/yyyy"))</span> }
+                                                </div></li>
+                                            }
+                                            else
+                                            {
+                                                <li style="margin-bottom: 1em;"><div style="font-family: UbuntuBold;">Travel Credit : RM @creditAmt
+                                                @if (creditExp != null){ <br /><span class="credit_exp_text">RM @creditExp.CreditAmt (Expires in @creditExp.CreditExp.ToString("dd/MM/yyyy"))</span> }
+                                                </div></li>
+                                            }
+
+                                            @if (!IsAgent)
+                                            {
+                                                <li style="margin-bottom: 1em;"><div style="font-family: UbuntuBold;">Travel Wallet : RM @cashCreditAmt
+                                                @if (cashcreditExp != null){ <br /><span class="credit_exp_text">RM @cashcreditExp.CreditAmt (Expires in @cashcreditExp.CreditExp.ToString("dd/MM/yyyy"))</span> }
+                                                </div></li>
+                                                <li><a href="@Url.Action("ManageProfile", "Member")">View/Update Profile</a></li>
+                                            }
+                                            @if (customPrincipal.IsLoginPasswordNotSetup)
+                                            {
+                                                <li><a href="@Url.Action("SetupPassword", "Account")">Set a Password</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li><a href="@Url.Action("ManagePassword", "Account")">Change Password</a></li>
+                                            }
+                                            <li><a href="@Url.Action("UpcomingTrips", "Account")">@(IsAgent ? "Upcoming Bookings" : "My UpcomingTrips")</a></li>
+                                            <li><a href="@Url.Action("TravelHistory", "Account")">@(IsAgent ? "Booking History" : " My Travel History")</a></li>
+                                            <li><a href="@Url.Action("FrequentFlyer", "Tools")">Frequent Traveller</a></li>
+                                            @if (!IsAgent)
+                                            {
+                                                <li><a href="@Url.Action("TravellerGroup", "Tools")">Traveller Group</a></li>
+                                            }                       
+                                            @if (true)
+                                            {
+                                                <li><a href="@Url.Action("SavedSearch", "Account")">@(IsAgent ? "Saved Search" : "My Saved Search")</a></li>
+                                            }
+                                            <li><hr><a href="javascript:;" onclick="document.getElementById('logoutForm').submit();">Log Out</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        using (Html.BeginForm("LogOff", "Account", routeValues: new { }, method: FormMethod.Post, htmlAttributes: new { id = "logoutForm", @style = "display:none" }))
+                        {
+                            //@Html.AntiForgeryToken()
+                        }
+                    }
+                    // anonymous user
+                    else
+                    {
+                        <div id='cssmenu'>
+                            <ul>
+                                <li class="has-sub">
+                                    <span class="submenu-button"></span>
+                                    <a href='#'>Login</a>
+                                    <ul>
+                                        <li><a href='@Url.Action("Login", "Account")'>Member</a></li>
+                                        <li><a href='@(isB2BEnabled ? Url.Action("Login", "Agent") : "http://ecom.mayflower.com.my/eanb2b")'>Agency</a></li>
+                                    </ul>
+                                </li>
+                                @if (isB2BEnabled)
+                                {
+                                    <li class="has-sub">
+                                        <span class="submenu-button"></span>
+                                        <a href='#'>Register</a>
+                                        <ul>
+                                            @*<li><a href='@Url.RouteUrl("Register")'>Member Register</a></li>*@
+                                            <li><a href='/Member/SimpleRegister'>Member Register</a></li>
+                                            <li><a href='@(isB2BEnabled ? Url.Action("AgentRegister", "Agent") : "")'>Agent Registration</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><a href="@Url.RouteUrl("Register")">Register</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    @*2017/02/22 - If keep load at any page might caused AntiForgery issues,
+        if need to use PLEASE call ViewBag.UsePopupLoginBox = true*@
+    @if (!User.Identity.IsAuthenticated && ViewBag.UsePopupLoginBox == true)
+    {
+        @Html.Partial("~/Views/Shared/MasterThemes/_LoginBox.cshtml", new Alphareds.Module.Model.LoginModel())
+    }
+
+    <div class="clear"></div>
+    @if (ViewBag.HeaderRed == true)
+    {
+        @Html.Raw("</div>")
+    }
+</div>
+<script type="text/javascript">
+    var ptitle = @Html.Raw(Json.Encode(ViewBag.Title));
+    if(ptitle == "Flight Search Result"){
+    } else if(ptitle == "Traveller Info"){
+    } else if(ptitle == "Booking Payment"){
+    } else{
+        localStorage.removeItem("outbdep");
+        localStorage.removeItem("outbarr");
+        localStorage.removeItem("inbdep");
+        localStorage.removeItem("inbarr");
+        localStorage.removeItem("pricefil");
+    }
+</script>
+
+@helper GenerateCMSUrl(string rawUrl, string urlText)
+{
+    <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = destinationUrl + rawUrl, type = "MenuTransfer" })'>@urlText</a>
+}

@@ -1,0 +1,534 @@
+﻿@using Alphareds.Module.Model;
+
+@model CheckoutProduct
+@{
+    ViewBag.Title = "Insurance";
+    ViewBag.HeaderRed = true;
+    string superPNRNo = ViewBag.superPNRNo;
+    var insuranceInfoModel = Model;
+    decimal price = 0;
+    string currency = "";
+
+    if (Model.SellItemsAvailable.Insurance != null)
+    {
+        var insuranceInfo = Model.SellItemsAvailable.Insurance.QuotedInformations.FirstOrDefault();
+        price = insuranceInfo.Price;
+        currency = insuranceInfo.CurrencyCode;
+    }
+
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+
+    #region get data from viewBag
+    BookedProductView bookingDetail = null;
+    Alphareds.Module.Model.Database.BookingHotel hotelDBContext = null;
+    bool hasHotelBooking = false;
+
+    if(ViewBag.BookedDetail != null)
+    {
+        bookingDetail = (BookedProductView)ViewBag.BookedDetail;
+        hotelDBContext = bookingDetail.Hotel;
+        hasHotelBooking = hotelDBContext != null;
+    }
+    #endregion
+
+    BundleTable.Bundles.Add(new StyleBundle("~/css/bundle")
+        .Include("~/CSS/v2style.css")
+        .Include("~/CSS/v2responsive.css")
+        .Include("~/CSS/ars-style.css")
+        .Include("~/CSS/crosssell/bootstrap.min.css")
+        .Include("~/CSS/hotel/bootstrap-carousel.css")
+        .Include("~/CSS/crosssell/style.css"));
+}
+
+@section style{
+    <link href="@Url.Content("~/css/bundle?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+    <link href="@Url.Content("~/CSS/checkout/style.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+    <link href="@Url.Content("~/CSS/checkout/styles_v2.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+
+    <style>
+        .ins_submit_button {
+            width: 100%;
+            background-color: #eb1c24;
+            height: 60px;
+            font-size: 14px;
+            color: #fff;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+            border-radius: 30px;
+            border: 1px;
+            margin-top: 50px;
+            width: 70%;
+            margin-left: 15%;
+        }
+
+    .h2_mhdb2_heading2 {
+        background-image: url(../images/info-icon.png);
+        background-repeat: no-repeat;
+        font-size: 14px;
+        float: left;
+        margin-left: 10px;
+        margin-top: -6px;
+        color: #ec1c24;
+        min-width: 55px;
+        height: 35px;
+    }
+
+    a:-webkit-any-link {
+        color: #000;
+        text-decoration: none;
+    }
+
+    a {
+        -webkit-transition: initial;
+        -moz-transition: initial;
+        -o-transition: initial;
+        transition: initial;
+    }
+
+    .payment_innerbox {
+        width: 92%;
+    }
+
+    .s4_blt_sub_heading {
+        font-family: 'UbuntuBold';
+    }
+
+    .s3-1_form {
+        padding-bottom : 0px !important;
+    }
+
+    .moreflight_box{
+        background-color: white !important;
+    }
+
+    .s3_1_flight_details_box.s3_1_flight_details_box2{
+        min-height: 0px !important;
+    }
+
+    .member_profile_heading_container{
+        margin-top : 80px !important;
+    }
+
+    @@media screen and (min-width : 800px) {
+        .s3_hinfo_tc_inner_left {
+            width: 7%;
+        }
+
+        .s3_hinfo_tc_inner_right {
+            width: 93%;
+        }
+
+        .s3_hinfo_tc_left {
+            width: auto;
+        }
+    }
+
+    @@media screen and (max-width : 900px) {
+
+        .pdcont_nameright {
+            width: 78%;
+        }
+
+        .pdcont_nameleft2 {
+            float: left;
+            width: 20%;
+            display: inline-block;
+        }
+
+        .s3_hotel_contacts_box {
+            margin: 10px;
+        }
+    }
+
+    @@media screen and (max-width : 730px) and (min-width:601px) {
+        .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+            margin-left: -20px !important;
+        }
+    }
+
+    @@media screen and (max-width : 900px) and (min-width:601px) {
+        .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+            margin-top: 6px !important;
+            margin-left: -15px;
+        }
+
+        .word-form {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width : 600px) {
+        .s4_guest_tabs_name_container H4 span {
+            padding-left: 0px;
+        }
+
+        .pdcont_nameright {
+            width: 75%;
+            display: inline-block;
+        }
+
+        .pdcont_nameleft {
+            width: 64px;
+            display: inline-block;
+            float: left;
+        }
+
+        .h2_mhdb2_mapbox span {
+            display: inherit;
+            width: 73px;
+            margin-left: 0px;
+        }
+
+        .s3_hotel_name_portion3_customize {
+            margin-left: 0px !important;
+        }
+
+        .st4_payment_heading_container1 span {
+            font-size: 23px;
+        }
+
+        .s4_guest_tabs_name_container H3 {
+            padding-top: 0px;
+        }
+
+        .mpjm_pd_heading_left {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            display: inline-block;
+            float: left;
+        }
+
+        .pdcont_nameright {
+            display: inline-block;
+            width: 70%;
+        }
+
+        .pdcont_nameleft2 {
+            float: left;
+            width: 30%;
+            display: inline-block;
+        }
+
+        .s4_blt_py_con_left {
+            width: 60%;
+            float: left;
+        }
+
+        .s4_blt_py_con_right {
+            float: right;
+        }
+
+        .word-form {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width : 425px) {
+        .booking_refrence_text {
+            line-height: 20px;
+            padding-top: 10px;
+        }
+
+        .s3_1_breadcrump {
+            height: 80px;
+        }
+
+        .st4_payment_heading_container1 {
+            background-position: 19% 3px;
+            background-position-y: -1px;
+        }
+    }
+
+    @@media screen and (max-width : 375px) {
+        .st4_payment_heading_container1 {
+            background-position: 17% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 370px) {
+        .st4_payment_heading_container1 {
+            background-position: 15% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 418px) {
+        .secondrow {
+            float: left;
+            margin-top: 8px;
+        }
+    }
+
+    @@media screen and (max-width : 325px) {
+        .st4_payment_heading_container1 {
+            background-position: 11% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 400px) {
+        .s4_blt_sub_heading {
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .pgt_left {
+            font-size: 19px;
+        }
+
+        .pgt_right {
+            font-size: 14px;
+            padding-top: 5px;
+        }
+    }
+</style>
+
+@if (hasHotelBooking)
+    {
+    <style>
+        /* I'm Seperator START */
+        .fullcover_div_GoogleMap {
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999999;
+            display: none;
+        }
+
+        .viewmorehotel_container.hotel-info {
+            margin: auto !important;
+        }
+
+        .viewmorehotel_container {
+            max-width: 883px;
+            width: 96%;
+            margin: 2em auto;
+            height: 500px;
+        }
+
+        .viewmorehotel_white1nn {
+            height: 510px;
+            overflow: auto;
+            text-align: center;
+        }
+
+        .vm_inner_content {
+            width: 95%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .hotel_summary.mf_ib_border_box {
+            background: none;
+        }
+
+        .hotel_summary .mf_ib_bb_lrbox_inner {
+            max-width: 100% !important;
+        }
+
+        .hotel_summary .mf_ib_bb_lrbox {
+            width: 100%;
+        }
+
+        .s3_hotel_name_portion3_customize {
+            margin-left: 20px;
+            color: #00a298 !important;
+        }
+    </style>
+}
+}
+
+@if (Model.IsDynamic)
+{
+    <style>
+        .s2_filer_container {
+            width: 100%;
+            background-color: #fff;
+            border-bottom: 1px solid #d9d9d9;
+            border-top: 1px solid #d9d9d9;
+            margin-top: 50px;
+        }
+
+        .col-lg-offset-2 {
+            width: 100% !important;
+            margin-left: 11% !important;
+        }
+
+        .section-tabs .nav-wizard {
+            margin: 0px !important;
+            max-width: 100% !important;
+        }
+
+        @@media screen and (min-device-width : 992px)and (max-width : 1200px) {
+            .addons > .container > .section-tabs > .col-md-offset-1 {
+                margin-left: unset !important;
+            }
+        }
+
+        @@media screen and (min-width : 768px) and (max-width : 991px) {
+            .nav-pills.nav-wizard > li > a > .visible-sm {
+                display: none !important;
+            }
+
+            .nav-pills.nav-wizard > li > a > .visible-xs {
+                display: block !important;
+            }
+
+            .nav-pills.nav-wizard > li > a {
+                width: 70px !important;
+            }
+        }
+
+        @@media screen and (min-width: 769px) {
+            .flex {
+                display: flex;
+            }
+        }
+    </style>
+}
+
+@if (bookingDetail != null)
+{
+
+    @Html.Partial("~/Views/Insurance/_SummaryBar.cshtml", bookingDetail)
+
+    <div class="nav-booking-section">
+        <div class="moreflight_container">
+            <div class="moreflight_box">
+                <div class="more_flight_innerbox">
+                    <div class="mf_content_container">
+                        <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+                        @Html.Partial("~/Views/Insurance/_bookingDetail.cshtml", bookingDetail)
+
+                    </div>
+                </div>
+                <div class="show_more_flight_icon">Show more booking details</div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@*<div class="container-fluid">*@
+    @using (Html.BeginForm("GetProtected", "Insurance", new { superPNRNo }, FormMethod.Post, new { id = "addInsurance" })) //new { insuranceInfoModel = Model },
+    {
+
+        if (price == 0)
+        {
+            <div class="member_profile_heading_container">
+                <h3 style="color: green">Holiday should be fun and worry free!</h3>
+            </div>
+            <div class="member_profile_heading_container">
+
+                @Html.ValidationMessage("Error", new { style = "font-size: 22px;font-style: italic;" })
+
+            </div>
+            @*<div class="s2_main_container">*@
+            @*<div class="s2_mc_border_conainer" style="background: #fff">*@
+            <div style="width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    @if (!isEnableCMS)
+                    {
+                        <div class="redbacktohome_button" style="width: 190px"><a href="@Url.Action("Index", "Home")" style="padding: 8% 17%;">Back to Homepage</a></div>
+                    }
+                    else
+                    {
+                        <div class="redbacktohome_button" style="width: 190px"><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="padding: 8% 17%;">Back to Homepage</a></div>
+                    }
+                </div>
+            </div>
+            @*</div>*@
+            @*</div>*@
+        }
+        else
+        {
+
+            <div class="member_profile_heading_container">
+                <h3 style="color: green">Holiday should be fun and worry free!</h3>
+                <h4>Choose now to cover against the risk of financial losses.</h4>
+            </div>
+
+            <div class="container4">
+                <div class="section-BRD section-insurance" style="margin-bottom: 10px;">
+
+                    <h3 class="box-heading blue-bg">
+                        <span class="addon-ico">
+                            <img src="@Url.Content("~/Images/ico/insurance.png")" />
+                        </span>
+                        <span class="addon-title">Travel Insurance</span>
+                    </h3>
+
+                    <div class="addon-etc hg-md ins">
+                        <div class="content-left">
+                            <img class="img-responsive" src="@Url.Content("~/Images/addon-bg/insurance2.jpg")" />
+                        </div>
+                        <div class="content-right">
+                            <div class="etc-detail">
+                                <div class="block-lf insurance-block">
+                                    <div class="title">
+                                        <div class="t-ico">
+                                            <img style="max-height:30px;" src="~/Images/ico/info-ico.png" />
+                                        </div>
+                                        <div class="add-cr-subtitle">
+                                            Chubb Travel Protection
+
+                                            <div class="insurance-cover">
+                                                Add travel insurance and protect everyone from
+                                                <ul class="insuranceList">
+                                                    <li class="tick">Personal Accident</li>
+                                                    <li class="tick">Overseas Medical </li>
+                                                    <li class="tick">Flight/baggage delay</li>
+                                                </ul>
+                                            </div>
+                                            <div class="etc-desc">
+                                                <span><a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/ScheduleOfBenefits.pdf" target="_blank" style="color: #00A651; font-size: 12px;">Click to view Full Coverage</a></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="insuranceTNC">I confirm I have read, understood and accepted the <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/PolicyWording.pdf" target="_blank">Terms & Conditions</a> and <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/Declaration.pdf" target="_blank">Declaration</a>.</p>
+                                </div>
+                                <div class="block-rg insurance-price">
+                                    <div class="desc-price block">
+                                        <div class="p-wrapper">
+                                            <div class="cur">+ @currency</div>
+                                            <div class="rate"> @(price.ToString("n2"))</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="etc-selection">
+                                        <div class="etc-selection">
+                                            <select id="requestInsurance" name="requestInsurance" class="etc-select-opt">
+                                                <option value="true" selected>Yes, I need this</option>
+                                                <option value="false">No, thanks</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="container-fluid">
+                <button type="submit" id="btnSubmit" value="submit" name="btnAddInsurance" class="ins_submit_button mem_marbotzero add-cursor-pointer">Submit</button>
+            </div>
+        }
+
+
+    }
+    @*</div>*@
+
+
+@section scripts{
+    @if (hasHotelBooking)
+    {
+        @Html.Partial("~/Views/Hotel/_SharedJSScripts.cshtml")
+    }
+}

@@ -1,0 +1,624 @@
+﻿@model Alphareds.Module.Model.AgentProfileEditModel
+
+@{
+    ViewBag.Title = "Edit Agent Profile";
+    ViewBag.RenderRedLine = true;
+
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+
+    List<SelectListItem> titleList = Alphareds.Module.Common.UtilitiesService.GetTitleList(true, "ADT");
+}
+
+@section style{
+    <style>
+        .s3-1_cf_lable_text span {
+            color: red;
+        }
+
+        .cp2 {
+            padding-top: 20px;
+        }
+
+        .s3-1_flyer_newedit {
+            float: left;
+            width: 8%;
+            height: 30px;
+            margin-left: 2%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 30px;
+            color: transparent;
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .s3-1_flyer_newplus {
+            width: 4%;
+            line-height: 30px;
+        }
+
+        .s3-1_flyer_right {
+            width: 70%;
+        }
+
+        .ff-img-container {
+            position: absolute;
+            height: 55px;
+            width: 60px;
+            padding-left: 5px;
+        }
+
+        select.s3-1_flyer_left_dupinput {
+            background: none;
+            padding-left: 4em;
+            padding-top: 0;
+        }
+
+        .ff-img-container > img {
+            height: 55px;
+        }
+
+        .s3-1_fi_row1 {
+            border: none;
+            height: auto;
+            float: left;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .s3-1_contactform_title_first_row {
+            width: 14%;
+            float: left;
+        }
+
+        .s3-1_contactform_firstname_first_row {
+            width: 49%;
+            float: left;
+        }
+
+        .s3-1_contactform_familyname_first_row {
+            width: 49%;
+            float: right;
+        }
+
+        .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+            width: 100%;
+            float: left;
+            padding-left: 0%;
+        }
+
+        .s3_1_contactform_name {
+            width: 84%;
+            float: right;
+        }
+
+        .s3-1_fi_row1-right {
+            margin-top: 28px;
+        }
+
+        .s3-1_fir1_b1 select {
+            font-family: 'Conv_Ubuntu-Light';
+            height: 56px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url(../images/drop_down_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border: 1px solid #000;
+            width: 100%;
+            font-size: 16px;
+            padding-left: 15%;
+        }
+
+        .s3-1_full_textbox_name_com {
+            width: 100%;
+            height: 56px;
+            background-color: transparent;
+            border: 1px solid #000;
+            font-size: 16px;
+            padding-left: 24px;
+        }
+
+        @@media screen and (max-width: 500px) {
+            .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+                width: 105% !important;
+            }
+
+            .ndphoneno {
+                line-height: 0;
+            }
+        }
+    </style>
+
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function (e) {
+            $("[name*=PassportExpiryDate]").rules("remove", "date");
+            $("[name*=DOB]").rules("remove", "date");
+            $("[name*=PassportExpiryDate]").rules("add", "profilepassportValid");
+            $("[name*=DOB]").rules("add", "profiledobValid");
+            $("select[name*='PasspExp']").each(function (index, element) {
+                $(element).rules("add", "profilepassportValid");
+            });
+            $("select[name*='DOB']").each(function (index, element) {
+                $(element).rules("add", "profiledobValid");
+            });
+        });
+
+        $(".popout-content").click(function () {
+            var ffcode = $(this).data('airlinecode');
+            var ffrno = $(this).data('ffrno');
+            var url = $(this).data('url');
+            var loadArea = $('#popOutEdit');
+            var loading = $('#loading');
+
+            loadArea.hide();
+            loadArea.html();
+            $(".fullcover_div2").fadeIn();
+
+            $.ajax({
+                url: url,
+                type: "GET", dataType: "html",
+                data: { airlinecode: ffcode },
+                beforeSend: function (e) {
+                    loading.fadeIn();
+                },
+                complete: function () {
+                    loading.hide();
+                    loadArea.fadeIn();
+                }
+            }).done(function (res) {
+                loadArea.html(res);
+
+            }).fail(function (xhr, error, status) {
+                loadArea.html(error + ': ' + status + '<br/> Please try again later.');
+            });
+        });
+
+        $(function () {
+            $(".s3-1_flyer_left_dupinput").click(function () {
+                //$(".ffn_inputbox ul").toggle();
+                $(this).parent().find(".ffn_inputboxulli_container ul").toggle();
+            });
+        });
+
+        $(document).on('change', 'select.s3-1_flyer_left_dupinput', function (e) {
+            var selectedAirlineCode = $(this).val();
+            airImg(selectedAirlineCode).done(function (res) {
+                $('.ff-img-container > img').attr('src', res.ImagePath);
+            });
+        });
+
+        $('input[name="SecondaryPhone"], select[name="SecondaryPhoneCountryCode"]').on('change', function (e) {
+            phoneValidation();
+            $('select[name="SecondaryPhoneCountryCode"]').valid();
+            $('input[name="SecondaryPhone"]').valid();
+        });
+
+        var phoneValidation = function () {
+            //if($(element).val().length == 0){
+            if ($('input[name="SecondaryPhone"]').val().length == 0 && $('select[name="SecondaryPhoneCountryCode"]').val().length == 0) {
+                $('input[name="SecondaryPhone"]').rules('remove', 'required');
+                $('select[name="SecondaryPhoneCountryCode"]').rules('remove', 'required');
+                $('[data-valmsg-for="SecondaryPhoneCountryCode"]').empty();
+            }
+            else {
+                $('input[name="SecondaryPhone"]').rules('add', 'required');
+                $('select[name="SecondaryPhoneCountryCode"]').rules('add', 'required');
+            }
+        }
+    </script>
+}
+
+@*<div class="fullcover_div2" id="FlyerPopModal">
+        <div class="fcd_white2">
+            <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" alt="" width="31" height="29"></div>
+            <h3>Frequent Traveller number</h3>
+            <div class="fcd_white_field_container">
+                <div id="loading" style="width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                    <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                        <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120">
+                        <p id="msglbl" style="color:#808080;margin:1em">Hold on, your holiday is on the way...</p>
+                    </div>
+                </div>
+                <div id="popOutEdit">
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@*using (Ajax.BeginForm("Edit", "User", new AjaxOptions { }))*@
+@using (Html.BeginForm("AgentUpdateProfile", "Agent"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    /* Not used, as simplified workflow
+    @Html.HiddenFor(model => model.UserID)
+    @Html.HiddenFor(model => model.OrganizationName)
+    @Html.HiddenFor(model => model.Email)
+    @Html.HiddenFor(model => model.IsActive)
+    */
+
+    <!-- MAIN CONTENT PORTION START -->
+    <div class="registration_page_container">
+        <div class="rpc_inner">
+            <h2>Edit Agent profile</h2>
+            <h3>Keep your profile up-to-date to ensure everything is in place!</h3>
+
+            <!-- company detail container start -->
+            <div class="editprofile_container">
+                <h4>Company Details</h4>
+                <div class="rpc_wtc_inner_ep">
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company Name<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.OrganizationName, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            @Html.ValidationMessageFor(model => model.OrganizationName, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company Email Address<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.Email, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company Registration Number<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.RegistrationNo, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.RegistrationNo, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company GST Registration Number</div>
+                            <div>@Html.TextBoxFor(model => model.TaxRegistrationNo, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">KPL Number<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.KPLNo, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.KPLNo, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Fax Number</div>
+                            <div>
+                                @Html.DropDownListFor(model => model.FaxNoCountryCode, Mayflower.General.Utilities.PhoneCodeList(), "-", new { @class = "s3-1_phonenumber_left" })
+                                @Html.TextBoxFor(model => model.ContactNo3, new { @class = "s3-1_phonenumber_right", @style = "padding-right:24px" })
+                                <div class="clear"></div>
+                                @Html.ValidationMessageFor(model => model.FaxNoCountryCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                                @Html.ValidationMessageFor(model => model.ContactNo3, null, new { @class = "textforerrormsg phonenoerror" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company Phone Number (Office)<span>*</span></div>
+                            <div>
+                                @Html.DropDownListFor(model => model.OfficeNoCountryCode, Mayflower.General.Utilities.PhoneCodeList("MYS"), new { @class = "s3-1_phonenumber_left", @data_val = "true", @data_val_required = "Primary Phone Code is required.", @required = "true" })
+                                @Html.TextBoxFor(model => model.ContactNo1, new { @class = "s3-1_phonenumber_right", @data_val = "true", @data_val_required = "Primary Phone is required.", @required = "true", @style = "padding-right:24px" })
+                                <div class="clear"></div>
+                                @Html.ValidationMessageFor(model => model.OfficeNoCountryCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                                @Html.ValidationMessageFor(model => model.ContactNo1, null, new { @class = "textforerrormsg phonenerror" })
+                            </div>
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company Phone Number (Mobile)<span>*</span></div>
+                            <div>
+                                @Html.DropDownListFor(model => model.MobileNoCountryCode, Mayflower.General.Utilities.PhoneCodeList(), "-", new { @class = "s3-1_phonenumber_left" })
+                                @Html.TextBoxFor(model => model.ContactNo2, new { @class = "s3-1_phonenumber_right", @style = "padding-right:24px" })
+                                <div class="clear"></div>
+                                @Html.ValidationMessageFor(model => model.MobileNoCountryCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                                @Html.ValidationMessageFor(model => model.ContactNo2, null, new { @class = "textforerrormsg phonenoerror" })
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company Address Line1<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.Address1, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.Address1, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company Address Line2<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.Address2, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.Address2, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company's City<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.City, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.City, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company Postal Code<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.PostCode, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.PostCode, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Company's State<span>*</span></div>
+                            <div>@Html.TextBoxFor(model => model.ProvinceState, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.ProvinceState, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Company's Country<span>*</span></div>
+                            <div>@Html.DropDownListFor(model => model.CountryCode, Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })</div>
+                            <div class="clear"></div>
+                            @Html.ValidationMessageFor(model => model.CountryCode, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <!-- line end -->
+                    <!-- line start -->
+                    <div class="s3-1_cf_lable_text">
+                        Line of Business ：
+                        <input type="checkbox" name="Line of Business" value="Ticketing"> Ticketing
+                        <input type="checkbox" name="Line of Business" value="GIT"> GIT
+                        <input type="checkbox" name="Line of Business" value="FIT"> FIT
+                        <input type="checkbox" name="Line of Business" value="Hotel"> Hotel
+                        <input type="checkbox" name="Line of Business" value="Others"> Others
+                    </div>
+                    <div class="s3-1_cf_lable_text">
+                        GDS  ：
+                        <input type="checkbox" name="Line of Business" value="Abacus"> Abacus
+                        <input type="checkbox" name="Line of Business" value="Galileo"> Galileo
+                        <input type="checkbox" name="Line of Business" value="Amadeus"> Amadeus
+                        <input type="checkbox" name="Line of Business" value="Others"> Others
+                    </div>
+                    <!-- line end -->
+                </div>
+            </div>
+            <!-- company detail container start -->
+
+            <div class="ep_seprate_line">&nbsp;</div>
+
+            <!-- contact detail container start -->
+            <div class="editprofile_container">
+                @for (int i = 0; i <= 1; i++)
+                {
+                <!-- line start -->
+                    <div class="s3-1_fi_row1">
+                        @if (i == 0)
+                        {
+                            <h4>Contact Person 1</h4>
+                        }
+                        else
+                        {
+                            <h4>Contact Person 2</h4>
+                        }
+                        <div class="s3-1_contactform_title_first_row">
+                            <div class="s3-1_cf_lable_text">Title<span>*</span></div>
+                            <div class="s3-1_fir1_b1">
+                                <div>
+                                    @*@Html.DropDownListFor(model => model.ContactDetails[i].TitleCode, titleList, new { @class = "s3-1_title" })*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s3_1_contactform_name">
+                            <div class="s3-1_contactform_firstname_first_row">
+                                <div class="s3-1_cf_lable_text">First Name<span>*</span></div>
+                                <div class="s3-1_fir1_b2">
+                                    <div>
+                                        @*@Html.TextBoxFor(model => model.ContactDetails[i].FirstName, new { @class = "s3-1_full_textbox_name_com" })
+                                        @Html.ValidationMessageFor(model => model.ContactDetails[i].FirstName, null, new { @class = "textforerrormsg" })*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s3-1_contactform_familyname_first_row">
+                                <div class="s3-1_cf_lable_text">Family Name<span>*</span></div>
+                                <div class="s3-1_fir1_b3">
+                                    <div>
+                                        @*@Html.TextBoxFor(model => model.ContactDetails[i].LastName, new { @class = "s3-1_full_textbox_name_com" })
+                                        @Html.ValidationMessageFor(model => model.ContactDetails[i].LastName, null, new { @class = "textforerrormsg" })*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                <!-- line end -->
+                <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Designation<span>*</span></div>
+                            <div>@*@Html.TextBoxFor(model => model.ContactDetails[i].Designation, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })*@</div>
+                            <div class="clear"></div>
+                            @*@Html.ValidationMessageFor(model => model.ContactDetails[i].Designation, null, new { @class = "textforerrormsg" })*@
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Email Address<span>*</span></div>
+                            <div>@*@Html.TextBoxFor(model => model.ContactDetails[i].Email, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })*@</div>
+                            <div class="clear"></div>
+                            @*@Html.ValidationMessageFor(model => model.ContactDetails[i].Email, null, new { @class = "textforerrormsg" })*@
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                <!-- line end -->
+                <!-- line start -->
+                    <div class="s3-1_fullform_left">
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Phone Number (Office)<span>*</span></div>
+                            <div>
+                                @*@Html.DropDownListFor(model => model.ContactDetails[i].OfficePhonePhoneCode, Mayflower.General.Utilities.PhoneCodeList("MYS"), new { @class = "s3-1_phonenumber_left", @data_val = "true", @data_val_required = "Primary Phone Code is required.", @required = "true" })
+                                @Html.TextBoxFor(model => model.ContactDetails[i].OfficePhone, new { @class = "s3-1_phonenumber_right", @data_val = "true", @required = "true", @style = "padding-right:24px" })*@
+                                <div class="clear"></div>
+                                @*@Html.ValidationMessageFor(model => model.ContactDetails[i].OfficePhonePhoneCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                                @Html.ValidationMessageFor(model => model.ContactDetails[i].OfficePhone, null, new { @class = "textforerrormsg phonenerror" })*@
+                            </div>
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Phone Number (Mobile)<span>*</span></div>
+                            <div>
+                                @*@Html.DropDownListFor(model => model.ContactDetails[i].MobilePhonePhoneCode, Mayflower.General.Utilities.PhoneCodeList(), "-", new { @class = "s3-1_phonenumber_left" })
+                                @Html.TextBoxFor(model => model.ContactDetails[i].MobilePhone, new { @class = "s3-1_phonenumber_right", @style = "padding-right:24px" })*@
+                                <div class="clear"></div>
+                                @*@Html.ValidationMessageFor(model => model.ContactDetails[i].MobilePhonePhoneCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                                @Html.ValidationMessageFor(model => model.ContactDetails[i].MobilePhone, null, new { @class = "textforerrormsg phonenoerror" })*@
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                <!-- line end -->
+                }
+                <!-- line start -->
+                <div class="s3-1_fi_row1">
+                    <h4>Emergency Contact After Office Hours</h4>
+                    <div class="s3-1_contactform_title_first_row">
+                        <div class="s3-1_cf_lable_text">Title<span>*</span></div>
+                        <div class="s3-1_fir1_b1">
+                            <div>
+                                @*@Html.DropDownListFor(model => model.EmergencyContact[0].TitleCode, titleList, new { @class = "s3-1_title" })*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="s3_1_contactform_name">
+                        <div class="s3-1_contactform_firstname_first_row">
+                            <div class="s3-1_cf_lable_text">First Name<span>*</span></div>
+                            <div class="s3-1_fir1_b2">
+                                <div>
+                                    @*@Html.TextBoxFor(model => model.EmergencyContact[0].FirstName, new { @class = "s3-1_full_textbox_name_com" })
+                                    @Html.ValidationMessageFor(model => model.EmergencyContact[0].FirstName, null, new { @class = "textforerrormsg" })*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s3-1_contactform_familyname_first_row">
+                            <div class="s3-1_cf_lable_text">Family Name<span>*</span></div>
+                            <div class="s3-1_fir1_b3">
+                                <div>
+                                    @*@Html.TextBoxFor(model => model.EmergencyContact[0].LastName, new { @class = "s3-1_full_textbox_name_com" })
+                                    @Html.ValidationMessageFor(model => model.EmergencyContact[0].LastName, null, new { @class = "textforerrormsg" })*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <!-- line end -->
+                <!-- line start -->
+                <div class="s3-1_fullform_left">
+                    <div class="s3-1_contactform_left">
+                        <div class="s3-1_cf_lable_text">Phone Number (Mobile)<span>*</span></div>
+                        <div>
+                            @*@Html.DropDownListFor(model => model.EmergencyContact[0].MobilePhonePhoneCode, Mayflower.General.Utilities.PhoneCodeList(), "-", new { @class = "s3-1_phonenumber_left" })
+                            @Html.TextBoxFor(model => model.EmergencyContact[0].MobilePhone, new { @class = "s3-1_phonenumber_right", @style = "padding-right:24px" })*@
+                            <div class="clear"></div>
+                            @*@Html.ValidationMessageFor(model => model.EmergencyContact[0].MobilePhonePhoneCode, null, new { @class = "textforerrormsg phonecodeerror" })
+                            @Html.ValidationMessageFor(model => model.EmergencyContact[0].MobilePhone, null, new { @class = "textforerrormsg phonenoerror" })*@
+                        </div>
+                    </div>
+                    <div class="s3-1_contactform_right">
+                        <div class="s3-1_cf_lable_text">Designation</div>
+                        <div>@*@Html.TextBoxFor(model => model.EmergencyContact[0].Designation, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })*@</div>
+                        <div class="clear"></div>
+                        @*@Html.ValidationMessageFor(model => model.EmergencyContact[0].Designation, null, new { @class = "textforerrormsg" })*@
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+                <!-- line end -->
+            </div>
+            <!-- contact detail container end -->
+
+            <div class="ep_seprate_line">&nbsp;</div>
+
+            <!-- Support Documents start -->
+            <div class="editprofile_container">
+                <h4>Support Documents</h4>
+                <div class="mem-userpass">
+                    <div class="rpc_wtc_inner">
+                        <!-- line start -->
+                        <div class="s3-1_cf_lable_text">A. KPL (Ministry of Tourism)<span>*</span></div>
+                        <div><input type="file" name="@*@Html.NameFor(x => x.KPL)*@"></div>
+                        @*@Html.ValidationMessageFor(model => model.KPL, null, new { @class = "textforerrormsg" })*@
+                        <div class="clearfix"></div>
+                        <!-- line end -->
+                        <!-- line start -->
+                        <div class="s3-1_cf_lable_text">B. Business Registration<span>*</span></div>
+                        <div><input type="file" name="@*@Html.NameFor(x => x.BusinessRegistration)*@"></div>
+                        @*@Html.ValidationMessageFor(model => model.BusinessRegistration, null, new { @class = "textforerrormsg" })*@
+                        <div class="clearfix"></div>
+                        <!-- line end -->
+                        <!-- line start -->
+                        <div class="s3-1_cf_lable_text">C. Borang 9 (if applicable)</div>
+                        <div><input type="file" name="@*@Html.NameFor(x => x.Borang9)*@"></div>
+                        <div class="clearfix"></div>
+                        <!-- line end -->
+                    </div>
+                </div>
+            </div>
+            <!-- Support Documents end -->
+            @* Hide Frequent Traveller Section first, not implement in this Phase
+                <div class="ep_seprate_line">&nbsp;</div>
+
+                <!-- Frequent Traveller detail container start -->
+                <div id="ffndiv" class="editprofile_container">
+                    @Html.Partial("~/Views/User/_FrequentFlyerSection.cshtml")
+                </div>
+                <div class="clear"></div>
+                <!-- Frequent Traveller detail end -->
+            *@
+
+            <div class="ep_seprate_line">&nbsp;</div>
+
+            <button type="submit" id="btnSubmit" value="Save" name="btnUpdateProfile" class="s3-1_form_button_nopromp add-cursor-pointer">Submit</button>
+        </div>
+
+    </div>
+    <!-- MAIN CONTENT PORTION END -->
+}
+
+@if (Request.IsAjaxRequest())
+{
+
+}

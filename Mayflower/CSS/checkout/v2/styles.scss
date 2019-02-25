@@ -1,0 +1,81 @@
+﻿@import 'customize-bootstrap';
+@import 'reservation-bar';
+@import 'hotel-notification-instruction';
+@import 'hotel-page';
+@import 'payment-page';
+@import 'checkout-addon';
+
+.typeahead__list {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.field_error_msg {
+    line-height: 1;
+}
+
+span.textforerrormsg.field-validation-error {
+    font-size: 13px;
+    font-family: 'SFPro Regular';
+    color: #ed1d27;
+}
+
+/*.custom-radio label input[type="radio"]:disabled + span:before {
+    border: 5px solid #E57373;
+}
+
+.custom-radio label input[type="radio"]:disabled + span:after {
+    content: "";
+    width: 16px;
+    height: 16px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: url('/../../images/stop-sig-re.png') center;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.custom-checkbox input[type="checkbox"]:disabled + span:after {
+    content: "";
+    width: 25px;
+    height: 25px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background: url('/../../images/stop-cross-sig-sq-re.png') center;
+    border: 1px solid #ed1d27;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}*/
+
+.custom-radio label input[type="radio"]:disabled + span:before, .custom-checkbox input[type="checkbox"]:disabled + span:before {
+    border: 5px solid #e57373;
+    border-radius: 50%;
+    background: url("/../../images/stop-sig-re.png") center;
+}
+
+.custom-radio label input[type="radio"]:disabled + span:after {
+    background: none;
+}
+
+@media only screen and (max-width: 992px) {
+    .custom-checkbox input[type="checkbox"]:disabled + span:after {
+        width: 20px;
+        height: 20px;
+    }
+
+    .custom-radio label input[type="radio"]:disabled + span:after {
+        width: 12px;
+        height: 12px;
+    }
+}

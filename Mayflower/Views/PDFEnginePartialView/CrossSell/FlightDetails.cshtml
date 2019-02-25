@@ -1,0 +1,126 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.BookingController
+@using Alphareds.Module.Model.Database
+
+@model Booking
+
+@{
+    BookingSummaryViewModel bookingSummaryViewModel = BookingServiceController.getBookingSumaryFromDB(Model.BookingID);
+
+    var outbound = bookingSummaryViewModel.BookingSummaryFlightList[0];
+    var inbound = bookingSummaryViewModel.BookingSummaryFlightList.Count < 2 ? null : bookingSummaryViewModel.BookingSummaryFlightList[1];
+    string outboundDepartDate = outbound.BookingSummaryFlightSegmentList[0].DepartureDateTime.ToString("dd MMM yyy, ddd");
+    string inboundDepartDate = string.Empty;
+
+    if (inbound != null)
+    {
+        inboundDepartDate = inbound.BookingSummaryFlightSegmentList[0].DepartureDateTime.ToString("dd MMM yyy, ddd");
+    }
+}
+
+<div class="outBound fl">
+    <div class="item-header blue-bg">
+        <h3 class="item-heading">Outbound - @outboundDepartDate</h3>
+    </div>
+    <div class="item-content">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td width="55"><img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Depart-icon.png" /></td>
+                <td><h4 class="content-heading">Departs on @outboundDepartDate</h4></td>
+            </tr>
+        </table>
+
+        @FlightStopDetail(outbound)
+    </div>
+</div>
+<div class="inBound fl">
+    <div class="item-header blue-bg">
+        <h3 class="item-heading">Inbound - @inboundDepartDate</h3>
+    </div>
+    <div class="item-content">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td width="55"><img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Depart-icon.png" /></td>
+                <td><h4 class="content-heading">Departs on @inboundDepartDate</h4></td>
+            </tr>
+        </table>
+        
+        @FlightStopDetail(inbound)
+    </div>
+</div>
+
+@helper FlightStopDetail(BookingSummaryFlight segmentList)
+{
+int counter = 1;
+double totalNextDay = 0;
+string displayTotalNextDay = totalNextDay != 0 ? "(+" + totalNextDay + ")" : "";
+TimeSpan totalTripElapsedTime = TimeSpan.FromMinutes(segmentList.TotalElapsedTime);
+double totalFlightElapsedTimeHour = Math.Floor(totalTripElapsedTime.TotalHours);
+
+foreach (var item in segmentList.BookingSummaryFlightSegmentList)
+{
+    double NextCountDay = item.DepartureDateTime.TimeOfDay.Add(item.ArrivalDateTime.Subtract(item.DepartureDateTime)).Days;
+    totalNextDay = totalNextDay + NextCountDay;
+    string nextCountDayText = totalNextDay != 0 ? "(+" + totalNextDay + ")" : "";
+    TimeSpan segmentElapsedTime = TimeSpan.FromMinutes(item.ElapsedTime);
+    string isSecondLine = counter != 1 ? "clr" : "";
+
+        <div class="content-details">
+            <div class="schd @isSecondLine">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td width="103"><div class="time">@item.DepartureDateTime.ToString("HHmm")</div></td>
+                        <td><div class="place">@UtilitiesService.GetAirportName(item.DepartureAirportLocationCode)<br /><span class="font-lGrey">(@item.DepartureAirportLocationCode)</span></div></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="schd-details @isSecondLine">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td width="103" class="up-down"><p>&nbsp;</p><img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Arrow-icon.png" width="17" /></td>
+                        <td>
+                            <ul style="list-style:none">
+                                <li class="pnr">@(item.AirlineCode + item.FlightNumber) <div class="fr"><img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Duration-icon.png" width="27" /> @(segmentElapsedTime.Hours)h @(segmentElapsedTime.Minutes)m</div></li>
+                                <li class="airline">@UtilitiesService.GetAirlineName(item.AirlineCode)</li>
+                                <li class="operated">Operated by @UtilitiesService.GetAirlineName(item.OperatingAirlineCode)</li>
+                                <li class="class">@UtilitiesService.GetCabinNameByCode(item.CabinClass)</li>
+                                @*<li class="boing-no">Boeing 777</li>*@
+                                @*<li class="stops">Stops in Hong Kong</li>*@
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="clr"><p>&nbsp;</p></div>
+            <div class="schd clr">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td width="103"><div class="time">@item.ArrivalDateTime.ToString("HHmm")</div></td>
+                        <td><div class="place">@UtilitiesService.GetAirportName(item.ArrivalAirportLocationCode)<br /><span class="font-lGrey">(@item.ArrivalAirportLocationCode)</span></div></td>
+                    </tr>
+                </table>
+            </div>
+
+            @if (segmentList.BookingSummaryFlightSegmentList.Count > 1 && segmentList.BookingSummaryFlightSegmentList.Count != counter)
+            {
+                DateTime nextFlightDateTime = segmentList.BookingSummaryFlightSegmentList[counter].DepartureDateTime;
+                TimeSpan transitTime = nextFlightDateTime.Subtract(item.ArrivalDateTime);
+                counter += 1;
+
+                <div class="clr"><p>&nbsp;</p></div>
+                <div class="transit blue-bg clr">
+                    <img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Transit-time-icon.png" />&nbsp;&nbsp;&nbsp;&nbsp;Transit time
+                    <span class="fr">@(transitTime.Hours)h @(transitTime.Minutes)m </span>
+                </div>
+            }
+        </div>
+}
+    <div class="clr"><p>&nbsp;</p></div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+            <td width="55"><img src="http://52.220.18.122/PDFWebServices/CrossSellTemplate/images/Arrival-icon.png" style="vertical-align:middle" /></td>
+            <td><h4 class="content-heading">Arrives on @segmentList.BookingSummaryFlightSegmentList.Last().ArrivalDateTime.ToString("dd MMM yyyy, ddd") @displayTotalNextDay <br />Total flight time <span class="total-time">@(totalFlightElapsedTimeHour)h @(totalTripElapsedTime.Minutes)m</span></h4></td>
+        </tr>
+    </table>
+}

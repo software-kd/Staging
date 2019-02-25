@@ -1,0 +1,52 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Model.Database
+@model IEnumerable<EventBooking>
+
+@if (Model != null)
+{
+    foreach (var item in Model.GroupBy(x => x.EventProduct.EventDetail.EventMaster))
+    {
+        string qty = item.Key.EventTypeCode == "CT" ? ""
+            : (item.Key.EventTypeCode == "TH" || item.Key.EventTypeCode == "GT") ? " x " + item.Sum(s => s.Qty).ToString()
+            : " x " + item.First().Qty.ToString();
+
+        <div class="s4_blt_py_con_left">@item.Key.EventName @(qty)</div>
+        <div class="s4_blt_py_con_right">@item.First().CurrencyCode <span>@(item.Sum(x => x.TotalBookingAmt).ToString("n2"))</span></div>
+        <div class="clear"></div>
+        
+        if (item.Key.EventTypeCode == "CT")
+        {
+            <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                @foreach (var eItem in item)
+                {            
+                    <div style="margin-left: 5%;">@eItem.Qty x @eItem.EventProduct.TicketCategory.TicketCategory1</div>
+                    <div class="clear"></div>
+                }
+            </div>
+        }
+        if (item.Key.EventTypeCode == "TH" || item.Key.EventTypeCode == "CR" || item.Key.EventTypeCode == "CT")
+        {
+            // Nothing display first
+        }
+        else if (item.Key.EventTypeCode == "GT")
+        {
+            <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                @foreach (var eItem in item)
+                {
+                    <div style="margin-left: 5%;">@eItem.EventProduct.TicketCategory.TicketCategory1 x @eItem.Qty, @eItem.EventDate.ToString("dd-MMM-yyyy, dddd")</div>
+                    <div class="clear"></div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                @foreach (var eItem in item)
+                {
+                    <div style="margin-left: 5%;">@eItem.EventDate.ToString("dd-MMM-yyyy, dddd")</div>
+                    <div class="clear"></div>
+                }
+            </div>
+        }
+    }
+}

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ItemsList path="~/images_hotel/hotel_icons/" DefaultImage="unknown-icon.png">
+  <item id="2096" image="01-Eligibility-for-loyalty-points.png">Eligibility for Hotel Loyalty Points</item>
+  <item id="2097" image="02-Free-high-speed-internet.png">Free High-Speed Internet</item>
+  <item id="2098" image="05-Continental-breakfast.png">Free Breakfast</item>
+  <item id="2102" image="04-All-meals.png">All Meals</item>
+  <item id="2103" image="05-Continental-breakfast.png">Continental Breakfast</item>
+  <item id="2104" image="05-Continental-breakfast.png">Full Breakfast</item>
+  <item id="2105" image="05-Continental-breakfast.png">English Breakfast</item>
+  <item id="2106" image="08-Free-lunch.png">Free Lunch</item>
+  <item id="2107" image="09-Free-dinner.png">Free Dinner</item>
+  <item id="2108" image="10-Food-beveerage-credit.png">Food/Beverage Credit</item>
+  <item id="2109" image="11-Free-parking.png">Free Parking</item>
+  <item id="2110" image="12-Free-airport-parking.png">Free Airport Parking</item>
+  <item id="2111" image="13-All-inclusive.png">All-Inclusive</item>
+  <item id="2175" image="14-Same-day-cancellation.png">Same-Day Cancellation</item>
+  <item id="2191" image="02-Free-high-speed-internet.png">Free High-Speed Internet</item>
+  <item id="2192" image="16-Free-wireless-internet.png">Free Wireless Internet</item>
+  <item id="2193" image="05-Continental-breakfast.png">Continental Breakfast for 2</item>
+  <item id="2194" image="05-Continental-breakfast.png">Breakfast for 2</item>
+  <item id="2195" image="19-Free-valet-parking.png">Free Valet Parking</item>
+  <item id="2196" image="20-Free-airport-shuttle.png">Free Airport Shuttle</item>
+  <item id="2197" image="21-Free-room-upgrade.png">Free Room Upgrade</item>
+  <item id="2198" image="22-Resort-credit-included.png">Resort Credit Included</item>
+  <item id="2199" image="23-Welcome-gift-upon-arrival.png">Welcome Gift Upon Arrival</item>
+  <item id="2200" image="24-Spa-credit.png">Spa Credit</item>
+  <item id="2201" image="25-Golf-credit.png">Golf Credit</item>
+  <item id="2202" image="26-VIP-access-nightclub.png">VIP Line Access to Nightclub(s)</item>
+  <item id="2203" image="27-2for1-buffet.png">2-for-1 Buffet</item>
+  <item id="2204" image="28-Free-ski-lift-and-rental.png">Free Ski Lift Ticket &amp; Rental</item>
+  <item id="2205" image="05-Continental-breakfast.png">Breakfast Buffet</item>
+  <item id="2206" image="30-Half-board.png">Half Board</item>
+  <item id="2207" image="31-Full-board.png">Full Board</item>
+  <item id="2208" image="32-Full-kitchen.png">Full Kitchen</item>
+  <item id="2209" image="05-Continental-breakfast.png">Continental Breakfast</item>
+  <item id="2210" image="05-Continental-breakfast.png">Full Breakfast</item>
+  <item id="2211" image="05-Continental-breakfast.png">Breakfast Buffet</item>
+  <item id="2212" image="36-Free-fitness-center-access.png">Free Fitness Center Access</item>
+  <item id="2213" image="37-Free-business-center-access.png">Free Business Center Access</item>
+  <item id="2214" image="20-Free-airport-shuttle.png">Free Airport Shuttle</item>
+  <item id="2215" image="39-Free-hotel-parking.png">Free Hotel Parking</item>
+  <item id="2216" image="19-Free-valet-parking.png">Free Valet Parking</item>
+  <item id="2217" image="41-Welcome-drink-upon-arrival.png">Welcome Drink Upon Arrival</item>
+  <item id="2218" image="42-Free-local-calls.png">Free Local Calls</item>
+  <item id="2219" image="43-Complimentary-wine-reception.png">Complimentary Wine Reception</item>
+  <item id="2220" image="16-Free-wireless-internet.png">Free Wireless Internet</item>
+  <item id="2221" image="45-Free-local-shuttle.png">Free Local Shuttle</item>
+  <item id="2222" image="46-Free-local-newspaper.png">Free Local Newspaper</item>
+  <item id="2223" image="47-1-Free-Inroom-Movie.png">Includes One Free In-Room Movie</item>
+  <item id="2224" image="48-Room-upgrade-upon-availability.png">Room Upgrade Upon Availability</item>
+  <item id="2225" image="49-Guaranteed-room-upgrade.png">Guaranteed Room Upgrade</item>
+  <item id="2226" image="50-Early-check-in-privilege.png">Early Check-In Privilege</item>
+  <item id="2227" image="51-Late-check-out-privilege.png">Late Check-Out Privilege</item>
+  <item id="2228" image="52-Free-bottled-water.png">Free Bottled Water</item>
+  <item id="2232" image="53-Egencia-exclusive-rate.png">Egencia Exclusive Rate</item>
+  <item id="2233" image="54-Food-beverage-discount.png">Food-and-Beverage Discount</item>
+  <item id="2234" image="55-Slot-play.png">Slot Play</item>
+  <item id="2235" image="56-Casino-credit.png">Casino Credit</item>
+  <item id="2236" image="57-Match-play.png">Match Play</item>
+  <item id="1073742551" image="58-Free-welcome-drink.png">Free welcome drink</item>
+  <item id="1073742552" image="59-drinks-and-horsdoeuvres.png">Drinks and hors doeuvres</item>
+  <item id="1073742617" image="60-Disney-park-tickets.png">Disney Park tickets</item>
+  <item id="1073742618" image="61-Spa-access.png">Spa access</item>
+  <item id="1073742621" image="05-Continental-breakfast.png">Free Breakfast for 1 Adult</item>
+  <item id="1073742624" image="63-Complimentary-minibar-items.png">Complimentary Minibar Items</item>
+  <item id="1073742625" image="09-Free-dinner.png">Free Dinner</item>
+  <item id="1073742626" image="65-Free-dinner-for-1-adult.png">Free Dinner for 1 Adult</item>
+  <item id="1073742627" image="32-Full-kitchen.png">Full Kitchen</item>
+  <item id="1073742680" image="67-1000-choice-points-pernight.png">1000 Choice Privileges Points per Night</item>
+  <item id="1073742681" image="68-500-choice-points-pernight.png">500 Choice Privileges Points per Night</item>
+  <item id="1073742736" image="69-Evening-manager-reception.png">Evening Manager's Reception</item>
+  <item id="1073742786" image="05-Continental-breakfast.png">Free Breakfast</item>
+  <item id="1073742787" image="16-Free-wireless-internet.png">Free Internet</item>
+  <item id="1073742857" image="05-Continental-breakfast.png">Breakfast for 1</item>
+  <item id="1073742858" image="73-Complimentary-green-fees.png">Complimentary green fees</item>
+  <item id="1073742859" image="74-Free-one-way-airport-transfer.png">Free one-way airport transfer</item>
+  <item id="1073742860" image="75-Free-return-airport-transfer.png">Free return airport transfer</item>
+  <item id="1073742861" image="76-Free-waterpark-passes.png">Free water park passes</item>
+  <item id="1073742862" image="77-2-game-drives-pernight.png">2 Game Drives per night</item>
+  <item id="1073742863" image="78-1-game-drive-pernight.png">1 Game Drive per night</item>
+  <item id="1073742909" image="79-City-tax-included.png">City Tax Included</item>
+  <item id="1073743274" image="80-Early-check-in.png">Early Check-in</item>
+  <item id="1073743275" image="81-Late-check-out.png">Late Check-out</item>
+  <item id="1073743286" image="82-Free-massage-included.png">Free massage included</item>
+  <item id="1073743287" image="83-Free-minibar.png">Free minibar</item>
+  <item id="1073743288" image="84-Ski-pass-included.png">Ski pass included</item>
+</ItemsList>

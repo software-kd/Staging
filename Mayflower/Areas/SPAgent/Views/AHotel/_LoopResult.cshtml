@@ -1,0 +1,183 @@
+﻿@model SearchHotelModel
+@using Alphareds.Module.ESBHotelComparisonWebService.ESBHotel
+
+@{
+    Layout = null;
+
+    if (Model.IPagedB2BHotelList != null)
+    {
+        foreach (var hotel in Model.IPagedB2BHotelList)
+        {
+            var hotelSupplierHeader = hotel.SupplierHotels.FirstOrDefault(x => x.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Expedia)
+                ?? hotel.SupplierHotels.FirstOrDefault();
+
+            @RenderHotelList(hotelSupplierHeader, hotel.SupplierHotels)
+        }
+
+        if (!Model.IPagedB2BHotelList.IsLastPage)
+        {
+            <button id="show-more">Show More</button>
+        }
+    }
+    else if (Model.IPagedHotelList != null)
+    {
+        foreach (var hotel in Model.IPagedHotelList)
+        {
+            @RenderHotelList(hotel, null)
+        }
+
+        if (!Model.IPagedHotelList.IsLastPage)
+        {
+            <button id="show-more">Show More</button>
+        }
+    }
+    else if (Model.DepartureDate == DateTime.MaxValue || Model.DepartureDate == DateTime.MinValue)
+    {
+        <div id="area-new-search">
+            <a href="#">Search Now</a>
+        </div>
+    }
+    else
+    {
+        <div>
+            @GetLoadImgGif()
+        </div>
+    }
+}
+
+@helper RenderHotelList(HotelInformation hotelSupplierHeader, HotelInformation[] listHotelSupplier = null)
+    {
+        if (listHotelSupplier == null)
+        {
+            listHotelSupplier = new HotelInformation[1];
+            listHotelSupplier[0] = hotelSupplierHeader;
+        }
+
+        var sortLowestHotelSupplier = listHotelSupplier.OrderBy(x => x.lowRate);
+        var lowestPriceSupplier = listHotelSupplier.FirstOrDefault();
+
+
+        <div class="ht-block" data-status="pre" data-htid="@hotelSupplierHeader.hotelId">
+
+            <div class="ht-img-block">
+                <img src="@hotelSupplierHeader.imagesURL.Big_350x350" />
+            </div>
+
+            <div class="ht-detail-block">
+
+                <div class="dt-content">
+                    @hotelSupplierHeader.name
+                    <div class="ht-star">
+                        @{
+                            if (!string.IsNullOrEmpty(hotelSupplierHeader.hotelRating))
+                            {
+                                Html.Raw(@"<div class=""h2_mhdb2_starbox"">");
+                                int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelSupplierHeader.hotelRating)));
+                                for (int i = 1; i <= NoOfStar; i++)
+                                {
+                                    <img src="@Url.Content("~/images_hotel/hotel_red_star.png")" alt="@NoOfStar star">
+                                }
+                                Html.Raw("</div>");
+                            }
+                        }
+                    </div>
+
+                    <div class="ht-address">
+                        @GetHotelAddress(hotelSupplierHeader)
+                    </div>
+
+                    <div class="ht-facility">
+                        @GetLoadImgGif()
+                    </div>
+
+                </div>
+
+                <div class="dt-price">
+                    from <span data-pricelv="lowest">@lowestPriceSupplier.rateCurrencyCode @GetLoadImgGif()</span>
+
+                    <div class="dt-price-more">
+                        @{
+                            int loopCount = 0;
+
+                            var supplier = typeof(SearchSupplier).GetProperties();//.OrderBy(x => Guid.NewGuid());
+                            foreach (var item in supplier)
+                            {
+                                if (loopCount == 3)
+                                {
+                                    <div class="ht-supp">
+                                        <div class="lbl-more-price"><a href="#">View More</a></div>
+                                    </div>
+                                }
+
+                                if (item.PropertyType.Name == "Boolean")
+                                {
+                                    <div class="ht-supp no-pc" data-pcsupp="@item.Name">
+                                        @item.Name
+                                        <div class="ht-price-block">@GetLoadImgGif()</div>
+                                    </div>
+                                }
+                                loopCount++;
+                            }
+
+                            @*foreach (var item in sortLowestHotelSupplier)
+                                {
+                                    <div class="ht-supp">
+                                        @item.hotelSupplier
+                                        <div class="ht-price-block">@item.rateCurrencyCode @item.lowRate</div>
+                                    </div>
+
+                                    loopCount++;
+                                }*@
+                        }
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+}
+
+@helper GetHotelAddress(HotelInformation hotel)
+    {
+
+        List<string> addressList = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(hotel.locationDescription))
+        {
+            addressList.Add(hotel.locationDescription);
+        }
+
+        if (!string.IsNullOrWhiteSpace(hotel.Addresses.city))
+        {
+            if (addressList.Count > 0)
+            {
+                var lastIndex = addressList[0].IndexOf(hotel.Addresses.city);
+
+                if (lastIndex == -1)
+                {
+                    addressList.Add(hotel.Addresses.city);
+                }
+            }
+            else
+            {
+                addressList.Add(hotel.Addresses.city);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(hotel.Addresses.countryCode))
+        {
+            addressList.Add(Alphareds.Module.Common.UtilitiesService.GetCountryName(hotel.Addresses.countryCode));
+        }
+
+        if (addressList.Count > 0)
+        {
+            @Html.Raw(HttpUtility.HtmlDecode(string.Join(", ", addressList)))
+        }
+}
+
+@helper GetLoadImgGif()
+    {
+        <img src="~/Images/txt_load.gif" style="max-height: 26px;vertical-align: middle;">
+}

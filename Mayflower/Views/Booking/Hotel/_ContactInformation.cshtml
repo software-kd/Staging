@@ -1,0 +1,158 @@
+﻿@model Alphareds.Module.Model.ReserveRoomModel
+@using Alphareds.Module.ServiceCall;
+
+@{
+    List<string> nameList = new List<string>();
+    nameList.Add(Model.contactDetail.FirstName);
+    nameList.Add(Model.contactDetail.FamilyName);
+
+    DateTime contactDOB = DateTime.MaxValue;
+    if (Model.contactDetail.DateOfMonth.Year > 0 && Model.contactDetail.DateOfMonth.Month > 0 && Model.contactDetail.DateOfMonth.Day > 0)
+    {
+        contactDOB = new DateTime(Model.contactDetail.DateOfMonth.Year, Model.contactDetail.DateOfMonth.Month, Model.contactDetail.DateOfMonth.Day);
+    }
+
+    string phoneNum = Model.contactDetail.PrimaryPhoneNoPrefixNo != null ? "( +" + Model.contactDetail.PrimaryPhoneNoPrefixNo + ")" : "-";
+    string phoneNum2 = Model.contactDetail.SecondaryPhoneNoPrefix != null ? "( +" + Model.contactDetail.SecondaryPhoneNoPrefix + ")" : "-";
+}
+
+<div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+<div class="s4_payment_heading guest">Contact Details</div>
+<div class="s3_hotel_contacts_box">
+    <!-- PERSONAL DETAIL START -->
+    <div class="pd_containerbox">
+        <div class="pdcont_nameleft">
+            @{  string fLetters = "";
+              foreach (var part in string.Join(" ", nameList).Split(' '))
+              {
+                  if (part.Any(x => x != ' ' && fLetters.Length <= 2))
+                  {
+                      fLetters += part.First();
+                  }
+              }
+            }
+            <div class="mpjm_pd_heading_left mpjm_spclclass_mt" style="margin-top: 12px;">@fLetters.ToUpper()</div>
+            <div class="clear"></div>
+        </div>
+        <div class="pdcont_nameright">
+            <div class="s4_guest_tabs_name_container">
+                <h3>@Model.contactDetail.Title @Model.contactDetail.FirstName.ToUpper() @Model.contactDetail.FamilyName.ToUpper()</h3>
+                <h4>Email: <span>@Model.contactDetail.Email</span></h4>
+            </div>
+            <div class="mpjm_halfdiv">
+                <div class="mpjmhd_lable spcl_bigfont">Primary Phone Number</div>
+                <div class="mpjmhd_ans spcl_bigfont1">@phoneNum @Model.contactDetail.PrimaryPhoneNo</div>
+            </div>
+            <div class="mpjm_halfdiv">
+                <div class="mpjmhd_lable spcl_bigfont">Secondary Phone Number</div>
+                <div class="mpjmhd_ans spcl_bigfont1">@phoneNum2 @Model.contactDetail.SecondaryPhoneNo</div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!-- PERSONAL DETAIL END -->
+</div>
+<div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+
+<div class="s4_payment_heading guest">Guest Details</div>
+<div>
+    <div class="payment_graytab_container mt20">
+
+        @{
+            var grp = Model.GuestRooms.GroupBy(x => new { x.RoomTypeName });
+            int roomCounter = 1;
+        }
+        @foreach (var grpRoom in grp.OrderByDescending(x => x.Count()))
+        {
+
+            <div class="pasengerTypeInfo">
+                <div class="payment_gray_tabs">
+                    <div class="pgt_left">@grpRoom.Key.RoomTypeName x @grpRoom.Count()</div>
+                    <div class="pgt_right">&nbsp;</div>
+                    <div class="clear"></div>
+                </div>
+                <!-- row start -->
+                @foreach (var room in grpRoom)
+                {
+                    string[] name = new[] { room.FirstName, room.FamilyName };
+                    string joinName = string.Join(" ", name).ToUpper();
+
+                    DateTime roomDOB = DateTime.MaxValue;
+                    if (room.DateOfBirth.Year > 0 && room.DateOfBirth.Month > 0 && room.DateOfBirth.Day > 0)
+                    {
+                        roomDOB = new DateTime(room.DateOfBirth.Year, room.DateOfBirth.Month, room.DateOfBirth.Day);
+                    }
+
+                    fLetters = "";
+                    foreach (var part in joinName.Split(' '))
+                    {
+                        if (part.Any(x => x != ' ' && fLetters.Length <= 2))
+                        {
+                            fLetters += part.First();
+                        }
+                    }
+
+                    <div class="payment_fulldetail_container">
+                        <div class="s4_blue_top_pati">Room @roomCounter</div>
+                        <!-- PERSONAL DETAIL START -->
+                        <div class="pd_containerbox">
+                            <div class="pdcont_nameleft">
+                                <div class="mpjm_pd_heading_left mpjm_spclclass_mt">@fLetters.ToUpper()</div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="pdcont_nameright">
+                                <div class="s4_guest_tabs_name_container">
+                                    <h3>@room.Title @joinName</h3>
+                                    <h4>Date of birth: <span>@(roomDOB == DateTime.MaxValue ? "-" : roomDOB.ToString("dd MMM yyyy"))</span></h4>
+                                </div>
+                                <div class="mpjmhd_ans spcl_bigfont1" style="font-size: 20px;">Special Request (subject to availability)</div>
+
+                                @if (room.SpecialRequest != null)
+                                {
+                                    string bedDesc = "", imagePath = "";
+                                    string betXMLPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Hotel_BetTypes.xml");
+                                    ExpediaHotelsServiceCall.GetImagesFromXML(betXMLPath, SearchImageColumn.ID, (room.SpecialRequest.BetTypeID ?? "-"), ref bedDesc, ref imagePath);
+
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Smoking Room</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(room.SpecialRequest.SmokingPreferences.ToString())</div>
+                                    </div>
+
+                                    @*<div class="mpjm_halfdiv">
+                                            <div class="mpjmhd_lable spcl_bigfont">Floor Options</div>
+                                            <div class="mpjmhd_ans spcl_bigfont1">-</div>
+                                        </div>*@
+
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Bedding Request</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(string.IsNullOrWhiteSpace(bedDesc) ? "-" : bedDesc)</div>
+                                    </div>
+
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Check in</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(room.CheckInMode.ToString())</div>
+                                    </div>
+
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Additional Request</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(room.AdditionalRequest ?? "-")</div>
+                                    </div>
+                                }
+
+
+                                <div class="clear"></div>
+
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <!-- PERSONAL DETAIL END -->
+                    </div>
+                                roomCounter++;
+                }
+                <!-- row end -->
+            </div>
+        }
+    </div>
+
+</div>

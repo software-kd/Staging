@@ -1,0 +1,84 @@
+﻿.ui-autocomplete {
+    max-height: 200px;
+    font-size: 0.8em;
+    overflow: auto;
+    padding-right: initial;
+    position: absolute;
+    z-index: 100000000;
+    cursor: default;
+    padding: 0;
+    margin-top: 2px;
+    list-style: none;
+    background-color: #ffffff;
+    border: 2px thick #000;
+    border-radius: 0px;
+}
+
+.ui-autocomplete.ui-widget-content a{
+    color: inherit!important;
+    transition: none;
+}
+
+    .ui-autocomplete.ui-widget-content {
+        background: #fff !important;
+    }
+
+.ui-autocomplete.ui-widget-content > li{
+    padding: 0!important;
+    margin: 0!important;
+    border-bottom: 1px solid #000;
+}
+
+.ui-autocomplete.ui-widget-content > li div{
+    padding: 10px!important;
+    margin: 0!important;
+    font-family: 'UbuntuBold';
+}
+
+.ui-autocomplete li.ui-menu-item:hover{
+    background-color: inherit!important;
+}
+
+.ui-autocomplete > li > .ui-state-active{ 
+    /*transition: background-color 0.8s ease !important;*/
+    color: #fff!important;
+    background-color: #eb1c24!important;
+}
+
+.ui-autocomplete > li > .ui-state-active {
+    border: none;
+    border-radius: 0!important;
+    margin: inherit;
+}
+
+.ui-autocomplete > li > .ui-state-focus {
+    border: none;
+    border-radius: 0;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+.ui-auto-span {
+    display: inline-block;
+    margin: 3px 0px 0;
+}
+
+.input-container {
+    position: relative;
+}
+
+input + span.glyphicon.glyphicon-remove.clearinput {
+    display: none;
+}
+
+input:focus + span.glyphicon.glyphicon-remove.clearinput {
+    display: block !important;
+    position: absolute;
+    top: 30%;
+    right: 5%;
+    font-size: 14px;
+    cursor: pointer;
+    color: #777;
+}

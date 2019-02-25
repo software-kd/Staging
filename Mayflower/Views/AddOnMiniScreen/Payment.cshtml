@@ -1,0 +1,288 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    Layout = null;
+    string tripid = Model.ReferralCode;
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    bool isB2BAgentAndAllowHold = User.Identity.IsAuthenticated && CustomPrincipal.IsAgent && Model.Hotel == null
+        && Model.Flight != null && Model.Flight.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.SACS;
+    string affiliationId = Request.QueryString["affiliationId"];
+
+    ViewBag.Title = "Payment";
+    ViewBag.HeaderRed = true;
+    ViewBag.tripid = tripid;
+    //ViewBag.CheckSession = true;
+    ViewBag.ReturnAction = Model.SellItemsAvailable.EventProducts != null || Model.SellItemsAvailable.Hotels != null || Model.SellItemsAvailable.Insurance != null ?
+        Url.Action("AddOn", "Checkout", new { tripid, affiliationId }) : Url.Action("GuestDetails", "Checkout", new { tripid, affiliationId });
+
+    Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+    var taxRate = db.TaxCodeTypes.FirstOrDefault(x => x.TaxCode == "SR").TaxPercentage;
+
+    string currencyCode = Model.CheckOutSummary.CurrencyCode;
+
+    BundleTable.Bundles.Clear();
+    BundleTable.Bundles.Add(new ScriptBundle("~/js/bundlev2")
+                        .Include(@"~/Scripts/v3.0/page-payment.js"));
+}
+<link href="~/CSS/v3.0_style.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/theme.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/custom.css" rel="stylesheet" />
+<link href="~/CSS/checkout/style.min.css" rel="stylesheet" />
+<link href="~/CSS/v2style.css" rel="stylesheet" />
+<link href="@Url.Content("~/CSS/checkout/style.min.css?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+<script src="/Scripts/jquery-2.2.4.min.js"></script>
+<script src="/Scripts/jquery-ui.min.js"></script>
+<script src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+
+<script src="/Scripts/jquery.validate.js" type="text/javascript"></script>
+<script src="/Scripts/jquery.validate.unobtrusive.js" type="text/javascript"></script>
+
+
+@if (Core.IsEnableAdyen)
+{
+    <link href="@Url.Content("~/CSS/checkout/adyencc.min.css")?ver=@DateTime.Now.ToString("yyyyMMddhh")" rel="stylesheet" />
+    <script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+    <style>
+        .creditCard-container {
+            display: block;
+        }
+    </style>
+}
+
+<style>
+    .custom-checkbox {
+        display: none;
+    }
+
+    #adyAmt {
+        color: #ed1d27;
+    }
+    
+    .custom-radio label input[type="radio"]:checked + span:after {
+        top: 7%;
+        transform: unset;
+    }
+    .fa {
+        line-height: 22px;
+    }
+    .navbar-brand a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .navbar-brand a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .main-content {
+        padding-top: 0px !important;
+    }
+
+    .btn-group-vertical > .btn-group:after, .btn-group-vertical > .btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+        content: none !important;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1.5rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand2 {
+        float: none;
+        height: unset;
+        padding: unset;
+        display: inline-block;
+        padding-top: 0.3125rem !important;
+        padding-bottom: 0.3125rem !important;
+        margin-right: 1.5rem !important;
+        font-size: 20px;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .s4_pnb_inner button {
+        margin: 15px auto;
+        font-weight: 500;
+        width: 100%;
+        max-width: 200px;
+        border-radius: 10px;
+        display: block;
+    }
+    .breadcrumb {
+        display: block;
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        list-style: none;
+        background-color: #fff;
+        border-radius: 2px;
+        text-align: center;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-md  navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="###">
+                <img src="~/Images/logo_w.png" class="img-responsive">
+            </a>
+            <div class="navbar-brand navbar-brand2">@Html.ActionLink("Back to main menu ", "Index", "AddOnMiniScreen")</div>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <div class="section ">
+        <div class="container">
+            <div class="row">
+                <div class="main-content col-12">
+                    <div class="breadcrumb clear-initial-trail ">
+                        <div><div class="step">Select Add-ons </div></div>
+                        <div><div class="step active">Payment</div></div>
+                        <div><div class="step">Confirmation</div></div>
+                    </div>
+
+                    @using (Html.BeginForm("PaymentMini", "Checkout", new { tripid }, FormMethod.Post, new { id = "checkoutForm" }))
+                    {
+                        <div class="box-wrap">
+                            @Html.HiddenFor(X => X.ReferralCode)
+                            <p class="lead text-center">Paymend Sumary</p>
+                            <div class="row wrap gray f-500 icons">
+                                @if (Model.Hotel != null)
+                                {
+                                    <div class="col-md-6"><i class="fa fa-o fa-hospital-o" aria-hidden="true"></i>@Model.Hotel.RoomSelected.HotelRoomInformationList.FirstOrDefault().hotelName</div>
+                                    <div class="col-md-6" style="padding-top:1%">RM @Model.Hotel.PricingDetail.ProductTotalAmount<span class="f-200"> inclu. tax</span></div>
+                                    <div class="col-md-12">
+                                        <span class="f-200">check in:</span>
+                                        <br>@Model.Hotel.SearchHotelInfo.ArrivalDate.ToString(string.Format("dd/MM/yyyy"))
+                                        <br><span class="f-200">chek out:</span>
+                                        <br>@Model.Hotel.SearchHotelInfo.DepartureDate.ToString(string.Format("dd/MM/yyyy"))
+                                    </div>
+                                }
+                                @if (Model.AddOnProduct != null)
+                                {
+                                    <div class="col-md-6"><i class="fa fa-o fa-wifi" aria-hidden="true"></i>Wifi</div>
+                                    <div class="col-md-6" style="padding-top:1%">RM @Model.AddOnProduct.PricingDetail.ProductTotalAmount.RoundToDecimalPlace(2)</div>
+                                }
+                                @if (Model.Insurance != null)
+                                {
+                                    <div class="col-md-6"><i class="fa fa-o fa-shield" aria-hidden="true"></i>Chubb Travel insurance</div>
+                                    <div class="col-md-6" style="padding-top:1%">RM @Model.Insurance.PricingDetail.ProductTotalAmount</div>
+                                }
+                                <div class="hr"></div>
+                                <div class="col-md-12">
+
+                                    <i class="fa fa-o fa-usd" aria-hidden="true"></i>Total Payble Amount : MYR <span class="text-primary" id="totalVal" data-value="@Model.PaymentDetails.GrandTotalForPayment.RoundToDecimalPlace(2)">@Model.PaymentDetails.GrandTotalForPayment.RoundToDecimalPlace(2)</span> <span class="f-200">inclu. tax</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s4_payment_nextbox" style="position: relative">
+                            <div class="s4_pnb_red_heading">Pay Using</div>
+
+                            <div class="s4_pnb_inner">
+                                @*@Html.Partial("~/Views/Checkout/PaymentPartials/_PaymentMethodPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())*@
+                                @Html.Partial("~/Views/Checkout/PaymentPartials/v2/_PaymentMethodPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())
+                                <div class="s4_png_line"></div>
+                                <button type="submit" class="btn btn-primary ars-payment" >Submit Payment </button>
+                                @*<a href="javascript:;" class="ars-payment"><button type="submit" class="btn btn-primary ars-payment">Pay Now</button></a>*@
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+@if (Core.IsEnableAdyen)
+{
+    @*//--Credit Card--Start//*@
+    //<script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+    <script type="text/javascript" src="@Url.Content("~/js/payment?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))"></script>
+        @*//--Credit Card--End//*@
+
+    BundleTable.Bundles.Add(new ScriptBundle("~/js/payment")
+                                    .Include("~/scripts/checkout/adyencc.js"));
+}
+else
+{
+    <script>
+        $('.ars-payment').on('click', function (e) {
+            var hiddenValue = $('#buttonValue');
+            var clickedVal = $(this).val();
+            hiddenValue.val('PaymentNow');
+            $('#checkoutForm').submit();
+        });
+    </script>
+}
+@*<script src="~/Scripts/v3.0/page-payment.js"></script>*@
+<script>
+    var paymentCalcUrl = '@Url.Action("UpdatePayment", "Checkout")';
+    var adyencc = 0;
+
+    $(document).ready(function () {
+        history.pushState('', '', window.location.href);
+    });
+
+    $('#CVV').on('keyup keydown', function (e) {
+        var val = $(this).val();
+
+        if (val.length === 0) {
+            $('#ExpMonths, #ExpYear').val('0');
+        }
+
+        if (e.keyCode !== 8) {
+            //var monthTest = new RegExp("^[0-1][0-9]$");
+            if (val.length === 2) {
+                $('#ExpMonths').val(val);
+                $(this).val(val + '/');
+            }
+            else if (val.length === 7) {
+                $('#ExpYear').val(val.substring(3, val.length));
+            }
+        }
+        else if (e.keyCode === 8) {
+            if (val.length === 3) {
+                $(this).val(val.replace('/', ''));
+            }
+        }
+    });
+
+    $('#fpx').on('click', function (e) {
+        $('#adyen-encrypted-form').hide()
+    });
+
+    $('#visaMaster').on('click', function (e) {
+        $('#adyen-encrypted-form').show()
+        $('.card-form').show()
+    });
+
+    var fpxValue = $("#totalVal").data("value");
+    var adyenCC = (parseFloat(fpxValue * 1.5 / 100) + parseFloat(fpxValue)).toFixed(2);
+    $("#adyAmt").text("MYR " + adyenCC);
+
+    $('#CreditCardNo').on('blur', function () {
+        var value = $(this).val();
+        var value2 = $(this).val().substr(0, 1);
+        if (value2 == '4' && value.length == 16) {
+            $('#CardType').val("Visa Card");
+            $('#CardType').val() == "Visa Card"
+        }
+        else
+            $('#CardType').val("Master Card");
+        $('#CardType').val() == "Master Card"
+    });
+</script>

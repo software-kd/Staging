@@ -1,0 +1,958 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@using Alphareds.Module.ServiceCall;
+@using System.Text.RegularExpressions;
+<!-- hotel full view start -->
+<div class="fullcover_div8">
+    @{
+        int tabCounter = 0;
+        bool isLocalHost = Core.IsForLocalHost;
+        if (ViewData["HOTELINFO"] != null)
+        {
+            HotelBiodata hotel = ((GetHotelInformationResponse)ViewData["HOTELINFO"]).hotelInformation;
+            string WidgetPartnerID = System.Configuration.ConfigurationManager.AppSettings.Get("PartnerID");
+            if (hotel != null && hotel.hotelSummary != null)
+            {
+                <div class="viewmorehotel_container hotel-info">
+
+                    <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Hotel Information</div>
+                    <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">What's Nearby</div>
+                    <div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">
+                        <div class="div8_tab3">
+                            <div class="div8_tab3_img">
+                                <div><img src="@Url.Content("../images_hotel/ta_icon.png")" width="25" height="14" alt=""></div>
+                                @{
+                                    string rating = hotel.hotelSummary.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "");
+                                    if (rating.Length == 1 && rating != "0")
+                                    {
+                                        if (!rating.Equals(5))
+                                        {
+                                            rating += "0";
+                                        }
+                                    }
+                                }
+                                <div class="sm-circle-rating-@rating"></div>
+                            </div>
+                            <div class="div8_tab3_img_txt">Traveller Rating</div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                    @if (isLocalHost)
+                    {
+                        <div class="div8_toptabs d8tab4" id="d8tab4" onclick="ShowTab('tab4');">New Tab</div>
+                    }
+                    <div class="clear"></div>
+                    <div class="tl_right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+                    <div class="viewmorehotel_white1nn">
+                        <!-- CONTAINER HOTEL INFORMATION START -->
+                        <div class="div8_tab_container1">
+                            <div class="d8c1_text">@Html.Raw(hotel.hotelSummary.name)</div>
+                            <div class="d8c1_star">
+                                @{
+                                    int NoOfStar = Convert.ToInt16(Math.Round(Convert.ToDouble(hotel.hotelSummary.hotelRating)));
+                                    for (int i = 1; i <= NoOfStar; i++)
+                                    {
+                                        <img src="@Url.Content("../images_hotel/hotel_star.png")" width="14" height="14" alt="">
+                                    }
+                                }
+                            </div>
+                            <div class="clear"></div>
+
+                            @if (hotel.HotelImages != null)
+                            {
+                                @imageSlider(hotel.HotelImages.Select(x => x.TypesOfImage.y_500x500).ToArray());
+                            }
+
+                            <div class="@tabColor(tabCounter++)" style="clear:left">
+                                <div class="d8c1_blocks_left">Location</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string fullAddress = @hotel.hotelSummary.address1;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.hotelSummary.address2) ? "" : ", " + hotel.hotelSummary.address2);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.hotelSummary.address3) ? "" : ", " + hotel.hotelSummary.address3);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.hotelSummary.postalCode) ? "" : ", " + hotel.hotelSummary.postalCode);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.hotelSummary.city) ? "" : ", " + hotel.hotelSummary.city);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.hotelSummary.countryCode) ? "" : ", " + hotel.hotelSummary.countryCode);
+
+                                        string destination = hotel.hotelSummary.name + "," + hotel.hotelSummary.city;
+                                        ViewData.Add("MAP", ExpediaHotelsServiceCall.GetGoogleMapURL(System.Configuration.ConfigurationManager.AppSettings.Get("GoogleMapID"), Server.UrlEncode(destination)));
+                                    }
+                                    <div>@Html.Raw(fullAddress)</div>
+                                    <div class="d8c1_showhidebutton showmapdivbutton" id="showmapdivbutton">Show Map</div>
+                                    <div class="mt10 showmapdiv" id="showmapdiv"><iframe width="500" height="450" frameborder="0" style="border:0" src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Check-In/Out Time</div>
+                                <div class="d8c1_blocks_right">
+                                    <div><ul style="list-style: none;"><li><b>Check In Time: </b>@(string.IsNullOrEmpty(hotel.hotelDetails.checkInTime) ? "-" : hotel.hotelDetails.checkInTime)</li><li><b>Check Out Time:</b> @(string.IsNullOrEmpty(hotel.hotelDetails.checkOutTime) ? "-" : hotel.hotelDetails.checkOutTime)</li></ul></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Check-In Instruction</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>@Html.Raw(string.IsNullOrEmpty(hotel.hotelDetails.checkInInstructions) ? "-" : hotel.hotelDetails.checkInInstructions)</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Description</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>@Html.Raw(hotel.hotelDetails.propertyDescription != null ? hotel.hotelDetails.propertyDescription.Replace("&lt;", "<").Replace("&gt;", ">") : "-")</div>
+                                    @{
+                                        if (!string.IsNullOrEmpty(hotel.hotelDetails.locationDescription))
+                                        {
+                                            <div class="d8c1_showhidebutton showmoredivbutton">Show More</div>
+                                            <div class="mt10 showmorediv" id="showmorediv">
+                                                @Html.Raw(hotel.hotelDetails.locationDescription.Replace("&lt;", "<").Replace("&gt;", ">"))<br /><br />
+                                                @Html.Raw(hotel.hotelDetails.areaInformation.Replace("&lt;", "<").Replace("&gt;", ">"))
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Guest Rating</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>@hotel.hotelSummary.tripAdvisor.tripAdvisorRating / 5</div>
+                                    <div class="d8c1_totalreview">@hotel.hotelSummary.tripAdvisor.tripAdvisorReviewCount Reviews</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)" id="hotelinfo_amenities">
+                                <div class="d8c1_blocks_left">Hotel Amenities</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        if (hotel.PropertyAmenities != null)
+                                        {
+                                            foreach (Amenity item in hotel.PropertyAmenities)
+                                            {
+                                                <div class="d8c1_br_blocks_three">@Html.Raw(item.amenity)</div>
+                                            }
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreamenities">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Policies</div>
+                                <div class="d8c1_blocks_right">
+                                    @(string.IsNullOrEmpty(hotel.hotelDetails.hotelPolicy) ? "" : Html.Raw(hotel.hotelDetails.hotelPolicy) + "<br /><br />")<div class="hotelpopuppolicy">@Html.Raw(hotel.hotelDetails.propertyInformation.Replace("  ", "</div><div class='hotelpopuppolicy'>"))</div>
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmorepolicy">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">You need to know</div>
+                                <div class="d8c1_blocks_right knowb4go">
+                                    <div>@Html.Raw(string.IsNullOrEmpty(hotel.hotelDetails.knowBeforeYouGoDescription) ? "-" : hotel.hotelDetails.knowBeforeYouGoDescription)</div>
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreknow">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Fees</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>
+                                        @{
+                                            string Fees = (string.IsNullOrEmpty(hotel.hotelDetails.mandatoryFeesDescription) ? "" : hotel.hotelDetails.mandatoryFeesDescription + "<br />");
+                                            Fees = (string.IsNullOrEmpty(hotel.hotelDetails.roomFeesDescription) ? "" : hotel.hotelDetails.roomFeesDescription);
+                                        }
+                                        @Html.Raw(string.IsNullOrEmpty(Fees) ? "-" : Fees)
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <!-- CONTAINER HOTEL INFORMATION END -->
+                        <!-- CONTAINER NEAR BY START -->
+                        <div class="div8_tab_container2"><iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Nearby, hotel.hotelSummary.hotelId, WidgetPartnerID)"></iframe></div>
+                        <!-- CONTAINER NEAR BY END -->
+                        <!-- CONTAINER RATING START -->
+                        <div class="div8_tab_container3"><iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Detail, hotel.hotelSummary.hotelId, WidgetPartnerID)"></iframe></div>
+                        <!-- CONTAINER RATING END -->
+                        @if (isLocalHost)
+                        {
+                            <div class="div8_tab_container4">
+                                @* Future tab item *@
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewData["HOTELINFOTP"] != null)
+        {
+            var hotel = ((Alphareds.Module.TourplanWebService.TPWS.Reply)ViewData["HOTELINFOTP"]).OptionInfoReply.Option.FirstOrDefault();
+            var hotel2 = ((Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelListResponse)ViewData["HOTELINFOTP2"]);
+            Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation selectedHotelInfo = new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation();
+
+            if (hotel2 != null && hotel2.HotelList != null && hotel2.HotelList.Length > 0)
+            {
+                selectedHotelInfo = hotel2.HotelList.FirstOrDefault(x => x.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan && x.OptionalCode.StartsWith(hotel.Opt.Remove(hotel.Opt.Length - 6, 6)));
+            }
+
+            bool gotBundle = false;
+
+            string WidgetPartnerID = System.Configuration.ConfigurationManager.AppSettings.Get("PartnerID");
+            if (hotel != null)
+            {
+                <div class="viewmorehotel_container hotel-info">
+
+                    @if (ViewBag.HotelSupplierCode == "TP")
+                    {
+                        <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Hotel Information</div>
+                        <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">What's Nearby</div>
+                        if (gotBundle)
+                        {
+                            @*<div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">MayDay</div>*@
+                        }
+                        @*<div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">
+                                <div class="div8_tab3">
+                                    <div class="div8_tab3_img">
+                                        <div><img src="@Url.Content("../images_hotel/ta_icon.png")" width="25" height="14" alt=""></div>
+                                        @{
+                                            string rating = "0";
+                                            if (rating.Length == 1 && rating != "0")
+                                            {
+                                                if (!rating.Equals(5))
+                                                {
+                                                    rating += "0";
+                                                }
+                                            }
+                                        }
+                                        <div class="sm-circle-rating-@rating"></div>
+                                    </div>
+                                    <div class="div8_tab3_img_txt">Traveller Rating</div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>*@
+                    }
+
+                    <div class="clear"></div>
+                    <div class="tl_right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+                    <div class="viewmorehotel_white1nn">
+                        <!-- CONTAINER HOTEL INFORMATION START -->
+                        <div class="div8_tab_container1">
+                            <div class="d8c1_text">@hotel.OptGeneral.SupplierName</div>
+                            <div class="d8c1_star">
+                                @{
+                                    int NoOfStar = Convert.ToInt32(hotel.OptGeneral.Class.Substring(0, 1));
+                                    for (int i = 1; i <= NoOfStar; i++)
+                                    {
+                                        <img src="@Url.Content("../images_hotel/hotel_star.png")" width="14" height="14" alt="">
+                                    }
+
+                                    string[] dummyImage = new string[] { "~/Images_hotel/no-img-01.png" };
+
+                                    if (selectedHotelInfo.imagesURLmore != null)
+                                    {
+                                        dummyImage = selectedHotelInfo.imagesURLmore;
+                                    }
+                                    else if (selectedHotelInfo.imagesURL != null)
+                                    {
+                                        dummyImage = new string[] { selectedHotelInfo.imagesURL.y_500x500 };
+                                    }
+                                }
+                            </div>
+                            <div class="clear"></div>
+
+                            @imageSlider(dummyImage)
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Location</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string fullAddress = @hotel.OptGeneral.Address1;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.OptGeneral.Address2) ? "" : ", " + hotel.OptGeneral.Address2);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.OptGeneral.PostCode) ? "" : ", " + hotel.OptGeneral.PostCode);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.OptGeneral.Address3) ? "" : ", " + hotel.OptGeneral.Address3);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.OptGeneral.Address4) ? "" : ", " + hotel.OptGeneral.Address4);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.OptGeneral.Address5) ? "" : ", " + hotel.OptGeneral.Address5);
+
+                                        string destination = hotel.OptGeneral.SupplierName + "," + hotel.OptGeneral.Address3;
+                                        ViewData.Add("MAP", ExpediaHotelsServiceCall.GetGoogleMapURL(System.Configuration.ConfigurationManager.AppSettings.Get("GoogleMapID"), Server.UrlEncode(destination)));
+                                    }
+                                    <div>@Html.Raw(fullAddress)</div>
+                                    <div class="d8c1_showhidebutton showmapdivbutton" id="showmapdivbutton">Show Map</div>
+                                    <div class="mt10 showmapdiv" id="showmapdiv"><iframe width="500" height="450" frameborder="0" style="border:0" src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Check-In/Out Time</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        bool gotDetail = selectedHotelInfo != null && selectedHotelInfo.hotelDetail != null;
+                                    }
+                                    <div><ul style="list-style: none;"><li><b>Check In Time: </b>@(gotDetail ? selectedHotelInfo.hotelDetail.checkInTime : "-")</li><li><b>Check Out Time:</b>@(gotDetail ? selectedHotelInfo.hotelDetail.checkOutTime : "-")</li></ul></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Check-In Instruction</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>-</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Description</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string hDesc = gotDetail ? selectedHotelInfo.hotelDetail.locationDescription : "-";
+                                    }
+                                    <div>@Html.Raw(!string.IsNullOrWhiteSpace(hDesc) ? hDesc.Replace(Environment.NewLine, "<br/>") : "-")</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Guest Rating</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>0 / 5</div>
+                                        <div class="d8c1_totalreview">0 Reviews</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+                            <div class="@tabColor(tabCounter++)" id="hotelinfo_amenities">
+                                <div class="d8c1_blocks_left">Hotel Amenities</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        Alphareds.Module.TourplanWebService.TPWS.Amenities amenity = hotel.Amenities;
+                                        if (hotel.Amenities != null)
+                                        {
+                                            foreach (var item in hotel.Amenities.Amenity)
+                                            {
+                                                <div class="d8c1_br_blocks_three">@Html.Raw(item.AmenityDescription)</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="d8c1_br_blocks_three">-</div>
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreamenities">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Policies</div>
+                                <div class="d8c1_blocks_right">
+                                    <div class="hotelpopuppolicy">@Html.Raw(gotDetail ? (selectedHotelInfo.hotelDetail.hotelPolicy != null ? selectedHotelInfo.hotelDetail.hotelPolicy.Replace("\n", "<br />") : "-") : "-")</div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">You need to know</div>
+                                <div class="d8c1_blocks_right knowb4go">
+                                    <div>
+                                        @if (hotel.OptionNotes != null)
+                                        {
+                                            foreach (var item in hotel.OptionNotes.OptionNote)
+                                            {
+                                                <b>@(item.NoteCategory ?? "-")</b><br />
+                                                @(item.NoteText ?? "-")<br />
+                                                <i><small>Last Update: @(item.LastUpdate ?? "-")</small></i>
+                                                <br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div>-</div>
+                                        }
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Fees</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>-</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                        </div>
+                        <!-- CONTAINER HOTEL INFORMATION END -->
+                        <!-- CONTAINER NEAR BY START -->
+                        <div class="div8_tab_container2">
+                            @try
+                            {
+                                <iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Nearby, hotel2.HotelList.FirstOrDefault().Addresses.longitude, hotel2.HotelList.FirstOrDefault().Addresses.latitude, WidgetPartnerID)"></iframe>
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                        </div>
+                        <!-- CONTAINER NEAR BY END -->
+                        <!-- CONTAINER RATING START -->
+                        <div class="div8_tab_container3">
+                            @if (gotBundle)
+                            {
+                                @* Any special bundle item content. *@
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    <iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Detail, hotel2.HotelList.FirstOrDefault().Addresses.longitude, hotel2.HotelList.FirstOrDefault().Addresses.latitude, WidgetPartnerID)"></iframe>
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+                            }
+                        </div>
+                        <!-- CONTAINER RATING END -->
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewData["HOTELINFOJT"] != null)
+        {
+            var hotel = ((Alphareds.Module.JacTravelWebService.JTWS.PropertyDetailsResponse)ViewData["HOTELINFOJT"]);
+            var hotel2 = ((Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelListResponse)ViewData["HOTELINFOJT2"]);
+            var selectedHotel = hotel2.HotelList.FirstOrDefault(x => x.jacTravelPropertyID == hotel.PropertyID);
+            string WidgetPartnerID = System.Configuration.ConfigurationManager.AppSettings.Get("PartnerID");
+            if (hotel != null)
+            {
+
+                <div class="viewmorehotel_container hotel-info">
+
+                    @if (ViewBag.HotelSupplierCode == "JAC")
+                    {
+                        <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Hotel Information</div>
+                        <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">What's Nearby</div>
+                        @*<div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">
+                                <div class="div8_tab3">
+                                    <div class="div8_tab3_img">
+                                        <div><img src="@Url.Content("../images_hotel/ta_icon.png")" width="25" height="14" alt=""></div>
+                                        @{
+                                            string rating = "0";
+                                            if (rating.Length == 1 && rating != "0")
+                                            {
+                                                if (!rating.Equals(5))
+                                                {
+                                                    rating += "0";
+                                                }
+                                            }
+                                        }
+                                        <div class="sm-circle-rating-@rating"></div>
+                                    </div>
+                                    <div class="div8_tab3_img_txt">Traveller Rating</div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>*@
+                    }
+
+                    <div class="clear"></div>
+                    <div class="tl_right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+                    <div class="viewmorehotel_white1nn">
+                        <!-- CONTAINER HOTEL INFORMATION START -->
+                        <div class="div8_tab_container1">
+                            <div class="d8c1_text">@hotel.PropertyName</div>
+                            <div class="d8c1_star">
+                                @{
+                                    int NoOfStar = Convert.ToInt16(Math.Round(Convert.ToDouble(hotel.Rating)));
+                                    for (int i = 1; i <= NoOfStar; i++)
+                                    {
+                                        <img src="@Url.Content("../images_hotel/hotel_star.png")" width="14" height="14" alt="">
+                                    }
+                                }
+                            </div>
+                            <div class="clear"></div>
+
+                            @if (selectedHotel != null)
+                            {
+                                @imageSlider(selectedHotel.imagesURLmore)
+                            }
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Location</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string fullAddress = hotel.Address1;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Address2) ? "" : ", " + hotel.Address2);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Country) ? "" : ", " + hotel.Country);
+
+                                        string destination = hotel.PropertyName + "," + hotel.TownCity;
+                                        ViewData.Add("MAP", ExpediaHotelsServiceCall.GetGoogleMapURL(System.Configuration.ConfigurationManager.AppSettings.Get("GoogleMapID"), Server.UrlEncode(destination)));
+                                    }
+                                    <div>@Html.Raw(fullAddress)</div>
+                                    <div class="d8c1_showhidebutton showmapdivbutton" id="showmapdivbutton">Show Map</div>
+                                    <div class="mt10 showmapdiv" id="showmapdiv"><iframe width="500" height="450" frameborder="0" style="border:0" src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Check-In/Out Time</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div><ul style="list-style: none;"><li><b>Check In Time: </b>-</li><li><b>Check Out Time:</b>-</li></ul></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Check-In Instruction</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>-</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Description</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>@Html.Raw(hotel.Description != null ? hotel.Description.Replace("\\r\\n", "<br />").Replace("\\n", "<br />") : "-")</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Guest Rating</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>0 / 5</div>
+                                        <div class="d8c1_totalreview">0 Reviews</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+                            <div class="@tabColor(tabCounter++)" id="hotelinfo_amenities">
+                                <div class="d8c1_blocks_left">Hotel Amenities</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        if (hotel.Facilities.Facility != null)
+                                        {
+                                            foreach (var item in hotel.Facilities.Facility)
+                                            {
+                                                <div class="d8c1_br_blocks_three">@Html.Raw(item.FacilityDesc)</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="d8c1_br_blocks_three">-</div>
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreamenities">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Policies</div>
+                                <div class="d8c1_blocks_right">
+                                    @if (hotel2 != null && hotel2.HotelList != null && hotel2.HotelList.Length > 0)
+                                    {
+                                        if (selectedHotel != null && selectedHotel.errata != null && selectedHotel.errata.Length > 0)
+                                        {
+                                            foreach (var policy in selectedHotel.errata.Take(2))
+                                            {
+                                                <div class="hotelpopuppolicy">@policy.Description</div><br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="hotelpopuppolicy">-</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="hotelpopuppolicy">-</div>
+                                    }
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">You need to know</div>
+                                    <div class="d8c1_blocks_right knowb4go">
+                                        <div>-</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Fees</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>-</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+
+                        </div>
+                        <!-- CONTAINER HOTEL INFORMATION END -->
+                        <!-- CONTAINER NEAR BY START -->
+                        <div class="div8_tab_container2"><iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Nearby, hotel.Longitude, hotel.Latitude, WidgetPartnerID)"></iframe></div>
+                        <!-- CONTAINER NEAR BY END -->
+                        <!-- CONTAINER RATING START -->
+                        <div class="div8_tab_container3"><iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Detail, hotel.Longitude, hotel.Latitude, WidgetPartnerID)"></iframe></div>
+                        <!-- CONTAINER RATING END -->
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewData["HOTELINFOHB"] != null)
+        {
+            var hotel = ((Alphareds.Module.HotelBedsWebService.HBWS.HotelDetailsRS)ViewData["HOTELINFOHB"]);
+            var hotel2 = ((Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelListResponse)ViewData["HOTELINFOHB2"]);
+            var hotel2info = hotel2.HotelList.Where(x => x.hotelId == hotel.Hotel.Code).ToList();
+            string WidgetPartnerID = System.Configuration.ConfigurationManager.AppSettings.Get("PartnerID");
+            if (hotel != null)
+            {
+
+                <div class="viewmorehotel_container hotel-info">
+
+                    @if (ViewBag.HotelSupplierCode == "HB")
+                    {
+                        <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Hotel Information</div>
+                        <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">What's Nearby</div>
+                    }
+
+                    <div class="clear"></div>
+                    <div class="tl_right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+                    <div class="viewmorehotel_white1nn">
+                        <!-- CONTAINER HOTEL INFORMATION START -->
+                        <div class="div8_tab_container1">
+                            <div class="d8c1_text">@hotel.Hotel.Name</div>
+                            <div class="d8c1_star">
+                                @{
+                                    int NoOfStar = hotel2info.FirstOrDefault().hotelRating != null ? Convert.ToInt16(Math.Round(Convert.ToDouble(hotel2info.FirstOrDefault().hotelRating))) : 0;
+                                    for (int i = 1; i <= NoOfStar; i++)
+                                    {
+                                        <img src="@Url.Content("../images_hotel/hotel_star.png")" width="14" height="14" alt="">
+                                    }
+                                }
+                            </div>
+                            <div class="clear"></div>
+
+                            @if (hotel.Hotel.Images != null && hotel.Hotel.Images.Image != null)
+                            {
+                                @imageSlider(hotel.Hotel.Images.Image.Select(x => x.Path).ToArray(), "http://photos.hotelbeds.com/giata/")
+                            }
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Location</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string fullAddress = hotel.Hotel.Address;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotel.PostalCode) ? "" : ", " + hotel.Hotel.PostalCode);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotel.City) ? "" : ", " + hotel.Hotel.City);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotel.Country.Description) ? "" : ", " + hotel.Hotel.Country.Description);
+
+                                        string destination = hotel.Hotel.Name + "," + hotel.Hotel.City;
+                                        ViewData.Add("MAP", ExpediaHotelsServiceCall.GetGoogleMapURL(System.Configuration.ConfigurationManager.AppSettings.Get("GoogleMapID"), Server.UrlEncode(destination)));
+                                    }
+                                    <div>@Html.Raw(fullAddress)</div>
+                                    <div class="d8c1_showhidebutton showmapdivbutton" id="showmapdivbutton">Show Map</div>
+                                    <div class="mt10 showmapdiv" id="showmapdiv"><iframe width="500" height="450" frameborder="0" style="border:0" src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Description</div>
+                                <div class="d8c1_blocks_right">
+                                    <div>@Html.Raw(hotel.Hotel.Description != null ? hotel.Hotel.Description.Replace("\\r\\n", "<br />").Replace("\\n", "<br />") : "-")</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)" id="hotelinfo_amenities">
+                                <div class="d8c1_blocks_left">Hotel Amenities</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        if (hotel.Hotel.Facilities != null)
+                                        {
+                                            foreach (var item in hotel.Hotel.Facilities.Facility)
+                                            {
+                                                <div class="d8c1_br_blocks_three">@Html.Raw(item.Description) @(item.Number != null ? " - " + item.Number : "")</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="d8c1_br_blocks_three">-</div>
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreamenities">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                        </div>
+                        <!-- CONTAINER HOTEL INFORMATION END -->
+                        <!-- CONTAINER NEAR BY START -->
+                        <div class="div8_tab_container2"><iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Nearby, hotel2info.FirstOrDefault().Addresses.longitude, hotel2.HotelList.FirstOrDefault().Addresses.latitude, WidgetPartnerID)"></iframe></div>
+                        <!-- CONTAINER NEAR BY END -->
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewData["HOTELINFOTAAP"] != null)
+        {
+            var hotel = ((Alphareds.Module.ExpediaTAAPWebService.ExpediaTAAP.SearchHotelResponse)ViewData["HOTELINFOTAAP"]);
+
+            bool gotBundle = false;
+
+            string WidgetPartnerID = System.Configuration.ConfigurationManager.AppSettings.Get("PartnerID");
+            if (hotel != null && hotel.Errors == null)
+            {
+                <div class="viewmorehotel_container hotel-info">
+
+                    @if (ViewBag.HotelSupplierCode == "TAAP")
+                    {
+                        <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Hotel Information</div>
+                        <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">What's Nearby</div>
+                        if (gotBundle)
+                        {
+                            @*<div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">MayDay</div>*@
+                        }
+                    }
+
+                    <div class="clear"></div>
+                    <div class="tl_right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+                    <div class="viewmorehotel_white1nn">
+                        <!-- CONTAINER HOTEL INFORMATION START -->
+                        <div class="div8_tab_container1">
+                            <div class="d8c1_text">@hotel.Hotels.FirstOrDefault().Name</div>
+                            <div class="d8c1_star">
+                                @{
+                                    int NoOfStar = hotel.Hotels.FirstOrDefault().GuestRating != null ? Convert.ToInt16(Math.Round(Convert.ToDouble(hotel.Hotels.FirstOrDefault().GuestRating))) : 0;
+                                    for (int i = 1; i <= NoOfStar; i++)
+                                    {
+                                        <img src="@Url.Content("../images_hotel/hotel_star.png")" width="14" height="14" alt="">
+                                    }
+                                }
+                            </div>
+                            <div class="clear"></div>
+                            @if (hotel.Hotels.FirstOrDefault().Media != null)
+                            {
+                                @imageSlider(hotel.Hotels.FirstOrDefault().Media.Select(x => x.Url).ToArray());
+                            }
+                            <div class="clear"></div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Location</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string fullAddress = hotel.Hotels.FirstOrDefault().Location.Address.Address1;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Location.Address.PostalCode) ? "" : ", " + hotel.Hotels.FirstOrDefault().Location.Address.PostalCode);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Location.Address.City) ? "" : ", " + hotel.Hotels.FirstOrDefault().Location.Address.City);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Location.Address.Country) ? "" : ", " + hotel.Hotels.FirstOrDefault().Location.Address.Country);
+
+                                        string destination = hotel.Hotels.FirstOrDefault().Name + "," + hotel.Hotels.FirstOrDefault().Location.Address.City;
+                                        ViewData.Add("MAP", ExpediaHotelsServiceCall.GetGoogleMapURL(System.Configuration.ConfigurationManager.AppSettings.Get("GoogleMapID"), Server.UrlEncode(destination)));
+                                    }
+                                    <div>@Html.Raw(fullAddress)</div>
+                                    <div class="d8c1_showhidebutton showmapdivbutton" id="showmapdivbutton">Show Map</div>
+                                    <div class="mt10 showmapdiv" id="showmapdiv"><iframe width="500" height="450" frameborder="0" style="border:0" src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Check-In/Out Time</div>
+                                <div class="d8c1_blocks_right">
+                                    <div><ul style="list-style: none;"><li><b>Check In Time: </b>@(string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Policies.CheckInStartTime) ? "-" : hotel.Hotels.FirstOrDefault().Policies.CheckInStartTime)</li><li><b>Check Out Time:</b> @(string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Policies.CheckOutTime) ? "-" : hotel.Hotels.FirstOrDefault().Policies.CheckOutTime)</li></ul></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Description</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        string Description = hotel.Hotels.FirstOrDefault().Description.HotelTeaser;
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Description.LocationTeaser) ? "" : "<br />" + hotel.Hotels.FirstOrDefault().Description.LocationTeaser);
+                                        fullAddress += (string.IsNullOrEmpty(hotel.Hotels.FirstOrDefault().Description.RoomTeaser) ? "" : "<br />" + hotel.Hotels.FirstOrDefault().Description.RoomTeaser);
+                                    }
+                                    <div>@Html.Raw(Description)</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            @*<div class="@tabColor(tabCounter++)">
+                                    <div class="d8c1_blocks_left">Guest Rating</div>
+                                    <div class="d8c1_blocks_right">
+                                        <div>0 / 5</div>
+                                        <div class="d8c1_totalreview">0 Reviews</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>*@
+                            <div class="@tabColor(tabCounter++)" id="hotelinfo_amenities">
+                                <div class="d8c1_blocks_left">Hotel Amenities</div>
+                                <div class="d8c1_blocks_right">
+                                    @{
+                                        if (hotel.Hotels.FirstOrDefault().HotelAmenities != null)
+                                        {
+                                            foreach (var item in hotel.Hotels.FirstOrDefault().HotelAmenities)
+                                            {
+                                                <div class="d8c1_br_blocks_three">@Html.Raw(item.Name)</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="d8c1_br_blocks_three">-</div>
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                    <div class="d8c1_showhidebutton showmoreamenities">Show More</div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="@tabColor(tabCounter++)">
+                                <div class="d8c1_blocks_left">Policies</div>
+                                <div class="d8c1_blocks_right">
+                                    @if (hotel.Hotels.FirstOrDefault().Policies != null)
+                                    {
+                                        if (hotel.Hotels.FirstOrDefault().Policies.ChildrenAndExtraBedsPolicies != null)
+                                        {
+                                            foreach (var item in hotel.Hotels.FirstOrDefault().Policies.ChildrenAndExtraBedsPolicies)
+                                            {
+                                                <div class="hotelpopuppolicy">@Html.Raw(item)</div>
+                                            }
+                                        }
+                                        if (hotel.Hotels.FirstOrDefault().Policies.PetPolicies != null)
+                                        {
+                                            foreach (var item in hotel.Hotels.FirstOrDefault().Policies.PetPolicies)
+                                            {
+                                                <div class="hotelpopuppolicy">@Html.Raw(item)</div>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="d8c1_br_blocks_three">-</div>
+                                    }
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <!-- CONTAINER HOTEL INFORMATION END -->
+                        <!-- CONTAINER NEAR BY START -->
+                        <div class="div8_tab_container2">
+                            @try
+                            {
+                                <iframe width="100%" height="500px" src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Nearby, hotel.Hotels.FirstOrDefault().Location.GeoLocation.Longitude, hotel.Hotels.FirstOrDefault().Location.GeoLocation.Latitude, WidgetPartnerID)"></iframe>
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                        </div>
+                        <!-- CONTAINER NEAR BY END -->
+                    </div>
+                </div>
+            }
+
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    @{
+        string tripid = Request.QueryString["tripid"];
+        string GTM_trackHotelDetail = "";
+        if (Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid) != null) {
+            GTM_trackHotelDetail = Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid).ToString();
+            Alphareds.Module.Common.Core.SetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid, null);
+        }
+    }
+
+
+    try {
+        var GTM_trackHotelDetail = '@Html.Raw(GTM_trackHotelDetail)';
+        if (GTM_trackHotelDetail.length > 1) {
+            trackHotelDetail(GTM_trackHotelDetail, 'detail');
+        }
+    } catch (e) { }
+</script>
+<!-- hotel full view end -->
+
+@functions{
+    private string tabColor(int counter)
+    {
+        return counter % 2 == 0 ? "d8c1_graybolck" : "d8c1_whitebolck";
+    }
+}
+
+@helper imageSlider(string[] imgList, string prefixUrl = null)
+{
+    var list = imgList.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+    <div class="d8c1_gallery">
+        <div id="myCarousel" class="carousel slide">
+            <div class="callbacks_container">
+                <ul class="carousel-inner bslides" role="listbox">
+                    @{
+                        int count1 = 0;
+
+                        foreach (string image in list)
+                        {
+                            if (count1 == 0)
+                            {
+                                <li class="item active"><img data-src="@Url.Content(prefixUrl + image)" alt=""></li>
+                            }
+                            else
+                            {
+                                <li class="item"><img data-src="@Url.Content(prefixUrl + image)" alt=""></li>
+                            }
+                            count1++;
+                        }
+                    }
+                </ul>
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            <div style="margin-top:20px;max-height:120px;overflow-y:auto" class="col-md-12 hidden-sm hidden-xs">
+                <ul style="list-style-type:none" class="carousel-indicators">
+                    @{
+                        int count = 0;
+                        foreach (string image in list)
+                        {
+                            if (count == 0)
+                            {
+                                <li data-target="#myCarousel" data-slide-to="0" class="active"><a><img data-src="@Url.Content(prefixUrl + image)" alt=""></a></li>
+                            }
+                            else
+                            {
+                                <li data-target="#myCarousel" data-slide-to=@count><a><img data-src="@Url.Content(prefixUrl + image)" alt=""></a></li>
+                            }
+                            count++;
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}

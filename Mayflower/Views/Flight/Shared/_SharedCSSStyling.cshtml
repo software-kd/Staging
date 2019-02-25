@@ -1,0 +1,1255 @@
+﻿<style>
+    .nav-pills.nav-wizard > li:not(:first-child) a::before, .nav-pills.nav-wizard > li:not(:last-child) a::after {
+        width : 20px;
+        height: 34px;
+    }
+
+    .navZoom {
+         height: 34px;
+    }
+
+    .mf_ib_border_box2 {
+        margin: 30px;
+        border: 1px solid #d5d5d5;
+    }
+
+    .mf_ib_bb_lrbox2 {
+        width: 100%;
+    }
+
+    .s4_blt_py_container, .s4_blt_py_container2 {
+        width: 90% !important;
+    }
+
+    #modal-container .btn-section {
+        margin-top: 1em;
+        text-align: center;
+    }
+
+    #modal-container .modal-cancel-btn {
+        display: inline-block;
+        width: 120px;
+        border-radius: 0;
+    }
+
+    #modal-container .modal-confirm-btn {
+        background-color: #17c134;
+        display: inline-block;
+        margin-right: 1em;
+        width: 120px;
+        border-radius: 0;
+    }
+
+    #modal-container a {
+        text-decoration: none;
+    }
+
+    #ui-datepicker-div {
+        font-size: 12px;
+    }
+
+    .check_create_acc {
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .farerules.spcldiv {
+        transition: none;
+    }
+
+    .focusborder {
+        box-shadow: inset 0 0 0 1px #a9a9ab, 0 0 0 2px #9EC0F8 !important;
+    }
+
+    .incompleted {
+        background-color: lightgray !important;
+        cursor: no-drop;
+        outline: none;
+    }
+
+    .isInvalid {
+        background-image: url(../Images/stop-sig-re.png) !important;
+        background-repeat: no-repeat !important;
+        background-size: 24px !important;
+        border: none !important;
+    }
+
+    .mobilepic {
+        display: none;
+    }
+
+    .moreflight_container {
+        margin-top: 0;
+    }
+
+    .mr_form_confirm input[type=checkbox]:not(old) + label {
+        font-size: 13px;
+        margin-right: 50px;
+    }
+
+    .s2_mil_left {
+        margin-top: -18px;
+    }
+
+    .s3-1_activli .completed {
+        background-image: url(../images/tick_done.png);
+    }
+
+    .s3-1_activli:hover {
+        cursor: pointer;
+    }
+
+    .s3-1_cf_lable_text span {
+        color: #eb1c24;
+    }
+
+    .s3-1_contactform_familyname_first_row {
+        float: right;
+        width: 49%;
+    }
+
+    .s3-1_contactform_firstname_first_row {
+        float: left;
+        width: 49%;
+    }
+
+    .s3-1_contactform_title_first_row {
+        float: left;
+        width: 14%;
+    }
+
+    .s3-1_fi_row1 {
+        border: none;
+        float: left;
+        height: auto;
+        width: 95%;
+    }
+
+    .s3-1_fi_row1-right {
+        margin-top: 28px;
+    }
+
+    .s3-1_fir1_b1 select {
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: transparent;
+        background-image: url(../images/drop_down_arrow.png);
+        background-position: right center;
+        background-repeat: no-repeat;
+        border: 1px solid #000;
+        font-family: Conv_Ubuntu-Light;
+        font-size: 16px;
+        height: 56px;
+        padding-left: 15%;
+        width: 100%;
+    }
+
+    .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+        float: left;
+        padding-left: 0;
+        width: 100%;
+    }
+
+    .s3-1_form_button {
+        width: 95%;
+    }
+
+    .s3-1_full_textbox_com:disabled {
+        background-color: #d3d3d3;
+        cursor: no-drop;
+    }
+
+    .s3-1_full_textbox_name_com {
+        background-color: transparent;
+        border: 1px solid #000;
+        font-size: 16px;
+        height: 56px;
+        padding-left: 24px;
+        width: 100%;
+    }
+
+    .s3-1_guestdetail_box ul li {
+        cursor: pointer;
+        height: inherit;
+    }
+
+    .s3-1_inactive_guest {
+        cursor: default;
+    }
+
+    .s3_1_ans_fig {
+        margin-right: 5px;
+    }
+
+    .s3_1_ans_myr {
+        font-size: 15px;
+        margin-right: 3px;
+    }
+
+    .s3_1_contactform_name {
+        float: right;
+        width: 84%;
+    }
+
+    .s3_1_fdb4_inner_lf_lable {
+        font-family: UbuntuBold;
+        margin-right: 3px;
+    }
+
+    .s3_1_fdb_i3_da_lable .dep, .s3_1_fdb_i3_da_lable .ret {
+        background-image: none;
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .s3_1_fdb_i3_da_timing .tim_box, .s3_1_fdb4_inner_lf_lable2, .img_box, .date_L, .s3_1_fdb4_inner_lf_lable4 {
+        font-family: Conv_Ubuntu-Light;
+    }
+
+    .s4_pnb_red_heading {
+        font-size: 19px;
+        height: 60px;
+        line-height: 60px;
+    }
+
+    .s4_png_boxright_price, .s4_png_boxright_credit {
+        float: right;
+        font-family: UbuntuRegular;
+        font-size: 16px;
+        margin-top: 5px;
+    }
+
+    .show_more_flight_icon {
+        background-image: url(../images/more_info_icon_down.png);
+        margin-top: -22px;
+    }
+
+    .textforerrormsg:after {
+        clear: both;
+    }
+
+    input[type=checkbox]:not(old) + input + label > span {
+        background: #f1f1f3;
+        border: .0625em solid #000;
+        box-shadow: inset 0 0 0 1px #a9a9ab;
+        display: inline-block;
+        height: 18px;
+        margin: .25em .5em .25em -17px;
+        vertical-align: top;
+        width: 21px;
+    }
+
+    input[type=checkbox]:not(old):checked + input + label > span:before {
+        color: #eb1c24;
+        content: '✓';
+        display: block;
+        font-weight: 700;
+        height: 15px;
+        line-height: 14px;
+        text-align: center;
+        text-shadow: 0 0 .0714em #eb1c24;
+        width: 17px;
+    }
+
+    ul > li > .completed {
+        background-image: url(../images/gray_tick_done.png);
+        background-position: center 100%;
+        background-repeat: no-repeat;
+        display: block;
+        padding-top: 25px;
+    }
+
+    .cdhc_redbar .completed {
+        background-image: url(../images/tick_done.png);
+    }
+
+    div > .completed {
+        background-image: url(../images/gray_tick_done.png);
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+    .h2_mhd3_rl_row_b2.show_toltip1 {
+        position: relative;
+    }
+
+    #popup-modal .fcd_white3_op {
+        max-height: unset;
+    }
+
+    .fullcover_div_GoogleMap {
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999999;
+        display: none;
+    }
+
+    .viewmorehotel_container {
+        max-width: 883px;
+        width: 96%;
+        height: 500px;
+        margin: 2em auto;
+    }
+
+        .viewmorehotel_container.hotel-info {
+            margin: auto !important;
+        }
+
+    .viewmorehotel_white1nn {
+        height: 510px;
+        overflow: auto;
+        text-align: center;
+    }
+
+    .vm_inner_content {
+        width: 95%;
+        text-align: left;
+        margin: auto;
+    }
+    /* room slider start */
+    .callbacks_container {
+        position: relative;
+    }
+
+    .callbacks_nav {
+        top: 70%;
+    }
+
+    .callbacks_tabs {
+        display: none;
+    }
+
+    .rslides2 {
+        width: 197px;
+        height: 123px;
+    }
+    /* room slider end */
+    .nav-size-addon {
+        max-width: 750px !important;
+    }
+
+    .nav-size {
+        max-width: 600px !important;
+    }
+
+    .s3-1_inactive_guest .igb2 {
+        height: 46px;
+    }
+
+    .s3-1_inactive_guest .igb1 {
+        height: 16px;
+    }
+
+    .s4_png_inner_row input[type=radio]:not(old) + label, .ipay_con_left input[type=checkbox]:not(old) + label {
+        font-weight: initial;
+    }
+
+    .s2-1_form_toll_tip_1 {
+        margin-right: -35px;
+    }
+
+    .s2-1_tt_right {
+        color: #000;
+    }
+
+    .s2-1_tt_right1 {
+        color: #000;
+    }
+
+    section {
+        padding-top: 65px;
+    }
+
+    .st4_payment_heading_container {
+        margin-top: 5px;
+        margin-bottom: 41px;
+    }
+
+    .h2_mhdb2_heading2 {
+        background-image: url(../images/info-icon.png);
+        background-repeat: no-repeat;
+        margin-left: 10px;
+        margin-top: -6px;
+        font-size: 14px;
+        float: right;
+        color: #ec1c24;
+        min-width: 55px;
+        height: 35px;
+    }
+
+    .timebox {
+        margin-left: 7px;
+    }
+
+    @@media screen and (max-width: 1400px) and (min-width: 900px) {
+        /*.s3_1_flight_details_box {
+            padding-bottom: 25px;
+        }*/
+
+        .show_more_flight_icon {
+            margin-top: -22px;
+        }
+    }
+
+    @@media screen and (min-width: 1260px) {
+        .check_in, .check_out {
+            margin-left: 3px;
+        }
+    }
+
+    @@media screen and (max-width: 1024px) and (min-width: 901px) {
+        .check_in, .check_out {
+            margin-left: 3px;
+        }
+    }
+
+    @@media screen and (min-width: 901px) {
+        .s3_1_fdb_i3_da_lable {
+            width: 24%;
+        }
+
+        .show_more_flight_icon_p {
+            margin-bottom: 15px;
+        }
+
+        .s2-1_tt_left {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .s2-1_tt_right1 {
+            float: left;
+            text-align: right;
+            width: 50%;
+            font-size: 12px;
+            font-family: 'UbuntuRegular';
+            margin-bottom: 4px;
+            margin-top: 0px;
+        }
+
+            .s2-1_tt_right1 span {
+                font-family: 'UbuntuBold';
+                font-size: 18px !important;
+            }
+
+        .s2-1_tt_right {
+            margin-top: -5px;
+        }
+
+        .clear1 {
+            margin-bottom: 35px;
+        }
+
+        .eachSection {
+            margin-bottom: 10px;
+        }
+
+        .flightpart {
+            /*height: 60px;*/
+        }
+
+        .hotelpart {
+            /*height: 60px;*/
+        }
+
+        .planeIcone {
+            background-image: url(../../Images/fl_t_ico.png);
+            background-repeat: no-repeat;
+            padding-left: 50px;
+            height: 40px;
+            display: inline-block;
+            float: left;
+            /*margin-top: -3%;
+            background-size: 41px 41px;*/
+        }
+
+        .hotelIcone {
+            background-image: url('../../Images/ht_t_ico.png');
+            background-repeat: no-repeat;
+            padding-left: 50px;
+            height: 40px;
+        }
+
+        .s3_1_fdb4_inner {
+            margin-bottom: 7px;
+        }
+
+        .s3_1_fdb4_inner_lf_lable {
+        }
+
+        .s3_1_fdb4_inner_lf_lable2 {
+            margin-bottom: 17px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .s3_1_fdb_child_det, .s3_1_fdb4_inner_lf_lable, .s3_1_fdb4_inner_ri_ans, .s3_1_fdb4_inner_lf_lable2 {
+            float: right;
+        }
+
+        .s3_1_fdb_child_det, .s3_1_fdb_class_det {
+            margin-top: 0;
+        }
+
+        .s3_1_fdb_flight_name {
+            width: 100%;
+            margin-bottom: 7px;
+            padding-top: 0;
+        }
+
+        .s3_1_fdb_hotel_name {
+            width: 100%;
+            margin-bottom: 7px;
+            padding-top: 8px;
+            float: left;
+        }
+
+        .check_in {
+            background-image: none;
+            padding: 0;
+            padding-top: 13px;
+            color: #eb1c24;
+            background-repeat: no-repeat;
+            background-position: right center;
+        }
+
+        .check_out {
+            background-image: none;
+            padding: 0;
+            /*padding-top:32px;*/
+            color: #eb1c24;
+            background-repeat: no-repeat;
+            background-position: right center;
+        }
+
+        .s3_1_fdb_i3_da_lable .sty {
+            background-image: none;
+            /*margin-left: 15px;*/
+            padding: 0;
+            padding-top: 32px;
+            color: #eb1c24;
+            background-repeat: no-repeat;
+            background-position: right center;
+        }
+
+        .s3_1_fdb_i3_da_timing .tim_box1 {
+            padding-top: 13px;
+        }
+
+        .s3_1_fdb_i3_da_timing .tim_box1, .s3_1_fdb_i3_da_timing .tim_box2 {
+            color: #1b1b1b;
+            font-family: Conv_Ubuntu-Light;
+            padding-left: 2px;
+        }
+
+        .s3_1_fdb_room {
+            float: right;
+            margin-top: 50px;
+            font-family: Conv_Ubuntu-Light;
+        }
+
+            .s3_1_fdb_room span {
+                color: #eb1c24;
+            }
+
+        .totalpricepart {
+            margin-top: -20px;
+        }
+
+        .s3_1_fdb_inner_b2 {
+            width: 26%;
+        }
+
+        .s3_1_fdb_i3_da_timing {
+            width: 75%;
+        }
+
+        .s3_1_fdb_i3_inner {
+            max-width: 400px;
+            margin-left: 10px;
+        }
+
+        .s3_1_fdb_inner_b3 {
+            width: 32%;
+        }
+
+        .s3_1_fdb_inner_b4 {
+            width: 33%;
+        }
+
+        .s3_form_toll_tip {
+            margin-left: -200px;
+        }
+
+        .flight_name {
+            display: inline-block;
+            width: 77%;
+        }
+    }
+
+    @@media screen and (min-width: 965px){
+        .hotelpart {
+            /*height:80px;
+            padding-top:20px;*/
+        }
+    }
+
+    @@media screen and (min-width: 902px) and (max-width: 964px) {
+        .flightpart {
+            /*height: 98px;*/
+        }
+
+        .hotelpart {
+            /*height: 76px;*/
+        }
+    }
+
+    @@media screen and (min-width: 902px) and (max-width: 906px) {
+        .s3_1_fdb4_inner_lf_lable {
+            margin-right: 0px;
+        }
+    }
+
+    @@media screen and (min-width: 907px) and (max-width: 917px) {
+        .s3_1_fdb4_inner_lf_lable {
+            margin-right: 2px;
+        }
+    }
+
+    @@media screen and (min-width: 918px) and (max-width: 940px) {
+        .s3_1_fdb4_inner_lf_lable {
+            margin-right: 5px;
+        }
+    }
+
+    @@media screen and (max-width: 767px) {
+        .nav-size-addon {
+            max-width: 320px !important;
+        }
+
+        .nav-size {
+            max-width: 250px !important;
+        }
+    }
+
+    @@media screen and (min-width: 901px) and (max-width: 991px) {
+        .cont-size {
+            width: 800px;
+        }
+    }
+
+    @@media screen and (min-width: 768px) and (max-width: 991px) {
+        .centerStepBar {
+            width: 102%;
+            margin-left: 0%;
+        }
+    }
+
+    @@media screen and (max-width: 899px) and (min-width: 769px) {
+        .show_more_flight_icon {
+            margin-top: -32px;
+        }
+    }
+
+    @@media screen and (max-width: 768px) {
+        .show_more_flight_icon {
+            margin-top: -32px;
+        }
+    }
+
+    @@media screen and (max-width: 724px) and (min-width:700px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 90px !important;
+        }
+    }
+
+    @@media screen and (max-width: 699px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 65px !important;
+        }
+    }
+
+    @@media screen and (max-width: 650px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 45px !important;
+        }
+    }
+
+    @@media screen and (max-width: 569px) and (min-width:550px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 20px !important;
+        }
+    }
+
+    @@media screen and (max-width: 549px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 10px !important;
+        }
+    }
+
+    @@media screen and (max-width: 500px) {
+        .position {
+            margin-left: 90px;
+        }
+
+        .s2-1_form_toll_tip_1 {
+            margin-right: 60px !important;
+        }
+
+        .s3-1_form {
+            border-bottom: none;
+        }
+    }
+
+    @@media screen and (min-width:600px) {
+        .pdcont_nameleft {
+            margin-top: 2px;
+        }
+    }
+
+    @@media screen and (max-width: 465px) and (min-width:430px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 50px !important;
+        }
+    }
+
+    @@media screen and (max-width: 429px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 40px !important;
+        }
+    }
+
+    @@media screen and (max-width: 400px) and (min-width:365px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: 20px !important;
+        }
+    }
+
+    @@media screen and (max-width: 364px) {
+        .s2-1_form_toll_tip_1 {
+            margin-right: -8px !important;
+        }
+    }
+
+    @@media screen and (max-width: 900px) {
+        #cssmenu #menu-button:after {
+            height: 8px;
+        }
+
+        .center {
+            padding-bottom: 10px;
+        }
+
+        .h2_mhd3_rl_row_b2_mobile {
+            padding-left: 0px;
+        }
+
+        .position {
+            margin-left: -26px;
+        }
+
+        .s2-1_tt_left {
+            color: black;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .s2-1_tt_right {
+            margin-top: -4px;
+        }
+
+        .blackLine {
+            margin-top: 0px;
+        }
+
+        .eachSection {
+            margin-bottom: 10px;
+        }
+
+        .title-deco {
+            font-weight: bold;
+            color: black;
+        }
+
+        .h2_mhd3_rl_row_b2_mobile.show_toltip1 {
+            position: relative;
+        }
+
+        .s2-1_form_toll_tip_1 {
+            top: 25px;
+            margin-right: 100px;
+        }
+
+        .s3_1_fdb_i3_da_lable {
+            margin-bottom: -5px !important;
+        }
+
+        .s3_1_fdb_hotel_name {
+            margin-bottom: 10px;
+        }
+
+        .s3_1_fdb_inner_checkin.s3_1_fdb_inner_b4 {
+            border-right: 1px solid #0d0d0d;
+            min-height: 15px;
+            padding-top: 0;
+        }
+
+        .s3_1_fdb_inner_checkout.s3_1_fdb_inner_b3 {
+            min-height: 15px;
+            padding-top: 0;
+        }
+
+        .planeIcone {
+            background-image: url(../../Images/fl_t_ico.png);
+            background-repeat: no-repeat;
+            height: 40px;
+        }
+
+        .s2_ca_text1 {
+            margin-bottom: 3em;
+        }
+
+        .s3_form_toll_tip {
+            margin-left: 0px;
+            right: 200px;
+        }
+
+        .s3-1_form_button {
+            width: 100%;
+        }
+
+        .s3_1_fdb4_inner_lf_lable2 {
+            display: inline;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .more_flight_innerbox {
+            margin-top: 10px;
+        }
+
+        .moreflight_container {
+            margin-top: 0px;
+        }
+
+        .s3_hotel_contacts_box {
+            margin: 10px;
+        }
+
+        .s3_1_fdb_room {
+            padding-top: 5px;
+            padding-bottom: 2px;
+            text-align: center;
+            font-family: 'Conv_Ubuntu-Light';
+        }
+
+            .s3_1_fdb_room span {
+                color: #eb1c24;
+            }
+
+        .check_in, .check_out {
+            text-align: center;
+            color: #eb1c24;
+        }
+        /*.check_out{
+                color: #eb1c24;
+                padding-top: 3px;
+            }*/
+
+        .tim_box1, .tim_box2 {
+            text-align: center;
+            color: #1b1b1b;
+            font-family: Conv_Ubuntu-Light;
+        }
+
+        .hotelIcone {
+            background-image: url('../../Images/ht_t_ico.png');
+            background-repeat: no-repeat;
+            height: 40px;
+        }
+
+        .s3_1_fdb_hotel_name {
+            text-align: center;
+        }
+
+        .hotelinfo {
+            padding-top: 135px;
+        }
+    }
+
+    @@media screen and (max-width: 991px) and (min-width:901px) {
+        .forsscreen {
+            display: none !important;
+        }
+
+        .s3_1_fdb4_inner_ri_ans, .s3_1_fdb4_inner_lf_lable {
+            margin-top: 13px !important;
+        }
+    }
+
+    @@media screen and (max-width: 909px) and (min-width: 901px) {
+        .flight_name {
+            width: 75%;
+        }
+    }
+
+    @@media screen and (max-width: 600px) {
+        /*.s2-1_form_toll_tip_1 {
+                top: 25px;
+                margin-right: 30px !important;
+            }*/
+
+        .s3_1_flight_details_box {
+            padding-bottom: 15px;
+        }
+
+        .s3_1_fdb_i3_da_lable.withline {
+            border-right: 1px solid #0d0d0d;
+        }
+
+        .s3_1_fdb_inner_b2 {
+            border-right: 0px;
+        }
+
+        .hotelinfo {
+            padding-top: 5px;
+        }
+
+        .s3_1_fdb_child_det {
+            margin-top: 0px !important;
+        }
+
+        .expand {
+            height: 320px !important;
+        }
+
+        .s3_1_fdb_room {
+            text-align: center;
+            font-family: 'Conv_Ubuntu-Light';
+        }
+
+            .s3_1_fdb_room span {
+                color: #eb1c24;
+            }
+
+        .s3_1_fdb_i3_da_lable_mob .sty {
+            color: #eb1c24;
+        }
+
+        .s3_1_fdb_i3_da_lable_mob {
+            width: auto;
+            text-align: center;
+        }
+
+        .tim_box1 {
+            color: #1b1b1b;
+            font-family: Conv_Ubuntu-Light;
+        }
+
+        .hotelIcone {
+            background-image: url('../../Images/ht_t_ico.png');
+            background-repeat: no-repeat;
+            height: 40px;
+        }
+
+        .s3_1_fdb_hotel_name {
+            text-align: center;
+        }
+
+        .center {
+            width: auto;
+            text-align: center;
+            padding-left: 0% !important;
+        }
+
+        .s3_1_fdb4_inner_ri_ans {
+            width: auto !important;
+        }
+
+        .s3_1_ans_fig {
+            font-size: 19px;
+            margin-top: -4px;
+        }
+
+        .s3_form_toll_tip {
+            margin-left: -270px;
+        }
+
+        .s3_1_fdb_i3_da_timing .tim_box, .s3_1_fdb_i3_da_timing .img_box, .s3_1_fdb_i3_da_timing, .s3_1_fdb_flight_name, .s3_1_fdb_i3_da_lable {
+            float: none;
+            text-align: center;
+        }
+
+        .s3_1_fdb4_inner_lf_lable2 {
+            display: inline;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .s3_1_ans_fig {
+            float: left !important;
+            font-size: 19px;
+            margin-top: -4px;
+        }
+
+        .s3_1_fdb4_inner_lf_lable2, .s3_1_ans_fig, .show_toltip2 {
+            display: inline-block;
+        }
+
+        .tim_box, .img_box {
+            display: inline-block;
+        }
+
+        .s3_form_toll_tip {
+            right: 12%;
+        }
+
+        .picL2 {
+            margin: 11%;
+        }
+
+        .picL {
+            margin: 5%;
+        }
+
+        .picL3 {
+            margin: 15%;
+        }
+
+        .mobilepic {
+            display: inherit;
+        }
+
+        .mobileonly3 {
+            display: none;
+        }
+
+        .s3_1_fdb_i3_da_lable {
+            padding: 0px;
+            text-align: center;
+        }
+    }
+
+    @@media screen and (max-width: 500px) {
+        .s4_blt_py_con_left {
+            float: left;
+        }
+
+        .s4_blt_py_con_right {
+            float: right;
+        }
+
+        .s4_png_boxright img {
+            width: 90px;
+        }
+
+        .s4_png_boxright {
+            padding-top: 10px;
+        }
+
+        .s4_pnb_inner {
+            width: 100%;
+            margin: 0;
+        }
+
+        .s4_pnb_red_heading {
+            height: 50px;
+            line-height: 50px;
+            font-size: 19px;
+        }
+
+        .s3-1_title {
+            padding-left: 24px !important;
+        }
+
+        .s3_form_toll_tip {
+            right: 0;
+        }
+    }
+
+    @@media screen and (min-width: 500px) {
+        .goup {
+            margin-top: -100px;
+        }
+    }
+
+    @@media screen and (max-width: 736px) and (min-width:601px) {
+        .withoutcrossSale {
+            height: 235px !important;
+        }
+
+        .s3_1_fdb4_inner_lf_lable2 {
+            margin-top: 2px;
+        }
+
+        .show_toltip2 {
+            margin-top: 2px;
+        }
+    }
+
+    @@media only screen and (min-device-width : 375px) and (max-device-width : 667px) { /* STYLES GO HERE */
+        .button-margin {
+            margin-top: -32px;
+        }
+    }
+
+    @@media only screen and (min-device-width : 414px) and (max-device-width : 736px) {
+        .button-margin {
+            margin-top: -32px;
+        }
+    }
+
+    @@media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait) { /* iphone6 */
+        .withoutcrossSale {
+            height: 220px;
+        }
+    }
+
+    @@media only screen and (min-device-width : 414px) and (max-device-width : 736px) and (orientation : portrait) { /* iphone6+ */
+        .withoutcrossSale {
+            height: 220px;
+        }
+    }
+
+
+    @@media screen and (max-width: 460px) {
+        .s4_png_boxright_price, .s4_png_boxright_credit, .s4_png_inner_row_price {
+            font-size: 13px;
+        }
+    }
+
+    @@media screen and (max-width: 400px) {
+        /*.s2-1_form_toll_tip_1 {
+                margin-right: -10px !important;
+            }*/
+
+        .s4_png_inner_row {
+            font-size: 14px;
+        }
+
+        .s4_png_boxright img {
+            width: 70px;
+        }
+
+        .s4_png_boxright {
+            padding-top: 14px;
+        }
+
+        .s4_png_boxleft {
+            padding-right: 8px;
+        }
+
+        .s4_png_boxright_price, .s4_png_boxright_credit {
+            width: 100%;
+            float: left;
+            padding-left: 48px;
+            line-height: normal;
+        }
+    }
+
+    @@media screen and (max-width: 350px) {
+        .center {
+            padding-left: 0% !important;
+        }
+
+        .s3_1_fdb_i3_da_lable_mob {
+            padding-left: 20px;
+        }
+
+        .s3_1_fdb_hotel_name {
+            padding-left: 15px;
+        }
+    }
+
+    @@media screen and (max-width:964px) and (min-width: 902px) {
+        .s3_1_fdb_inner_b3 {
+            min-height: 98px;
+        }
+    }
+</style>
+
+@if (ViewBag.IsOneWay == true)
+{
+    <style>
+        @@media screen and (max-width: 900px) {
+            .s3_1_fdb_inner_b33 {
+                width: 50% !important;
+            }
+
+            .s3_1_fdb_i3_da_lable3 {
+                padding-left: 0;
+                text-align: center;
+            }
+
+            .s3_1_fdb_i3_da_timing {
+                float: none !important;
+            }
+
+                .s3_1_fdb_i3_da_timing .tim_box {
+                    float: none !important;
+                }
+
+                .s3_1_fdb_i3_da_timing .img_box {
+                    float: none !important;
+                }
+
+            .s3_1_fdb_small2 {
+                margin-left: 0;
+            }
+
+            .s3_1_flight_details_box {
+                padding-bottom: 20px !important;
+                padding-top: 10px !important;
+            }
+        }
+
+        @@media screen and (max-width: 600px) {
+            .s3_1_fdb_inner_b2 {
+                border-right: none;
+            }
+
+            .s3_1_fdb_inner_b33 {
+                border-right: 1px solid #0d0d0d;
+            }
+
+            .tim_box, .img_box {
+                display: inline-block;
+            }
+
+            .s3_1_fdb_i3_da_lable3 {
+                padding-left: 0;
+                text-align: center;
+            }
+
+            .s3_1_fdb_i3_da_timing {
+                float: none !important;
+            }
+
+                .s3_1_fdb_i3_da_timing .tim_box {
+                    float: none !important;
+                }
+
+                .s3_1_fdb_i3_da_timing .img_box {
+                    float: none !important;
+                }
+
+            .s3_1_fdb_small2 {
+                margin-left: 0;
+            }
+        }
+
+        @@media screen and (max-width: 900px) and (min-width: 601px) {
+            .mob_passengerdetails {
+                width: 50%;
+                padding-top: 30px;
+                padding-bottom: 5px !important;
+                padding-top: 5px !important;
+            }
+        }
+    </style>
+}

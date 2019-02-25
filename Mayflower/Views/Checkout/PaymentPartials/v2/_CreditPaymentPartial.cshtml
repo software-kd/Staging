@@ -1,0 +1,81 @@
+﻿@using Alphareds.Module.Model.Database;
+@model Alphareds.Module.Model.PaymentCheckout
+
+@if (User.Identity.IsAuthenticated)
+{
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+    var credit = Model.AvailableCredit;
+    bool isAgent = customPrincipal.IsAgent;
+    string label = isAgent ? "Agent Credit" : "Travel Credit";
+
+    #region Credit Checking
+    //agent user
+    bool checkCreditTermValid = true;
+    string checkAgentCreditValid = null;
+    if (isAgent)
+    {
+        checkCreditTermValid = customPrincipal.CreditTerm > 0;
+        checkAgentCreditValid = credit <= 0 ? "isInvalid" : checkCreditTermValid ? null : "isInvalid";
+    }
+    #endregion
+
+    string clientName = Html.NameFor(m => m.UseCredit).ToString();
+
+    PromoCodeRule promoCodeRule = ViewBag.PromoCodeRule;
+    bool AllowWithTC = ViewBag.AllowWithTC ?? false;
+    bool allowUseTC = ((promoCodeRule != null && promoCodeRule.DiscountAmtOrPCT == 0) || ViewBag.PromoID == 0 || AllowWithTC) && !Model.NotAllowUsingTC;
+
+    bool ischeckboxDisable = (credit <= 0 || (Model.CreditUsed <= 0 && (Model.PaymentMethod == "tw" ? Model.DepositAmt == 0 : Model.GrandTotalForPayment == 0))) || !allowUseTC;
+    string checkBoxHtmlCSSDisable = ischeckboxDisable ? "disabled" : null;
+
+    string tooltipsMsg = "<div class='customize-tooltips-list'><ul>";
+
+    if (isAgent)
+    {
+        tooltipsMsg += "<li>100 % of your total payable is allowed to be redeemed using Agent Credit.</li>";
+    }
+    else
+    {
+        tooltipsMsg += "<li>Travel Credit not available for discounted booking (ex. Promo Code).</li>";
+        tooltipsMsg += "<li>Only a maximum of 20 % of your total payable is allowed to be redeemed using Travel Credit.</li>";
+    }
+
+    tooltipsMsg += "</ul></div>";
+
+    <!-- Payment Single -->
+
+    <div class="payment-single @(Model.CreditUsed > 0 ? "in" : "")" data-pmethod="TC">
+        <div class="payment-top custom-checkbox">
+            <label>
+                <input type="checkbox" id="@clientName" name="@clientName" value="true" @(Model.UseCredit && !ischeckboxDisable ? "checked" : "") @checkBoxHtmlCSSDisable>
+                <span class="d-inline-block">
+                    <strong>
+                        @label
+                        <img src="~/images/toll_tip.png" style="vertical-align: top; margin-left: 1em;" data-toggle="tooltip" data-html="true" data-placement="top" title="@Html.Raw(tooltipsMsg)" />
+                    </strong>
+                    <br>Balance @Model.PaymentCurrencyCode @Model.DisplayBalCreditAmt.ToString("n2")
+                </span>
+            </label>
+            <p>Payable: <i>@(Model.CreditUsed > 0 ? $"{Model.PaymentCurrencyCode} {Model.CreditUsed.ToString("n2")}" : "")</i></p>
+        </div>
+    </div>
+
+    if (!isAgent)
+    {
+        object walletchkboxHtmlCSSDisable = Model.EWallet.BalanceAmt <= 0 && Model.EWallet.UseAmt <= 0 ? "disabled" : null;
+        clientName = Html.NameFor(m => m.EWallet.UseWallet).ToString();
+        label = "Travel Wallet";
+
+        <div class="payment-single @(Model.EWallet.UseAmt > 0 ? "in" : "")" data-pmethod="TW">
+            <div class="payment-top custom-checkbox">
+                <label>
+                    <input type="checkbox" id="@clientName" name="@clientName" value="true" @(Model.EWallet.UseWallet ? "checked" : "") @walletchkboxHtmlCSSDisable>
+                    <span class="d-inline-block"><strong>Travel Wallet</strong><br>Balance @Model.EWallet.CurrencyCode @Model.EWallet.DisplayBalAmt.ToString("n2")</span>
+                </label>
+                <p>Payable: <i>@(Model.EWallet.UseAmt > 0 ? $"{Model.PaymentCurrencyCode} {Model.EWallet.UseAmt.ToString("n2")}" : "")</i></p>
+            </div>
+        </div>
+    }
+
+    <!-- ./Payment Single -->
+}

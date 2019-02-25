@@ -1,0 +1,47 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.ProductCarRental.SearchCriteria
+@{
+    string tripid = Request.QueryString["tripid"];
+    Alphareds.Module.CarRentalWebService.CRWS.OTA_GetBranchRS locationList = ViewBag.locationList;
+    List<SelectListItem> LocationCodeList = locationList != null && locationList.Success == "true" ? (from a in locationList.GetBranchRSCore.GroupBy(x => new { x.State, x.City }).OrderByDescending(x=>x.Key.City=="Langkawi")
+                                                                                                      select new SelectListItem
+                                                                                                      {
+                                                                                                          Text = a.Key.City,
+                                                                                                          Value = a.Key.State,
+                                                                                                          Selected = Model.locationCode == a.Key.State
+                                                                                                      }).ToList() : new List<SelectListItem>();
+}
+@using (Html.BeginForm("GetCarRentalSearch", "CarRental", new { tripid, newsearch = "1" }, FormMethod.Post))
+{
+    <div class="section box-top-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="top-filter">
+                        <div class="filter-item">
+                            <div class="form-group">
+                                @Html.DropDownListFor(model => model.locationCode, LocationCodeList, new { @id = "locationCode", @placeholder = "Choose a Location...", @class = "chosen-select form-control" })
+                            </div>
+                        </div>
+                        <div class="filter-item">
+                            <div class="form-group">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1" style="border: none;background-color: transparent;">
+                                            <img src="/images/assets/icon_calendar.png" alt="">
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(Model => Model.RentalPeriod, new { @placeholder = "select date", @class = "form-control data" })                                </div>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(model=>model.PickupDateTime)
+                        @Html.HiddenFor(model => model.ReturnDateTime)
+                        <div class="filter-item">
+                            <button type="submit" class="btn btn-block updateBtn" href="###">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

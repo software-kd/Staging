@@ -1,0 +1,856 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    ViewBag.HeaderRed = true;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+    string cmsUrl = Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("AlphaReds.CMSUrl");
+
+    bool isB2BAgentAndAllowHold = User.Identity.IsAuthenticated && CustomPrincipal.IsAgent && Model.Hotel == null
+        && Model.Flight != null && Model.Flight.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.SACS;
+
+    if (isB2BAgentAndAllowHold)
+    {
+        ViewBag.IsAllowPaymentLater = true;
+    }
+    bool displayPrice = !Model.IsFixedPrice;
+    string tripid = Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    bool isEventBundleBooking = Model.Flight == null && Model.Hotel == null && Model.AddOnProduct != null;
+
+    ViewBag.Title = "Payment";
+    ViewBag.tripid = tripid;
+
+    ViewBag.ReturnAction = Model.SellItemsAvailable.EventProducts != null || Model.SellItemsAvailable.Hotels != null || Model.SellItemsAvailable.Insurance != null ?
+        Url.Action("AddOn", "Checkout", new { tripid, affiliationId }) : Url.Action("GuestDetails", "Checkout", new { tripid, affiliationId });
+    ViewBag.IsCarRental = Model.Hotel == null && Model.Flight == null && Model.CarRental != null;
+
+    Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+
+    PromoCodeRule promoCodeRule = Model.PromoID != 0 ? db.PromoCodeRules.FirstOrDefault(x => x.PromoID == Model.PromoID) : null;
+
+    string currencyCode = Model.CheckOutSummary.CurrencyCode;
+    List<bool> htIsNonRefundable = new List<bool>();
+    List<string> htCancellationPolicyList = new List<string>();
+
+    BundleTable.Bundles.Clear();
+    BundleTable.Bundles.Add(new ScriptBundle("~/js/bundlev2")
+                        .Include(@"~/Scripts/v3.0/page-payment.js"));
+
+    //Modify Summary Layout 30-10-18
+    int adtCount = 0, cnnCount = 0, infCount = 0, typeCount = 0, index_item = 0, index_item2 = 0, index_type = 0, index_addOn = 0;
+    string passengerType = "";
+}
+
+@section style{
+    @if (Core.IsEnableAdyen)
+    {
+        <link href="@Url.Content("~/CSS/checkout/adyencc.min.css")?ver=@DateTime.Now.ToString("yyyyMMddhh")" rel="stylesheet" />
+    }
+}
+
+
+@using (Html.BeginForm("Payment", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { id = "checkoutForm" }))
+{
+    <!-- Booker Details -->
+    <div class="booker-details m-u-20">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="booker-details-left">
+                        <div class="booker-header">
+                            <ul>
+                                @if (Model.TourPackage != null || (Model.AddOnProduct != null && Model.Hotel == null && Model.Flight == null))
+                                {
+                                    <li>Payment</li>
+                                }
+                                else
+                                {
+                                    <li>@(Model.CheckoutStep >= 3 ? Html.Raw($"<a href='{Url.Action("guestdetails", "checkout", new { tripid })}' class='text-white'>") : null)1. Contact/Guest Details@(Model.CheckoutStep >= 3 ? Html.Raw("</a>") : null)</li>
+                                    <li>@(Model.CheckoutStep >= 4 ? Html.Raw($"<a href='{Url.Action("addon", "checkout", new { tripid })}' class='text-white'>") : null)2. Addons@(Model.CheckoutStep >= 4 ? Html.Raw("</a>") : null)</li>
+                                    <li class="active">@(Model.CheckoutStep >= 5 ? Html.Raw($"<a href='{Url.Action("payment", "checkout", new { tripid })}' class='text-white'>") : null)3. Payment@(Model.CheckoutStep >= 5 ? Html.Raw("</a>") : null)</li>
+                                    <li>4. Confirmation</li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="booker-body shadow bg-white">
+                            <div class="payment-details">
+                                <h3>Reservation Summary</h3>
+                                <div class="payment-sum">
+                                    <ul>
+                                        @foreach (var product in Model.Products.GroupBy(grp => grp.ProductType))
+                                        {
+                                            var allInPrice = product.Sum(x => x.PricingDetail.BaseRate_BeforeDisc) + product.Sum(x => x.PricingDetail.Surcharge) + product.Sum(x => x.PricingDetail.GST);
+                                            bool isEventBundle = Model.Hotel == null && Model.Flight == null && Model.AddOnProduct != null;
+
+                                            if (Model.Products.Count == 1 & Model.Hotel != null && false)
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                if (Model.CarRental != null)
+                                                {
+                                                    foreach (var item in product.SelectMany(x => x.PricingDetail.Items))
+                                                    {
+                                                        <li>
+                                                            <span>@item.ItemDetail</span>
+                                                            <span>@currencyCode @item.TTlBaseRate.ToString("n2")</span>
+                                                        </li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <span>@(Model.TourPackage != null ? "Tour Package" : (isEventBundle ? "Concert Bundle" : product.Key.ToString().AddSpacingAfterUpCase() == "Add On Products" ? "Add On" : product.Key.ToString().AddSpacingAfterUpCase()) )</span>
+                                                        @if (displayPrice)
+                                                        {
+                                                            if (true || product.Key != ProductTypes.AddOnProducts)
+                                                            {
+                                                                <span>@currencyCode @allInPrice.ToString("n2")</span>
+                                                            }
+                                                        }
+                                                    </li>
+                                                }
+
+                                                if (Core.IsTestInstantDisc && Model.IsDynamic)
+                                                {
+                                                    <li class="payment-detail-item-list">
+                                                        <span class="text-danger font-italic">Selling: @currencyCode @product.Sum(x => x.PricingDetail.ProductTotalAmount).ToString("n2") &nbsp;/&nbsp;&nbsp;Cost: @currencyCode @product.Sum(x => x.PricingDetail.ProductTtlAmount_SupplierSource).ToString("n2")</span>
+                                                        <span></span>
+                                                    </li>
+                                                }
+                                                foreach (var item in product.Where(x => x.ProductType != ProductTypes.CR).SelectMany(x => x.PricingDetail.Items))
+                                                {
+                                                    if (product.Key == ProductTypes.Hotel)
+                                                    {
+                                                        var roomGrp = Model.Hotel.RoomDetails.GroupBy(x => x.RoomTypeName);
+                                                        foreach (var room in roomGrp)
+                                                        {
+                                                            var roomPriceTotal = room.Sum(x => x.TotalBaseRate_BeforeDiscount) + room.Sum(x => x.TotalTaxAndServices) + room.Sum(x => x.TotalGST);
+
+                                                            var guestList = Model.Hotel.RoomDetails;
+                                                            var index_room = 0;
+                                                            var hotelTitle = !Model.IsDynamic ? "Guest(s) name" : "Contact name";
+                                                            var roomTitle = "";
+
+                                                            if (index_item2 == 0)
+                                                            {
+                                                                <li class="mb-0">@hotelTitle</li>
+                                                                index_item2++;
+                                                            }
+
+                                                            foreach (var guest in guestList)
+                                                            {
+                                                                if (!Model.IsDynamic)
+                                                                {
+                                                                    index_room++;
+                                                                }
+
+                                                                roomTitle = !Model.IsDynamic ? "Room " + index_room.ToString() + ": " : "Name: ";
+                                                                var fullName = char.ToUpper(guest.GivenName[0]) + guest.GivenName.Substring(1) + " " + char.ToUpper(guest.Surname[0]) + guest.Surname.Substring(1);
+                                                                <li class="mb-0">@roomTitle&nbsp;@fullName</li>
+
+                                                                if (Model.IsDynamic)
+                                                                {
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            <li class="payment-detail-item-list ml-2">
+                                                                <span>
+                                                                    @room.Key x @room.Count()
+                                                                    @if (Core.IsForStaging)
+                                                                    {
+                                                                        <span class="payment-detail-item-list text-danger font-italic ml-2">(Base: @currencyCode @room.Sum(x => x.TotalBaseRate_BeforeDiscount).ToString("#,##0.00"))</span>
+                                                                    }
+                                                                </span>
+                                                                @if (displayPrice || allInPrice != roomPriceTotal || roomGrp.Count() > 1)
+                                                                {
+                                                                    <span>@currencyCode @roomPriceTotal</span>
+                                                                }
+                                                            </li>
+
+                                                            var pernight = room.SelectMany(x => x.ChargeableRatePerNight).GroupBy(x => x.CheckInDate);
+                                                            var firstNight = pernight.First().Key.ToString("dd MMM (ddd)");
+                                                            var lastNight = pernight.Last().Key.ToString("dd MMM (ddd)");
+                                                            var nightDuration = firstNight == lastNight ? firstNight : firstNight + " - " + lastNight;
+                                                            <li class="payment-detail-item-list ml-4">
+                                                                <span>@nightDuration</span>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    else if (product.Key == ProductTypes.Insurance)
+                                                    {
+                                                        int paxCountForInsurance = Model.Insurance.TotalQuotePax;
+                                                        <li class="ml-2"><span>&bull; @item.ItemDetail x @paxCountForInsurance &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/ScheduleOfBenefits.pdf" target="_blank" style="font-size: 12px;">Click to view Full Coverage</a></span></li>
+                                                    }
+                                                    else if (product.Key == ProductTypes.TP)
+                                                    {
+                                                        <li class="ml-2"><span>&bull; @item.ItemDetail @(item.ItemDetail.Contains("Tour Guide") || item.ItemDetail.Contains("Entrances") || item.ItemDetail.Contains("Transport") ? "" : "x " + item.ItemQty)</span></li>
+                                                    }
+                                                    else if (product.Key == ProductTypes.Flight)
+                                                    {
+                                                        List<TravellerDetail> traveller = Model.Flight.TravellerDetails;
+                                                        foreach (var people in traveller)
+                                                        {
+                                                            if (index_item < traveller.Count)
+                                                            {
+                                                                List<KeyValuePair<KeyValuePair<string, string>, string>> ssrList = new List<KeyValuePair<KeyValuePair<string, string>, string>>();
+                                                                List<KeyValuePair<string, string>> baggageList = Alphareds.Module.Common.UtilitiesService.AirAsiaSSR(FlightSSR.Baggage, false);
+                                                                List<KeyValuePair<string, string>> mealList = Alphareds.Module.Common.UtilitiesService.AirAsiaSSR(FlightSSR.Meal, false);
+                                                                var index_name = index_item + 1;
+                                                                var name_num = "";
+                                                                var sameType = false;
+                                                                var lowerCase = passengerType.ToLower();
+                                                                var nameTitle = traveller[index_item].Title.Substring(0, 1) + traveller[index_item].Title.Substring(1).ToLower() + ".";
+                                                                var fullName = char.ToUpper(traveller[index_item].GivenName[0]) + traveller[index_item].GivenName.Substring(1) + " " + char.ToUpper(traveller[index_item].Surname[0]) + traveller[index_item].Surname.Substring(1);
+                                                                List<KeyValuePair<string, string>> baggage = new List<KeyValuePair<string, string>>();
+                                                                bool hasBegg = false, hasMeal = false;
+                                                                var departCode = "(" + Model.Flight.SearchFlightInfo.DepartureStationCode + "-" + Model.Flight.SearchFlightInfo.ArrivalStationCode + ")";
+                                                                var returnCode = "(" + Model.Flight.SearchFlightInfo.ArrivalStationCode + "-" + Model.Flight.SearchFlightInfo.DepartureStationCode + ")";
+
+                                                                if (index_item == 0)
+                                                                {
+                                                                    <li class="mb-0">Traveller(s) name</li>
+                                                                    foreach (var guest in traveller)
+                                                                    {
+                                                                        if (guest.PassengerType == "ADT")
+                                                                        {
+                                                                            adtCount++;
+                                                                        }
+                                                                        else if (guest.PassengerType == "CNN")
+                                                                        {
+                                                                            cnnCount++;
+                                                                        }
+                                                                        else if (guest.PassengerType == "INF")
+                                                                        {
+                                                                            infCount++;
+                                                                        }
+                                                                    }
+                                                                    passengerType = traveller[index_item].PassengerType;
+                                                                }
+                                                                else
+                                                                {
+                                                                    sameType = passengerType == traveller[index_item].PassengerType ? true : false;
+                                                                }
+
+                                                                passengerType = traveller[index_item].PassengerType;
+                                                                typeCount = passengerType == "ADT" ? adtCount : passengerType == "CNN" ? cnnCount : passengerType == "INF" ? infCount : 0;
+
+                                                                if (!sameType)
+                                                                {
+                                                                    if (index_type == 0)
+                                                                    {
+                                                                        <li class="mb-0">@passengerType&nbsp;X @typeCount</li>
+                                                                        index_type++;
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    index_type = 0;
+                                                                }
+
+                                                                if (typeCount > 1)
+                                                                {
+                                                                    name_num = "Name " + index_name + ": ";
+                                                                }
+                                                                else
+                                                                {
+                                                                    name_num = "Name: ";
+                                                                }
+
+                                                                <li class="mb-0">@name_num&nbsp;@fullName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.O.B: @(Convert.ToDateTime(traveller[index_item].DOB).ToString("dd MMM yyyy"))</li>
+
+                                                                if (traveller[index_item].OutBoundSSR != null)
+                                                                {
+                                                                    foreach (var outBound in traveller[index_item].OutBoundSSR.Where(x => x.SSRType == FlightSSR.Baggage))
+                                                                    {
+                                                                        var nothing = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>("NB", "No Checked Baggage"), departCode);
+                                                                        if (!string.IsNullOrEmpty(outBound.SSRCode))
+                                                                        {
+                                                                            var tempBagg = baggageList.FirstOrDefault(x => x.Key == outBound.SSRCode);
+                                                                            if (tempBagg.Key != null && tempBagg.Value != null)
+                                                                            {
+                                                                                var baggSelected = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>(tempBagg.Key, tempBagg.Value), departCode);
+                                                                                ssrList.Add(baggSelected);
+                                                                                hasBegg = true;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            ssrList.Add(nothing);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (traveller[index_item].InBoundSSR != null)
+                                                                {
+                                                                    foreach (var inBound in traveller[index_item].InBoundSSR.Where(x => x.SSRType == FlightSSR.Baggage))
+                                                                    {
+                                                                        var nothing = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>("NB", "No Checked Baggage"), returnCode);
+                                                                        if (!string.IsNullOrEmpty(inBound.SSRCode))
+                                                                        {
+                                                                            var tempBagg = baggageList.FirstOrDefault(x => x.Key == inBound.SSRCode);
+                                                                            if (tempBagg.Key != null && tempBagg.Value != null)
+                                                                            {
+                                                                                var baggSelected = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>(tempBagg.Key, tempBagg.Value), returnCode);
+                                                                                ssrList.Add(baggSelected);
+                                                                                hasBegg = true;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            ssrList.Add(nothing);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (traveller[index_item].OutBoundSSR != null)
+                                                                {
+                                                                    foreach (var outBound in traveller[index_item].OutBoundSSR.Where(x => x.SSRType == FlightSSR.Meal))
+                                                                    {
+                                                                        var nothing = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>("NM", "No Checked Meal"), departCode);
+                                                                        if (!string.IsNullOrEmpty(outBound.SSRCode))
+                                                                        {
+                                                                            var tempMeal = mealList.FirstOrDefault(x => x.Key == outBound.SSRCode);
+                                                                            if (tempMeal.Key != null && tempMeal.Value != null)
+                                                                            {
+                                                                                var mealSelected = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>(tempMeal.Key, tempMeal.Value), departCode);
+                                                                                ssrList.Add(mealSelected);
+                                                                                hasMeal = true;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            ssrList.Add(nothing);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (traveller[index_item].InBoundSSR != null)
+                                                                {
+                                                                    foreach (var inBound in traveller[index_item].InBoundSSR.Where(x => x.SSRType == FlightSSR.Meal))
+                                                                    {
+                                                                        var depToArr = "(" + Model.Flight.SearchFlightInfo.DepartureStationCode + "-" + Model.Flight.SearchFlightInfo.ArrivalStationCode + ")";
+                                                                        var nothing = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>("NM", "No Checked Meal"), returnCode);
+                                                                        if (!string.IsNullOrEmpty(inBound.SSRCode))
+                                                                        {
+                                                                            var tempMeal = mealList.FirstOrDefault(x => x.Key == inBound.SSRCode);
+                                                                            if (tempMeal.Key != null && tempMeal.Value != null)
+                                                                            {
+                                                                                var mealSelected = new KeyValuePair<KeyValuePair<string, string>, string>(new KeyValuePair<string, string>(tempMeal.Key, tempMeal.Value), returnCode);
+                                                                                ssrList.Add(mealSelected);
+                                                                                hasMeal = true;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            ssrList.Add(nothing);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (ssrList != null)
+                                                                {
+                                                                    foreach (var selected in ssrList)
+                                                                    {
+                                                                        string tempKey = selected.Key.Key;
+                                                                        string tempValue = selected.Key.Value;
+                                                                        string arrDepCode = selected.Value;
+                                                                        var value = "";
+                                                                        if (tempKey.Contains("PBA"))
+                                                                        {
+                                                                            value = "Check Baggage " + tempValue;
+                                                                        }
+                                                                        else if (!hasBegg && !hasMeal && tempKey.Contains("NB"))
+                                                                        {
+                                                                            value = tempValue;
+                                                                        }
+                                                                        else if (!hasBegg && hasMeal && !tempKey.Contains("NB") && !tempKey.Contains("NM"))
+                                                                        {
+                                                                            value = tempValue;
+                                                                        }
+                                                                        else if (hasBegg && hasMeal && !tempKey.Contains("NB") && !tempKey.Contains("NM"))
+                                                                        {
+                                                                            value = tempValue;
+                                                                        }
+
+                                                                        if (value != "")
+                                                                        {
+                                                                            <li class="mb-0">@value&nbsp;@arrDepCode</li>
+                                                                        }
+                                                                    }
+                                                                }
+                                                                <li></li>
+                                                                index_item++;
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (product.Key == ProductTypes.AddOnProducts)
+                                                    {
+                                                        foreach (Alphareds.Module.Model.Database.usp_EventMasterSelect_Result headerInfo in Model.SellItemsAvailable.EventProducts.HeaderInfo.Where(x => item.ItemDetail.StartsWith(x.EventName)))
+                                                        {
+                                                            foreach (var ticket in Model.AddOnProduct.TicketInfo.Where(x => x.EventID == headerInfo.EventID))
+                                                            {
+                                                                if (index_addOn <= Model.AddOnProduct.TicketInfo.Count())
+                                                                {
+                                                                    if (headerInfo.EventTypeCode == "SC")
+                                                                    {
+                                                                        var eventName_temp = headerInfo.EventName.ToLower();
+                                                                        var eventName = char.ToUpper(eventName_temp[0]) + eventName_temp.Substring(1);
+                                                                        <li class="ml-2"><span>&bull;@eventName&nbsp;@ticket.TicketCategory x @ticket.OrderedQty</span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li class="ml-2"><span>&bull; @item.ItemDetail x @item.ItemQty</span></li>
+                                                                        @*<li class="ml-2"><span>&bull; @ticket.ItemDesc @ticket.TicketCategory x @ticket.OrderedQty</span></li>*@
+                                                                    }
+                                                                    index_addOn++;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="ml-2"><span>&bull; @item.ItemDetail x @item.ItemQty</span></li>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        <li>
+                                            <span>Processing Fee</span>
+                                            <span>@currencyCode <span class="ProcessingFee">@Model.CheckOutSummary.ProcessingFee.TtlAmt.ToString("n2")</span></span>
+                                        </li>
+
+                                        @if (Model.IsDynamic && Model.CheckOutSummary.DiscountDetails.Where(s => s.DiscType == DiscountType.PD).Count() > 0)
+                                        {
+                                            decimal ttlCodeDisc = Model.CheckOutSummary.DiscountDetails.Where(s => s.DiscType == DiscountType.PD).Sum(s => s.Disc_Amt);
+                                            <li id="instantdisc_detail">
+                                                <span class="list-item-desc">Instant Discount</span>
+                                                <span class="list-item-amt">@currencyCode @((-Math.Abs(ttlCodeDisc)).ToString("n2"))</span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li id="instantdisc_detail" class="instantdiscdiv">
+                                                <span class="list-item-desc"></span>
+                                                <span class="list-item-amt"></span>
+                                            </li>
+                                        }
+
+                                        @if (Model.PromoID != 0)
+                                        {
+                                            decimal ttlCodeDisc = Model.CheckOutSummary.DiscountDetails.Where(s => s.DiscType == DiscountType.CODE).Sum(s => s.Disc_Amt);
+                                            // Promo Code Section Here
+                                            bool isHidePromoCode = Model.PromoCodeFunctions.GetFrontendFunction.FlightAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.HotelAutoApplied
+                                                || Model.PromoCodeFunctions.GetFrontendFunction.PackageAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.PromoCodeHideForCustomer;
+                                            string displaypromoname = string.IsNullOrWhiteSpace(promoCodeRule.DisplayPromoName) ? null : $" - {promoCodeRule.DisplayPromoName}";
+                                            string displaypromocode = $"Promo Code {(!isHidePromoCode ? $"({promoCodeRule.PromoCode}{displaypromoname})" : "")}";
+
+                                            <li class="pcode_detail">
+                                                <span id="p_left">
+                                                    @displaypromocode
+                                                    @if (!Model.PromoCodeFunctions.GetFrontendFunction.WaiveCreditCardFee)
+                                                    {
+                                                        <span><a id="promo-remove" href="javascript:;">Remove</a></span>
+                                                    }
+                                                </span>
+                                                <span id="p_right">
+                                                    @currencyCode @((-Math.Abs(ttlCodeDisc)).ToString("n2"))
+                                                </span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="pcode_detail">
+                                                <span id="p_left"></span>
+                                                <span id="p_right"></span>
+                                            </li>
+                                        }
+
+                                        <li>
+                                            <span>Total Price</span>
+                                            <span>@currencyCode <span class="TotalPrice">@((Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary).ToString("n2"))</span></span>
+                                        </li>
+                                    </ul>
+                                    @if (Model.TourPackage != null && (Model.TourPackage.TourPackageDetails.IsDepositOnly ?? false))
+                                    {
+                                        bool isDepositFixed = Model.TourPackage.TourPackageDetails.DepositTypeCode == "FIX";
+                                        decimal depositRate = Model.TourPackage.TourPackageDetails.DepositRate ?? 100;
+                                        decimal depositprice = isDepositFixed ? (depositRate * Model.TourPackage.TourPackagesInfo.NoOfPax) : (Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary * depositRate / 100);
+                                        <ul>
+                                            <li>
+                                                <span>Deposit Amount (@(isDepositFixed ? currencyCode + depositRate + " per pax" : Convert.ToInt32(depositRate) + "%"))</span>
+                                                <span>@currencyCode <span class="DepositPrice">@(Model.CheckOutSummary != null ? Model.CheckOutSummary.DepositAmt.ToString("n2") : depositprice.ToString("n2"))</span></span>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if (Model.Hotel != null)
+                                    {
+                                        bool gotHotelInstruction = Model.Hotel.HotelInstrusction != null && (!string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.NotificationFee) ||
+                                        !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.MandatoryFee) || !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.SpecialCheckInInstruction) ||
+                                        !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.KnowBeforeYouGoDesc));
+                                        bool HBHotelRateDesc = Model.Hotel.RoomSelected.HotelRoomInformationList.FirstOrDefault().hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.HotelBeds &&
+                                            Model.Hotel.RoomSelected.HotelRoomInformationList.Any(x => x.roomAvailabilityDetailsList.FirstOrDefault()?.rateDescription != null);
+
+                                        htCancellationPolicyList = Model.Hotel.RoomSelected?.HotelRoomInformationList?
+                                                                    .SelectMany(x => x.roomAvailabilityDetailsList)
+                                                                    ?.SelectMany(x => x.RateInfos)?.Select(x =>
+                                                                    {
+                                                                        htIsNonRefundable.Add(x.nonRefundable);
+                                                                        return x.cancellationPolicy;
+                                                                    })
+                                                                    ?.Distinct()?.ToList() ?? new List<string>();
+
+                                        if (gotHotelInstruction || HBHotelRateDesc)
+                                        {
+                                            <div class="custom-hotel-instruc">
+
+                                                @if (gotHotelInstruction)
+                                                {
+                                                    var checkoutHotelModel = Model.Hotel.HotelInstrusction;
+                                                    if (!string.IsNullOrEmpty(checkoutHotelModel.NotificationFee))
+                                                    {
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Notification and Fees</u></div>
+                                                            @Html.Raw(checkoutHotelModel.NotificationFee)
+                                                        </div>
+                                                    }
+
+                                                    if (!string.IsNullOrEmpty(checkoutHotelModel.MandatoryFee))
+                                                    {
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Mandatory Fees</u></div>
+                                                            @Html.Raw(checkoutHotelModel.MandatoryFee)
+                                                        </div>
+                                                    }
+
+                                                    if (!string.IsNullOrEmpty(checkoutHotelModel.KnowBeforeYouGoDesc))
+                                                    {
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Know Before You Go</u></div>
+                                                            @Html.Raw(checkoutHotelModel.KnowBeforeYouGoDesc)
+                                                        </div>
+                                                    }
+
+                                                    if (!string.IsNullOrEmpty(checkoutHotelModel.CheckInInstruction))
+                                                    {
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Check In Instruction</u></div>
+                                                            @Html.Raw(checkoutHotelModel.CheckInInstruction)
+                                                        </div>
+                                                    }
+
+                                                    if (!string.IsNullOrEmpty(checkoutHotelModel.SpecialCheckInInstruction))
+                                                    {
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Special Check In Instruction</u></div>
+                                                            @Html.Raw(checkoutHotelModel.SpecialCheckInInstruction)
+                                                        </div>
+                                                    }
+                                                }
+                                                @if (HBHotelRateDesc)
+                                                {
+                                                    foreach (var room in Model.Hotel.RoomSelected.HotelRoomInformationList)
+                                                    {
+                                                        List<string> ratedesclist = room.roomAvailabilityDetailsList.FirstOrDefault().rateDescription.Split(new string[] { ". -" }, StringSplitOptions.None).ToList<string>();
+                                                        <div class="custom-instruc-content">
+                                                            <div><u>Rate Description</u></div>
+                                                            @foreach (var ratedesc in ratedesclist)
+                                                            {
+                                                                @ratedesc<br />
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+
+
+                                            </div>
+                                        }
+                                    }
+
+                                    <div class="custom-hotel-instruc">
+                                        <div class="custom-instruc-content">
+                                            <div><u>Cancellation Policy</u></div>
+                                            <ul>
+                                                @if (htCancellationPolicyList.Count > 0)
+                                                {
+                                                    <li>
+                                                        Hotel Cancellation Policy:
+                                                        <ul style="list-style-type: circle">
+                                                            @foreach (var item in htIsNonRefundable.Distinct())
+                                                            {
+                                                                if (item)
+                                                                {
+                                                                    <li>Non-Refundable.</li>
+                                                                }
+                                                            }
+
+                                                            @foreach (var _policy in htCancellationPolicyList)
+                                                            {
+                                                                if (!string.IsNullOrWhiteSpace(_policy))
+                                                                {
+                                                                    <li>@_policy.Trim()</li>
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+
+                                                <li>In the event that you make any amendments to your booking (including, but not limited to, cancellations, refunds and amendments), paid amount will be refunded into your member's account in the form of 'Travel Wallet'. </li>
+                                                <li>Mayflower Holidays Sdn. Bhd. reserves the absolute right to charge you an administration fee of not more than RM100 per person to cover the administration costs incurred by Mayflower Holidays Sdn Bhd should you insist to refund in cash form. </li>
+                                                <li>More policies here - <a href="https://www.mayflower.com.my/cancel">Mayflower Cancellation Policy</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (ViewBag.IsCarRental)
+                                {
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p class="f-14 f-400">
+                                                Special Pick-up Instruction The credit card used to book the reservation must be presented by the cardholder at check-in. For more details, please contact the office using the information on the reservation confirmation received after
+                                                booking.
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-12">
+                                    <div class="form-tag type-2">Payment Method</div>
+                                </div>
+                                <div class="payment-methods">
+                                    @{
+                                        bool isPromoCodeUsed = promoCodeRule != null;
+                                        ViewBag.PromoCodeRule = promoCodeRule;
+                                        ViewBag.PromoID = Model.PromoID;
+                                        ViewBag.AllowWithTC = Model.PromoCodeFunctions.GetFrontendFunction.AllowWithTC;
+
+                                        @Html.Partial("~/Views/Checkout/PaymentPartials/v2/_PaymentMethodPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())
+
+                                    }
+
+                                    @if (Model.TourPackage == null && !isEventBundleBooking && !Model.PaymentDetails.NotAllowUsingPromoCode)
+                                    {
+                                        <div style="margin-left: -1.6em" class="promo-container pItem">
+                                            <div class="mt-3">
+                                                <div class="form-inline">
+                                                    <div class="input-group">
+                                                        <img style="height: 100%" class="mb-2 mr-sm-2" src="~/Images/promo_code.png" />
+
+                                                        <div class="input-group promo-container pItem"
+                                                             style="width:71%">
+                                                            <label class="sr-only" for="pCode">Promo Code</label>
+                                                            <input id="promo-code" type="text" class="form-control mb-2 mr-sm-2" placeholder="Promo Code" autocomplete="off"
+                                                                   value="@(isPromoCodeUsed && !(Model.PromoCodeFunctions.GetFrontendFunction.PromoCodeHideForCustomer ||
+                                                                            Model.PromoCodeFunctions.GetFrontendFunction.FlightAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.HotelAutoApplied
+                                                                            || Model.PromoCodeFunctions.GetFrontendFunction.PackageAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.PackageAutoAppliedHotel) ?
+                                                                            promoCodeRule.PromoCode.ToUpper() : "")" />
+                                                            <button id="apply-code" type="button" class="btn btn-success mb-2">Apply</button>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: -5px;margin-left: 50px;font-size: 14px;height: 22px;overflow-y: hidden;">
+                                            <span class="textforerrormsg promo-sMsg text-danger">@(isPromoCodeUsed ? promoCodeRule.DisplayPromoName : "")</span>
+                                            <span style="margin-top: 5px;display: block;font-family: 'UbuntuBold';font-size: 16px;">
+                                                <img class="code-checking" src="/Images/loading_40x40.gif" style="width: 20px;float: left;display: none">
+                                                <span class="code-msg"></span>
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="payment-terms">
+                                    @*<div class="form-group custom-checkbox">
+                                            <label>
+                                                <input id="contesttnc" type="checkbox" name="contesttnc"><span>By ticking this box, I agree to all of the Terms & Conditions of this Buy Travel Win Contest.</span>
+                                            </label>
+                                        </div>*@
+                                    <div class="form-group custom-checkbox">
+                                        <label>
+                                            <input id="tnc" type="checkbox" name="tnc" value="true">
+                                            <span style="display: block;">
+                                                I agree to all the <a href="@cmsUrl/tnc">Terms & Conditions</a> of Mayflower Holidays.
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group custom-checkbox">
+                                        <label>
+                                            <input id="policy" type="checkbox" name="policy" value="true">
+                                            <span style="display: block;">
+                                                By using and accessing any of the websites and / or services (whether by your mobile phone, PC or any other means), I am deemed to agree to the provisions of the
+                                                <a href="@cmsUrl/pdpa">Personal Data Protection Act 2010</a> as well as other applicable laws protecting privacy. I also read, understand and agree with the <a href="https://www.mayflower.com.my/cancel">Cancellation Policies</a>.
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    @if (CustomPrincipal.IsAgent && (Model.Hotel?.RoomDetails?.Any(x => x.IsEPSPackageRate) ?? false))
+                                    {
+                                        <div class="form-group custom-checkbox">
+                                            <label>
+                                                <input id="b2bagree" type="checkbox" name="policy" value="true">
+                                                <span style="display: block;">
+                                                    The hotel rates are only available when sold as part of a package i.e. combined with one or more transport components (flight, train or car) and sold as one price to the customer.
+                                                    In addition, at no time should the hotel rate be disclosed to the customer or marked up in any way. Please tick the box to indicate that you agree to these terms.
+                                                </span>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                @if (Model.TourPackage != null)
+                {
+                    @Html.Partial("~/Views/Checkout/SharedPartials/v2/_ReservationDetailsTour.cshtml")
+                }
+                else
+                {
+                    @Html.Partial("~/Views/Checkout/SharedPartials/v2/_ReservationDetails.cshtml")
+                }
+
+            </div>
+        </div>
+    </div>
+    <!-- ./ Booker Details -->
+}
+
+
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="processingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 0">
+            <div class="modal-body text-center">
+                <p><img src="@Url.Content("~/Images/mayflower_loading.gif")" width="80" alt="" /></p>
+                <br />
+                <p>Hold on, your order is begin processing ...</p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@if (isB2BAgentAndAllowHold)
+{
+    <div class="modal fade" id="prompthold" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="border-radius: 0">
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you confirm to hold the booking?</p>
+                    <br />
+                    <p>Please be aware that the booking will expire and unable to recover after the hold period is over. </p>
+                    <p>Kindly add payment promptly before expiry.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="confirm-paylater" class="btn btn-primary">Proceed</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+}
+
+@section scripts{
+    <script src="~/js/bundlev2?v=@DateTime.Now.ToString("yyyyMMdd")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/v3.0/hotel-search/page-search.js")"></script>
+
+    <script id="remove-after-execute">
+        $(function () {
+            paymentCalcUrl = '@Url.Action("UpdatePayment", "Checkout")';
+            $('#remove-after-execute').remove();
+        });
+    </script>
+    @if (Core.IsEnableAdyen)
+    {
+        BundleTable.Bundles.Add(new ScriptBundle("~/js/payment")
+                                        .Include("~/scripts/checkout/adyencc.js"));
+
+        @*//--Credit Card--Start//*@
+        <script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+        <script type="text/javascript" src="@Url.Content("~/js/payment?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))"></script>
+        @*//--Credit Card--End//*@
+    }
+
+    @if (IsPost)
+    {
+        <script id="postback-script">
+            var voidPayment = false;
+            var isValid = @Html.Raw(Json.Encode(ViewData.ModelState.IsValid));
+            var errorsMsg = @Html.Raw(Json.Encode(string.Join(Environment.NewLine,ViewData.ModelState.Where(x => x.Value.Errors.Count > 0).SelectMany(x => x.Value.Errors).Select(error => error.ErrorMessage))));
+
+            @if (Request.QueryString["status"] == "payment-void") {
+                @:voidPayment = true;
+            }
+
+            if (!isValid && errorsMsg == "Oops...the fare you chosen is no longer available.. Please try to search again.")
+            {
+                function getFList() {
+                    window.location.href = '@Url.Action("RedirectSearch", "Flight")' + location.search;
+                };
+                var confirmFunction = 'getFList();';
+                $(".btn.modal-confirm").attr("onclick", confirmFunction);
+
+                dynamicModal('INFO', errorsMsg, true).modal();
+            }
+            else if(!isValid) {
+                dynamicModal('INFO', errorsMsg, false).modal();
+            }
+            if (voidPayment) {
+                dynamicModal('INFO', 'Your payment was cancelled succesfully. You will not be charged any amount.</br></br>If you have any enquiries, please contact us.', false).modal();
+            }
+            $('#postback-script').remove();
+        </script>
+    }
+    else if (Request.QueryString["status"] == "fail")
+    {
+        <script id="payment-ret-script">
+            dynamicModal('INFO', 'Failed transactions. Please try again later.', false).modal();
+            @*history.pushState({}, null, '@Request.Url.ToString().Replace("status=fail", "")');*@
+            $('#payment-ret-script').remove();
+        </script>
+    }
+    else if (Request.QueryString["status"] == "payment-void")
+    {
+        <script id="payment-ret-script">
+            dynamicModal('INFO', 'Your payment was cancelled succesfully. You will not be charged any amount.</br></br>If you have any enquiries, please contact us.', false).modal();
+            $('#payment-ret-script').remove();
+        </script>
+    }
+
+    @if (isB2BAgentAndAllowHold)
+    {
+        <script>
+            $('#payment-later').on('click', function (e) {
+                if ($('#paymentLater').length == 0) {
+                    $('#checkoutForm').append('<input id="paymentLater" name="paymentLater" type="hidden" value="1">');
+                }
+
+                $('#prompthold').modal({
+                    show: true,
+                });
+            });
+
+            $('#confirm-paylater').on('click', function (e) {
+                if (!$(this).hasClass('disabled')) {
+                    $('#checkoutForm').unbind('submit');
+                    $('#checkoutForm').submit();
+                    $(this).addClass('disabled');
+                }
+            });
+        </script>
+
+    }
+}

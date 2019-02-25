@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRQ" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRQ" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.Models" />
+  <xs:complexType name="VerifyFlightRQ">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CoreQuery" nillable="true" type="tns:CoreQuery" />
+      <xs:element minOccurs="0" name="Preference" nillable="true" type="tns:Preference" />
+      <xs:element minOccurs="0" name="TotalPrice" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Travelers" nillable="true" type="tns:Travelers" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VerifyFlightRQ" nillable="true" type="tns:VerifyFlightRQ" />
+  <xs:complexType name="CoreQuery">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="OriginDestinations" nillable="true" type="tns:OriginDestinations" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CoreQuery" nillable="true" type="tns:CoreQuery" />
+  <xs:complexType name="OriginDestinations">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="OriginDestination" nillable="true" type="tns:ArrayOfOriginDestination" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OriginDestinations" nillable="true" type="tns:OriginDestinations" />
+  <xs:complexType name="ArrayOfOriginDestination">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="OriginDestination" nillable="true" type="tns:OriginDestination" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfOriginDestination" nillable="true" type="tns:ArrayOfOriginDestination" />
+  <xs:complexType name="OriginDestination">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Arrival" nillable="true" type="tns:Arrival" />
+      <xs:element minOccurs="0" name="Departure" nillable="true" type="tns:Departure" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OriginDestination" nillable="true" type="tns:OriginDestination" />
+  <xs:complexType name="Arrival">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AirportCode" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Arrival" nillable="true" type="tns:Arrival" />
+  <xs:complexType name="Departure">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AirportCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Date" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SegmentReference" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Time" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Departure" nillable="true" type="tns:Departure" />
+  <xs:complexType name="Preference">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CabinPreferences" nillable="true" type="tns:CabinPreferences" />
+      <xs:element minOccurs="0" name="FarePreferences" nillable="true" type="tns:FarePreferences" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Preference" nillable="true" type="tns:Preference" />
+  <xs:complexType name="CabinPreferences">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CabinType" nillable="true" type="tns:CabinType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CabinPreferences" nillable="true" type="tns:CabinPreferences" />
+  <xs:complexType name="CabinType">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BritishAirways.Models" minOccurs="0" name="Code" type="q1:EnumData.CabinType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CabinType" nillable="true" type="tns:CabinType" />
+  <xs:complexType name="FarePreferences">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Types" nillable="true" type="tns:Types" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FarePreferences" nillable="true" type="tns:FarePreferences" />
+  <xs:complexType name="Types">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Type" nillable="true" type="tns:ArrayOfType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Types" nillable="true" type="tns:Types" />
+  <xs:complexType name="ArrayOfType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Type" nillable="true" type="tns:Type" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfType" nillable="true" type="tns:ArrayOfType" />
+  <xs:complexType name="Type">
+    <xs:sequence>
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/BritishAirways.Models" minOccurs="0" name="Code" type="q2:EnumData.TicketType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Type" nillable="true" type="tns:Type" />
+  <xs:complexType name="Travelers">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Traveler" nillable="true" type="tns:ArrayOfTraveler" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Travelers" nillable="true" type="tns:Travelers" />
+  <xs:complexType name="ArrayOfTraveler">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Traveler" nillable="true" type="tns:Traveler" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTraveler" nillable="true" type="tns:ArrayOfTraveler" />
+  <xs:complexType name="Traveler">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AnonymousTraveler" nillable="true" type="tns:AnonymousTraveler" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Traveler" nillable="true" type="tns:Traveler" />
+  <xs:complexType name="AnonymousTraveler">
+    <xs:sequence>
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/BritishAirways.Models" minOccurs="0" name="PTC" type="q3:EnumData.PTC" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AnonymousTraveler" nillable="true" type="tns:AnonymousTraveler" />
+</xs:schema>

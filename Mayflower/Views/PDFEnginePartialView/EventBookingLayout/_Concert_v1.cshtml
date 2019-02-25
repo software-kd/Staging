@@ -1,0 +1,130 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@model IGrouping<string, EventBooking>
+
+@if (Model != null && Model.Key != null)
+{
+    <section class='flight-details clr fl'>
+        <h3 class='heading-blue font-blue'>Concert Ticket Details</h3>
+
+        @foreach (var item in Model.GroupBy(grp => grp.EventProduct.EventDetail.EventMaster))
+        {
+            var eventMaster = item.Key;
+            List<string> ticketRedempDate = new List<string>();
+            ticketRedempDate.Add(eventMaster.RedemptionStartDateTime.Value.ToString("dd MMMM yyyy"));
+            ticketRedempDate.Add(eventMaster.RedemptionEndDateTime.Value.ToString("dd MMMM yyyy"));
+            ticketRedempDate = ticketRedempDate.Distinct().ToList();
+
+            <div class='row subdetails clr'>
+                <table cellpadding='0' cellspacing='0' border='0' class='details'>
+                    <tbody>
+                        <tr>
+                            <td width='251'>Concert</td>
+                            <td width='2'>:</td>
+                            <td>
+                                &nbsp;@eventMaster.EventName
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Venue</td>
+                            <td>:</td>
+                            <td>
+                                &nbsp;@eventMaster.VenueName
+                                <br />
+                                <p style='font-weight:normal'>&nbsp;@eventMaster.VenueAddress</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>:</td>
+                            <td>&nbsp;@RenderEventDate(item)</td>
+                        </tr>
+                        <tr>
+                            <td>Time</td>
+                            <td>:</td>
+                            <td>&nbsp;@RenderSelectedEventTime(item)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class='item-header blue-bg'>
+                    <h3 class='item-heading' style='text-align:center'>Ticket Redemption</h3>
+                </div>
+                <table cellpadding='0' cellspacing='0' border='0' style='border: 1px solid #dbdbdb; font-size:18px; margin: 10px auto;'>
+                    <thead style='background: #00B0F0; height: 46px; padding-left:25px;'>
+                        <tr>
+                            <td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Ticket Type</td>
+                            <td width='265' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Venue</td>
+                            <td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Date</td>
+                            <td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Time</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class='brdB-grey'>
+                            <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                                <span class='font-red room-name'>
+                                    @foreach (var _dtl in item)
+                                    {
+                                        @_dtl.Qty @:x @_dtl.EventProduct.TicketCategory.TicketCategory1<br />
+                                    }
+                                </span>
+                            </td>
+                            <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                                @eventMaster.RedemptionVenue
+                            </td>
+                            <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'> @RenderEventDate(item) </td>
+                            <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                                From @(eventMaster.RedemptionStartDateTime.Value.ToString("h:mm tt")) to @(eventMaster.RedemptionEndDateTime.Value.ToString("h:mm tt"))
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class='row clr remarks fl'>
+                <h4>Terms & Conditions:</h4>
+                <p>
+                    For security reasons, the following are required upon ticket issuance and redemption. Failure to produce these may
+                    result in denied redemption:
+                </p>
+                <ul class='decimal' style='list-style-type: square; list-style-position: inside;'>
+                    <li>
+                        According to the general industry practice, concert ticket(s) purchased is normally non-refundable, non-exchangeable
+                        and non-transferable once payment is made.
+                    </li>
+                    <li>There shall be no cancellations and amendments are allowed unless otherwise specified by Mayflower. </li>
+                    <li>
+                        Under special circumstances and is subject to the respective organizer/ Mayflower terms and conditions, shall
+                        any cancellation/ amendment is required, please contact the Mayflower Customer Service Team accordingly;
+                        charges may be applied.
+                    </li>
+                    <li>
+                        In the event that the purchaser(s) contacting the respective organizer directly for any cancellation/ amendment
+                        without Mayflower’s acknowledgement, Mayflower therefore shall not be liable for any losses/damages/costs
+                        which may be incurred resulting from and/ or arising out of or in connection with this cancellation/ amendment.
+                    </li>
+                    <li>All other respective organizer’s terms & conditions apply and are subject to change without prior notice. </li>
+                </ul>
+            </div>
+        }
+    </section>
+}
+
+@helper RenderEventDate(IGrouping<EventMaster, EventBooking> grouping)
+{
+var grpDate = grouping.Select(x => x.EventDate.ToString("dd MMMM yyyy")).Distinct();
+if (grpDate != null && grpDate.Count() > 0)
+{
+        @Html.Raw(string.Join("<br/>", grpDate))
+}
+}
+
+@helper RenderSelectedEventTime(IGrouping<EventMaster, EventBooking> grouping)
+{
+//var allTime = grouping.Select(x => x.EventProduct.EventDetail.EventStartTime.ToHoursMinutesTT() + " - " + x.EventProduct.EventDetail.EventEndTime.ToHoursMinutesTT()).Distinct();
+var allTime = grouping.Select(x => x.EventProduct.EventDetail.EventStartTime.ToHoursMinutesTT()).Distinct();
+
+if (allTime != null && allTime.Count() > 0)
+{
+        @(string.Join("<br/>", allTime))
+}
+}

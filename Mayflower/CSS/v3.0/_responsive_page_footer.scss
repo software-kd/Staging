@@ -1,0 +1,189 @@
+﻿@media screen and (max-width: 1200px) {
+    footer .footer-mid .col-sm-8 {
+        width: 59%;
+        border-right: 1px solid #fff;
+    }
+
+    footer .footer-center-list .list-title {
+        padding-right: 10px;
+    }
+
+    footer .short-list-row-gp .list-title-gp {
+        margin-top: 0;
+    }
+
+    footer .short-list-row-gp .footer-img {
+        margin-top: 2px;
+    }
+
+    .NewsLetter_class.col-sm-4 {
+        width: 41%;
+        border-left: none;
+        padding-top: 40px;
+    }
+
+    footer .footer-img-link.footer-img-link-empty {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    footer .list-row .short-list-row-pt {
+        width: 60%;
+    }
+
+    footer .list-row .short-list-row-pt .list-title-pt {
+        width: 26%;
+    }
+}
+
+@media screen and (max-width: 990px) {
+    footer .f-img-file {
+        width: 75.6px;
+        height: 90px;
+    }
+
+    footer .footer-mid .col-sm-8 {
+        width: 51%;
+    }
+
+    .NewsLetter_class.col-sm-4 {
+        width: 49%;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    footer .footer-mid .col-sm-8 {
+        width: 100%;
+        border-right: none;
+    }
+
+    footer .list-row .short-list-row-pt {
+        width: 50%;
+    }
+
+    footer .short-list-row-pt .list-title-pt {
+        width: 27%;
+    }
+
+    footer .footer-mid-left .f-img {
+        margin: 0 auto;
+        display: inline-block;
+    }
+
+    footer .footer-mid-left .f-img-file:last-child {
+        left: 0;
+    }
+
+    footer .footer-mid-left .f-img-file {
+        float: left;
+        width: 25%;
+        height: 30%;
+    }
+
+    footer .list-row .short-list-row-pt {
+        width: 60%;
+    }
+
+    .NewsLetter_class.col-sm-4 .social-link .link_text {
+        float: left;
+    }
+
+    .NewsLetter_class.col-sm-4 {
+        width: 100%;
+        padding-top: 10px;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (max-width: 636px) {
+    footer .footer-mid-left .why_mayflower_text {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    footer .footer-mid-left .why_mayflower_text {
+        width: 50%;
+    }
+
+    footer .footer-center-list .list-title {
+        width: 22%;
+    }
+
+    footer .footer-center-list .list-content {
+        width: 78%;
+    }
+
+    footer .list-row .short-list-row-gp {
+        width: 40%;
+    }
+
+    footer .list-row .short-list-row-pt {
+        width: 50%;
+    }
+
+    footer .list-row .short-list-row-gp .list-title-gp,
+    footer .list-row .short-list-row-pt .list-title-pt {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 580px) {
+    footer .short-list-row-pt .list-title-pt {
+        margin: 0;
+    }
+
+    footer .list-row .short-list-row-gp,
+    footer .list-row .short-list-row-pt {
+        padding: 0;
+        float: left;
+    }
+
+    footer .short-list-row-gp .footer-img {
+        margin-top: 5px;
+    }
+}
+
+@media screen and (max-width: 410px) {
+    footer .footer-mid-left .why_mayflower_text {
+        width: 100%;
+    }
+
+    footer .list-row-airline-pt .footer-img-link,
+    footer .list-row-we-accept .footer-img-link {
+        width: 25%;
+        display: block;
+        float: left;
+        margin-right: 0;
+    }
+
+    footer .list-row-airline-pt .list-title {
+        width: 36%;
+        margin-bottom: 5px;
+    }
+
+    footer .footer-img-link.footer-img-link-empty {
+        display: none;
+    }
+
+    footer .list-row-airline-pt .list-content,
+    footer .list-row-we-accept .list-content {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    footer .footer-center-list.container .list-title {
+        width: 100%;
+    }
+
+    footer .footer-center-list .list-row {
+        width: 100.4%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    footer .list-row .short-list-row-gp {
+        width: 50%;
+    }
+}

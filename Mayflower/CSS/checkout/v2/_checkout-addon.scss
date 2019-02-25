@@ -1,0 +1,114 @@
+﻿.addon {
+    .HTL {
+        .price-div {
+            h3 {
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+.addon-sec-top {
+    display: flex;
+    display: -ms-flexbox;
+    justify-content: space-between;
+    margin-bottom: 1em;
+
+    h2 {
+        margin: 8px 0 !important;
+    }
+
+    .cuntom-unit-inner {
+        font-size: 14px;
+        min-width: 120px;
+        max-height: 34px;
+        justify-self: center;
+        align-self: center;
+        text-align: center;
+    }
+}
+
+// desktop middle large view
+@media only screen and (min-width: 993px) and (max-width: 1199px) {
+    .HTL {
+        /*.addonh_mid {
+            min-width: 340px;
+        }*/
+        .mid-content {
+            padding-right: 0;
+
+            h2 {
+                font-size: 17px;
+            }
+        }
+
+        .mid-bottom {
+            font-size: 13px !important;
+        }
+
+        .price-div {
+            padding-right: 0;
+
+            h3 {
+                font-size: 18px;
+            }
+
+            h3 + p {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+        }
+
+        .room-trigger {
+            &.btn-primary.btn--red {
+                padding: 5px 6px;
+                font-size: 13px;
+            }
+        }
+    }
+}
+
+// table view
+@media only screen and (max-width: 992px) {
+    .HTL {
+        .slider-wrap {
+            max-width: 230px;
+        }
+
+        .mid-content {
+            width: calc(100% - 409px);
+        }
+
+        .mid-bottom {
+            font-size: 13px !important;
+        }
+
+        .price-div {
+            max-width: 173px;
+        }
+    }
+}
+
+// mobile view
+@media only screen and (max-width: 767px) {
+    .HTL {
+        .carousel-inner {
+            max-height: inherit;
+        }
+
+        .slider-wrap {
+            max-width: 100%;
+            padding: 10px;
+            padding-bottom: 0;
+        }
+
+        .mid-content, .price-div {
+            width: 100%;
+            max-width: inherit;
+        }
+    }
+
+    .addon-sec-top {
+        margin-top: 1em;
+    }
+}

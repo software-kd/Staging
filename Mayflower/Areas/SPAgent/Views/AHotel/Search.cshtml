@@ -1,0 +1,215 @@
+﻿@model SearchHotelModel
+@{
+    ViewBag.Title = "Search";
+    string tripid = Request.QueryString["tripid"];
+}
+
+@section style {
+    <style>
+        .content-wrapper {
+            max-width: 1082px;
+            /*max-width: 1236px;*/
+            margin: 0 auto;
+        }
+
+        .ht-block {
+            display: block;
+            margin: 1em;
+        }
+
+        .ht-img-block {
+            max-width: 250px;
+            max-height: 150px;
+            /*max-height: 120px;*/
+            width: 33%;
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+
+        .ht-detail-block {
+            padding: 0.4em;
+            /*margin: 1em;*/
+            width: 65%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .dt-content {
+            width: 78%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .ht-star img {
+            max-width: 14px;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .ht-price-block {
+            color: #000000;
+        }
+
+        .ht-supp {
+            /*font-style: italic;*/
+            height: 39px;
+            font-size: 12px;
+            color: #808080;
+            margin-bottom: 0.5em;
+        }
+
+        .ht-address {
+            margin-top: 1em;
+            font-size: 13px;
+            color: #6b6a6a;
+        }
+
+        .dt-price {
+            width: 21%;
+            max-height: 160px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+
+        .lbl-more-price {
+            line-height: 19px;
+        }
+    </style>
+}
+
+
+<div class="content-wrapper">
+    <div id="main-list">
+        @{
+            Html.RenderAction("_loopresult", "ahotel", new { area = "agent" });
+        }
+    </div>
+</div>
+
+
+@*@Html.Action("Hotel", "SessionSetter", new { area = "agent" })*@
+
+
+@section scripts{
+    <script>
+        var hotelFunc = function () {
+            var pg = 1;
+            this.pg = pg;
+            hotelFunc = load();
+
+            this.loadMore = function () {
+                $('#show-more').remove();
+                this.pg = pg += 1;
+                return loopRes();
+            };
+
+            this.stopLoad = function (new_pg) {
+                pg = new_pg;
+            };
+
+            this.updatePrice = function () {
+                upPc();
+            };
+
+            function load() {
+                if ($('.ht-block').length === 0 && $('#area-new-search').length === 0) {
+                    $.ajax({
+                        url: '@Url.Action("Hotel", "SessionSetter", new { area = "agent", tripid })',
+                        dataType: 'json',
+                        method: 'get',
+                        complete: function (e) {
+                            if (e.responseJSON) {
+                                loopRes();
+                                setTimeout(rl, 5000);
+                                //rl();
+                            }
+                        },
+                    });
+                }
+            }
+
+            function rl() {
+                $.ajax({
+                        url: '@Url.Action("Hotel", "SessionSetter", new { area = "agent", tripid })',
+                        dataType: 'json',
+                        method: 'get',
+                        complete: function (e) {
+                            if (e.responseJSON) {
+                                upPc();
+                                //loopRes();
+                            }
+                        },
+                    });
+            }
+
+            function loopRes() {
+                $.ajax({
+                    url: '@Url.Action("_LoopResult", "AHotel", new { area = "agent", tripid })&page=' + pg ,
+                    dataType: 'json',
+                    method: 'get',
+                    complete: function (e) {
+                        $('#main-list').append(e.responseText);
+                    },
+                });
+            }
+
+            function upPc() {
+                $('.ht-block[data-status="pre"]').each(function (i, e) {
+                    var htdt = $(e).data('htid');
+                    gtPc(htdt);
+                });
+            }
+
+            function gtPc(ht) {
+                 $.ajax({
+                    url: '@Url.Action("_gtpc", "ahotel", new { area = "agent", tripid })',
+                    dataType: 'json',
+                    data: { htid: ht},
+                    method: 'get',
+                    complete: function (res) {
+                        var lowest = 0;
+                        var curr = '';
+                        var rootBlock = $('.ht-block[data-htid="' + ht + '"]');
+                        if (res.responseJSON.length <= 3) {
+                            rootBlock.find('.lbl-more-price').parent().remove()
+                        }
+
+                        $(res.responseJSON).each(function (i, e) {
+                            if (e.Price < lowest || lowest == 0) {
+                                lowest = e.Price;
+                                curr = e.Curr;
+                            }
+                            
+                            var pcBlock = rootBlock.find('[data-pcsupp="' + e.Source + '"] .ht-price-block');
+                            pcBlock.html(e.Price);
+                            pcBlock.parent().removeClass('no-pc');
+                        });
+
+                        rootBlock.find('.ht-supp.no-pc').remove();
+                        rootBlock.find('[data-pricelv="lowest"]').html(curr + ' ' + lowest);
+                    },
+                });
+            }
+        };
+
+        var hotel = new hotelFunc();
+
+        /*if ($('.ht-block').length === 0) {
+            console.log(hotel.pg);
+        }*/
+
+        $('#main-list').on('click', '#show-more', function (e) {
+            hotel.loadMore(hotel.pg);
+            console.log(hotel.pg);
+        });
+
+        $('.lbl-more-price').on('click', function (e) {
+            e.preventDefault();
+            $(this).hide();
+            var h = $(this).parents('.dt-price-more').height();
+            $(this).parents('.dt-price').css('max-height', h + 40);
+        })
+    </script>
+}

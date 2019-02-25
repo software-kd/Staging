@@ -1,0 +1,822 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    Layout = null;
+    ViewBag.Title = "Add On";
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+}
+
+<link href="~/CSS/MiniScreenCSS/theme.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/custom.css" rel="stylesheet" />
+<link href="~/CSS/checkout/style.min.css" rel="stylesheet" />
+<link href="~/CSS/checkout/styles_v2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="@Url.Content("~/CSS/v2style.css")" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/CSS/v2responsive.css")" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/CSS/ars-style.css")" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/bootstrap.min.css")" type="text/css" />
+<link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/style.css")" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+<link rel="stylesheet" href="@Url.Content("~/CSS/hotel/bootstrap-carousel.css")">
+<link href="@Url.Content("~/CSS/checkout/style.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+<link href="@Url.Content("~/CSS/checkout/styles_v2.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+
+<style>
+    .CT, .SC {
+        display:none;
+    }
+
+    .box-wrap button {
+        margin: 0px;
+    }
+
+    .ars-spacer {
+        margin: 60px 0;
+    }
+
+    .navbar-brand a, .btn-primary a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .navbar-brand a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .box-wrap2 {
+        margin: none;
+        max-width: none;
+    }
+
+    .main-content {
+        padding-top: 0px !important;
+    }
+
+    .btn-group-vertical > .btn-group:after, .btn-group-vertical > .btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+        content: none !important;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1.5rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand2 {
+        float: none;
+        height: unset;
+        padding: unset;
+        display: inline-block;
+        padding-top: 0.3125rem !important;
+        padding-bottom: 0.3125rem !important;
+        margin-right: 1.5rem !important;
+        font-size: 20px;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .breadcrumb {
+        display: block;
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        list-style: none;
+        background-color: #fff;
+        border-radius: 2px;
+        text-align: center;
+    }
+
+    .ticket_select label {
+        width: 100%;
+    }
+
+    .text-center {
+        margin-top: unset;
+    }
+</style>
+
+<body>
+    <nav class="navbar navbar-expand-md  navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="###">
+                <img src="~/Images/logo_w.png" class="img-responsive">
+            </a>
+            <div class="navbar-brand navbar-brand2">@Html.ActionLink("Back to main menu ", "Index", "AddOnMiniScreen")</div>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="breadcrumb clear-initial-trail ">
+        <div><div class="step active">Select Add-ons </div></div>
+        <div><div class="step">Payment</div></div>
+        <div><div class="step">Confirmation</div></div>
+    </div>
+
+    <div class="section ">
+        <div class="container">
+            @using (Html.BeginForm("AddOnMini", "Checkout", new { tripid }, FormMethod.Post, new { @id = "crossSale" }))
+            {
+                <div class="row">
+                    <div class="main-content col-12">
+                        @Html.HiddenFor(X => X.ReferralCode)
+                        @if (Model.SellItemsAvailable.Insurance != null)
+                        {
+                            @Html.Partial("~/Views/AddOnMiniScreen/_Insurance.cshtml", Model.SellItemsAvailable.Insurance)
+                        }
+
+                        <div class="box-wrap box-wrap2">
+                            <div class="wrap-carusel f-500 ">
+                                <div><input data-val="true" id="storeHoteLCount" value="false" type="hidden" /></div>
+                                @if (Model.SellItemsAvailable.Hotels != null)
+                                {
+                                    <div class="item-container">
+                                        @Html.Hidden("dataToken", null, new { @class = "token" })
+                                        @Html.Partial("~/Views/AddOnMiniScreen/_HotelAddOn.cshtml", Model.SellItemsAvailable.Hotels)
+                                        <div class="clear"></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (Model.SellItemsAvailable.EventProducts != null)
+                        {
+                            // This one special need, token inside partial views
+                            @Html.Partial("~/Views/Checkout/AddOnPartials/_EventProductList.cshtml", Model.SellItemsAvailable.EventProducts)
+                        }
+
+                        <div class="box-wrap ">
+                            <br>
+                            <div class=" wrap gray f-500">
+                                Total Add-ons Chargers: MYR <span class="text-primary" id="ttlprice"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4 "><button type="submit" class="btn btn-primary" style="margin: 15px auto;"> < Go Back</button></div>
+                                <div class="col-4 "><button class="btn btn-primary" style="margin: 15px auto;"> @Html.ActionLink("Register", "AddOnRegister", "AddOnMiniScreen")</button></div>
+                                <div class="col-4 text-center">
+                                    <button type="submit" class="btn btn-primary" id="prompt-btn" href="javascript:;" style="margin: 15px auto;">Pay Now ></button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+
+@if (Model.SellItemsAvailable.Hotels != null)
+{
+    @Html.Partial("~/Views/Hotel/_PopupRoomInfo.cshtml")
+    @Html.Partial("~/Views/Hotel/_HotelInformation.cshtml")
+}
+
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+<!--START: checking before Reserve -->
+<script>
+
+    var ttlpriceSum = 0;
+    var wfprice = 0;
+
+    $("#ttlprice").text($("#rate2").data("value"));
+    ttlpriceSum += $("#rate2").data("value");
+
+    $("#requireInsurance").on("change", function () {
+        if ($("#requireInsurance").val() == "true") {
+            ttlpriceSum += $("#rate2").data("value");
+            $("#ttlprice").text(ttlpriceSum);
+        }
+        else {
+            ttlpriceSum -= $("#rate2").data("value");
+            $("#ttlprice").text(ttlpriceSum);
+        }
+    });
+
+    $("#WF-select").on("change", function () {
+        var optionText = $("#WF-select option:selected").text();
+        if (optionText == "0") {
+            ttlpriceSum -= wfprice;
+            wfprice = 0;
+            $("#ttlprice").text(ttlpriceSum.toFixed(2));
+        }
+        else if (optionText == "1") {
+            ttlpriceSum -= wfprice;
+            ttlpriceSum += parseFloat($("#PriceRate-wf").data("value"));
+            wfprice = parseFloat($("#PriceRate-wf").data("value"));
+            $("#ttlprice").text(ttlpriceSum.toFixed(2));
+        }
+        else if (optionText == "2") {
+            ttlpriceSum -= wfprice;
+            ttlpriceSum += parseFloat(($("#PriceRate-wf").data("value") * 2));
+            wfprice = parseFloat(($("#PriceRate-wf").data("value") * 2));
+            $("#ttlprice").text(ttlpriceSum.toFixed(2));
+        }
+        else {
+            ttlpriceSum -= wfprice;
+            ttlpriceSum += parseFloat(($("#PriceRate-wf").data("value") * 3));
+            wfprice = parseFloat(($("#PriceRate-wf").data("value") * 3));
+            $("#ttlprice").text(ttlpriceSum.toFixed(2));
+        }
+    });
+
+    var tripid = $('#ReferralCode').val();
+    var cancelBtn = function (text, func) {
+    func = typeof (func) === 'undefined' ? '' : func;
+    return "<a href=\'javascript:;\' onclick'" + func + "' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>" + text + "</div></a>";
+    }
+
+    var trackAddToCart = function (selectedRoom) {
+        var dataLayer = window.dataLayer = window.dataLayer || [];
+        dataLayer.push({
+            'event': 'ecom-select',
+            'currencyCode': 'MYR',
+            'products': selectedRoom
+        });
+    }
+
+    $("div").on('click', '.modal-close', function () {
+    reloadScrollBars();
+    $(".fullcover_div5").fadeOut();
+    $("#modal-container").empty();
+    });
+
+    function reloadScrollBars() {
+        document.documentElement.style.overflow = 'auto';  // firefox, chrome
+        document.body.scroll = "yes"; // ie only
+    }
+
+    $(document).on('click', '.loginclose img', function () {
+        $(".fullcover_div").fadeOut();
+        $(".fullcover_div1").fadeOut();
+        $(".fullcover_div6").fadeOut();
+        $(".fullcover_div7").fadeOut();
+        $(".fullcover_div8").fadeOut();
+        $(".fullcover_div_GoogleMap").fadeOut();
+        reloadScrollBars();
+    });
+
+    $('#hotelresultlist, #hotelresultlist_m').on('click', '.HideRoomDetail', function () {
+        hideAllRoomForm();
+        var ele = $(this);
+        var bid = ele.data('box');
+        var bCt = ele.data('type');
+        var type = $('.ticket_list[data-box="' + bid + '"]');
+        var allType = $('.ticket_list[data-type="' + bCt + '"]');
+
+        allType.addClass('hide');
+    });
+
+    $.getSInfo = function () {
+    return $.ajax({
+    method: 'POST',
+    url: '/hotel/setsearchinfo' + '?tripid=@tripid',
+    cache: false,
+    async: true,
+    contentType: "application/json",
+    }).promise();
+    };
+
+    var hsInfo = '';
+
+    $.getSInfo().then(function (res) {
+    // success
+    hsInfo = res;
+    //location.hash = $.param(hsInfo);
+    }, function (res) {
+    // failed
+    });
+
+    $('#hotelresultlist, #hotelresultlist_m').on('click', '.ShowMoreRoom', function () {
+        if ($('#storeHoteLCount').val() == "false") {
+            var obj = $(this).data("hotelid");
+            var idname = typeof obj === "undefined" ? '' : "#roomlist2_" + obj;
+            var ele = $(this);
+            var bid = ele.data('box');
+            var bCt = ele.data('type');
+            var type = $('.ticket_list[data-box="' + bid + '"]');
+            var allType = $('.ticket_list[data-type="' + bCt + '"]');
+            var bar = $('.ticket_select[data-box="' + bid + '"]');
+            var allBar = $('.ticket_select[data-type="' + bCt + '"]');
+            allType.hide();
+
+            hsInfo.HID = $(this).data("hotelid");
+            hsInfo.HSR = $(this).data('supp');
+
+            $.ajax({
+                type: "GET",
+                url: '/AddOnMiniScreen/GetRoomInfo?data=' + obj + '|room' + '&tripid=' + tripid,
+                data: hsInfo,
+                cache: false,
+                async: true,
+                dataType: "html",
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).done(function (result) {
+                var formSelector = '.form-container2 ' + idname;
+                $(formSelector).html(result).prepend('<div class="div25">&nbsp;</div>');
+                allType.show();
+                type.removeClass('hide');
+                allBar.removeClass('HideRoomDetail').addClass('ShowMoreRoom');
+                bar.removeClass('ShowMoreRoom').addClass('HideRoomDetail');
+                $('.white-bg-ars').removeClass('white-bg-ars');
+                $('.addhotel-widget[data-hotelid="' + obj + '"]').addClass('white-bg-ars');
+                $('#loading-modal').hide();
+            });
+        }
+        else {
+            popupMsg('You already select the Hotel.');
+        }
+    });
+
+
+    $('.section-hotel').on('click', '.room-select-btn', function (e) {
+        checkRoomInvent(this);
+    });
+
+    // Add Ticket Button
+    $('.tic_select_btn').on('click', function (e) {
+        addTicket(this);
+    });
+
+    // Payment
+    $('.item-container').on('click', '.box-heading span a', function (e) {
+        $(this).parents('h3').next().toggleClass('in');
+        $(this).parents('.item-container').find('.token').val('');
+        $(this).parent().remove();
+    });
+
+    $('#prompt-btn').on('click', function (e) {
+        var popupContainer = $('#popup-modal .modal-container');
+        var htmlMarkup = '';
+
+        var h = $('#dataToken');
+        var i = $('#requireInsurance');
+
+        if (typeof (h) !== 'undefined' && h.length > 0 && h.val() != '') {
+            var item = JSON.parse(h.val());
+            htmlMarkup += '<h3>Hotel</h3>';
+            $(item).each(function (index, list) {
+                htmlMarkup += '<p>' + (index + 1) + '. ' + list.name;
+                htmlMarkup += ' x ' + list.qty + '</p>';
+
+            });
+        }
+
+        $('.token.event-product').each(function (i, e) {
+            var c = $(e);
+            if (typeof (c) !== 'undefined' && c.length > 0 && c.val() != '') {
+                var item = JSON.parse(c.val());
+                htmlMarkup += '<h3>' + item[0].type + '</h3>';
+                $(item).each(function (index, list) {
+                    htmlMarkup += '<p>' + (index + 1) + '. ' + list.name + ' - ';
+                    htmlMarkup += 'Category ' + list.cat + ' x ' + list.qty + '</p>';
+
+                });
+            }
+        });
+
+        $('.token.event-product.etc').val('');
+        var addCount = 0;
+        $('select[data-type]').each(function (i, e) {
+            var etcP = [];
+            var pEle = $(e);
+            var v = pEle.val();
+            if (v > 0) {
+                etcP.push({
+                    type: pEle.data('type'),
+                    name: pEle.data('name'),
+                    master: pEle.data('master'),
+                    item: pEle.data('tick'),
+                    cat: pEle.data('cat'),
+                    qty: v,
+                    date: pEle.data('dt'),
+                });
+                var tEle = $('#' + pEle.data('type'));
+                var cVal = tEle.val();
+                if (cVal.length) {
+                    $(JSON.parse(cVal)).each(function (i, e) {
+                        etcP.push(e);
+                    });
+                }
+                addCount++;
+                tEle.val(JSON.stringify(etcP));
+            }
+    });
+
+    var insTrue = true;
+    if (typeof (i) !== 'undefined' && i.length > 0 && i.val() == 'true') {
+    htmlMarkup += '<h3>Insurance</h3>';
+    htmlMarkup += '<p>' + 'Chubb Insurance ' + $('.insurance-price').html() + '</p>';
+    insTrue = true;
+    @*checkIns().done(function (res) {
+        $('#loading-modal').hide();
+        try {
+            var j = JSON.parse(res);
+            if (j.status === true) {
+            $("#crossSale").submit();
+            }
+        } catch (e) {
+            popupMsg(res);
+        }
+    }).fail(function (res) {
+        $('#loading-modal').hide();
+        var popupContainer = $('#popup-modal .modal-container');
+        popupContainer.html(res.responsetext);
+        @*popupContainer.html('Unexpected error occur, please try again leter.');
+        $('#popup-modal').show();
+    });*@
+    }
+    if (insTrue) {
+    if (htmlMarkup.length > 0 || addCount > 0) {
+        //var confirmFunction = 'onclick=\'$("#crossSale").submit();\'';
+        //htmlMarkup += "<div class='btn-section'>";
+        //htmlMarkup += "<a href=\'javascript:;\' class='continue-submit'><div " + confirmFunction + "class='redbacktohome_button modal-confirm-btn''>Continue</div></a>";
+        //htmlMarkup += cancelBtn('Cancel');
+        //htmlMarkup += "</div>";
+
+        //popupContainer.html(htmlMarkup);
+        //$('#popup-modal').show();
+        $("#crossSale").submit();
+    } else {
+        popupMsg('Please select one(1) addon type.');
+    }
+    }
+    });
+
+    var hideAllRoomForm = function () {
+    $('.white-bg-ars').removeClass('white-bg-ars');
+    $('.HideRoomDetail').each(function (index, element) {
+    $(element).removeClass('HideRoomDetail');
+    $(element).addClass('ShowMoreRoom');
+    });
+    }
+
+    var pushRoomToCart = function (e) {
+    var rd = {
+    hotel: $(e).data('hid'),
+    typeCode: $(e).attr("data-roomtypecode"),
+    rateCode: $(e).attr("data-ratecode"),
+    qty: $(e).attr("data-qty"),
+    name: $(e).data('roomname'),
+    propertyId: $(e).data("propertyid"),
+    ratetype: $(e).attr("data-ratetype"),
+    encSupp: $(e).attr("data-encsupp"),
+    };
+    return rd;
+    }
+
+    var checkRoomInvent = function (checkingForm, fromPrompt, price) {
+        var r = [];
+        var ttlprice = $(checkingForm).attr('data-totalPrice');
+    try {
+    //var isMobile = typeof checkingForm !== 'undefined';
+    //var idname = isMobile ? '#' + checkingForm : '';
+    //var formSelector = isMobile ? idname : '#roomlist';
+    var formSelector = $(checkingForm).parents('.form-container2');
+    var hotelId = $(checkingForm).data('hid');
+    hotelId = typeof (hotelId) !== 'undefined' ? hotelId : fromPrompt[0].hotel;
+    var NameList = '';
+    var hotelSelected = [];
+    var hName = $('.hotel_name[data-hotelid="' + hotelId + '"]').data('hotelname');
+
+    if (typeof (hotelId) !== 'undefined') {
+        var e = checkingForm;
+        var roomType = $(e).data('roomname');
+        hotelSelected.push({
+            HotelName: hName,
+            HotelImgHTML: $('.fix-img-container[data-hotelid="' + hotelId + '"]').parents().html(),//$('.addhotel-widget>[data-hotelid="' + hotelId + '"]').html(),
+            RoomType: roomType,
+            Unit: $(e).attr('data-qty'),
+            Type: 'Hotel',
+            Price: $(e).attr('data-totalPrice'),
+        });
+        rd = pushRoomToCart(e);
+        r.push(rd);
+        NameList += '|' + hotelId + '=' + $(e).attr('data-roomtypecode') + '=' + $(e).attr('data-ratecode') + '=' + selectedValue + '=' + roomType;
+    }
+    } catch (e) {
+    }
+    if (typeof fromPrompt === 'undefined') {
+    if (hotelSelected.length === 0) {
+        popupMsg('Please select one(1) room type.');
+        return false;
+    }
+    else if (hotelSelected.length === 1) {
+        prompHotelInfo(hotelSelected, JSON.stringify(r), ttlprice);
+        return false;
+    }
+    else {
+        popupMsg('Only 1 room type availaible for Hotel Add-On.');
+        return false;
+    }
+
+    }
+
+    var obj = '';
+    var data;
+    var request = $.Deferred();
+    var jData = JSON.stringify(fromPrompt);
+    request = $.ajax({
+    type: 'POST',
+    url: '/Hotel/CheckInventory?' @*+ encodeURIComponent(NameList)*@ + '&tripid=' + tripid,
+    data: jData,
+    cache: false,
+    async: true,
+    dataType: 'json',
+    contentType: 'application/json',
+    beforeSend: function () {
+        $('#loading-modal').show();
+    }
+    }).promise();
+    //if (NameList.length > 0) {
+    //}
+    //else {
+    //    data = "NOROOM";
+    //}
+
+    request.fail(function (res) {
+    var popupContainer = $('#popup-modal .modal-container');
+    popupContainer.html(res.responseText);
+    });
+
+    request.done(function (result) {
+    $('#loading-modal').hide();
+    var GTM_addToCartList = [];
+    if (Array.isArray(result)) {
+        result.forEach(function (element) {
+            if (element.id != "ENOUGH") {
+                GTM_addToCartList.push(element);
+            }
+        });
+        result = "ENOUGH";
+    }
+    data = typeof result === "undefined" ? data : result;
+
+    switch (data) {
+        case "NOTENOUGH": obj = $('#PopupErr_NotEnoughPax').html(); break;
+        case "NOROOM": obj = $('#PopupErr_SelectFirst').html(); break;
+        case "TIMEOUT": obj = $('#PopupErr_NotEnoughPax').html(); break;
+        case "EXCEED": obj = $('#PopupErr_Exceed').html(); break;
+        default:
+            if (data.length > 10) {
+                obj = data;
+            }
+            break;
+    }
+
+    if (data === "NOROOM" || typeof result === "undefined") {
+
+    }
+    else if (data != "ENOUGH") {
+        $('#modal-container .hotel-title').hide();
+        $('#modal-container .btn-section').css('text-align', 'justify');
+        $('#modal-container .btn-section').html('<div style="color: #EC1C24;font-size: 18px;font-family: \'Ubuntu-Light\';line-height: initial;">' + obj + '</div>');
+        $('#modal-container .btn-section').append('<div class="btn-section" style="text-align: center">' + cancelBtn('OK') + '</div>');
+        $("#popup-modal").show();
+        return;
+    } else {
+        ttlpriceSum += price;
+        $("#ttlprice").text(ttlpriceSum.toFixed(2));
+        $("#popup-modal").hide();
+        var allType = $('.ticket_list[data-type="hotel"]');
+        $('#storeHoteLCount').val("true");
+        $('.ticket_select').removeClass('HideRoomDetail');
+        $('.ticket_select').addClass('ShowMoreRoom');
+        allType.addClass('hide');
+    }
+
+    $('#dataToken').val(jData);
+
+    //if (typeof (jData) !== 'undefined' && jData.length > 0) {
+    //    pushItem('Hotel', hName);
+
+    //    $('.hotel').hide();
+    //    trackAddToCart(GTM_addToCartList);
+    //    hideAllRoomForm();
+    //}
+    //$('#crossSale').submit();
+    return;
+    });
+
+    if (!(NameList.length > 0)) {
+    request.resolve();
+    }
+    }
+
+    var addTicket = function (element, jObj) {
+    var tickSelected = [];
+    var pEle = $(element);
+    var p = pEle.parents('.concert_container');
+    var dateTick = p.find('#tk_date option:selected').val();
+
+    if (typeof (jObj) !== 'undefined') {
+    tickSelected = jObj;
+    var list = [];
+    if (tickSelected.length > 0) {
+        pushItem(tickSelected[0].type, tickSelected[0].name);
+        var v = JSON.stringify(jObj);
+        $('#' + tickSelected[0].type).val(v);
+        localStorage.tickSelected = v;
+        tickSelected.forEach(function (ticket) {
+            var addon = {
+                name: ticket.name,
+                id: ticket.item,
+                price: ticket.price,
+                quantity: ticket.qty
+            };
+            list.push(addon);
+        });
+        trackSelectAddOn(list);
+    } else {
+        popupMsg('Please select one(1) category add-on.');
+    }
+    } else if (typeof (dateTick) === 'undefined') {
+    alert('Please select a date.');
+    } else {
+    var _qty = 0;
+    var acp = 0;
+    p.find('.tk_type_selector option:selected').each(function (i, e) {
+        var v = parseInt($(e).val());
+        acp = pEle.data('cc');
+        if (v != '0') {
+            _qty += v;
+            tickSelected.push({
+                type: pEle.data('type'),
+                name: pEle.data('name'),
+                master: pEle.data('master'),
+                item: $(e).parent().data('tick'),
+                cat: $(e).parent().data('cat'),
+                catname: $(e).parent().data('catname'),
+                qty: v,
+                date: dateTick,
+                price: $(e).parent().data('price')
+            });
+        }
+    });
+
+    if (_qty > acp) {
+        popupMsg('Ticket selected cannot greater than pax total.');
+    } else if (tickSelected.length > 0) {
+        promopItemSelected(tickSelected);
+    } else {
+        popupMsg('Please select one(1) category ticket.');
+    }
+
+    }
+    }
+
+    /* Show room info */
+    var ShowRoomInfo = function (objVal, objVal2) {
+    var val = objVal + "|" + objVal2;
+    hsInfo.data = val;
+    $.ajax({
+    type: "GET",
+    url: '/Hotel/GetRoomInfo?data=' + val + tripid,
+    cache: false,
+    async: true,
+    data: hsInfo,
+    dataType: "html",
+    beforeSend: function () {
+        $('#loading-modal').show();
+    }
+    }).done(function (result) {
+    $('.fullcover_div7').html(result);
+    $("#slider").responsiveSlides({
+        auto: true,
+        nav: true,
+        speed: 500,
+        namespace: "callbacks",
+        pager: true,
+    });
+    $(".fullcover_div7").fadeIn();
+    unloadScrollBars();
+    $('#loading-modal').hide();
+    if ($(window).height() < 580) {
+        var h = $(window).height() - 20;
+        $(".viewmorehotel_white1nn").css('height', h);
+    }
+    });
+    }
+
+    var ShowPolicy = function (data) {
+    var obj = "#" + data;
+    $('#modal-container').css('text-align', 'justify');
+    $('#modal-container').css('font-family', '"UbuntuRegular"');
+    $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">Booking Cancellation Policy</div>');
+    $('#modal-container').append($(obj).html());
+    $("#popup-modal").show();
+    unloadScrollBars();
+    }
+
+    // Prompt hotel selected information
+    var prompHotelInfo = function (hotelSelected, jData, ttlprice) {
+    var popupContainer = $('#popup-modal .modal-container');
+    var htmlMarkup = '';
+    $(hotelSelected).each(function (index, list) {
+    htmlMarkup += '<h4 class="hotel-title">' + list.Type + ' Confirm?' + '</h4>';
+    htmlMarkup += '<p>' + list.HotelName + '<br>';
+    htmlMarkup += '' + list.RoomType + ' x ' + list.Unit + '</p>';
+    htmlMarkup += '<div class="section-hotel" style="margin-top: 0">';
+    htmlMarkup += '<div class="addhotel-widget" style="width: 100%">';
+    htmlMarkup += list.HotelImgHTML;
+    htmlMarkup += '</div>';
+    htmlMarkup += '</div>';
+    })
+    //var callback = typeof checkingForm === 'string' ? '"' + checkingForm + '"' : checkingForm;
+    var confirmFunction = 'onclick=\'checkRoomInvent("", ' + jData + ', ' + ttlprice + ');\'';
+    //var confirmFunction = 'onclick=\'checkRoomInvent(' + '\'\'' + ', \'' + jData + '\')\'';
+    htmlMarkup += "<div class='btn-section'>";
+    htmlMarkup += "<a href=\'javascript:;\' class='continue-submit'><div " + confirmFunction + "class='redbacktohome_button modal-confirm-btn''>Continue</div></a>";
+    htmlMarkup += cancelBtn('Cancel');
+    htmlMarkup += "</div>";
+    popupContainer.html(htmlMarkup);
+    $('#popup-modal').show();
+    }
+
+    // Prompt item selected information
+    var promopItemSelected = function (item) {
+    var popupContainer = $('#popup-modal .modal-container');
+    var htmlMarkup = '';
+    htmlMarkup += '<h4 class="hotel-title">Ticket Confirm?' + '</h4>';
+    $(item).each(function (index, list) {
+    htmlMarkup += '<p>' + list.name + '<br>';
+    htmlMarkup += 'Category ' + list.catname + ' x ' + list.qty + '</p>';
+    })
+    htmlMarkup += '</div>';
+    var confirmFunction = 'onclick=\'addTicket("", ' + JSON.stringify(item) + ');\'';
+    htmlMarkup += "<div class='btn-section'>";
+    htmlMarkup += "<a href=\'javascript:;\' class='continue-submit'><div " + confirmFunction + "class='redbacktohome_button modal-confirm-btn''>Continue</div></a>";
+    htmlMarkup += cancelBtn('Cancel');
+    htmlMarkup += "</div>";
+    popupContainer.html(htmlMarkup);
+    $('#popup-modal').show();
+    }
+
+    var pushItem = function (type, title, item) {
+        var c = $('.collapse.' + type);
+        var h = c.siblings('h3');
+        c.removeClass('in');
+        var htmlMarkup = '';
+        htmlMarkup += '<span> - <a href=\'javascript:;\'>';
+        htmlMarkup += title;
+        htmlMarkup += ' <img src="/images/tab_arrowdown_w.png"></a></span>';
+        h.append(htmlMarkup);
+        $('#popup-modal').fadeOut();
+    }
+
+    var popupMsg = function (htmlMarkup) {
+    var popupContainer = $('#popup-modal .modal-container');
+    @if (!Model.SellItemsAvailable.ForceCrossSell) {
+    <text>
+    //htmlMarkup += '<p style="margin-top: 2em;margin-bottom: -2em;">OR</p>';
+    htmlMarkup += '<div style="margin-top: 4em;margin-bottom: -2em;font-size:12px">';
+    htmlMarkup += cancelBtn('Cancel');
+    @*htmlMarkup += '<i><a href="javascript:;" data-url="@Url.Action("AddOn", "Checkout", new { tripid })" onclick="submit_form(this)" class="add-cursor-pointer">Continue without Add-on</a></i></div>';*@
+    </text>
+    }
+    popupContainer.html(htmlMarkup);
+    $('#popup-modal > .fcd_white3_op').append('<div class="ars-spacer"></div>');
+    $('#popup-modal').show();
+    }
+
+    var checkIns = function () {
+    return $.ajax({
+    type: 'POST',
+    url: '/Checkout/CheckInsurancePassport',
+    cache: false,
+    dataType: 'html',
+    beforeSend: function () {
+        $('#loading-modal').show();
+    }
+    }).promise()
+    }
+
+    var updateIdd = function (res) {
+    if (typeof (res) === 'object') {
+    var msg = '';
+    $(res).each(function (i, e) {
+        msg += e + '\n';
+    });
+    alert(msg);
+    }
+    else {
+    @*//popupMsg('Update personal identity failed.');*@
+    $('#popup-modal').hide();
+    }
+    }
+</script>
+<!--END: checking before Reserve -->

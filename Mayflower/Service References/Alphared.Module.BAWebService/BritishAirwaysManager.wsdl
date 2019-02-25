@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="BritishAirwaysManager" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.Models" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd6" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd7" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd8" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd9" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd10" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd11" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd12" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd13" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd14" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd15" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd16" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd17" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd18" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd19" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRS" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd20" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRQ" />
+      <xsd:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd21" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRS" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IBritishAirwaysManager_GetFlightAvailability_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFlightAvailability" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetFlightAvailability_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFlightAvailabilityResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetSeatAvailability_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSeatAvailability" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetSeatAvailability_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSeatAvailabilityResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetFlightPrice_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFlightPrice" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetFlightPrice_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFlightPriceResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderCreate_InputMessage">
+    <wsdl:part name="parameters" element="tns:OrderCreate" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderCreate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:OrderCreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderRetrieve_InputMessage">
+    <wsdl:part name="parameters" element="tns:OrderRetrieve" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderRetrieve_OutputMessage">
+    <wsdl:part name="parameters" element="tns:OrderRetrieveResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderCancel_InputMessage">
+    <wsdl:part name="parameters" element="tns:OrderCancel" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_OrderCancel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:OrderCancelResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetServiceList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetServiceList" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_GetServiceList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetServiceListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_AirDocIssue_InputMessage">
+    <wsdl:part name="parameters" element="tns:AirDocIssue" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_AirDocIssue_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AirDocIssueResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_VerifyFlight_InputMessage">
+    <wsdl:part name="parameters" element="tns:VerifyFlight" />
+  </wsdl:message>
+  <wsdl:message name="IBritishAirwaysManager_VerifyFlight_OutputMessage">
+    <wsdl:part name="parameters" element="tns:VerifyFlightResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IBritishAirwaysManager">
+    <wsdl:operation name="GetFlightAvailability">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetFlightAvailability" message="tns:IBritishAirwaysManager_GetFlightAvailability_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetFlightAvailabilityResponse" message="tns:IBritishAirwaysManager_GetFlightAvailability_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSeatAvailability">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetSeatAvailability" message="tns:IBritishAirwaysManager_GetSeatAvailability_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetSeatAvailabilityResponse" message="tns:IBritishAirwaysManager_GetSeatAvailability_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFlightPrice">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetFlightPrice" message="tns:IBritishAirwaysManager_GetFlightPrice_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetFlightPriceResponse" message="tns:IBritishAirwaysManager_GetFlightPrice_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderCreate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderCreate" message="tns:IBritishAirwaysManager_OrderCreate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderCreateResponse" message="tns:IBritishAirwaysManager_OrderCreate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderRetrieve">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderRetrieve" message="tns:IBritishAirwaysManager_OrderRetrieve_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderRetrieveResponse" message="tns:IBritishAirwaysManager_OrderRetrieve_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderCancel">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderCancel" message="tns:IBritishAirwaysManager_OrderCancel_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/OrderCancelResponse" message="tns:IBritishAirwaysManager_OrderCancel_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetServiceList" message="tns:IBritishAirwaysManager_GetServiceList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/GetServiceListResponse" message="tns:IBritishAirwaysManager_GetServiceList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AirDocIssue">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/AirDocIssue" message="tns:IBritishAirwaysManager_AirDocIssue_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/AirDocIssueResponse" message="tns:IBritishAirwaysManager_AirDocIssue_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="VerifyFlight">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBritishAirwaysManager/VerifyFlight" message="tns:IBritishAirwaysManager_VerifyFlight_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBritishAirwaysManager/VerifyFlightResponse" message="tns:IBritishAirwaysManager_VerifyFlight_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IBritishAirwaysManager" type="tns:IBritishAirwaysManager">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetFlightAvailability">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/GetFlightAvailability" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSeatAvailability">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/GetSeatAvailability" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFlightPrice">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/GetFlightPrice" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderCreate">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/OrderCreate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderRetrieve">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/OrderRetrieve" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderCancel">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/OrderCancel" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceList">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/GetServiceList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AirDocIssue">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/AirDocIssue" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifyFlight">
+      <soap:operation soapAction="http://tempuri.org/IBritishAirwaysManager/VerifyFlight" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BritishAirwaysManager">
+    <wsdl:port name="BasicHttpBinding_IBritishAirwaysManager" binding="tns:BasicHttpBinding_IBritishAirwaysManager">
+      <soap:address location="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

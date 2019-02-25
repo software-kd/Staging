@@ -1,0 +1,929 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    ViewBag.IsCarRental = Model.Hotel == null && Model.Flight == null && Model.CarRental != null;
+    bool isEventBundle = Model.Hotel == null && Model.Flight == null && Model.TourPackage == null && Model.CarRental == null && Model.SellItemsAvailable.EventProducts != null;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+    ViewBag.Title = !isEventBundle ? "Add On" : "Event Bundle";
+    ViewBag.HeaderRed = true;
+
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    string returnAction = Url.Action("GuestDetails", "Checkout", new { tripid, affiliationId });
+
+    ViewBag.ReturnAction = returnAction;
+    ViewBag.SubmitBtnId = "prompt-btn";
+
+    string actionName = "AddOn";
+    string controllerName = "Checkout";
+
+    if (isEventBundle)
+    {
+        actionName = "EventBundle";
+    }
+}
+
+<div class="booker-details m-u-20">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="booker-details-left">
+                    @if (isEventBundle == true)
+                    {
+                        <div class="booker-header">
+                            <ul>
+                                <li class="active">1. Event Bundle</li>
+                                <li>2. Contact Details@(Model.CheckoutStep >= 3 ? Html.Raw("</a>") : null)</li>
+                                <li>3. Payment@(Model.CheckoutStep >= 5 ? Html.Raw("</a>") : null)</li>
+                                <li>4. Confirmation</li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="booker-header">
+                            <ul>
+                                <li>@(Model.CheckoutStep >= 3 ? Html.Raw($"<a href='{Url.Action("guestdetails", "checkout", new { tripid })}' class='text-white'>") : null)1. Contact/guest Details@(Model.CheckoutStep >= 3 ? Html.Raw("</a>") : null)</li>
+                                <li class="active">@(Model.CheckoutStep >= 4 ? Html.Raw($"<a href='{Url.Action("addon", "checkout", new { tripid })}' class='text-white'>") : null)2. Addons@(Model.CheckoutStep >= 4 ? Html.Raw("</a>") : null)</li>
+                                <li>@(Model.CheckoutStep >= 5 ? Html.Raw($"<a href='{Url.Action("payment", "checkout", new { tripid })}' class='text-white'>") : null)3. Payment@(Model.CheckoutStep >= 5 ? Html.Raw("</a>") : null)</li>
+                                <li>4. Confirmation</li>
+                            </ul>
+                        </div>
+                    }
+                    @*<div class="booker-header">
+                            <ul>
+                                <li>@(Model.CheckoutStep >= 3 ? Html.Raw($"<a href='{Url.Action("guestdetails", "checkout", new { tripid })}' class='text-white'>") : null)1. Contact/guest Details@(Model.CheckoutStep >= 3 ? Html.Raw("</a>") : null)</li>
+                                <li class="active">@(Model.CheckoutStep >= 4 ? Html.Raw($"<a href='{Url.Action("addon", "checkout", new { tripid })}' class='text-white'>") : null)@(carRental != true ? "2. Addons" : "2. Accessories")@(Model.CheckoutStep >= 4 ? Html.Raw("</a>") : null)</li>
+                                <li>@(Model.CheckoutStep >= 5 ? Html.Raw($"<a href='{Url.Action("payment", "checkout", new { tripid })}' class='text-white'>") : null)3. Payment@(Model.CheckoutStep >= 5 ? Html.Raw("</a>") : null)</li>
+                                <li>4. Confirmation</li>
+                            </ul>
+                        </div>*@
+                    @using (Html.BeginForm(actionName, controllerName, new { tripid, affiliationId }, FormMethod.Post, new { @id = "crossSale" }))
+                    {
+                        <div class="booker-body shadow bg-white">
+                            <div class="addon">
+                                <div class="addon-top row">
+                                    <div class="w-100 col">
+                                        @if (!ViewBag.IsCarRental)
+                                        {
+                                            <div class="row">
+                                                <div class="col-12 col-sm-3 addoncat_lbl">
+                                                    <span>Categories:</span>
+                                                </div>
+                                                <div class="col col-xs-12">
+                                                    @if (Model.SellItemsAvailable.Hotels != null)
+                                                    {
+                                                        <label class="custom-check-2">
+                                                            <input type="checkbox" name="addonfilter" value="HTL"><span>Hotel Deals</span>
+                                                        </label>
+                                                    }
+                                                    @if (Model.SellItemsAvailable.Insurance != null)
+                                                    {
+                                                        <label class="custom-check-2">
+                                                            <input type="checkbox" name="addonfilter" value="INS"><span>Travel Insurance</span>
+                                                        </label>
+                                                    }
+                                                    @if (Model.SellItemsAvailable.EventProducts != null)
+                                                    {
+                                                        var eventTypeGrp = Model.SellItemsAvailable.EventProducts.HeaderInfo.GroupBy(x => new { x.EventTypeCode, x.EventType });
+                                                        foreach (var eventType in eventTypeGrp.OrderByDescending(x => x.Key.EventTypeCode == "CT"))
+                                                        {
+                                                            <label class="custom-check-2">
+                                                                <input type="checkbox" name="addonfilter" value="@eventType.Key.EventTypeCode"><span>@eventType.Key.EventType</span>
+                                                            </label>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-12">
+                                                <div class="form-tag type-2">Select Accessories </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    @if (!Model.SellItemsAvailable.ForceCrossSell)
+                                    {
+                                        <div class="skipaddon">
+                                            <a href="javascript:;" class="skip-href" data-url="@Url.Action("AddOn", "Checkout", new { tripid })" onclick="submit_form(this)">@(!ViewBag.IsCarRental ? "Continue without addons " : "Continue without accessories ")<i class="fa fa-angle-right"></i></a>
+                                        </div>
+                                    }
+                                </div>
+                                @if (!ViewBag.IsCarRental)
+                                {
+                                    if (Model.SellItemsAvailable.Hotels != null)
+                                    {
+
+                                        @Html.Hidden("dataToken", null, new { @class = "token" })
+                                        <h4 class="hotelselected search-item bg-white"></h4>
+                                        @Html.Partial("~/Views/Checkout/AddOnPartials/_HotelAddOn_v2.cshtml", Model.SellItemsAvailable.Hotels)
+                                    }
+
+                                    if (Model.SellItemsAvailable.Insurance != null)
+                                    {
+                                        @Html.Partial("~/Views/Checkout/AddOnPartials/_InsuranceAddOn_v2.cshtml", Model.SellItemsAvailable.Insurance)
+                                    }
+
+                                    if (Model.SellItemsAvailable.EventProducts != null)
+                                    {
+                                        // This one special need, token inside partial views
+                                        if (Model.EventBundleReserveCode != null)
+                                        {
+                                            @Html.Partial("~/Views/Checkout/AddOnPartials/_ReserveEventProductList_v2.cshtml", Model.SellItemsAvailable.EventProducts)
+                                        }
+                                        else
+                                        {
+                                            @Html.Partial("~/Views/Checkout/AddOnPartials/_EventProductList_v2.cshtml", Model.SellItemsAvailable.EventProducts)
+                                        }
+                                        @*@Html.Partial("~/Views/Checkout/AddOnPartials/_EventProductList_v2.cshtml", Model.SellItemsAvailable.EventProducts)*@
+                                    }
+                                }
+                                else
+                                {
+                                    @Html.Partial("~/Views/Checkout/AddOnPartials/_CarRentalAccessories.cshtml", Model.CarRental)
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            @*use shared layout for product summary*@
+            @Html.Partial("~/Views/Checkout/SharedPartials/v2/_ReservationDetails.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+@if (Model.SellItemsAvailable.Hotels != null)
+{
+    @*@Html.Partial("~/Views/Hotel/_PopupRoomInfo.cshtml")
+        @Html.Partial("~/Views/Hotel/_HotelInformation.cshtml")*@
+}
+
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+<!-- MAIN CONTENT PORTION START -->
+<input type="hidden" id="hidViewMore" />
+@Html.Partial("~/Views/Hotel/_GoogleMap.cshtml")
+
+
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
+
+
+    <!-- Date Rangepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+    <!-- Lightbox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+    <script src="~/Scripts/v3.0/hotel-search/general.js"></script>
+
+    <script src="@Url.Content("~/Scripts/hotel/responsiveslides.min.js")"></script> @* if can don't use those old script/style *@
+    @*@Html.Partial("~/Views/Hotel/_PopoutHotelFunctionJSScripts.cshtml")*@
+    @Html.Partial("~/Views/Checkout/_checkoutScripts.cshtml")
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ars-customize.js")"></script>
+
+    <script src="~/Scripts/v3.0/hotel-search/page-search.js"></script>
+
+    <!--START: checking before Reserve -->
+    <script>
+        var tripid = '&tripid=' + '@tripid' + '&cs=true' @Html.Raw(string.IsNullOrWhiteSpace(affiliationId) ? "" : " + '&affiliationId=" + affiliationId + "'"  );
+        var cancelBtn = function (text, func) {
+            func = typeof (func) === 'undefined' ? '' : func;
+            return "<a href=\'javascript:;\' onclick'" + func + "' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>" + text + "</div></a>";
+        }
+
+        function ShowTab(objVal) {
+            if (objVal == "tab1") {
+                $(".div8_tab_container1").fadeIn();
+                $(".div8_tab_container2").hide();
+                $(".div8_tab_container3").hide();
+                $(".div8_tab_container4").hide();
+                $(".d8tab1").addClass("d8activelink");
+                $(".d8tab2").removeClass("d8activelink");
+                $(".d8tab3").removeClass("d8activelink");
+                $(".d8tab4").removeClass("d8activelink");
+            }
+            else if (objVal == "tab2") {
+                $(".div8_tab_container2").fadeIn();
+                $(".div8_tab_container1").hide();
+                $(".div8_tab_container3").hide();
+                $(".div8_tab_container4").hide();
+                $(".d8tab2").addClass("d8activelink");
+                $(".d8tab1").removeClass("d8activelink");
+                $(".d8tab3").removeClass("d8activelink");
+                $(".d8tab4").removeClass("d8activelink");
+            }
+            else if (objVal == "tab3") {
+                $(".div8_tab_container3").fadeIn();
+                if ($(".div8_tab_container3 > iframe").attr("width") == '100%') {
+                    $(".div8_tab_container3 > iframe").attr("width", "99.9%");
+                }
+                else {
+                    $(".div8_tab_container3 > iframe").attr("width", "100%");
+                }
+                $(".div8_tab_container1").hide();
+                $(".div8_tab_container2").hide();
+                $(".div8_tab_container4").hide();
+                $(".d8tab3").addClass("d8activelink");
+                $(".d8tab4").removeClass("d8activelink");
+                $(".d8tab2").removeClass("d8activelink");
+                $(".d8tab1").removeClass("d8activelink");
+            }
+            else if (objVal == "tab4") {
+                $(".div8_tab_container4").fadeIn();
+                $(".div8_tab_container1").hide();
+                $(".div8_tab_container2").hide();
+                $(".div8_tab_container3").hide();
+                $(".d8tab4").addClass("d8activelink");
+                $(".d8tab3").removeClass("d8activelink");
+                $(".d8tab2").removeClass("d8activelink");
+                $(".d8tab1").removeClass("d8activelink");
+            }
+        }
+        $(document).on('click', '.loginclose img', function () {
+            $(".fullcover_div").fadeOut();
+            $(".fullcover_div1").fadeOut();
+            $(".fullcover_div6").fadeOut();
+            $(".fullcover_div7").fadeOut();
+            $(".fullcover_div8").fadeOut();
+            $(".fullcover_div_GoogleMap").fadeOut();
+            reloadScrollBars();
+        });
+
+        $.getSInfo = function () {
+            return $.ajax({
+                method: 'POST',
+                url: '/hotel/setsearchinfo' + '?tripid=@tripid',
+                cache: false,
+                async: true,
+                contentType: "application/json",
+            }).promise();
+        };
+
+        var hsInfo = '';
+
+        $.getSInfo().then(function (res) {
+            // success
+            hsInfo = res;
+            //location.hash = $.param(hsInfo);
+        }, function (res) {
+            // failed
+        });
+
+        $('.addon').on('click', '.room-triggerXXX', function () {
+            var roomwrap = $(this).parents('.search-item').find('.room-wrapper');
+            if (roomwrap.css('display') == 'block') {
+                roomwrap.toggle(200);
+            } else {
+                var obj = $(this).data("hotelid");
+                hsInfo.HID = $(this).data("hotelid");
+                hsInfo.HSR = $(this).data('supp');
+
+                $.ajax({
+                    type: "GET",
+                    url: '/Hotel/GetRoomInfo?data=' + obj + '|room' + tripid,
+                    data: hsInfo,
+                    cache: false,
+                    async: true,
+                    dataType: "html",
+                    beforeSend: function () {
+                        loadModal(true);
+                    }
+                }).done(function (result) {
+                    roomwrap.html(result);
+                    roomwrap.toggle(200);
+                    loadModal(false);
+                });
+            }
+        });
+
+        $('.addon_filter.HTL').on('click', '.room-select-btn', function (e) {
+            checkRoomInvent(this);
+        });
+
+        $('#prompt-btn').on('click', function (e) {
+            var popupContainer = $('#popup-modal .modal-container');
+            var htmlMarkup = '';
+            var list = [];
+            var h = $('#dataToken');
+            var i = $('#requireInsurance');
+            var acp = 0;
+            var stop = true;
+            var switchForTW = 0;
+            $('.token.event-product.etc').val('');
+            var addCount = 0;
+            $("[name='addonfilter']").each(function (index, element) {
+                var _qty = 0;
+                var addontype = $(element).val();
+                var etcP = [];
+                $(".tk_type_selector[data-type='" + addontype + "']").each(function (i, e) {
+                    var pEle = $(e);
+                    var v = pEle.val();
+                    acp = pEle.data('cc');
+                    var TWifo = pEle.parent(".custom-unit").find(".TWinfo");
+
+                    if (v > 0) {
+                        _qty += parseInt(v);
+                        etcP.push({
+                            type: pEle.data('type'),
+                            name: pEle.data('name'),
+                            master: pEle.data('master'),
+                            item: pEle.data('tick'),
+                            cat: pEle.data('cat'),
+                            qty: v,
+                            date: pEle.data('date'),
+                        });
+
+                        var addon = {
+                            name: pEle.data('name'),
+                            id: $(e).data('tick'),
+                            price: $(e).data('price'),
+                            quantity: v
+                        };
+                        list.push(addon);
+                        var tEle = $('#' + pEle.data('type'));
+
+                        if (/*switchForTW == 0 && */TWifo.data('twdesc') != undefined && TWifo.data('twamount') != undefined) {
+                            htmlMarkup += '<div class="text-center">' + TWifo.data('twdesc') + ' (' + pEle.data('catname') + ")" + '<br>';
+                            htmlMarkup += 'MYR ' + TWifo.data('twamount') + ' x ' + v + '</div><br>';
+                            switchForTW++;
+                        }
+
+                        htmlMarkup += '<div class="text-center">' + pEle.data('name') + '<br>';
+                        htmlMarkup += 'Category ' + pEle.data('catname') + ' x ' + v + '</div><br>';
+                        addCount++;
+                        tEle.val(JSON.stringify(etcP));
+                    }
+                    if (_qty > acp) {
+                        if (switchForTW > 0) {
+                            dynamicModal('', 'Ticket selected cannot greater than ' + acp.toString() + ' tickets.', false).modal(); //2 need change
+                        }
+                        else {
+                            dynamicModal('', 'Ticket selected cannot greater than pax total.', false).modal();
+                        }
+                        //dynamicModal('', 'Ticket selected cannot greater than pax total.', false).modal();
+                        stop = false;
+                        return false;
+                    }
+                });
+            });
+            if ($("[name='CarOptionalService']").length > 0) {
+                $("[name='CarOptionalService']").each(function (index, element) {
+                    if ($(element).is(':checked')) {
+                        var addon = {
+                            name: $(element).data('name'),
+                            id: $(element).data('tick'),
+                            price: $(element).data('price'),
+                            quantity: 1,
+                        };
+                        list.push(addon);
+                        htmlMarkup += '<div class="text-center">' + $(element).data('name') + ' - MYR' + $(element).data('price') + '</div><br>';
+                    }
+                });
+                $("[name='CarOptServices']").val(JSON.stringify(list));
+            }
+            if (stop) {
+                if (typeof(i) !== 'undefined' && i.length > 0 && i.val() == 'true') {
+                    htmlMarkup += '<div class="text-center">Insurance<br>';
+                    htmlMarkup += 'Chubb Insurance ' + $('.insurance-price').html() + '</div>';
+                }
+
+                if ((typeof (h) !== 'undefined' && typeof (h.val()) !== 'undefined' && h.val().length > 0)
+                    && addCount === 0 && htmlMarkup.length === 0) {
+                    $("#crossSale").submit();
+                }
+                else if (htmlMarkup.length > 0 || addCount > 0) {
+                    trackSelectAddOn(list);
+                    var confirmFunction = '$("#crossSale").submit();';
+                    $(".btn.modal-confirm").attr("onclick", confirmFunction);
+                    dynamicModal('Confirm?', htmlMarkup, true).modal();
+                } else {
+                    var content = '<div class="text-center">Please select one(1) addon type.';
+                    @if (!Model.SellItemsAvailable.ForceCrossSell) {
+                        <text>
+                            content += '<br/><br/>OR<br/><br/>';
+                            content += '<a href="javascript:;" data-url="@Url.Action("AddOn", "Checkout", new { tripid })" onclick="submit_form(this)">Continue without addons</a>';
+                        </text>
+                    }
+                    content += '</div>';
+                    dynamicModal('', content, false).modal();
+                }
+            }
+        });
+
+        var pushRoomToCart = function (e) {
+            var rd = {
+                hotel: $(e).data('hid'),
+                typeCode: $(e).attr("data-roomtypecode"),
+                rateCode: $(e).attr("data-ratecode"),
+                qty: $(e).attr("data-qty"),
+                name: $(e).data('roomname'),
+                propertyId: $(e).data("propertyid"),
+                ratetype: $(e).attr("data-ratetype"),
+                encSupp: $(e).attr("data-encsupp"),
+                ratetoken: $(e).attr("data-ratetoken"),
+            };
+            return rd;
+        }
+
+        var checkRoomInvent = function (checkingForm, fromPrompt) {
+            var r = [];
+            try {
+                var formSelector = $(checkingForm).parents('.form-container2');
+                var hotelId = $(checkingForm).data('hid');
+                hotelId = typeof (hotelId) !== 'undefined' ? hotelId : fromPrompt[0].hotel;
+                var NameList = '';
+                var hotelSelected = [];
+                var hName = $('.addon-ht-info[data-hotelid="' + hotelId + '"]').data('hotelname');
+
+                if (typeof (hotelId) !== 'undefined') {
+                    var e = checkingForm;
+                    var roomType = $(e).data('roomname');
+                    hotelSelected.push({
+                        HotelName: hName,
+                        HotelImgHTML: $('.slider-wrap[data-hotelid="' + hotelId + '"]').html(),//$('.addhotel-widget>[data-hotelid="' + hotelId + '"]').html(),
+                        RoomType: roomType,
+                        Unit: $(e).attr('data-qty'),
+                        Type: 'Hotel',
+                    });
+                    rd = pushRoomToCart(e);
+                    r.push(rd);
+                    NameList += '|' + hotelId + '=' + $(e).attr('data-roomtypecode') + '=' + $(e).attr('data-ratecode') + '=' + selectedValue + '=' + roomType;
+                }
+            } catch (e) {
+            }
+            if (typeof fromPrompt === 'undefined') {
+                if (hotelSelected.length === 0) {
+                    dynamicModal('', 'Please select one(1) room type.', false).modal();
+                    return false;
+                }
+                else if (hotelSelected.length === 1) {
+                    prompHotelInfo(hotelSelected, JSON.stringify(r));
+                    return false;
+                }
+                else {
+                    dynamicModal('', 'Only 1 room type availaible for Hotel Add-On.', false).modal();
+                    return false;
+                }
+
+            }
+
+            var obj = '';
+            var data;
+            var request = $.Deferred();
+            var jData = JSON.stringify(fromPrompt);
+            request = $.ajax({
+                type: 'POST',
+                url: '/Hotel/CheckInventory?' @*+ encodeURIComponent(NameList)*@ + tripid,
+                data: jData,
+                cache: false,
+                async: true,
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function () {
+                    loadModal(true);
+                }
+            }).promise();
+
+            request.fail(function (res) {
+                var popupContainer = $('#popup-modal .modal-container');
+                popupContainer.html(res.responseText);
+            });
+
+            request.done(function (result) {
+                loadModal(false);
+                $('#genericModal').modal('hide');
+                var GTM_addToCartList = [];
+                if (Array.isArray(result)) {
+                    result.forEach(function (element) {
+                        if (element.id != "ENOUGH") {
+                            GTM_addToCartList.push(element);
+                        }
+                    });
+                    result = "ENOUGH";
+                }
+                data = typeof result === "undefined" ? data : result;
+
+                switch (data) {
+                    case "NOTENOUGH": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                    case "NOROOM": obj = $('#PopupErr_SelectFirst').html(); break;
+                    case "TIMEOUT": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                    case "EXCEED": obj = $('#PopupErr_Exceed').html(); break;
+                    default:
+                        if (data.length > 10) {
+                            obj = data;
+                        }
+                        break;
+                }
+
+                if (data === "NOROOM" || typeof result === "undefined") {
+
+                }
+                else if (data != "ENOUGH") {
+                    dynamicModal('', obj, false).modal();
+                    return;
+                }
+
+                $('#dataToken').val(jData);
+
+                if (typeof (jData) !== 'undefined' && jData.length > 0) {
+                    pushItem('Hotel', hName);
+                    $('.room-container').empty();
+                    $('.room-trigger').addClass('btn-primary btn-secondary');
+                    $('.addon_filter.HTL').hide();
+                    trackAddToCart(GTM_addToCartList);
+                    //hideAllRoomForm();
+                }
+                //$('#crossSale').submit();
+                return;
+            });
+
+            if (!(NameList.length > 0)) {
+                //request.resolve();
+            }
+        }
+
+        // Prompt hotel selected information
+        var prompHotelInfo = function (hotelSelected, jData) {
+            var htmlMarkup = '';
+            $(hotelSelected).each(function (index, list) {
+                htmlMarkup += '<div class="text-center">' + list.HotelName + '<br>';
+                htmlMarkup += '' + list.RoomType + ' x ' + list.Unit + '</div><br>';
+                htmlMarkup += list.HotelImgHTML;
+            })
+            var confirmFunction = 'checkRoomInvent("", ' + jData + ');';
+            $(".btn.modal-confirm").text("Continue");
+            $(".btn.modal-close").text("Cancel");
+            $(".btn.modal-confirm").attr("onclick", confirmFunction);
+            dynamicModal('Hotel Confirm?', htmlMarkup, true).modal();
+        }
+
+        var pushItem = function (type, title, item) {
+            var c = $("#dataToken");
+            var h = c.siblings('.hotelselected');
+            var htmlMarkup = '';
+            htmlMarkup += 'Hotel Deals<span> - <a href=\'javascript:;\'>';
+            htmlMarkup += title;
+            htmlMarkup += ' <img src="/images/tab_arrowdown_w.png"></a></span>';
+            h.append(htmlMarkup);
+        }
+
+        var popupMsg = function (htmlMarkup) {
+            var popupContainer = $('#popup-modal .modal-container');
+            @if (!Model.SellItemsAvailable.ForceCrossSell) {
+                <text>
+            htmlMarkup += '<p style="margin-top: 2em;margin-bottom: -2em;">OR</p>';
+            htmlMarkup += '<div style="margin-top: 4em;margin-bottom: -2em;font-size:12px">';
+            htmlMarkup += '<i><a href="javascript:;" data-url="@Url.Action("AddOn", "Checkout", new { tripid })" onclick="submit_form(this)" class="add-cursor-pointer">Continue without Add-on</a></i></div>';
+            </text>
+            }
+            popupContainer.html(htmlMarkup);
+            $('#popup-modal > .fcd_white3_op').append('<div class="ars-spacer"></div>');
+            $('#popup-modal').show();
+        }
+
+        var checkIns = function () {
+            return $.ajax({
+                type: 'POST',
+                url: '/Checkout/CheckInsurancePassport',
+                cache: false,
+                dataType: 'html',
+                beforeSend: function () {
+                    loadModal(true);
+                }
+            }).promise()
+        }
+
+        var updateIdd = function (res) {
+            if (typeof (res) === 'object') {
+                var msg = '';
+                $(res).each(function (i, e) {
+                    msg += e + '\n';
+                });
+                alert(msg);
+            }
+            else {
+                @*//popupMsg('Update personal identity failed.');*@
+                $('#popup-modal').hide();
+            }
+        }
+
+        $("select#tk_date").change(function () {
+            var el = $(this).parents('.addon-single');
+            el.find('.item-bottom').addClass("d-none");
+            var selector = '.item-bottom' + ".date_" + $(this).val().replace(/-/g, '');
+            var dtEvSelector = el.find(selector);
+            dtEvSelector.removeClass("d-none");
+            el.find('.d-none').find('.custom-unit').find('.cuntom-unit-inner').find('span').html('0')
+            el.find('.d-none').find('.custom-unit').find('input').val(0);
+            // find d-none > tk_type_selector value = 0
+        });
+
+        $(".etc-selection .etc-select-opt").change(function () {
+            var options = $(this).parents('.addon-container');
+            var list = [];
+            options.find('.etc-select-opt option:selected').each(function (i, e) {
+                var p = $(e).parents('.etc-selection').siblings(".desc-price").find(".p-wrapper .rate").text().replace(/\s+/g, '');;
+                var qty = $(e).val();
+                if (qty > 0) {
+                    var addon = {
+                        name: $(e).parent().data('name'),
+                        id: $(e).parent().data('tick'),
+                        price: p,
+                        quantity: qty
+                    };
+                    list.push(addon);
+                }
+            });
+            trackSelectAddOn(list);
+        });
+
+        $(document).ready(function() {
+                @if(isEventBundle)
+                {
+                    @:var isEB = true;
+                }
+                else
+                {
+
+                    @:var isEB = false;
+                }
+
+                //Count unit
+                $('.count-up').on('click', function (e) {
+                    e.preventDefault();
+
+                    var disable = $(this).parent('.cuntom-unit-inner').hasClass('offButton');
+
+                    if (disable) {
+                        dynamicModal('', 'Only can choose 1 Concert per purchase.', false).modal();
+                    }
+                    else {
+                        var getCurrentValue = $(this).parent('.cuntom-unit-inner').find('span').html();
+                        var getMaxQuantity = $(this).parent('.cuntom-unit-inner').data("quantity");
+                        var thisEID = $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').data("master");
+
+                        if (getCurrentValue >= 0) {
+                            if (getMaxQuantity > getCurrentValue) {
+                                getCurrentValue++;
+                                $(this).parent('.cuntom-unit-inner').find('span').html(getCurrentValue);
+                                $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(getCurrentValue); //update input value
+
+                                //add
+                                if (isEB) {
+                                    $(document).find('div.cuntom-unit-inner').each(function (i, e) {
+                                        var eId = $(e).parent('.custom-unit').find('input').data("master");
+
+                                        if (eId != thisEID) {
+                                            $(e).addClass('offButton');
+                                        }
+                                    });
+                                    //$(this).parent('.cuntom-unit-inner').removeClass('offButton');
+                                }
+                            }
+
+                        } else {
+                            $(this).parent('.cuntom-unit-inner').find('span').html('0');
+                            $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(0);
+                        }
+                    }
+
+                    //ori
+                    //var getCurrentValue = $(this).parent('.cuntom-unit-inner').find('span').html();
+                    //var getMaxQuantity = $(this).parent('.cuntom-unit-inner').data( "quantity" );
+                    //if (getCurrentValue >= 0) {
+                    //    if (getMaxQuantity > getCurrentValue) {
+                    //        getCurrentValue++;
+                    //        $(this).parent('.cuntom-unit-inner').find('span').html(getCurrentValue);
+                    //        $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(getCurrentValue); //update input value
+                    //    }
+
+                    //}else{
+                    //    $(this).parent('.cuntom-unit-inner').find('span').html('0');
+                    //    $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(0);
+                    //}
+                });
+
+                $('.count-down').on('click', function (e) {
+                    e.preventDefault();
+
+                    var disable = $(this).parent('.cuntom-unit-inner').hasClass('offButton');
+
+                    if (disable) {
+
+                    }
+                    else {
+                        var getCurrentValue = $(this).parent('.cuntom-unit-inner').find('span').html();
+
+                        var thisEID = $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').data("master");
+                        var sumTicketNo = 0;
+
+                        if (getCurrentValue > 0) {
+                            getCurrentValue--;
+
+                            $(this).parent('.cuntom-unit-inner').find('span').html(getCurrentValue);
+                            $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(getCurrentValue); //update input value
+
+                        } else {
+                            $(this).parent('.cuntom-unit-inner').find('span').html('0');
+                            $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(0);
+                        }
+
+                        //add
+                        if (getCurrentValue == 0 && isEB) {
+                            //need check same thisEID still have value or not. no then only remove all
+                            $(document).find('div.cuntom-unit-inner').each(function (i, e) {
+                                var eId = $(e).parent('.custom-unit').find('input').data("master");
+
+                                if (eId == thisEID) {
+                                    sumTicketNo += $(e).parent('.custom-unit').find('input').val();
+                                }
+                            });
+                            if (sumTicketNo == 0) {
+                                $(document).find('div.cuntom-unit-inner').removeClass('offButton');
+                            }
+                        }
+                    }
+
+
+                    //ori
+                    //var getCurrentValue = $(this).parent('.cuntom-unit-inner').find('span').html();
+
+                    //if(getCurrentValue > 0){
+                    //    getCurrentValue--;
+
+                    //    $(this).parent('.cuntom-unit-inner').find('span').html(getCurrentValue);
+                    //    $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(getCurrentValue); //update input value
+
+                    //}else{
+                    //    $(this).parent('.cuntom-unit-inner').find('span').html('0');
+                    //    $(this).parent('.cuntom-unit-inner').parent('.custom-unit').find('input').val(0);
+                    //}
+                });
+        });
+
+        //popout corncert info function script
+        $('.addon-single').on('click', '.popOut', function () {
+            var sdate = $(this).data("sdate");
+            var edate = $(this).data("edate");
+            var ID = $(this).data("id");
+            var scrollAmenities = $(this).hasClass('all_iconbox');
+            var showTripAd = $(this).hasClass('h2_mhdb3_trip_adv');
+            var locationSearch = location.search;
+            if (locationSearch == "") {
+                locationSearch = '?tripid=@tripid';
+            }
+            $.ajax({
+                type: "POST",
+                //url: '/Checkout/GetConcertInfo' + location.search,
+                url: '/Checkout/GetConcertInfo' + locationSearch,
+                data: {
+                    sd: sdate, ed: edate, id: ID
+                },
+                cache: false,
+                async: true,
+                dataType: "html",
+                beforeSend: function () {
+                    $(".fullcover_div_GoogleMap").empty();
+                    loadModal(true);
+                },
+            }).done(function (result) {
+                var containSection = $(result).find('.viewmorehotel_container.hotel-info').parent().html();
+
+                if (typeof (containSection) === 'undefined') {
+                    $('#modal-container').append(result);
+                    $("#popup-modal").show();
+                    loadModal(false);
+                    unloadScrollBars();
+                    return false;
+                }
+
+                $(".fullcover_div_GoogleMap").html(containSection == "" ? result : containSection);
+                carouselPreLoad();
+                initSlider($(".rslides"));
+                $("#myCarousel").carousel({ pause: "false" });
+                $(".fullcover_div_GoogleMap").fadeIn();
+                unloadScrollBars();
+                loadModal(false);
+                //if ($(window).height() < 580) {
+                //    var h = $(window).height() - 70;
+                //    $(".viewmorehotel_white1nn").css('height', h);
+                //}
+
+                if ($(window).width() > 900) {
+                    if ($('div.d8c1_br_blocks_three').length > 18) {
+                        $(".showmoreamenities").css("display", "block");
+                        $('div.d8c1_br_blocks_three:nth-child(18)').nextUntil(".clear").addClass("loadAmenities");
+                    }
+                } else {
+                    if ($('div.d8c1_br_blocks_three').length > 6) {
+                        $(".showmoreamenities").css("display", "block");
+                        $('div.d8c1_br_blocks_three:nth-child(6)').nextUntil(".clear").addClass("loadAmenities");
+                    }
+                }
+                if ($('div.knowb4go ul li').length > 4) {
+                    $(".showmoreknow").css("display", "block");
+                    $('div.knowb4go ul li:nth-child(4)').nextUntil(".clear").addClass("loadAmenities");
+                }
+                if ($("div.hotelpopuppolicy:not(.hotelpopuppolicy:empty)").length > 4) {
+                    $(".showmorepolicy").css("display", "block");
+                    $("div.hotelpopuppolicy:not(.hotelpopuppolicy:empty):nth-of-type(4)").nextUntil(".clear").addClass("loadAmenities");
+                }
+            })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    $('#modal-container').append(textStatus);
+                    $("#popup-modal").show();
+                    loadModal(false);
+                });
+        });
+        $('.addon').on('change', '[name=addonfilter]', function () {
+            $(".addon_filter").addClass("d-none");
+            if ($("[name=addonfilter]").not(':checked').length == 0 || $("[name=addonfilter]:checked").length == 0) {
+                $(".addon_filter").removeClass("d-none");
+            } else {
+                $("[name=addonfilter]").each(function () {
+                    if ($(this).is(':checked')) {
+                        $(".addon_filter." + $(this).val()).removeClass("d-none");
+                    }
+                });
+            }
+        });
+        $('.addon').on('click', '.addoncat', function () {
+            if ($(this).hasClass("d-block")) {
+                $(this).removeClass("d-block");
+            } else {
+                $(this).addClass("d-block");
+            }
+        });
+        $('.addon').on('click', '.hotelselected', function (e) {
+            $(this).text("");
+            $(".HTL").show();
+        });
+
+        //$('.reservation-body').on('click', '#apply-ebreserve-code', function (e) {
+        //    var bcode = $(document).find('#ebreserve-code').val();
+        //    if (typeof (bcode) == 'undefined' || bcode.length === 0) {
+        //        alert("Please enter the Bundle Code");
+        //    }
+        //    else {
+        //        //need check the code before go controller
+        //        var checkUsed = $.checkCodeUsed(bcode);
+        //        if (checkUsed) {
+        //            dynamicModal('', 'Reserve Code ' + bcode + 'is already Redeem', false).modal();
+        //        }
+        //        else {
+        //            window.location = '/Checkout/ReserveEventBundle?code=' + bcode;
+        //        }
+        //        //window.location = '/Checkout/ReserveEventBundle?code='+ bcode;
+        //    }
+        //});
+        //$.checkCodeUsed = function (e) {
+        //    //var params = { Email: e };
+        //    var result = true;
+        //    $.ajax({
+        //        url: '/Checkout/IsEBReserveCodeAvailable?code=' + e,
+        //        method: 'GET',
+        //        async: false,
+        //        cache: false,
+        //        contentType: "json",
+        //    }).done(function (res) {
+        //        result = res;
+        //    });
+        //    return result;
+        //};
+
+        var carouselPreLoad = function () {
+            $('.d8c1_gallery li img').each(function (i, e) {
+                var img = new Image();
+                var elem = $(e);
+                var l = elem.data('src');
+                try {
+                    elem.addClass("img_loading");
+                    e.src = '../Images/mayflower_loading.gif';
+                    img.onload = function (e2) {
+                        var e2;
+                        e.src = img.src;
+                        elem.removeClass("img_loading");
+                    }
+                    img.onerror = function (e3) {
+                        e.src = '../Images_hotel/no-img-01.png';
+                    }
+                    img.src = l;
+
+                } catch (ex) {
+                    e.src = '../Images_hotel/no-img-01.png';
+                };
+            });
+        }
+    </script>
+}
+
+

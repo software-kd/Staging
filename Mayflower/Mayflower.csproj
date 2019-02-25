@@ -1,0 +1,2869 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F6024299-CF99-46ED-A026-4E977CC1B8A0}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mayflower</RootNamespace>
+    <AssemblyName>Mayflower</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44397</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <Use64BitIISExpress />
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FilesToIncludeForPublish>OnlyFilesToRunTheApp</FilesToIncludeForPublish>
+    <ExcludeGeneratedDebugSymbol>false</ExcludeGeneratedDebugSymbol>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CreditCardValidator, Version=1.4.1.178, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CreditCardValidator.1.4.1\lib\net40\CreditCardValidator.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.AspNet, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.AspNet.4.3.4.13329\lib\net45-full\DotNetOpenAuth.AspNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.Core.4.3.4.13329\lib\net45-full\DotNetOpenAuth.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OAuth, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.OAuth.Core.4.3.4.13329\lib\net45-full\DotNetOpenAuth.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OAuth.Consumer, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.OAuth.Consumer.4.3.4.13329\lib\net45-full\DotNetOpenAuth.OAuth.Consumer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OpenId, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.Core.4.3.4.13329\lib\net45-full\DotNetOpenAuth.OpenId.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OpenId.RelyingParty, Version=4.3.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.RelyingParty.4.3.4.13329\lib\net45-full\DotNetOpenAuth.OpenId.RelyingParty.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidationNA, Version=1.2.16.24816, Culture=neutral, PublicKeyToken=0950390b87309e14, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidationNA.1.2.16\lib\net40\FluentValidationNA.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Forloop.HtmlHelpers, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Forloop.HtmlHelpers.1.2.0.0\lib\net45\Forloop.HtmlHelpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.1\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.1\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.3.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebPages.OAuth, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.3.2.3\lib\net45\Microsoft.Web.WebPages.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.12\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.4\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.103\lib\net45\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.103\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Linq.Dynamic, Version=1.1.14.15853, Culture=neutral, PublicKeyToken=b72be0322d1b32a8, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.Library.1.1.14\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Spatial, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.8.1\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Entity">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.7.0\lib\net45\System.Web.Http.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Abstractions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Configuration">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.EnterpriseServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebMatrix.Data, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.2.3\lib\net45\WebMatrix.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebMatrix.WebData, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.WebData.3.2.3\lib\net45\WebMatrix.WebData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\AuthConfig.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\SessionLess\Controllers\SHotelController.cs" />
+    <Compile Include="Areas\SessionLess\SessionLessAreaRegistration.cs" />
+    <Compile Include="Areas\SPAgent\SPAgentAreaRegistration.cs" />
+    <Compile Include="Areas\SPAgent\Controllers\AHotelController.cs" />
+    <Compile Include="Areas\SPAgent\Controllers\SessionSetterController.cs" />
+    <Compile Include="Areas\BOS\BOSAreaRegistration.cs" />
+    <Compile Include="Areas\BOS\Controllers\EventBookingController.cs" />
+    <Compile Include="Areas\BOS\Controllers\ToolsController.cs" />
+    <Compile Include="Areas\InternalApps\Controllers\ConfigureController.cs" />
+    <Compile Include="Areas\InternalApps\InternalAppsAreaRegistration.cs" />
+    <Compile Include="Areas\InternalApps\Models\TestSMTPModel.cs" />
+    <Compile Include="Areas\Notification\Controllers\InfoController.cs" />
+    <Compile Include="Areas\Notification\NotificationAreaRegistration.cs" />
+    <Compile Include="Areas\Notification\SignalR\NotificationHub.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AffiliateProgramController.cs" />
+    <Compile Include="Controllers\AddOnMiniScreenController.cs" />
+    <Compile Include="Controllers\AgentController.cs" />
+    <Compile Include="Controllers\BookingController.cs" />
+    <Compile Include="Controllers\TourPackageController.cs" />
+    <Compile Include="Controllers\CheckoutController.cs" />
+    <Compile Include="Controllers\DynamicFormPostSurfaceController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\FlightController.cs" />
+    <Compile Include="Controllers\FlightSearchController.cs" />
+    <Compile Include="Controllers\CarRentalController.cs" />
+    <Compile Include="Controllers\HotelController.cs" />
+    <Compile Include="Controllers\InsuranceController.cs" />
+    <Compile Include="Controllers\MemberController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ToolsController.cs" />
+    <Compile Include="CustomValidation\PhoneFormatAttribute.cs" />
+    <Compile Include="Filters\EditSelfInfoAttribute.cs" />
+    <Compile Include="Filters\EncryptedActionParameterAttribute.cs" />
+    <Compile Include="Filters\CustomActionFilter.cs" />
+    <Compile Include="Filters\PreserveAllQueryStringFilter.cs" />
+    <Compile Include="Filters\RolesFilter.cs" />
+    <Compile Include="Filters\LocalhostFilter.cs" />
+    <Compile Include="Filters\PreserveQueryStringFilter.cs" />
+    <Compile Include="Filters\SessionFilter.cs" />
+    <Compile Include="General\AcceptCustomButtonAttribute.cs" />
+    <Compile Include="General\BaseEncoding.cs" />
+    <Compile Include="General\Core.cs" />
+    <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
+    <Compile Include="General\CustomAuthentication.cs" />
+    <Compile Include="General\LogExceptionFilterAttribute.cs" />
+    <Compile Include="General\ModelStateErrorHandler.cs" />
+    <Compile Include="General\SessionHandler.cs" />
+    <Compile Include="General\Utilities.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\EncodedActionLink.cs" />
+    <Compile Include="Helpers\CustomizeHTMLControl.cs" />
+    <Compile Include="Helpers\OptimizationExtensions.cs" />
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\AgentModels.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\MasterDataModels.cs" />
+    <Compile Include="Models\OrganizationModels.cs" />
+    <Compile Include="Models\AdminViewModels.cs" />
+    <Compile Include="Models\PaymentModels.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Alphared.Module.BAWebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\TCGBookServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\TCGFareServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\TCGLookupServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\AirAsiaBaggage.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\AirAsiaMeal.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\AirAsiaSSR.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\Airline_en1.XML" />
+    <Content Include="App_Data\Airport.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\CabinClass.xml" />
+    <Content Include="App_Data\CardType.xml" />
+    <Content Include="App_Data\City_en1.XML" />
+    <Content Include="App_Data\Currency.xml" />
+    <Content Include="App_Data\HotelBundlePackage.xml" />
+    <Content Include="App_Data\Hotel_Amenities.xml" />
+    <Content Include="App_Data\Hotel_BetTypes.xml" />
+    <Content Include="App_Data\Hotel_Destination.xml" />
+    <Content Include="App_Data\Hotel_Paxes.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\Hotel_ValueAdds.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\EUFlightEmailArea.xml" />
+    <Content Include="App_Data\Insurance_AcceptArea.xml" />
+    <Content Include="App_Data\OfflinePaymentBlockRef.xml" />
+    <Content Include="App_Data\PaymentMethod.xml" />
+    <Content Include="App_Data\Relation.xml" />
+    <Content Include="App_Data\SortingList.xml" />
+    <Content Include="App_Data\Temp_TieringGroup.xml" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\PagedList.css" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\AutoComplete\jquery-ui.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="CSS\ajax-loader.gif" />
+    <Content Include="CSS\ars-custom.css" />
+    <Content Include="CSS\ars-hotel-tab.css" />
+    <Content Include="CSS\ars-style.css" />
+    <Content Include="CSS\ars-ui-autocomplete.css" />
+    <Content Include="CSS\ars_new_custom.css" />
+    <Content Include="CSS\bootstrap\bootstrap-carousel.css" />
+    <Content Include="CSS\bootstrap\bootstrap-datepicker.min.css" />
+    <Content Include="CSS\bootstrap\bootstrap-select.min.css" />
+    <Content Include="CSS\bootstrap\bootstrap-theme.min.css" />
+    <Content Include="CSS\bootstrap\bootstrap.min.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-datepicker.min.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-grid.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-grid.min.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-reboot.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-reboot.min.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap.css" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap.min.css" />
+    <Content Include="CSS\carRental\custom.css" />
+    <Content Include="CSS\carRental\custom.js" />
+    <Content Include="CSS\carRental\daterangepicker.css" />
+    <Content Include="CSS\carRental\ion.rangeSlider.skin.css" />
+    <Content Include="CSS\carRental\main.css" />
+    <Content Include="CSS\carRental\theme.css" />
+    <Content Include="CSS\checkout\adyencc.css">
+      <DependentUpon>adyencc.scss</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\adyencc.min.css">
+      <DependentUpon>adyencc.css</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\style.css">
+      <DependentUpon>style.scss</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\style.min.css">
+      <DependentUpon>style.css</DependentUpon>
+    </Content>
+    <Content Include="Content\AddOn\21042017_Terms_Conditions_for_Rental_Agreement.pdf" />
+    <Content Include="Areas\Notification\Views\web.config" />
+    <Content Include="Areas\Notification\Views\Info\Index.cshtml" />
+    <Content Include="Areas\BOS\Views\web.config" />
+    <Content Include="Areas\InternalApps\Views\web.config" />
+    <Content Include="Areas\InternalApps\Views\Configure\SMTP.cshtml" />
+    <Content Include="Areas\SPAgent\Views\web.config" />
+    <Content Include="Areas\SPAgent\Views\AHotel\Index.cshtml" />
+    <Content Include="Areas\SPAgent\Views\AHotel\_LoopResult.cshtml" />
+    <Content Include="Areas\SPAgent\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\SPAgent\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\SPAgent\Views\AHotel\Search.cshtml" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-grid.css.map" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-grid.min.css.map" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-reboot.css.map" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap-reboot.min.css.map" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap.css.map" />
+    <Content Include="CSS\bootstrap_v4.1.1\bootstrap.min.css.map" />
+    <Content Include="Areas\SessionLess\Views\web.config" />
+    <Content Include="CSS\carRental\main.less" />
+    <Content Include="CSS\carRental\theme.scss" />
+    <None Include="CSS\checkout\adyencc.scss" />
+    <None Include="CSS\checkout\styles_v2.scss" />
+    <Content Include="CSS\checkout\styles_v2.css">
+      <DependentUpon>styles_v2.scss</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\styles_v2.min.css">
+      <DependentUpon>styles_v2.css</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\v2\styles.css">
+      <DependentUpon>styles.scss</DependentUpon>
+    </Content>
+    <Content Include="CSS\checkout\v2\styles.min.css">
+      <DependentUpon>styles.css</DependentUpon>
+    </Content>
+    <Content Include="CSS\checks.png" />
+    <Content Include="CSS\checks1.png" />
+    <Content Include="CSS\checks2.png" />
+    <Content Include="CSS\checks3.png" />
+    <Content Include="CSS\checks4.png" />
+    <Content Include="CSS\checks4D.png" />
+    <Content Include="CSS\checks4_1.png" />
+    <Content Include="CSS\checks5.png" />
+    <Content Include="CSS\checks6.png" />
+    <Content Include="CSS\checks7.png" />
+    <Content Include="CSS\checks8.png" />
+    <Content Include="CSS\checks8_1.png" />
+    <Content Include="CSS\checks9.png" />
+    <Content Include="CSS\headerfooter\headerRedstyle.css" />
+    <Content Include="CSS\crosssell\bootstrap-theme.min.css" />
+    <Content Include="CSS\crosssell\bootstrap.min.css" />
+    <Content Include="CSS\crosssell\owl.carousel.css" />
+    <Content Include="CSS\crosssell\owl.theme.css" />
+    <Content Include="CSS\crosssell\style.css" />
+    <Content Include="CSS\font-awesome\font-awesome.css" />
+    <Content Include="CSS\font-awesome\font-awesome.min.css" />
+    <Content Include="CSS\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="CSS\fonts\slick.svg" />
+    <Content Include="CSS\fonts\UbuntuBold.svg" />
+    <Content Include="CSS\fonts\UbuntuMedium.svg" />
+    <Content Include="CSS\headerfooter\style1.css" />
+    <Content Include="CSS\hotel\bootstrap-carousel.css" />
+    <Content Include="CSS\hotel\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="CSS\hotel\fonts\Ubuntu-Light.svg" />
+    <Content Include="CSS\hotel\fonts\UbuntuBold.svg" />
+    <Content Include="CSS\hotel\fonts\UbuntuMedium.svg" />
+    <Content Include="CSS\hotel\fonts\UbuntuRegular.svg" />
+    <Content Include="CSS\hotel\jquery-ui.css" />
+    <Content Include="CSS\hotel\jquery.mThumbnailScroller.css" />
+    <Content Include="CSS\hotel\price_slider.css" />
+    <Content Include="CSS\hotel\responsive.css" />
+    <Content Include="CSS\hotel\scroller.css" />
+    <Content Include="CSS\hotel\sliders.css" />
+    <Content Include="CSS\hotel\slider_line.jpg" />
+    <Content Include="CSS\hotel\style.css" />
+    <Content Include="CSS\images\footer-banner.png" />
+    <Content Include="CSS\images\icons-car.gif" />
+    <Content Include="CSS\images\tripadvisoricons.png" />
+    <Content Include="CSS\images\ui-icons_444444_256x240.png" />
+    <Content Include="CSS\images\ui-icons_555555_256x240.png" />
+    <Content Include="CSS\images\ui-icons_777620_256x240.png" />
+    <Content Include="CSS\images\ui-icons_777777_256x240.png" />
+    <Content Include="CSS\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="CSS\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="CSS\ion-rangeSlider.css" />
+    <Content Include="CSS\jquery-ui.min.css" />
+    <Content Include="CSS\lightslider.css" />
+    <Content Include="CSS\MiniScreenCSS\custom.css" />
+    <Content Include="CSS\MiniScreenCSS\main.css" />
+    <Content Include="CSS\MiniScreenCSS\theme.css" />
+    <Content Include="CSS\nav_style.css" />
+    <Content Include="CSS\plus_bg.png" />
+    <Content Include="CSS\price_slider.css" />
+    <Content Include="CSS\sliders.css" />
+    <Content Include="CSS\slider_line.jpg" />
+    <Content Include="CSS\style.css" />
+    <Content Include="CSS\fonts\Ubuntu-Light.svg" />
+    <Content Include="CSS\fonts\UbuntuRegular.svg" />
+    <Content Include="CSS\jquery.mThumbnailScroller.css" />
+    <Content Include="CSS\responsive.css" />
+    <Content Include="CSS\scroller.css" />
+    <Content Include="CSS\tab_arrowdown_w.png" />
+    <Content Include="CSS\tab_arrowup_w.png" />
+    <Content Include="CSS\tripadvisorsprite.css" />
+    <Content Include="CSS\v2responsive.css" />
+    <Content Include="CSS\v2style.css" />
+    <Content Include="CSS\v3.0\jquery.typeahead.min.css" />
+    <Content Include="CSS\v3.0\styles.css">
+      <DependentUpon>styles.scss</DependentUpon>
+    </Content>
+    <Content Include="CSS\v3.0\styles.min.css">
+      <DependentUpon>styles.css</DependentUpon>
+    </Content>
+    <Content Include="CSS\v3.0_responsive.css" />
+    <Content Include="CSS\v3.0_style.css" />
+    <Content Include="CSS\waitMe.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="CSS\fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="fonts\SF-Pro-Display-Bold.svg" />
+    <Content Include="fonts\SF-Pro-Display-Light.svg" />
+    <Content Include="fonts\SF-Pro-Display-Medium.svg" />
+    <Content Include="fonts\SF-Pro-Display-Regular.svg" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Images\AirlineLogo\Cathay Dragon.png" />
+    <Content Include="Images\AirlineLogo\Fiji Airways.png" />
+    <Content Include="Images\AirlineLogo\Jeju Air.png" />
+    <Content Include="Images\AirlineLogo\VietJet Air.png" />
+    <Content Include="Images\arrow-32-xxl.png" />
+    <Content Include="Images\assets\3-star.png" />
+    <Content Include="Images\assets\4-star.png" />
+    <Content Include="Images\assets\5-star.png" />
+    <Content Include="Images\assets\60Years.png" />
+    <Content Include="Images\assets\adv-1.jpg" />
+    <Content Include="Images\assets\adv-10.png" />
+    <Content Include="Images\assets\adv-11.png" />
+    <Content Include="Images\assets\adv-12.png" />
+    <Content Include="Images\assets\adv-2.jpg" />
+    <Content Include="Images\assets\adv-3.jpg" />
+    <Content Include="Images\assets\adv-4.jpg" />
+    <Content Include="Images\assets\adv-5.png" />
+    <Content Include="Images\assets\adv-6.png" />
+    <Content Include="Images\assets\adv-7.png" />
+    <Content Include="Images\assets\adv-8.png" />
+    <Content Include="Images\assets\adv-9.png" />
+    <Content Include="Images\assets\aeq.png" />
+    <Content Include="Images\assets\Affin Bank.jpg" />
+    <Content Include="Images\assets\Aforadio.com.jpg" />
+    <Content Include="Images\assets\AirAsia.jpg" />
+    <Content Include="Images\assets\Alliance Bank.jpg" />
+    <Content Include="Images\assets\Ambank.jpg" />
+    <Content Include="Images\assets\Ana Airlines.jpg" />
+    <Content Include="Images\assets\Bangkok Airways.jpg" />
+    <Content Include="Images\assets\Bank Islam.jpg" />
+    <Content Include="Images\assets\Bank Muamalat.jpg" />
+    <Content Include="Images\assets\Bank Rakyat.jpg" />
+    <Content Include="Images\assets\banner.png" />
+    <Content Include="Images\assets\British Airways.jpg" />
+    <Content Include="Images\assets\BSN.jpg" />
+    <Content Include="Images\assets\calenderr.png" />
+    <Content Include="Images\assets\Cathay Pacific.jpg" />
+    <Content Include="Images\assets\CheapestRate.png" />
+    <Content Include="Images\assets\China Eastern.jpg" />
+    <Content Include="Images\assets\Chubb.jpg" />
+    <Content Include="Images\assets\chubb.png" />
+    <Content Include="Images\assets\CIMB Bank.jpg" />
+    <Content Include="Images\assets\credit-card.png" />
+    <Content Include="Images\assets\Emirates Airlines.jpg" />
+    <Content Include="Images\assets\Etihad Airways.jpg" />
+    <Content Include="Images\assets\flame.png" />
+    <Content Include="Images\assets\footer-banner.png" />
+    <Content Include="Images\assets\footer-brand.png" />
+    <Content Include="Images\assets\g-1.jpg" />
+    <Content Include="Images\assets\g-2.jpg" />
+    <Content Include="Images\assets\g3.jpg" />
+    <Content Include="Images\assets\g4.jpg" />
+    <Content Include="Images\assets\g5.jpg" />
+    <Content Include="Images\assets\gallery-bk.png" />
+    <Content Include="Images\assets\GoAsiaPlus.jpg" />
+    <Content Include="Images\assets\GreaterSavings.png" />
+    <Content Include="Images\assets\group-img-2.png" />
+    <Content Include="Images\assets\group-img.png" />
+    <Content Include="Images\assets\Hong Leong Bank.jpg" />
+    <Content Include="Images\assets\hotel-1.jpg" />
+    <Content Include="Images\assets\HSBC.jpg" />
+    <Content Include="Images\assets\icon_arrow_down.png" />
+    <Content Include="Images\assets\icon_calendar.png" />
+    <Content Include="Images\assets\icon_guests.png" />
+    <Content Include="Images\assets\icon_gym.png" />
+    <Content Include="Images\assets\icon_map.png" />
+    <Content Include="Images\assets\icon_options_minus.png" />
+    <Content Include="Images\assets\icon_options_plus.png" />
+    <Content Include="Images\assets\icon_payment_successful.png" />
+    <Content Include="Images\assets\icon_pets_allowed.png" />
+    <Content Include="Images\assets\icon_property_name.png" />
+    <Content Include="Images\assets\icon_rating_price.png" />
+    <Content Include="Images\assets\icon_restaurant.png" />
+    <Content Include="Images\assets\icon_spa.png" />
+    <Content Include="Images\assets\img-2 %282%29.png" />
+    <Content Include="Images\assets\Japan Airlines.jpg" />
+    <Content Include="Images\assets\KLM.jpg" />
+    <Content Include="Images\assets\Kuwait Finance Hosue.jpg" />
+    <Content Include="Images\assets\light.png" />
+    <Content Include="Images\assets\logo.png" />
+    <Content Include="Images\assets\Lufthansa.jpg" />
+    <Content Include="Images\assets\Malaysia Airlines.jpg" />
+    <Content Include="Images\assets\Malindo Airlines.jpg" />
+    <Content Include="Images\assets\marker.png" />
+    <Content Include="Images\assets\Master.jpg" />
+    <Content Include="Images\assets\Maybank.jpg" />
+    <Content Include="Images\assets\note.png" />
+    <Content Include="Images\assets\OCBC Bank.jpg" />
+    <Content Include="Images\assets\offer-1.jpg" />
+    <Content Include="Images\assets\offer-2.jpg" />
+    <Content Include="Images\assets\offer-3.jpg" />
+    <Content Include="Images\assets\Oman Airlines.jpg" />
+    <Content Include="Images\assets\Over380000.png" />
+    <Content Include="Images\assets\Over5000.png" />
+    <Content Include="Images\assets\Over80airlines.png" />
+    <Content Include="Images\assets\Personalized.png" />
+    <Content Include="Images\assets\Philippines Airlines.jpg" />
+    <Content Include="Images\assets\plane.png" />
+    <Content Include="Images\assets\Public Bank.jpg" />
+    <Content Include="Images\assets\Qatar Airways.jpg" />
+    <Content Include="Images\assets\rating-3.png" />
+    <Content Include="Images\assets\rating-4.png" />
+    <Content Include="Images\assets\RHB.jpg" />
+    <Content Include="Images\assets\Scoot.jpg" />
+    <Content Include="Images\assets\Singapore Airlines.jpg" />
+    <Content Include="Images\assets\slide_1.jpg" />
+    <Content Include="Images\assets\Standard Chartered.jpg" />
+    <Content Include="Images\assets\Swiss.jpg" />
+    <Content Include="Images\assets\tickets.png" />
+    <Content Include="Images\assets\TripAdvisor.jpg" />
+    <Content Include="Images\assets\tripadvisor.png" />
+    <Content Include="Images\assets\UOB.jpg" />
+    <Content Include="Images\assets\Visa.jpg" />
+    <Content Include="Images\assets\ZeroProcessing.png" />
+    <Content Include="Images\c01.jpg" />
+    <Content Include="Images\ConcertItems\JC_Concert_201810.png" />
+    <Content Include="Images\ConcertItems\JC_Concert_201810_2.png" />
+    <Content Include="Images\ConcertItems\JC_Concert_201810_3.png" />
+    <Content Include="Images\ConcertItems\JC_Concert_201810_SOLDOUT.png" />
+    <Content Include="Images\ConcertItems\Joker-xue-concert-mayflower-web.jpg" />
+    <Content Include="Images\ConcertItems\Joker-xue-concert-mayflower-web2.jpg" />
+    <Content Include="Images\ht-supp\eanrapid.png" />
+    <Content Include="Images\Icons_Flights.png" />
+    <Content Include="Images\Icons_Hotels.png" />
+    <Content Include="Images\payment\Boost_logo.png" />
+    <Content Include="Images\payment\cards_graphic.png" />
+    <Content Include="Images\payment\fpx_logo.png" />
+    <Content Include="Images\cup-icon.png" />
+    <Content Include="Images\headerfooter\aeq.png" />
+    <Content Include="Images\headerfooter\chubb.png" />
+    <Content Include="Images\headerfooter\credit-card.png" />
+    <Content Include="Images\headerfooter\footer-brand.png" />
+    <Content Include="Images\headerfooter\group-img-2.png" />
+    <Content Include="Images\headerfooter\group-img.png" />
+    <Content Include="Images\headerfooter\logo.png" />
+    <Content Include="Images\headerfooter\note.png" />
+    <Content Include="Images\headerfooter\tripadvisor.png" />
+    <Content Include="Images\payment\ipa_cc.png" />
+    <Content Include="Images\promo_code.png" />
+    <Content Include="Images\red-logo.gif" />
+    <Content Include="Images\sp-logo\ht-tr-logo-lg.png" />
+    <Content Include="Images\sp-logo\ht-tr-logo-sm.png" />
+    <Content Include="Images\tourIcon.PNG" />
+    <Content Include="Images\tripadvisorlogo.png" />
+    <Content Include="Images\stop-cross-sig-sq-re.png" />
+    <Content Include="Images\stop-sig-sq-re.png" />
+    <Content Include="Images\TripAdvisor\0.0-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\0.5-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\1.0-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\1.5-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\2.0-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\2.5-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\3.0-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\3.5-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\4.0-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\4.5-MCID-5.png" />
+    <Content Include="Images\TripAdvisor\5.0-MCID-5.png" />
+    <Content Include="Images_Hotel\amenities\v2\24 front desk.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\airport shuttle.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\arcade.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\attractions.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\bar lounge.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\breakfast.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\breakfast.png" />
+    <Content Include="Images_Hotel\amenities\v2\business centre.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\coffee shop.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\conference space.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\gym.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\laundry.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\luggage storage.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\map.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\newspaper.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\parking.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\parking.png" />
+    <Content Include="Images_Hotel\amenities\v2\restaurant.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\room service.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\safe deposit Bbox.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\smoking.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\smoking.png" />
+    <Content Include="Images_Hotel\amenities\v2\TV.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\wifi.jpg" />
+    <Content Include="Images_Hotel\amenities\v2\wifi.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Air-conditioning.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Bathrobes.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Bathtub.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Bed.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Breakfast.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Coffee-maker.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Desk.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Guest-pax.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Internet-access-LAN.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Internet-access-wireless.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Ironing-facilties.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Location.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Newspaper.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Pool-view.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Room-hotel-info.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Room-size.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Shuttle.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Swimming-pool.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\unknown-icon.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\View-more.png" />
+    <Content Include="Images_Hotel\Hotel_Amenities\Wifi.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\01-Eligibility-for-loyalty-points.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\02-Free-high-speed-internet.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\03-Free-breakfast.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\04-All-meals.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\05-Continental-breakfast.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\06-Full-breakfast.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\07-English-breakfast.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\08-Free-lunch.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\09-Free-dinner.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\10-Food-beveerage-credit.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\11-Free-parking.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\12-Free-airport-parking.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\13-All-inclusive.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\14-Same-day-cancellation.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\16-Free-wireless-internet.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\17-Continental-breakfast-for-2.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\18-breakfast-for-2.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\19-Free-valet-parking.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\20-Free-airport-shuttle.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\21-Free-room-upgrade.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\22-Resort-credit-included.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\23-Welcome-gift-upon-arrival.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\24-Spa-credit.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\25-Golf-credit.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\26-VIP-access-nightclub.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\27-2for1-buffet.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\28-Free-ski-lift-and-rental.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\29-Breakfast-buffet.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\30-Half-board.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\31-Full-board.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\32-Full-kitchen.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\36-Free-fitness-center-access.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\37-Free-business-center-access.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\39-Free-hotel-parking.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\41-Welcome-drink-upon-arrival.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\42-Free-local-calls.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\43-Complimentary-wine-reception.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\45-Free-local-shuttle.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\46-Free-local-newspaper.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\47-1-Free-Inroom-Movie.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\48-Room-upgrade-upon-availability.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\49-Guaranteed-room-upgrade.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\50-Early-check-in-privilege.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\51-Late-check-out-privilege.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\52-Free-bottled-water.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\53-Egencia-exclusive-rate.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\54-Food-beverage-discount.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\55-Slot-play.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\56-Casino-credit.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\57-Match-play.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\58-Free-welcome-drink.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\59-drinks-and-horsdoeuvres.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\60-Disney-park-tickets.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\61-Spa-access.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\62-Free-breakfast-for-1-adult.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\63-Complimentary-minibar-items.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\65-Free-dinner-for-1-adult.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\67-1000-choice-points-pernight.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\68-500-choice-points-pernight.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\69-Evening-manager-reception.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\72-Breakfast-for-1.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\73-Complimentary-green-fees.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\74-Free-one-way-airport-transfer.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\75-Free-return-airport-transfer.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\76-Free-waterpark-passes.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\77-2-game-drives-pernight.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\78-1-game-drive-pernight.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\79-City-tax-included.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\80-Early-check-in.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\81-Late-check-out.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\82-Free-massage-included.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\83-Free-minibar.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\84-Ski-pass-included.png" />
+    <Content Include="Images_Hotel\Hotel_Icons\unknown-icon.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\10pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\10pluspax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\1pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\2pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\3pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\4pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\5pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\6pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\7pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\8pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\9pax.png" />
+    <Content Include="Images_Hotel\Hotel_PaxIcons\unknown-icon.png" />
+    <Content Include="Images\2per.png" />
+    <Content Include="Images\4per.png" />
+    <Content Include="Images\ac_icon.jpg" />
+    <Content Include="Images\addon-bg\cars.jpg" />
+    <Content Include="Images\addon-bg\insurance.jpg" />
+    <Content Include="Images\addon-bg\insurance2.jpg" />
+    <Content Include="Images\addon-test-img\sample.jpg" />
+    <Content Include="Images\addon\cr\NISSAN_ALMERA.PNG" />
+    <Content Include="Images\addon\gt\KUL004.png" />
+    <Content Include="Images\addon\gt\MITLWT.png" />
+    <Content Include="Images\addon\gt\MITMAP.png" />
+    <Content Include="Images\addon\gt\MJASHK.png" />
+    <Content Include="Images\addon\gt\MJTLGM.png" />
+    <Content Include="Images\addon\gt\MKAKBP.png" />
+    <Content Include="Images\addon\gt\MKAKZA.png" />
+    <Content Include="Images\addon\gt\MKAMKL.png" />
+    <Content Include="Images\addon\gt\MKANZO.png" />
+    <Content Include="Images\addon\gt\MKTBTS.png" />
+    <Content Include="Images\addon\gt\MMAMTS.png" />
+    <Content Include="Images\addon\gt\MPACTP.png" />
+    <Content Include="Images\addon\gt\MPAEPB.png" />
+    <Content Include="Images\addon\gt\MPATSG.png" />
+    <Content Include="Images\addon\gt\MPTESC.png" />
+    <Content Include="Images\addon\gt\MPTTTP.png" />
+    <Content Include="Images\addon\gt\MSAFIC.png" />
+    <Content Include="Images\addon\gt\MSAMCS.png" />
+    <Content Include="Images\addon\gt\MSTSLP.png" />
+    <Content Include="Images\addon\gt\STRS0015.png" />
+    <Content Include="Images\addon\th\HKD001.png" />
+    <Content Include="Images\addon\th\HKD002.png" />
+    <Content Include="Images\addon\th\LLM_B10F1.png" />
+    <Content Include="Images\addon\th\LWOT_B1F1.png" />
+    <Content Include="Images\addon\th\SHD001-WD.png" />
+    <Content Include="Images\addon\th\SHD001-WE.png" />
+    <Content Include="Images\addon\th\SWYLGN.png" />
+    <Content Include="Images\addon\th\TYD001.png" />
+    <Content Include="Images\addon\th\USJ001.png" />
+    <Content Include="Images\addon\th\USS001.png" />
+    <Content Include="Images\addon\wf\WY_Free2D.png" />
+    <Content Include="Images\address-icon.jpg" />
+    <Content Include="Images\AirlineLogo\AccesRail.png" />
+    <Content Include="Images\AirlineLogo\Aegean Airlines.png" />
+    <Content Include="Images\AirlineLogo\Aer Lingus.png" />
+    <Content Include="Images\AirlineLogo\Aeroflot.png" />
+    <Content Include="Images\AirlineLogo\Aerolineas.png" />
+    <Content Include="Images\AirlineLogo\Aeromexico.png" />
+    <Content Include="Images\AirlineLogo\Air Algerie.png" />
+    <Content Include="Images\AirlineLogo\Air Antilles Express.png" />
+    <Content Include="Images\AirlineLogo\Air Arabia.png" />
+    <Content Include="Images\AirlineLogo\Air Astana.png" />
+    <Content Include="Images\AirlineLogo\Air Berlin.png" />
+    <Content Include="Images\AirlineLogo\Air Botswana.png" />
+    <Content Include="Images\AirlineLogo\Air Burkina.png" />
+    <Content Include="Images\AirlineLogo\Air Busan.png" />
+    <Content Include="Images\AirlineLogo\Air Canada.png" />
+    <Content Include="Images\AirlineLogo\Air China.png" />
+    <Content Include="Images\AirlineLogo\Air Cote d%27Ivoire.png" />
+    <Content Include="Images\AirlineLogo\Air Dolomiti.png" />
+    <Content Include="Images\AirlineLogo\Air Europa.png" />
+    <Content Include="Images\AirlineLogo\Air France.png" />
+    <Content Include="Images\AirlineLogo\Air India Regional.png" />
+    <Content Include="Images\AirlineLogo\Air India.png" />
+    <Content Include="Images\AirlineLogo\Air Macau.png" />
+    <Content Include="Images\AirlineLogo\Air Mauritius.png" />
+    <Content Include="Images\AirlineLogo\Air Namibia.png" />
+    <Content Include="Images\AirlineLogo\Air New Zealand.png" />
+    <Content Include="Images\AirlineLogo\Air Nostrum.png" />
+    <Content Include="Images\AirlineLogo\Air Serbia.png" />
+    <Content Include="Images\AirlineLogo\Air Seychelles.png" />
+    <Content Include="Images\AirlineLogo\Air Zimbabwe.png" />
+    <Content Include="Images\AirlineLogo\AirAsia X.png" />
+    <Content Include="Images\AirlineLogo\AirAsia.png" />
+    <Content Include="Images\AirlineLogo\airline-multiple.png" />
+    <Content Include="Images\AirlineLogo\Alaska Airlines.png" />
+    <Content Include="Images\AirlineLogo\Alitalia.png" />
+    <Content Include="Images\AirlineLogo\All Nippon Airways.png" />
+    <Content Include="Images\AirlineLogo\American Airlines.png" />
+    <Content Include="Images\AirlineLogo\Ana.png" />
+    <Content Include="Images\AirlineLogo\Arik Air.png" />
+    <Content Include="Images\AirlineLogo\Arkia-Israeli Airlines.png" />
+    <Content Include="Images\AirlineLogo\Asiana Airline.png" />
+    <Content Include="Images\AirlineLogo\Asiana Airlines.png" />
+    <Content Include="Images\AirlineLogo\ASKY Airlines.png" />
+    <Content Include="Images\AirlineLogo\AtlasGlobal.png" />
+    <Content Include="Images\AirlineLogo\Aurigny Air Services.png" />
+    <Content Include="Images\AirlineLogo\Austrian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Avianca Brazil.png" />
+    <Content Include="Images\AirlineLogo\Avianca El Salvador.png" />
+    <Content Include="Images\AirlineLogo\Avianca.png" />
+    <Content Include="Images\AirlineLogo\Azerbaijan Airlines.png" />
+    <Content Include="Images\AirlineLogo\Azores Airlines.png" />
+    <Content Include="Images\AirlineLogo\Azul.png" />
+    <Content Include="Images\AirlineLogo\Bahamasair.png" />
+    <Content Include="Images\AirlineLogo\Bangkok Air.png" />
+    <Content Include="Images\AirlineLogo\Bearskin Airlines.png" />
+    <Content Include="Images\AirlineLogo\Belavia - Belarusian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Biman Bangladesh Airlines.png" />
+    <Content Include="Images\AirlineLogo\Blue Islands.png" />
+    <Content Include="Images\AirlineLogo\Blue Panorama.png" />
+    <Content Include="Images\AirlineLogo\bmi Regional.png" />
+    <Content Include="Images\AirlineLogo\British Airways.png" />
+    <Content Include="Images\AirlineLogo\Brussels Airlines.png" />
+    <Content Include="Images\AirlineLogo\Cambodia Angkor Air.png" />
+    <Content Include="Images\AirlineLogo\Caribbean Airways.png" />
+    <Content Include="Images\AirlineLogo\Cathay Pacific.png" />
+    <Content Include="Images\AirlineLogo\Cayman Airways.png" />
+    <Content Include="Images\AirlineLogo\Cebu Pacific Air.png" />
+    <Content Include="Images\AirlineLogo\China Airlines.png" />
+    <Content Include="Images\AirlineLogo\China Eastern Airlines.png" />
+    <Content Include="Images\AirlineLogo\China Southern Airlines.png" />
+    <Content Include="Images\AirlineLogo\Citilink.png" />
+    <Content Include="Images\AirlineLogo\COPA.png" />
+    <Content Include="Images\AirlineLogo\Corsair.png" />
+    <Content Include="Images\AirlineLogo\Cubana de Aviacion.png" />
+    <Content Include="Images\AirlineLogo\Delta Airlines.png" />
+    <Content Include="Images\AirlineLogo\Dragonair.png" />
+    <Content Include="Images\AirlineLogo\Eastar Jet.png" />
+    <Content Include="Images\AirlineLogo\easyJet.png" />
+    <Content Include="Images\AirlineLogo\Edelweiss Air.png" />
+    <Content Include="Images\AirlineLogo\Egyptair.png" />
+    <Content Include="Images\AirlineLogo\El Al.png" />
+    <Content Include="Images\AirlineLogo\Ellinair.png" />
+    <Content Include="Images\AirlineLogo\Emirates.png" />
+    <Content Include="Images\AirlineLogo\Ethiopian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Etihad Regional.png" />
+    <Content Include="Images\AirlineLogo\Etihad.png" />
+    <Content Include="Images\AirlineLogo\Euroatlantic Airways.png" />
+    <Content Include="Images\AirlineLogo\Eurowings.png" />
+    <Content Include="Images\AirlineLogo\Eva Airways.png" />
+    <Content Include="Images\AirlineLogo\Fastjet.png" />
+    <Content Include="Images\AirlineLogo\Finair.png" />
+    <Content Include="Images\AirlineLogo\firefly.png" />
+    <Content Include="Images\AirlineLogo\Fly540.png" />
+    <Content Include="Images\AirlineLogo\Flybe.png" />
+    <Content Include="Images\AirlineLogo\FlyDubai.png" />
+    <Content Include="Images\AirlineLogo\flynas.png" />
+    <Content Include="Images\AirlineLogo\Frontier Airlines.png" />
+    <Content Include="Images\AirlineLogo\Garuda Indonesia.png" />
+    <Content Include="Images\AirlineLogo\GoAir.png" />
+    <Content Include="Images\AirlineLogo\GOL.png" />
+    <Content Include="Images\AirlineLogo\Gulf Air.png" />
+    <Content Include="Images\AirlineLogo\Hainan Airlines.png" />
+    <Content Include="Images\AirlineLogo\Hanh Air.png" />
+    <Content Include="Images\AirlineLogo\Hawaiian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Helvetic Airways.png" />
+    <Content Include="Images\AirlineLogo\Himalaya Airline.png" />
+    <Content Include="Images\AirlineLogo\HK Express.png" />
+    <Content Include="Images\AirlineLogo\HOP!.png" />
+    <Content Include="Images\AirlineLogo\Iberia.png" />
+    <Content Include="Images\AirlineLogo\Icelandair.png" />
+    <Content Include="Images\AirlineLogo\India Air.png" />
+    <Content Include="Images\AirlineLogo\IndiGo Airlines.png" />
+    <Content Include="Images\AirlineLogo\Insel Air.png" />
+    <Content Include="Images\AirlineLogo\InterCaribbean.png" />
+    <Content Include="Images\AirlineLogo\Interjet.png" />
+    <Content Include="Images\AirlineLogo\Iran Air.png" />
+    <Content Include="Images\AirlineLogo\Israir Airlines.png" />
+    <Content Include="Images\AirlineLogo\Japan Airlines.png" />
+    <Content Include="Images\AirlineLogo\Jet Airways.png" />
+    <Content Include="Images\AirlineLogo\Jetairfly.png" />
+    <Content Include="Images\AirlineLogo\JetBlue Airways.png" />
+    <Content Include="Images\AirlineLogo\Jetstar.png" />
+    <Content Include="Images\AirlineLogo\Juneyao Airlines.png" />
+    <Content Include="Images\AirlineLogo\KLM.png" />
+    <Content Include="Images\AirlineLogo\Korean Air.png" />
+    <Content Include="Images\AirlineLogo\Kuwait Airways.png" />
+    <Content Include="Images\AirlineLogo\LAM.png" />
+    <Content Include="Images\AirlineLogo\Lao Airlines.png" />
+    <Content Include="Images\AirlineLogo\LATAM Brasil.png" />
+    <Content Include="Images\AirlineLogo\LATAM Chile.png" />
+    <Content Include="Images\AirlineLogo\LIAT.png" />
+    <Content Include="Images\AirlineLogo\Lion Air.png" />
+    <Content Include="Images\AirlineLogo\LOT Polish Airlines.png" />
+    <Content Include="Images\AirlineLogo\Lufthansa.png" />
+    <Content Include="Images\AirlineLogo\Mahan Air.png" />
+    <Content Include="Images\AirlineLogo\Major US Carrier.png" />
+    <Content Include="Images\AirlineLogo\Malindo.png" />
+    <Content Include="Images\AirlineLogo\MAS.png" />
+    <Content Include="Images\AirlineLogo\Meridiana.png" />
+    <Content Include="Images\AirlineLogo\Middle East Airlines.png" />
+    <Content Include="Images\AirlineLogo\Monarch Airlines.png" />
+    <Content Include="Images\AirlineLogo\multi_airline.jpg" />
+    <Content Include="Images\AirlineLogo\multi_airline.png" />
+    <Content Include="Images\AirlineLogo\Myanmar Airways International.png" />
+    <Content Include="Images\AirlineLogo\No image airlines.png" />
+    <Content Include="Images\AirlineLogo\Nok Air.png" />
+    <Content Include="Images\AirlineLogo\Norra.png" />
+    <Content Include="Images\AirlineLogo\Norwegian.png" />
+    <Content Include="Images\AirlineLogo\Nouvelair Tunisie.png" />
+    <Content Include="Images\AirlineLogo\Olympic Air.png" />
+    <Content Include="Images\AirlineLogo\Oman Air.png" />
+    <Content Include="Images\AirlineLogo\Pakistan International Airlines.png" />
+    <Content Include="Images\AirlineLogo\Pegasus Airlines.png" />
+    <Content Include="Images\AirlineLogo\PGA-Portugalia Airlines.png" />
+    <Content Include="Images\AirlineLogo\Philippine Airlines.png" />
+    <Content Include="Images\AirlineLogo\Precision Air.png" />
+    <Content Include="Images\AirlineLogo\Proflight Zambia.png" />
+    <Content Include="Images\AirlineLogo\Qantas Airways.png" />
+    <Content Include="Images\AirlineLogo\Qatar.png" />
+    <Content Include="Images\AirlineLogo\Rossiya Airlines.png" />
+    <Content Include="Images\AirlineLogo\Royal Air Maroc.png" />
+    <Content Include="Images\AirlineLogo\Royal Brunei.png" />
+    <Content Include="Images\AirlineLogo\Royal Jordanian Airlines.png" />
+    <Content Include="Images\AirlineLogo\RwandAir.png" />
+    <Content Include="Images\AirlineLogo\Ryanair.png" />
+    <Content Include="Images\AirlineLogo\SAS.png" />
+    <Content Include="Images\AirlineLogo\Saudi Arabian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Scoot Airline.png" />
+    <Content Include="Images\AirlineLogo\Seaborne Airlines.png" />
+    <Content Include="Images\AirlineLogo\Shanghai Airlines.png" />
+    <Content Include="Images\AirlineLogo\Shenzhen Airlines.png" />
+    <Content Include="Images\AirlineLogo\Sichuan Airlines.png" />
+    <Content Include="Images\AirlineLogo\Silk Air.png" />
+    <Content Include="Images\AirlineLogo\Silver Airways.png" />
+    <Content Include="Images\AirlineLogo\Singapore Airlines.png" />
+    <Content Include="Images\AirlineLogo\Skymark Airlines.png" />
+    <Content Include="Images\AirlineLogo\Smart Wings.png" />
+    <Content Include="Images\AirlineLogo\South African Airways.png" />
+    <Content Include="Images\AirlineLogo\South East Asian Airlines.png" />
+    <Content Include="Images\AirlineLogo\Southwest Airlines.png" />
+    <Content Include="Images\AirlineLogo\Spicejet.png" />
+    <Content Include="Images\AirlineLogo\Spirit Airlines.png" />
+    <Content Include="Images\AirlineLogo\Sri Lankan Air.png" />
+    <Content Include="Images\AirlineLogo\Sriwijaya Air.png" />
+    <Content Include="Images\AirlineLogo\SunExpress Germany.png" />
+    <Content Include="Images\AirlineLogo\Swiss.png" />
+    <Content Include="Images\AirlineLogo\TAAG.png" />
+    <Content Include="Images\AirlineLogo\TAME.png" />
+    <Content Include="Images\AirlineLogo\TAP Portugal.png" />
+    <Content Include="Images\AirlineLogo\Tarom.png" />
+    <Content Include="Images\AirlineLogo\Thai AirAsia.png" />
+    <Content Include="Images\AirlineLogo\Thai Airways.png" />
+    <Content Include="Images\AirlineLogo\Thai Smile.png" />
+    <Content Include="Images\AirlineLogo\Thomas Cook Airlines.png" />
+    <Content Include="Images\AirlineLogo\Tianjin Airlines.png" />
+    <Content Include="Images\AirlineLogo\Tigerair.png" />
+    <Content Include="Images\AirlineLogo\Transavia Airlines.png" />
+    <Content Include="Images\AirlineLogo\Transavia France.png" />
+    <Content Include="Images\AirlineLogo\Tunisair Express.png" />
+    <Content Include="Images\AirlineLogo\Tunisair.png" />
+    <Content Include="Images\AirlineLogo\Turkish Airlines.png" />
+    <Content Include="Images\AirlineLogo\UIA.png" />
+    <Content Include="Images\AirlineLogo\United Airlines.png" />
+    <Content Include="Images\AirlineLogo\Ural Airlines.png" />
+    <Content Include="Images\AirlineLogo\Uzbekistan Airways.png" />
+    <Content Include="Images\AirlineLogo\Vanilla Air.png" />
+    <Content Include="Images\AirlineLogo\Vietnam Airlines.png" />
+    <Content Include="Images\AirlineLogo\Virgin America.png" />
+    <Content Include="Images\AirlineLogo\Virgin Atlantic Airways.png" />
+    <Content Include="Images\AirlineLogo\Virgin Australia.png" />
+    <Content Include="Images\AirlineLogo\VivaAerobus.png" />
+    <Content Include="Images\AirlineLogo\VivaColombia.png" />
+    <Content Include="Images\AirlineLogo\Volaris.png" />
+    <Content Include="Images\AirlineLogo\Volotea.png" />
+    <Content Include="Images\AirlineLogo\Vueling Airlines.png" />
+    <Content Include="Images\AirlineLogo\Westjet.png" />
+    <Content Include="Images\AirlineLogo\White Airways.png" />
+    <Content Include="Images\AirlineLogo\Wideroe.png" />
+    <Content Include="Images\AirlineLogo\Wizz Air.png" />
+    <Content Include="Images\AirlineLogo\WOW air.png" />
+    <Content Include="Images\AirlineLogo\Xiamen Airlines.png" />
+    <Content Include="Images\air_icon.png" />
+    <Content Include="Images\all_star.jpg" />
+    <Content Include="Images\arrive_icon.jpg" />
+    <Content Include="Images\arrive_icon.png" />
+    <Content Include="Images\arrow-left-grey.jpg" />
+    <Content Include="Images\arrow-left-grey.png" />
+    <Content Include="Images\arrow_d.jpg" />
+    <Content Include="Images\arrow_d.png" />
+    <Content Include="Images\arrow_down.png" />
+    <Content Include="Images\arrow_down1.png" />
+    <Content Include="Images\arrow_d_w.png" />
+    <Content Include="Images\arrow_left.jpg" />
+    <Content Include="Images\arrow_left.png" />
+    <Content Include="Images\arrow_right.png" />
+    <Content Include="Images\arrow_u.png" />
+    <Content Include="Images\arrow_up1.png" />
+    <Content Include="Images\auto_img1.png" />
+    <Content Include="Images\auto_img2.png" />
+    <Content Include="Images\back_arrow_img.png" />
+    <Content Include="Images\banner1350-513.png" />
+    <Content Include="Images\banner_home.jpg" />
+    <Content Include="Images\banner_home_mb.jpg" />
+    <Content Include="Images\bathroom_icon.jpg" />
+    <Content Include="Images\bed_icon.jpg" />
+    <Content Include="Images\bld-icon.png" />
+    <Content Include="Images\breadcrump_seperator.jpg" />
+    <Content Include="Images\breadcrump_seperator1.jpg" />
+    <Content Include="Images\breadcrump_seperator2.jpg" />
+    <Content Include="Images\breadcrump_seperator3.jpg" />
+    <Content Include="Images\breakfast_icon.jpg" />
+    <Content Include="Images\BTW-Logo-RGB-w-background.png" />
+    <Content Include="Images\building-icon.png" />
+    <Content Include="Images\bullet_point.jpg" />
+    <Content Include="Images\BundleItems\1_MAYDAY_1024px.jpg" />
+    <Content Include="Images\BundleItems\1_MAYDAY_320px.jpg" />
+    <Content Include="Images\BundleItems\1_MAYDAY_768px.jpg" />
+    <Content Include="Images\BundleItems\2_G-DRAGON_1024px.jpg" />
+    <Content Include="Images\BundleItems\2_G-DRAGON_320px.jpg" />
+    <Content Include="Images\BundleItems\2_G-DRAGON_768px.jpg" />
+    <Content Include="Images\calander-icon.jpg" />
+    <Content Include="Images\calander-icon.png" />
+    <Content Include="Images\calenderr.png" />
+    <Content Include="Images\cal_bg.png" />
+    <Content Include="Images\cal_bg1.png" />
+    <Content Include="Images\cal_bg_blue.png" />
+    <Content Include="Images\cards.jpg" />
+    <Content Include="Images\cart_icon.jpg" />
+    <Content Include="Images\chat-icon.png" />
+    <Content Include="Images\close.jpg" />
+    <Content Include="Images\close_tab.png" />
+    <Content Include="Images\ConcertItems\BRD_concert_inf.jpg" />
+    <Content Include="Images\ConcertItems\BRD_seating_layout.png" />
+    <Content Include="Images\ConcertItems\JC MAYFLOWER HP.jpg" />
+    <Content Include="Images\ConcertItems\JC MAYFLOWER HP_old.JPG" />
+    <Content Include="Images\ConcertItems\JC MAYFLOWER HP_sq.JPG" />
+    <Content Include="Images\ConcertItems\Mayday Homepage Banner_30 June.jpg" />
+    <Content Include="Images\ConcertItems\Mayday Homepage Banner_30 June_sq.jpg" />
+    <Content Include="Images\ConcertItems\Mayday_2017_seatplan.jpg" />
+    <Content Include="Images\ConcertItems\MayflowerThemaPark.jpg" />
+    <Content Include="Images\ConcertItems\Nissan_GrandLivina.jpg" />
+    <Content Include="Images\ConcertItems\seatplan_jacky_2.jpg" />
+    <Content Include="Images\ConcertItems\Toyota_VellFire.jpg" />
+    <Content Include="Images\ConcertItems\WifiSpec.jpg" />
+    <Content Include="Images\confirmation.png" />
+    <Content Include="Images\contactdetails.png" />
+    <Content Include="Images\cup_icon.png" />
+    <Content Include="Images\customer-service.png" />
+    <Content Include="Images\cvv-icon.png" />
+    <Content Include="Images\dd_arrow.png" />
+    <Content Include="Images\dd_arrow_gray.png" />
+    <Content Include="Images\dd_p1.jpg" />
+    <Content Include="Images\dd_p1.png" />
+    <Content Include="Images\dd_p2.jpg" />
+    <Content Include="Images\dd_p2.png" />
+    <Content Include="Images\deal_arrow.jpg" />
+    <Content Include="Images\dep.jpg" />
+    <Content Include="Images\dep_icon.jpg" />
+    <Content Include="Images\dep_icon.png" />
+    <Content Include="Images\dollar-icon.png" />
+    <Content Include="Images\down-arrow-icon.png" />
+    <Content Include="Images\down_mob_img.jpg" />
+    <Content Include="Images\drop_down_arrow.jpg" />
+    <Content Include="Images\drop_down_arrow.png" />
+    <Content Include="Images\dt_load_re.gif" />
+    <Content Include="Images\DUN-regt.png" />
+    <Content Include="Images\dustbin_icon.png" />
+    <Content Include="Images\economy_icon.png" />
+    <Content Include="Images\edit_profile.png" />
+    <Content Include="Images\err_header.jpg" />
+    <Content Include="Images\event-1.jpg" />
+    <Content Include="Images\event-2.jpg" />
+    <Content Include="Images\event-3.jpg" />
+    <Content Include="Images\event-4.jpg" />
+    <Content Include="Images\event-large-image.jpg" />
+    <Content Include="Images\Facebook-icon.png" />
+    <Content Include="Images\FA_USP_low.png" />
+    <Content Include="Images\fb-icon-foot.png" />
+    <Content Include="Images\fb_mo.jpg" />
+    <Content Include="Images\feedback-logo.htm" />
+    <Content Include="Images\feedback-logo.jpg" />
+    <Content Include="Images\feedback-logo.png" />
+    <Content Include="Images\filter_icon.jpg" />
+    <Content Include="Images\filter_img.png" />
+    <Content Include="Images\fil_ico1_red.png" />
+    <Content Include="Images\fil_ico1_white.png" />
+    <Content Include="Images\fil_ico2_red.png" />
+    <Content Include="Images\fil_ico2_white.png" />
+    <Content Include="Images\fil_ico3_red.png" />
+    <Content Include="Images\fil_ico3_white.png" />
+    <Content Include="Images\fil_ico4_red.png" />
+    <Content Include="Images\fil_ico4_white.png" />
+    <Content Include="Images\five_star.jpg" />
+    <Content Include="Images\fl1.jpg" />
+    <Content Include="Images\fl2.jpg" />
+    <Content Include="Images\fl3.jpg" />
+    <Content Include="Images\flight1.jpg" />
+    <Content Include="Images\flight2.jpg" />
+    <Content Include="Images\flight3.jpg" />
+    <Content Include="Images\flight4.jpg" />
+    <Content Include="Images\flight5.jpg" />
+    <Content Include="Images\flight6.jpg" />
+    <Content Include="Images\flight7.jpg" />
+    <Content Include="Images\flight8.jpg" />
+    <Content Include="Images\flight_active.png" />
+    <Content Include="Images\flight_inactive.png" />
+    <Content Include="Images\flying_icon.jpg" />
+    <Content Include="Images\fl_t_ico.png" />
+    <Content Include="Images\foot-mark-2.jpg" />
+    <Content Include="Images\four_star.jpg" />
+    <Content Include="Images\FpxLogo.png" />
+    <Content Include="Images\gallery.jpg" />
+    <Content Include="Images\general-icon-02.png" />
+    <Content Include="Images\Generals\Empty_197x45.png" />
+    <Content Include="Images\Generals\logo_notfound_197x45.png" />
+    <Content Include="Images\gray_plane.png" />
+    <Content Include="Images\gray_plus.jpg" />
+    <Content Include="Images\gray_star.png" />
+    <Content Include="Images\gray_tick_done.png" />
+    <Content Include="Images\green-tick.png" />
+    <Content Include="Images\gr_plane.jpg" />
+    <Content Include="Images\guest_icon.jpg" />
+    <Content Include="Images\guest_icon.png" />
+    <Content Include="Images\guest_icon_hotel.png" />
+    <Content Include="Images\header_bg.jpg" />
+    <Content Include="Images\heartinhand-icon.png" />
+    <Content Include="Images\hide_arrow_white.png" />
+    <Content Include="Images\hl_icon.png" />
+    <Content Include="Images\Home-banner.jpg" />
+    <Content Include="Images\hotel-mimage.jpg" />
+    <Content Include="Images\hotel_active.png" />
+    <Content Include="Images\hotel_big-tn.jpg" />
+    <Content Include="Images\hotel_big.jpg" />
+    <Content Include="Images\hotel_heading_icon.png" />
+    <Content Include="Images\hotel_inactive.png" />
+    <Content Include="Images\hotel_pic.jpg" />
+    <Content Include="Images\hotel_red_star.png" />
+    <Content Include="Images\hotel_r_icon.png" />
+    <Content Include="Images\hotel_star.png" />
+    <Content Include="Images\hotel_star_am.png" />
+    <Content Include="Images\hotel_thmb.jpg" />
+    <Content Include="Images\ht-supp\expedia.png" />
+    <Content Include="Images\ht-supp\expediataap.png" />
+    <Content Include="Images\ht-supp\hotelbeds.png" />
+    <Content Include="Images\ht-supp\jactravel.png" />
+    <Content Include="Images\ht-supp\tourplan.png" />
+    <Content Include="Images\ht_t_ico.png" />
+    <Content Include="Images\h_amen.png" />
+    <Content Include="Images\h_attraction.png" />
+    <Content Include="Images\h_imgs.jpg" />
+    <Content Include="Images\h_imgs1.jpg" />
+    <Content Include="Images\h_imgs2.jpg" />
+    <Content Include="Images\h_property.png" />
+    <Content Include="Images\h_rating.png" />
+    <Content Include="Images\i-icon.png" />
+    <Content Include="Images\ico1.png" />
+    <Content Include="Images\ico2.png" />
+    <Content Include="Images\icon_airline.png" />
+    <Content Include="Images\icon_tag.png" />
+    <Content Include="Images\ico\flight.png" />
+    <Content Include="Images\ico\hotel.png" />
+    <Content Include="Images\ico\info-ico.png" />
+    <Content Include="Images\ico\insurance.png" />
+    <Content Include="Images\ico\gt.png" />
+    <Content Include="Images\ico\ml.png" />
+    <Content Include="Images\ico\simcard.png" />
+    <Content Include="Images\ico\ct.png" />
+    <Content Include="Images\ico\cr.png" />
+    <Content Include="Images\ico\th.png" />
+    <Content Include="Images\ico\wf.png" />
+    <Content Include="Images\info-icon.png" />
+    <Content Include="Images\insta-icon-foot.png" />
+    <Content Include="Images\Instagram-Icon.png" />
+    <Content Include="Images\insurance.jpg" />
+    <Content Include="Images\ins_mo.jpg" />
+    <Content Include="Images\internet1_iicon.jpg" />
+    <Content Include="Images\internet_icon.jpg" />
+    <Content Include="Images\ipay_88.jpg" />
+    <Content Include="Images\knowmore_redarrow.png" />
+    <Content Include="Images\Kuala-Lumpur-thumb-hotel.jpg" />
+    <Content Include="Images\Kuala-Lumpur-thumb-hotelm.jpg" />
+    <Content Include="Images\label-right.jpg" />
+    <Content Include="Images\label-right.png" />
+    <Content Include="Images\label-rightm.jpg" />
+    <Content Include="Images\label-rightm.png" />
+    <Content Include="Images\left-arrow.png" />
+    <Content Include="Images\left_arrow_date.png" />
+    <Content Include="Images\loading.gif" />
+    <Content Include="Images\loading_40x40.gif" />
+    <Content Include="Images\loading_resize.gif" />
+    <Content Include="Images\location_icon.png" />
+    <Content Include="Images\login-icon.png" />
+    <Content Include="Images\logo.jpg" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Images\logo_tickle.png" />
+    <Content Include="Images\logo_w.png" />
+    <Content Include="Images\m-thumb.jpg" />
+    <Content Include="Images\map.jpg" />
+    <Content Include="Images\map_icon.png" />
+    <Content Include="Images\Mayflower-Old-logo-white.png" />
+    <Content Include="Images\Mayflower-Old-logo.png" />
+    <Content Include="Images\Mayflower-with-flower-symbolic-in-Red.png" />
+    <Content Include="Images\Mayflower-with-flower-symbolic-in-White.png" />
+    <Content Include="Images\mayflower_loading.gif" />
+    <Content Include="Images\mayflower_starbuy.gif" />
+    <Content Include="Images\member2-icon.png" />
+    <Content Include="Images\mem_minus.jpg" />
+    <Content Include="Images\mem_plus.jpg" />
+    <Content Include="Images\menu.jpg" />
+    <Content Include="Images\menu.png" />
+    <Content Include="Images\menu1.png" />
+    <Content Include="Images\mid_ico1.png" />
+    <Content Include="Images\mid_ico2.png" />
+    <Content Include="Images\mid_line.jpg" />
+    <Content Include="Images\mid_line1.jpg" />
+    <Content Include="Images\mid_line1.png" />
+    <Content Include="Images\minus.jpg" />
+    <Content Include="Images\minus_blue.png" />
+    <Content Include="Images\minus_green.png" />
+    <Content Include="Images\minus_ico.jpg" />
+    <Content Include="Images\minus_pink.png" />
+    <Content Include="Images\minus_violet.png" />
+    <Content Include="Images\minus_yellow.png" />
+    <Content Include="Images\modify_icon.png" />
+    <Content Include="Images\more_icon.png" />
+    <Content Include="Images\more_info_icon.png" />
+    <Content Include="Images\more_info_icon_down.png" />
+    <Content Include="Images\multi_city_icon_black.png" />
+    <Content Include="Images\multi_city_icon_white.png" />
+    <Content Include="Images\newsletter-bg.jpg" />
+    <Content Include="Images\no-img-01.jpg" />
+    <Content Include="Images\oneway_icon_black.png" />
+    <Content Include="Images\oneway_icon_white.png" />
+    <Content Include="Images\one_star.jpg" />
+    <Content Include="Images\OrganizationLogo\Agent_UTM.jpg" />
+    <Content Include="Images\payment.png" />
+    <Content Include="Images\payment_icon_hotel.png" />
+    <Content Include="Images\people-icon.png" />
+    <Content Include="Images\plane-icon-2.png" />
+    <Content Include="Images\plane-icon.png" />
+    <Content Include="Images\plus_bg.png" />
+    <Content Include="Images\plus_violet.png" />
+    <Content Include="Images\pl_icon.png" />
+    <Content Include="Images\pooll_icon.jpg" />
+    <Content Include="Images\pool_icon.png" />
+    <Content Include="Images\promotion\AA_desktop_banner.jpg" />
+    <Content Include="Images\promotion\Amsterdam.jpg" />
+    <Content Include="Images\promotion\Barcelona.jpg" />
+    <Content Include="Images\promotion\BRITISHAIRLONDON-NEW-WEBSITE-MOBILE-VERSION.jpg" />
+    <Content Include="Images\promotion\BRITISHAIRLONDON-NEW-WEBSITE.jpg" />
+    <Content Include="Images\promotion\BRITISHAIRLONDON-SMALL-IMAGE-LONDON.jpg" />
+    <Content Include="Images\promotion\BRITISHAIRLONDON_NEw-Website--1280-X-490-px.jpg" />
+    <Content Include="Images\promotion\Cape-Town.jpg" />
+    <Content Include="Images\promotion\Casablanca.jpg" />
+    <Content Include="Images\promotion\Doha.jpg" />
+    <Content Include="Images\promotion\Edinburg.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Dublin.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Frankfurt.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Geneva.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Istanbul.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-London.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Manchester.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-MUnich.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_BUSINESS-CLASS-Paris.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Amsterdam.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Edinburgh.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Istanbul.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-London.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Manchester.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-New-York.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Paris.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_ECONOMY-CLASS-Rome.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_NEw-Website--1280-X-490-px.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_New-Website-Mobile-version.jpg" />
+    <Content Include="Images\promotion\ETIHADEUROPE_NEw-Website.jpg" />
+    <Content Include="Images\promotion\Guangzhou.jpg" />
+    <Content Include="Images\promotion\Hong-Kong.jpg" />
+    <Content Include="Images\promotion\Istanbul.jpg" />
+    <Content Include="Images\promotion\London-Business-Class.jpg" />
+    <Content Include="Images\promotion\London-Economy-Class.jpg" />
+    <Content Include="Images\promotion\London.jpg" />
+    <Content Include="Images\promotion\Manchester.jpg" />
+    <Content Include="Images\promotion\Mas-Airline_NEw-Website--1280-X-490-px.jpg" />
+    <Content Include="Images\promotion\MASAIRGUANGZHOU_NEw-Website--1280-X-490-px.jpg" />
+    <Content Include="Images\promotion\MASAIRGUANGZHOU_New-Website-mobile-version.jpg" />
+    <Content Include="Images\promotion\MASAIRGUANGZHOU_New-Website.jpg" />
+    <Content Include="Images\promotion\MASAIRPROMO_New-Website-mobile-version.jpg" />
+    <Content Include="Images\promotion\MASAIRPROMO_New-Website.jpg" />
+    <Content Include="Images\promotion\Milan.jpg" />
+    <Content Include="Images\promotion\Munich.jpg" />
+    <Content Include="Images\promotion\New-York.jpg" />
+    <Content Include="Images\promotion\Paris.jpg" />
+    <Content Include="Images\promotion\Rome.jpg" />
+    <Content Include="Images\promotion\Shanghai.jpg" />
+    <Content Include="Images\promotion\Taiwan.jpg" />
+    <Content Include="Images\promotion\Turkish Airlines - Business CS B1F1-New Website Banner Visual-01.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines---Business-CS-B1F1--Mobile-Version-New-Website-Banner.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines---Business-CS-B1F1-New-Website-Banner.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines---Business-CS-B1F1_New-Website--1280-X-490-px.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Amsterdam.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Barcelona.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-London.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Madrid.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Milan.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Rome.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE-Vienna.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE_Paris.jpg" />
+    <Content Include="Images\promotion\Turkish-Airlines--Business-CS-B1F1-SMALL-IMAGE_Zurich.jpg" />
+    <Content Include="Images\promotion\Zurich.jpg" />
+    <Content Include="Images\prop_txt_bg.jpg" />
+    <Content Include="Images\QATARATRAVEL_NEw-Website-banner.jpg" />
+    <Content Include="Images\QATARATRAVEL_New-Website-Mobile-version.jpg" />
+    <Content Include="Images\QATARATRAVEL_NEw-Website.jpg" />
+    <Content Include="Images\rating3_5.png" />
+    <Content Include="Images\red_b_arrow.png" />
+    <Content Include="Images\right-arrow.png" />
+    <Content Include="Images\right-icon.png" />
+    <Content Include="Images\room_arrow.jpg" />
+    <Content Include="Images\room_icon.png" />
+    <Content Include="Images\search-icon.png" />
+    <Content Include="Images\search.png" />
+    <Content Include="Images\shuttle_icon.png" />
+    <Content Include="Images\sq_icon.jpg" />
+    <Content Include="Images\star_blue.png" />
+    <Content Include="Images\stop-sig-re.png" />
+    <Content Include="Images\ops.jpg" />
+    <Content Include="Images\payment_icon.png" />
+    <Content Include="Images\plane.png" />
+    <Content Include="Images\plane_icon.jpg" />
+    <Content Include="Images\plus_bg.jpg" />
+    <Content Include="Images\plus_blue.png" />
+    <Content Include="Images\plus_green.png" />
+    <Content Include="Images\plus_ico.jpg" />
+    <Content Include="Images\plus_icon.png" />
+    <Content Include="Images\plus_pink.png" />
+    <Content Include="Images\plus_yellow.png" />
+    <Content Include="Images\price_bg.png" />
+    <Content Include="Images\py_icon.jpg" />
+    <Content Include="Images\py_icon.png" />
+    <Content Include="Images\py_icon1.jpg" />
+    <Content Include="Images\py_icon1.png" />
+    <Content Include="Images\red_arrow.png" />
+    <Content Include="Images\red_minus.jpg" />
+    <Content Include="Images\red_minus.png" />
+    <Content Include="Images\ret.jpg" />
+    <Content Include="Images\return_icon_black.png" />
+    <Content Include="Images\return_icon_white.png" />
+    <Content Include="Images\right_arrow_date.png" />
+    <Content Include="Images\rtt_icon.jpg" />
+    <Content Include="Images\rtt_red_icon.png" />
+    <Content Include="Images\sc1_img1.jpg" />
+    <Content Include="Images\sc1_img2.jpg" />
+    <Content Include="Images\sc1_img3.jpg" />
+    <Content Include="Images\sc2_img1.jpg" />
+    <Content Include="Images\sc2_img2.jpg" />
+    <Content Include="Images\sc2_img3.jpg" />
+    <Content Include="Images\sc2_img4.jpg" />
+    <Content Include="Images\session_clock.jpg" />
+    <Content Include="Images\smily.jpg" />
+    <Content Include="Images\sort_arrow.png" />
+    <Content Include="Images\sort_icon.jpg" />
+    <Content Include="Images\submit_btn-arrow-green.png" />
+    <Content Include="Images\submit_btn-arrow.png" />
+    <Content Include="Images\success_py.png" />
+    <Content Include="Images\tab_arrowdown_w.png" />
+    <Content Include="Images\tab_arrowup_w.png" />
+    <Content Include="Images\ta_icon.png" />
+    <Content Include="Images\ta_icon_hi_res.png" />
+    <Content Include="Images\themes.gif" />
+    <Content Include="Images\three_star.jpg" />
+    <Content Include="Images\tick_done.png" />
+    <Content Include="Images\toll_tip.png" />
+    <Content Include="Images\toll_tip_ico.jpg" />
+    <Content Include="Images\toll_tip_icon.png" />
+    <Content Include="Images\toll_tip_top.png" />
+    <Content Include="Images\top_button.png" />
+    <Content Include="Images\Trip-Advisor-Logo.png" />
+    <Content Include="Images\tripadviser-logo-small.png" />
+    <Content Include="Images\tripadviser-logo.htm" />
+    <Content Include="Images\tripadviser-logo.png" />
+    <Content Include="Images\trip_adviser.jpg" />
+    <Content Include="Images\tt_top.png" />
+    <Content Include="Images\Tweeter-Icon.png" />
+    <Content Include="Images\twit-icon-foot.png" />
+    <Content Include="Images\two_star.jpg" />
+    <Content Include="Images\tw_mo.jpg" />
+    <Content Include="Images\txt_left_arrow.jpg" />
+    <Content Include="Images\txt_load.gif" />
+    <Content Include="Images\txt_right_arrow.jpg" />
+    <Content Include="Images\united_icon.jpg" />
+    <Content Include="Images\united_icon_gr.jpg" />
+    <Content Include="Images\unknown-icon.png" />
+    <Content Include="Images\VisaMasterLogo.jpg" />
+    <Content Include="Images\watch_icon.jpg" />
+    <Content Include="Images\watch_icon.png" />
+    <Content Include="Images\icon-ticket.png" />
+    <Content Include="Images\white-bld-icon.png" />
+    <Content Include="Images\white-chat-icon.png" />
+    <Content Include="Images\white-plane-icon.png" />
+    <Content Include="Images\wi-fi-icon.png" />
+    <Content Include="Images\wifil_icon.jpg" />
+    <Content Include="Images\wifi_icon.png" />
+    <Content Include="Images\yp_ico_black_1.png" />
+    <Content Include="Images\yp_ico_black_2.png" />
+    <Content Include="Images\yp_ico_black_3.png" />
+    <Content Include="Images\yp_ico_red_1.png" />
+    <Content Include="Images\yp_ico_red_2.png" />
+    <Content Include="Images\yp_ico_red_3.png" />
+    <Content Include="Images\yp_ico_white_1.png" />
+    <Content Include="Images\yp_ico_white_2.png" />
+    <Content Include="Images\yp_ico_white_3.png" />
+    <Content Include="Images_Hotel\01search.png" />
+    <Content Include="Images_Hotel\02contactdetails.png" />
+    <Content Include="Images_Hotel\03payment.png" />
+    <Content Include="Images_Hotel\04confirmation.png" />
+    <Content Include="Images_Hotel\1-Star-Default.png" />
+    <Content Include="Images_Hotel\1-Star-Selected.png" />
+    <Content Include="Images_Hotel\2-Star-Default.png" />
+    <Content Include="Images_Hotel\2-Star-Selected.png" />
+    <Content Include="Images_Hotel\3-Star-Default.png" />
+    <Content Include="Images_Hotel\3-Star-Selected.png" />
+    <Content Include="Images_Hotel\4-Star-Default.png" />
+    <Content Include="Images_Hotel\4-Star-Selected.png" />
+    <Content Include="Images_Hotel\5-Star-Default.png" />
+    <Content Include="Images_Hotel\5-Star-Selected.png" />
+    <Content Include="Images_Hotel\ac_icon.jpg" />
+    <Content Include="Images_Hotel\add-on.png" />
+    <Content Include="Images_Hotel\air_icon.png" />
+    <Content Include="Images_Hotel\All-Stars.png" />
+    <Content Include="Images_Hotel\all_star.jpg" />
+    <Content Include="Images_Hotel\arrow_d.jpg" />
+    <Content Include="Images_Hotel\arrow_d.png" />
+    <Content Include="Images_Hotel\arrow_down.png" />
+    <Content Include="Images_Hotel\arrow_down1.png" />
+    <Content Include="Images_Hotel\arrow_left.jpg" />
+    <Content Include="Images_Hotel\arrow_u.png" />
+    <Content Include="Images_Hotel\arrow_up1.png" />
+    <Content Include="Images_Hotel\auto_img1.png" />
+    <Content Include="Images_Hotel\auto_img2.png" />
+    <Content Include="Images_Hotel\bathroom_icon.jpg" />
+    <Content Include="Images_Hotel\bed_icon.jpg" />
+    <Content Include="Images_Hotel\breadcrump_seperator.jpg" />
+    <Content Include="Images_Hotel\breadcrump_seperator1.jpg" />
+    <Content Include="Images_Hotel\breadcrump_seperator2.jpg" />
+    <Content Include="Images_Hotel\breadcrump_seperator3.jpg" />
+    <Content Include="Images_Hotel\breakfast_icon.jpg" />
+    <Content Include="Images_Hotel\bullet_point.jpg" />
+    <Content Include="Images_Hotel\cal_bg.png" />
+    <Content Include="Images_Hotel\cards.jpg" />
+    <Content Include="Images_Hotel\cart_icon.jpg" />
+    <Content Include="Images_Hotel\close.jpg" />
+    <Content Include="Images_Hotel\close_tab.png" />
+    <Content Include="Images_Hotel\confirmation.png" />
+    <Content Include="Images_Hotel\contactdetails.png" />
+    <Content Include="Images_Hotel\cup_icon.png" />
+    <Content Include="Images_Hotel\dd_arrow.png" />
+    <Content Include="Images_Hotel\dd_arrow_gray.png" />
+    <Content Include="Images_Hotel\dd_p1.jpg" />
+    <Content Include="Images_Hotel\dd_p1.png" />
+    <Content Include="Images_Hotel\dd_p2.jpg" />
+    <Content Include="Images_Hotel\dd_p2.png" />
+    <Content Include="Images_Hotel\deal_arrow.jpg" />
+    <Content Include="Images_Hotel\dep.jpg" />
+    <Content Include="Images_Hotel\dep_icon.jpg" />
+    <Content Include="Images_Hotel\dep_icon.png" />
+    <Content Include="Images_Hotel\down_mob_img.jpg" />
+    <Content Include="Images_Hotel\drop_down_arrow.jpg" />
+    <Content Include="Images_Hotel\drop_down_arrow.png" />
+    <Content Include="Images_Hotel\economy_icon.png" />
+    <Content Include="Images_Hotel\edit_profile.png" />
+    <Content Include="Images_Hotel\err_header.jpg" />
+    <Content Include="Images_Hotel\filter_icon.jpg" />
+    <Content Include="Images_Hotel\filter_img.png" />
+    <Content Include="Images_Hotel\fil_ico1_red.png" />
+    <Content Include="Images_Hotel\fil_ico1_white.png" />
+    <Content Include="Images_Hotel\fil_ico2_red.png" />
+    <Content Include="Images_Hotel\fil_ico2_white.png" />
+    <Content Include="Images_Hotel\fil_ico3_red.png" />
+    <Content Include="Images_Hotel\fil_ico3_white.png" />
+    <Content Include="Images_Hotel\fil_ico4_red.png" />
+    <Content Include="Images_Hotel\fil_ico4_white.png" />
+    <Content Include="Images_Hotel\five_star.jpg" />
+    <Content Include="Images_Hotel\flying_icon.jpg" />
+    <Content Include="Images_Hotel\four_star.jpg" />
+    <Content Include="Images_Hotel\gray_plane.png" />
+    <Content Include="Images_Hotel\gray_plus.jpg" />
+    <Content Include="Images_Hotel\gray_tick_done.png" />
+    <Content Include="Images_Hotel\gr_plane.jpg" />
+    <Content Include="Images_Hotel\guest_icon.jpg" />
+    <Content Include="Images_Hotel\guest_icon.png" />
+    <Content Include="Images_Hotel\header_bg.jpg" />
+    <Content Include="Images_Hotel\hide_arrow_white.png" />
+    <Content Include="Images_Hotel\hotel_heading_icon.png" />
+    <Content Include="Images_Hotel\hotel_pic.jpg" />
+    <Content Include="Images_Hotel\hotel_red_star.png" />
+    <Content Include="Images_Hotel\hotel_star.png" />
+    <Content Include="Images_Hotel\h_amen.png" />
+    <Content Include="Images_Hotel\h_attraction.png" />
+    <Content Include="Images_Hotel\h_imgs.jpg" />
+    <Content Include="Images_Hotel\h_imgs1.jpg" />
+    <Content Include="Images_Hotel\h_imgs2.jpg" />
+    <Content Include="Images_Hotel\h_property.png" />
+    <Content Include="Images_Hotel\h_rating.png" />
+    <Content Include="Images_Hotel\internet1_iicon.jpg" />
+    <Content Include="Images_Hotel\internet_icon.jpg" />
+    <Content Include="Images_Hotel\ipay_88.jpg" />
+    <Content Include="Images_Hotel\left_arrow_date.png" />
+    <Content Include="Images_Hotel\location_icon.png" />
+    <Content Include="Images_Hotel\logo.jpg" />
+    <Content Include="Images_Hotel\logo.png" />
+    <Content Include="Images_Hotel\logo_tickle.png" />
+    <Content Include="Images_Hotel\logo_w.png" />
+    <Content Include="Images_Hotel\magnifying_glass.png" />
+    <Content Include="Images_Hotel\map_icon.png" />
+    <Content Include="Images_Hotel\mem_minus.jpg" />
+    <Content Include="Images_Hotel\mem_plus.jpg" />
+    <Content Include="Images_Hotel\menu.jpg" />
+    <Content Include="Images_Hotel\menu.png" />
+    <Content Include="Images_Hotel\menu1.png" />
+    <Content Include="Images_Hotel\mid_ico1.png" />
+    <Content Include="Images_Hotel\mid_ico2.png" />
+    <Content Include="Images_Hotel\mid_line.jpg" />
+    <Content Include="Images_Hotel\mid_line1.jpg" />
+    <Content Include="Images_Hotel\mid_line1.png" />
+    <Content Include="Images_Hotel\minus.jpg" />
+    <Content Include="Images_Hotel\minus_blue.png" />
+    <Content Include="Images_Hotel\minus_green.png" />
+    <Content Include="Images_Hotel\minus_ico.jpg" />
+    <Content Include="Images_Hotel\minus_pink.png" />
+    <Content Include="Images_Hotel\minus_violet.png" />
+    <Content Include="Images_Hotel\minus_yellow.png" />
+    <Content Include="Images_Hotel\modify_icon.png" />
+    <Content Include="Images_Hotel\more_icon.png" />
+    <Content Include="Images_Hotel\more_info_icon.png" />
+    <Content Include="Images_Hotel\multi_city_icon_black.png" />
+    <Content Include="Images_Hotel\multi_city_icon_white.png" />
+    <Content Include="Images_Hotel\no-img-01.jpg" />
+    <Content Include="Images_Hotel\no-img-01.png" />
+    <Content Include="Images_Hotel\oneway_icon_black.png" />
+    <Content Include="Images_Hotel\oneway_icon_white.png" />
+    <Content Include="Images_Hotel\one_star.jpg" />
+    <Content Include="Images_Hotel\ops.jpg" />
+    <Content Include="Images_Hotel\payment.png" />
+    <Content Include="Images_Hotel\payment_icon.png" />
+    <Content Include="Images_Hotel\plane.png" />
+    <Content Include="Images_Hotel\plane_icon.jpg" />
+    <Content Include="Images_Hotel\plus_bg.jpg" />
+    <Content Include="Images_Hotel\plus_bg.png" />
+    <Content Include="Images_Hotel\plus_blue.png" />
+    <Content Include="Images_Hotel\plus_green.png" />
+    <Content Include="Images_Hotel\plus_ico.jpg" />
+    <Content Include="Images_Hotel\plus_icon.png" />
+    <Content Include="Images_Hotel\plus_pink.png" />
+    <Content Include="Images_Hotel\plus_violet.png" />
+    <Content Include="Images_Hotel\plus_yellow.png" />
+    <Content Include="Images_Hotel\pooll_icon.jpg" />
+    <Content Include="Images_Hotel\pool_icon.png" />
+    <Content Include="Images_Hotel\price_bg.png" />
+    <Content Include="Images_Hotel\prop_txt_bg.jpg" />
+    <Content Include="Images_Hotel\py_icon.jpg" />
+    <Content Include="Images_Hotel\py_icon.png" />
+    <Content Include="Images_Hotel\py_icon1.jpg" />
+    <Content Include="Images_Hotel\py_icon1.png" />
+    <Content Include="Images_Hotel\red_arrow.png" />
+    <Content Include="Images_Hotel\red_minus.jpg" />
+    <Content Include="Images_Hotel\red_minus.png" />
+    <Content Include="Images_Hotel\ret.jpg" />
+    <Content Include="Images_Hotel\return_icon_black.png" />
+    <Content Include="Images_Hotel\return_icon_white.png" />
+    <Content Include="Images_Hotel\right_arrow_date.png" />
+    <Content Include="Images_Hotel\room_arrow.jpg" />
+    <Content Include="Images_Hotel\room_icon.png" />
+    <Content Include="Images_Hotel\rtt_icon.jpg" />
+    <Content Include="Images_Hotel\rtt_red_icon.png" />
+    <Content Include="Images_Hotel\search.png" />
+    <Content Include="Images_Hotel\session_clock.jpg" />
+    <Content Include="Images_Hotel\smily.jpg" />
+    <Content Include="Images_Hotel\sort_arrow.png" />
+    <Content Include="Images_Hotel\sort_icon.jpg" />
+    <Content Include="Images_Hotel\sq_icon.jpg" />
+    <Content Include="Images_Hotel\success_py.png" />
+    <Content Include="Images_Hotel\ta_icon.png" />
+    <Content Include="Images_Hotel\themes.gif" />
+    <Content Include="Images_Hotel\three_star.jpg" />
+    <Content Include="Images_Hotel\tick_done.png" />
+    <Content Include="Images_Hotel\toll_tip.png" />
+    <Content Include="Images_Hotel\toll_tip_ico.jpg" />
+    <Content Include="Images_Hotel\toll_tip_icon.png" />
+    <Content Include="Images_Hotel\toll_tip_top.png" />
+    <Content Include="Images_Hotel\tt_top.png" />
+    <Content Include="Images_Hotel\two_star.jpg" />
+    <Content Include="Images_Hotel\txt_left_arrow.jpg" />
+    <Content Include="Images_Hotel\txt_right_arrow.jpg" />
+    <Content Include="Images_Hotel\united_icon.jpg" />
+    <Content Include="Images_Hotel\united_icon_gr.jpg" />
+    <Content Include="Images_Hotel\unknown-icon.png" />
+    <Content Include="Images_Hotel\watch_icon.jpg" />
+    <Content Include="Images_Hotel\watch_icon.png" />
+    <Content Include="Images_Hotel\wifil_icon.jpg" />
+    <Content Include="Images_Hotel\wifi_icon.png" />
+    <Content Include="Images_Hotel\yp_ico_black_1.png" />
+    <Content Include="Images_Hotel\yp_ico_black_2.png" />
+    <Content Include="Images_Hotel\yp_ico_black_3.png" />
+    <Content Include="Images_Hotel\yp_ico_red_1.png" />
+    <Content Include="Images_Hotel\yp_ico_red_2.png" />
+    <Content Include="Images_Hotel\yp_ico_red_3.png" />
+    <Content Include="Images_Hotel\yp_ico_white_1.png" />
+    <Content Include="Images_Hotel\yp_ico_white_2.png" />
+    <Content Include="Images_Hotel\yp_ico_white_3.png" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="NLog.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CSS\fonts\Ubuntu-Light.eot" />
+    <Content Include="CSS\fonts\Ubuntu-Light.otf" />
+    <Content Include="CSS\fonts\Ubuntu-Light.ttf" />
+    <Content Include="CSS\fonts\Ubuntu-Light.woff" />
+    <Content Include="CSS\fonts\UbuntuRegular.eot" />
+    <Content Include="CSS\fonts\UbuntuRegular.ttf" />
+    <Content Include="CSS\fonts\UbuntuRegular.woff" />
+    <Content Include="CSS\fonts\UbuntuRegular.woff2" />
+    <Content Include="CSS\fonts\UbuntuBold.eot" />
+    <Content Include="CSS\fonts\UbuntuBold.ttf" />
+    <Content Include="CSS\fonts\UbuntuBold.woff" />
+    <Content Include="CSS\fonts\UbuntuBold.woff2" />
+    <Content Include="CSS\fonts\UbuntuMedium.eot" />
+    <Content Include="CSS\fonts\UbuntuMedium.ttf" />
+    <Content Include="CSS\fonts\UbuntuMedium.woff" />
+    <Content Include="CSS\fonts\UbuntuMedium.woff2" />
+    <Content Include="Images\AirlineLogo\Kulula.com" />
+    <Content Include="Content\Cancel.pdf" />
+    <Content Include="Content\PDPA.pdf" />
+    <Content Include="Content\TNC.pdf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.AddPassengerDetailsResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.BookFlightEnhancedAirBookResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.CancelTravelItineraryResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.QueuePlaceResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.ReadTravelItineraryResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.ReleaseExpiredSessionsResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.SearchFlightBargainFinderMaxResponse.datasource" />
+    <Content Include="Properties\DataSources\Alphareds.Module.SabreWebService.SWS.SendETicketResponse.datasource" />
+    <Content Include="CSS\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="CSS\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="CSS\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="CSS\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="CSS\fonts\MyriadPro-Regular.otf" />
+    <Content Include="CSS\hotel\fonts\Ubuntu-Light.eot" />
+    <Content Include="CSS\hotel\fonts\Ubuntu-Light.otf" />
+    <Content Include="CSS\hotel\fonts\Ubuntu-Light.ttf" />
+    <Content Include="CSS\hotel\fonts\Ubuntu-Light.woff" />
+    <Content Include="CSS\hotel\fonts\UbuntuMedium.eot" />
+    <Content Include="CSS\hotel\fonts\UbuntuMedium.ttf" />
+    <Content Include="CSS\hotel\fonts\UbuntuMedium.woff" />
+    <Content Include="CSS\hotel\fonts\UbuntuMedium.woff2" />
+    <Content Include="CSS\checkout\style.scss" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <Content Include="CSS\hotel\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="CSS\hotel\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="CSS\hotel\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="CSS\hotel\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="CSS\hotel\fonts\MyriadPro-Regular.otf" />
+    <Content Include="CSS\hotel\fonts\UbuntuBold.eot" />
+    <Content Include="CSS\hotel\fonts\UbuntuBold.ttf" />
+    <Content Include="CSS\hotel\fonts\UbuntuBold.woff" />
+    <Content Include="CSS\hotel\fonts\UbuntuBold.woff2" />
+    <Content Include="CSS\hotel\fonts\UbuntuRegular.eot" />
+    <Content Include="CSS\hotel\fonts\UbuntuRegular.ttf" />
+    <Content Include="CSS\hotel\fonts\UbuntuRegular.woff" />
+    <Content Include="CSS\hotel\fonts\UbuntuRegular.woff2" />
+    <Content Include="CSS\fonts\fontawesome-webfont.eot" />
+    <Content Include="CSS\fonts\fontawesome-webfont.ttf" />
+    <Content Include="CSS\fonts\fontawesome-webfont.woff" />
+    <Content Include="CSS\fonts\fontawesome-webfont.woff2" />
+    <Content Include="CSS\fonts\FontAwesome.otf" />
+    <Content Include="Scripts\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\bootstrap-select.min.js" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.bundle.js" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.js" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.min.js" />
+    <Content Include="Scripts\checkout\adyencc.js" />
+    <Content Include="Scripts\checkout_validation_v2.js" />
+    <Content Include="Scripts\countdown.min.js" />
+    <Content Include="Scripts\flight\payment.js" />
+    <Content Include="Scripts\footer.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="CSS\fonts\slick.eot" />
+    <Content Include="CSS\fonts\slick.ttf" />
+    <Content Include="CSS\fonts\slick.woff" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\SF-Pro-Display-Bold.eot" />
+    <Content Include="fonts\SF-Pro-Display-Bold.otf" />
+    <Content Include="fonts\SF-Pro-Display-Bold.ttf" />
+    <Content Include="fonts\SF-Pro-Display-Bold.woff" />
+    <Content Include="fonts\SF-Pro-Display-Bold.woff2" />
+    <Content Include="fonts\SF-Pro-Display-Light.eot" />
+    <Content Include="fonts\SF-Pro-Display-Light.otf" />
+    <Content Include="fonts\SF-Pro-Display-Light.ttf" />
+    <Content Include="fonts\SF-Pro-Display-Light.woff" />
+    <Content Include="fonts\SF-Pro-Display-Light.woff2" />
+    <Content Include="fonts\SF-Pro-Display-Medium.eot" />
+    <Content Include="fonts\SF-Pro-Display-Medium.otf" />
+    <Content Include="fonts\SF-Pro-Display-Medium.ttf" />
+    <Content Include="fonts\SF-Pro-Display-Medium.woff" />
+    <Content Include="fonts\SF-Pro-Display-Medium.woff2" />
+    <Content Include="fonts\SF-Pro-Display-Regular.eot" />
+    <Content Include="fonts\SF-Pro-Display-Regular.otf" />
+    <Content Include="fonts\SF-Pro-Display-Regular.ttf" />
+    <Content Include="fonts\SF-Pro-Display-Regular.woff" />
+    <Content Include="fonts\SF-Pro-Display-Regular.woff2" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.eot" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.otf" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.ttf" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.woff" />
+    <Content Include="fonts\SF-Pro-Display-Semibold.woff2" />
+    <Content Include="CSS\checkout\v2\styles.scss" />
+    <Content Include="CSS\checkout\v2\_hotel-notification-instruction.scss" />
+    <Content Include="CSS\checkout\v2\_customize-bootstrap.scss" />
+    <Content Include="CSS\checkout\v2\_payment-page.scss" />
+    <Content Include="CSS\checkout\v2\_hotel-page.scss" />
+    <Content Include="CSS\checkout\v2\_reservation-bar.scss" />
+    <Content Include="CSS\checkout\v2\_checkout-addon.scss" />
+    <Content Include="CSS\v3.0\styles.scss" />
+    <Content Include="CSS\v3.0\_page_header.scss" />
+    <Content Include="CSS\v3.0\_responsive_page_footer.scss" />
+    <Content Include="CSS\MiniScreenCSS\main.less" />
+    <Content Include="CSS\MiniScreenCSS\theme.scss" />
+    <None Include="CSS\v3.0\_page_footer.scss" />
+    <Content Include="CSS\v3.0\_responsive_general.scss" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.js.map" />
+    <Content Include="Scripts\bootstrap_v4.1.1\bootstrap.min.js.map" />
+    <None Include="Scripts\jquery-3.2.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.2.1.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.js" />
+    <Content Include="Scripts\jquery-3.2.1.slim.js" />
+    <Content Include="Scripts\jquery-3.2.1.slim.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
+    <Content Include="Scripts\ion-rangeSlider.min.js" />
+    <Content Include="Scripts\knockout-3.4.2.debug.js" />
+    <Content Include="Scripts\knockout-3.4.2.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\notif\init.js" />
+    <Content Include="Scripts\owl.carousel.js" />
+    <Content Include="Scripts\checkout_validation.js" />
+    <Content Include="Scripts\page-scripts.js" />
+    <Content Include="Scripts\rentalcar\custom.js" />
+    <Content Include="Scripts\tour\general_v2.js" />
+    <Content Include="Scripts\tour\general.js" />
+    <Content Include="Scripts\v3.0\hotel-search\autocomplete.js" />
+    <Content Include="Scripts\v3.0\hotel-search\page-search.js" />
+    <Content Include="Scripts\v3.0\hotel-search\search-panel.js" />
+    <Content Include="Scripts\v3.0\jquery.typeahead.min.js" />
+    <Content Include="Scripts\v3.0\page-scripts.js" />
+    <Content Include="Scripts\v3.0\page-payment.js" />
+    <Content Include="Scripts\v3.0\popper.min.js" />
+    <Content Include="Scripts\v3.0\slick.min.js" />
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager.disco" />
+    <None Include="Service References\Alphared.Module.BAWebService\configuration91.svcinfo" />
+    <None Include="Service References\Alphared.Module.BAWebService\configuration.svcinfo" />
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.AirDocDisplayRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.AirShoppingRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.FlightPriceRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.OrderCancelRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.OrderViewRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.OrderViewRS1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.SeatAvailabilityRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.ServiceListRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\Alphared.Module.BAWebService\Mayflower.Alphared.Module.BAWebService.VerifyFlightRS.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\Alphared.Module.BAWebService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="ThirdPartyLibrary\Syncfusion.Compression.Base.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.DocIO.Base.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.EJ.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.EJ.Export.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.EJ.MVC.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.Linq.Base.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.Pdf.Base.dll" />
+    <Content Include="ThirdPartyLibrary\Syncfusion.XlsIO.Base.dll" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\local.pubxml" />
+    <Content Include="Reference\ReadMe.txt" />
+    <Content Include="Scripts\additional-methods.js" />
+    <Content Include="Scripts\additional-methods.min.js" />
+    <Content Include="Scripts\ars-customize.js" />
+    <None Include="Properties\PublishProfiles\mylocal.pubxml" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\cldr.js" />
+    <Content Include="Scripts\cldr\event.js" />
+    <Content Include="Scripts\cldr\supplemental.js" />
+    <Content Include="Scripts\cldr\unresolved.js" />
+    <Content Include="Scripts\common\payment.js" />
+    <Content Include="Scripts\flight\step2.js" />
+    <Content Include="Scripts\gastatis-init.js" />
+    <Content Include="Scripts\gastatis.js" />
+    <Content Include="Scripts\globalize.js" />
+    <Content Include="Scripts\globalize\currency.js" />
+    <Content Include="Scripts\globalize\date.js" />
+    <Content Include="Scripts\globalize\message.js" />
+    <Content Include="Scripts\globalize\number.js" />
+    <Content Include="Scripts\globalize\plural.js" />
+    <Content Include="Scripts\globalize\relative-time.js" />
+    <Content Include="Scripts\globalize\unit.js" />
+    <Content Include="Scripts\hotel\payment.js" />
+    <Content Include="Scripts\hotel\jquery-ui.js" />
+    <Content Include="Scripts\hotel\jquery-ui.min.js" />
+    <Content Include="Scripts\hotel\jquery.min.js" />
+    <Content Include="Scripts\hotel\jquery.mThumbnailScroller.js" />
+    <Content Include="Scripts\hotel\jquery.timer.js" />
+    <Content Include="Scripts\hotel\price_slider1.js" />
+    <Content Include="Scripts\hotel\price_slider2.js" />
+    <Content Include="Scripts\hotel\responsiveslides.min.js" />
+    <Content Include="Scripts\hotel\slider_hotel.js" />
+    <Content Include="Scripts\hotel\time_slider.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.map" />
+    <Content Include="Scripts\jquery-3.2.1.slim.min.map" />
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager.wsdl" />
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager10.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager11.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager12.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager13.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager14.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager15.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager16.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager17.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager18.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager19.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager20.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager21.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager8.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\Alphared.Module.BAWebService\BritishAirwaysManager9.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\Book1.wsdl" />
+    <None Include="Service References\TCGBookServiceReference\BookingService1.disco" />
+    <Content Include="Scripts\init.js" />
+    <Content Include="Scripts\jquery-2.2.4.min.js" />
+    <Content Include="Scripts\jquery-migrate-3.0.0.js" />
+    <Content Include="Scripts\jquery-migrate-3.0.0.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.mThumbnailScroller.js" />
+    <Content Include="Scripts\jquery.mThumbnailScroller.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\price_slider1.js" />
+    <Content Include="Scripts\price_slider2.js" />
+    <Content Include="Scripts\promo_jquery.mThumbnailScroller.js" />
+    <Content Include="Scripts\promo_script.js" />
+    <Content Include="Scripts\slider.js" />
+    <Content Include="Scripts\time_slider.js" />
+    <Content Include="Scripts\waitMe.js" />
+    <None Include="Service References\TCGBookServiceReference\BookingService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\BookingService51.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\BookingService52.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\BookingService53.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\BookingService54.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.AddPaymentToBookingResponseData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.BookFlightResponseData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.Booking.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.BookingMakeTicketingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.BookingUpdateResponseData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.EquipmentListResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.FindBookingResponseData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.PaymentFeePriceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.ReserveBookingResponseData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.SeatAvailabilityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.SSRAvailabilityForBookingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGBookServiceReference\Mayflower.TCGBookServiceReference.SSRAvailabilityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\TCGFareServiceReference\configuration91.svcinfo" />
+    <None Include="Service References\TCGFareServiceReference\configuration.svcinfo" />
+    <None Include="Service References\TCGFareServiceReference\Fare1.wsdl" />
+    <None Include="Service References\TCGFareServiceReference\FareService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGFareServiceReference\FareService51.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGFareServiceReference\FareService52.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGFareServiceReference\FareService53.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGFareServiceReference\FareService54.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Service References\TCGFareServiceReference\Mayflower.TCGFareServiceReference.AvailabilityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGFareServiceReference\Mayflower.TCGFareServiceReference.FareRuleInfo.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGFareServiceReference\Mayflower.TCGFareServiceReference.ItineraryPriceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\TCGFareServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\TCGBookServiceReference\configuration91.svcinfo" />
+    <None Include="Service References\TCGBookServiceReference\configuration.svcinfo" />
+    <None Include="Service References\TCGBookServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\TCGLookupServiceReference\configuration91.svcinfo" />
+    <None Include="Service References\TCGLookupServiceReference\configuration.svcinfo" />
+    <None Include="Service References\TCGLookupServiceReference\Lookup1.wsdl" />
+    <None Include="Service References\TCGLookupServiceReference\LookupService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGLookupServiceReference\LookupService41.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGLookupServiceReference\LookupService42.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TCGLookupServiceReference\LookupService43.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.AllowCurrencyResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetCodeNameResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetCreditBalanceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetExternalRateListResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetFeeDetailsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetPackageSummaryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetPaymentMethodResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetRouteListResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\TCGLookupServiceReference\Mayflower.TCGLookupServiceReference.GetSSRDetailsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\TCGLookupServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\TCGFareServiceReference\FareService1.disco" />
+    <None Include="Service References\TCGLookupServiceReference\LookupService1.disco" />
+    <Content Include="Views\Booking\_BookingListPartial.cshtml" />
+    <Content Include="Views\Checkout\AddOn.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\EtcProducts\_PromptInfo.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_ConcertAddOn.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_ConcertInformation.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_ConcertSummary.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_EventProductList.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_HotelAddOn.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_InsuranceAddOn.cshtml" />
+    <Content Include="Views\Checkout\Confirmation.cshtml" />
+    <Content Include="Views\Checkout\CustomerDetails.cshtml" />
+    <Content Include="Views\Checkout\ErrorPaymentPopUp.cshtml" />
+    <Content Include="Views\Checkout\FlightPartials\_FlightSummary.cshtml" />
+    <Content Include="Views\Checkout\GuestDetails.cshtml" />
+    <Content Include="Views\Checkout\HotelPartials\_HotelSummary.cshtml" />
+    <Content Include="Views\Checkout\Interruption.cshtml" />
+    <Content Include="Views\Checkout\Payment.cshtml" />
+    <Content Include="Views\Checkout\PaymentPartials\v2\_AdyenPaymentPartial.cshtml" />
+    <Content Include="Views\Checkout\PaymentPartials\v2\_CreditPaymentPartial.cshtml" />
+    <Content Include="Views\Checkout\PaymentPartials\v2\_PaymentMethodPartial.cshtml" />
+    <Content Include="Views\Checkout\PaymentPartials\_CreditPaymentPartial.cshtml" />
+    <Content Include="Views\Checkout\PaymentPartials\_PaymentMethodPartial.cshtml" />
+    <Content Include="Views\Checkout\Payment_v2.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\v2\_FrequentFlyerPopOut.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\v2\_ReservationDetails.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_ContactInformation.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FlightSummary.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormBoxSelector.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormContactDetail.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormContactDetail_v2.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormFlightDetail.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormFlightDetail_v2.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormRoomDetail.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FormRoomDetail_v2.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FrequentFlyerPopOut.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_FrequentFlyerPopOutList.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_ProductSummary.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_ProductSummaryDynamicHeaderBar.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_ProductSummaryHeaderBar.cshtml" />
+    <Content Include="Views\Checkout\UpdatePartials\_SetInsurancePassport.cshtml" />
+    <Content Include="Views\Checkout\_checkoutScripts.cshtml" />
+    <Content Include="Views\Error\SessionTimeOut.cshtml" />
+    <Content Include="Views\Payment\_BankTransferPartail.cshtml" />
+    <Content Include="Views\Error\Type.cshtml" />
+    <Content Include="Views\Flight\Shared\_FareRulesView.cshtml" />
+    <Content Include="Views\Booking\_MHPaymentMethodPartial.cshtml" />
+    <Content Include="Views\Flight\Confirmed\_FlightItineraryDetails.cshtml" />
+    <Content Include="Views\Member\ManageProfile.cshtml" />
+    <Content Include="Views\Member\Register.cshtml" />
+    <Content Include="Views\Member\_FullRegisterPartial.cshtml" />
+    <Content Include="Views\Member\SuccessValidate.cshtml" />
+    <Content Include="Views\Member\SuccessRegister.cshtml" />
+    <Content Include="Views\Flight\Shared\_FareRulesPartialView.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\ServerError.cshtml" />
+    <Content Include="Views\Public\TermsConditions.cshtml" />
+    <Content Include="Views\Public\Cancel.cshtml" />
+    <Content Include="Views\Account\_LoginPartial.cshtml" />
+    <Content Include="Views\Booking\_SendEmailMessage.cshtml" />
+    <Content Include="Views\Account\LoggedOut.cshtml" />
+    <Content Include="Views\Account\_PasswordResetPartial.cshtml" />
+    <Content Include="Views\Account\MailResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordSuccess.cshtml" />
+    <Content Include="Views\Booking\_BookingExpiryMessage.cshtml" />
+    <Content Include="Views\Booking\_FailedQueuePlaceMessage.cshtml" />
+    <Content Include="Views\Booking\Hotel\_TravellerDetails.cshtml" />
+    <Content Include="Views\Booking\Hotel\_HotelItineraryDetails.cshtml" />
+    <Content Include="Views\Payment\Checkout.cshtml" />
+    <Content Include="Views\Hotel\_BookingSummary.cshtml" />
+    <Content Include="Views\Hotel\_SharedJSScripts.cshtml" />
+    <Content Include="Views\Booking\Hotel\_ContactInformation.cshtml" />
+    <Content Include="Views\Hotel\_PaymentSummary.cshtml" />
+    <Content Include="Views\Booking\_CreditPaymentPartial.cshtml" />
+    <Content Include="Views\Home\_SearchHotel.cshtml" />
+    <Content Include="Views\Hotel\_HotelInformation.cshtml" />
+    <Content Include="Views\Hotel\OrderHistory.cshtml" />
+    <Content Include="Views\Hotel\_GoogleMap.cshtml" />
+    <Content Include="Views\Account\_ListPartial.cshtml" />
+    <Content Include="Views\Account\UpcomingTrips.cshtml" />
+    <Content Include="Views\Account\TravelHistory.cshtml" />
+    <Content Include="Views\Hotel\_SearchDestinationWidgetScripts.cshtml" />
+    <Content Include="Views\DynamicFormPostSurface\DynamicFormPost.cshtml" />
+    <Content Include="Views\Hotel\_HotelList.cshtml" />
+    <Content Include="Views\Booking\Flight\_ContactInformation.cshtml" />
+    <Content Include="Views\Flight\OrderHistory.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\CrossSell\FlightDetails.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\CrossSell\PassengerInformation.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\CrossSell\PaymentSummary.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\CrossSell\RoomDetails.cshtml" />
+    <Content Include="Views\Hotel\_PopoutHotelFunctionJSScripts.cshtml" />
+    <Content Include="Views\Flight\Shared\_FareRulesScriptPartial.cshtml" />
+    <Content Include="Views\Agent\Login.cshtml" />
+    <Content Include="Views\Agent\AgentRegister.cshtml" />
+    <Content Include="Views\Agent\_AgentFullRegisterPartial.cshtml" />
+    <Content Include="Views\Agent\AgentUpdateProfile.cshtml" />
+    <Content Include="Views\Agent\AgentManageProfile.cshtml" />
+    <Content Include="Views\Agent\AgentCardView.cshtml" />
+    <Content Include="Views\Agent\SuccessRegister.cshtml" />
+    <Content Include="Views\Agent\SuccessValidate.cshtml" />
+    <Content Include="Views\Agent\AgentResetMailSend.cshtml" />
+    <Content Include="Views\Agent\AgentResetPassword.cshtml" />
+    <Content Include="Views\Agent\AgentResetPasswordSuccess.cshtml" />
+    <Content Include="Views\Agent\AgentMailResetPassword.cshtml" />
+    <Content Include="Views\Agent\_PasswordResetPartial.cshtml" />
+    <Content Include="Views\Payment\_PromoCodePartial.cshtml" />
+    <Content Include="Views\AffiliateProgram\Flight.cshtml" />
+    <Content Include="Views\Flight\Search\_FlightSearchResultList.cshtml" />
+    <Content Include="Views\Flight\AddOn.cshtml" />
+    <Content Include="Views\Flight\GuestDetails.cshtml" />
+    <Content Include="Views\Flight\Search.cshtml" />
+    <Content Include="Views\Flight\Shared\_SharedCSSStyling.cshtml" />
+    <Content Include="Views\Flight\Shared\_SearchWidgetScripts.cshtml" />
+    <Content Include="Views\Flight\Search\_ModifySearchPanel.cshtml" />
+    <Content Include="Views\Flight\GuestDetails\_GuestDetails.cshtml" />
+    <Content Include="Views\Flight\Shared\_FlightSearchSummarybar.cshtml" />
+    <Content Include="Views\Flight\Shared\_FlightItineraryDetails.cshtml" />
+    <Content Include="Views\Flight\Search\_FlightFilterPanel.cshtml" />
+    <Content Include="Views\Flight\Shared\_BookingSummary.cshtml" />
+    <Content Include="Views\Hotel\BundleItem\_1.cshtml" />
+    <Content Include="Views\Hotel\_ModifySearchHotelBundle.cshtml" />
+    <Content Include="Views\Hotel\BundleItem\_2.cshtml" />
+    <Content Include="Views\Hotel\DevelopmentViews\_AdvancedSearch.cshtml" />
+    <Content Include="Views\Flight\AddOn_Insurance.cshtml" />
+    <Content Include="Views\Account\PasswordChangeSuccess.cshtml" />
+    <Content Include="Views\Member\UpdateAccount.cshtml" />
+    <Content Include="Views\Member\_SimpleRegisterPartial.cshtml" />
+    <Content Include="Views\Member\SimpleRegister.cshtml" />
+    <Content Include="Views\Payment\SummaryPartials\_EventDetails.cshtml" />
+    <Content Include="Views\Payment\SummaryPartials\_PaidInformation.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\EventBookingLayout\_Concert_v1.cshtml" />
+    <Content Include="Views\Account\SavedSearch.cshtml" />
+    <Content Include="Views\Account\_ListSavedSearch.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\EventBookingLayout\_CarRental_v1.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\EventBookingLayout\_GroundTour_v1.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\EventBookingLayout\_ThemePark_v1.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\EventBookingLayout\_Wifi_v1.cshtml" />
+    <Content Include="Views\PDFEnginePartialView\InsuranceLayout\_Template_v1.cshtml" />
+    <Content Include="Views\Payment\SummaryPartials\_InsuranceDetails.cshtml" />
+    <Content Include="Views\Payment\_CreditCardFieldPartial.cshtml" />
+    <Content Include="Views\Home\_RecentSearchFlight.cshtml" />
+    <Content Include="Views\Home\_RecentSearchHotel.cshtml" />
+    <Content Include="Views\Account\_ExternalLogin\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_ExternalLogin\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\_ExternalLogin\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Member\CardView.cshtml" />
+    <Content Include="Views\Member\UpdateProfile.cshtml" />
+    <Content Include="Views\Insurance\InsurancePayment.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_BootstrapModal.cshtml" />
+    <Content Include="Views\Hotel\v2\_RoomList.cshtml" />
+    <Content Include="Views\Hotel\v2\_HotelList.cshtml" />
+    <Content Include="Views\Hotel\v2\_HotelListSessionless.cshtml" />
+    <Content Include="Views\Hotel\v2\_GoogleMap.cshtml" />
+    <Content Include="Views\Hotel\v2\_PopHotelInfo.cshtml" />
+    <Content Include="Views\Hotel\v2\TripAdvisor\_ReviewsBox.cshtml" />
+    <Content Include="Views\Hotel\v2\TripAdvisor\_NearbyBox.cshtml" />
+    <Content Include="Views\Checkout\OfflinePayment.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\v2\_ReservationDetailsOffline.cshtml" />
+    <Content Include="Views\Hotel\v2\_SearchPanel_Fixed.cshtml" />
+    <Content Include="Views\Checkout\SuccessPayment.cshtml" />
+    <Content Include="Views\Insurance\GetProtected.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_EventProductList_v2.cshtml" />
+    <Content Include="Views\Checkout\AddOn_v2.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_ConcertInformation_v2.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_InsuranceAddOn_v2.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_HotelAddOn_v2.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_NameGuideTooltip.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_Layout.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Site.css" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Account\_PasswordChangePartial.cshtml" />
+    <Content Include="Views\Account\_PasswordSetPartial.cshtml" />
+    <Content Include="Views\Account\ManagePassword.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Error\AccessDenied.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\User\CardView.cshtml" />
+    <Content Include="Views\User\UpdateProfile.cshtml" />
+    <Content Include="Views\User\_AddFrequentFlyerNumber.cshtml" />
+    <Content Include="Views\User\_UpdateFrequentFlyerNumber.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_Footer.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_Header.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_Layout.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_LoginBox.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_OopsBox.cshtml" />
+    <Content Include="Views\Public\PDPA.cshtml" />
+    <Content Include="Views\Account\ResetMailSend.cshtml" />
+    <Content Include="Views\Public\TempEmail.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_PaymentFail.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_PopOutModal.cshtml" />
+    <Content Include="Views\User\_FrequentFlyerSection.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_LoadingModal.cshtml" />
+    <Content Include="Views\Hotel\Search.cshtml" />
+    <Content Include="Views\Hotel\_ModifySearchHotel.cshtml" />
+    <Content Include="Views\Hotel\_InformationBox.cshtml" />
+    <Content Include="Views\Hotel\_HotelFilter.cshtml" />
+    <Content Include="Views\Hotel\_FilterTag.cshtml" />
+    <Content Include="Views\Hotel\_Scripts_Styles.cshtml" />
+    <Content Include="Views\Hotel\_PopupRoomInfo.cshtml" />
+    <Content Include="Views\Hotel\_ShowMoreRoom.cshtml" />
+    <Content Include="Views\Member\LoadSessionTransferUserData.cshtml" />
+    <Content Include="Views\Account\SetUpPassword.cshtml" />
+    <Content Include="Views\Tools\TravellerGroup.cshtml" />
+    <Content Include="Views\Tools\CreateTraveller.cshtml" />
+    <Content Include="Views\Tools\FrequentFlyer.cshtml" />
+    <Content Include="Views\Tools\NewFrequentFlyer.cshtml" />
+    <Content Include="Views\Tools\_FlyerList.cshtml" />
+    <Content Include="Views\Tools\EditFrequentFlyer.cshtml" />
+    <Content Include="Views\Tools\DeleteFrequentFlyer.cshtml" />
+    <Content Include="Views\Tools\_CreateTraveller.cshtml" />
+    <Content Include="Views\Tools\_TravellerGroup.cshtml" />
+    <Content Include="Views\Tools\EditTraveller.cshtml" />
+    <Content Include="Views\Tools\_EditTraveller.cshtml" />
+    <Content Include="Views\Tools\_DeleteFlyer.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_Header.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_Footer.cshtml" />
+    <Content Include="Views\Hotel\v2\Search.cshtml" />
+    <Content Include="Views\Hotel\v2\_SearchPanel.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_BootstrapLoginModal.cshtml" />
+    <Content Include="Views\Insurance\_BookingDetail.cshtml" />
+    <Content Include="Views\Insurance\_SummaryBar.cshtml" />
+    <Content Include="Views\Shared\MasterThemes\_NameGuideTooltip.cshtml" />
+    <Content Include="Views\Shared\Theme_3\_NameGuideTooltip.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\v2\_ReservationDetailsTour.cshtml" />
+    <Content Include="Views\Flight\v2\_SearchPanel.cshtml" />
+    <Content Include="Views\Hotel\v2\TripAdvisor\_PropertySummary.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_CarRentalAccessories.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\Index.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\UserInformation.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\AddOn.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\_Insurance.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\_HotelAddOn.cshtml" />
+    <Content Include="Views\Home\_SearchCarRental.cshtml" />
+    <Content Include="Views\Checkout\AddOnPartials\_ReserveEventProductList_v2.cshtml" />
+    <Content Include="Views\CarRental\Search.cshtml" />
+    <Content Include="Views\CarRental\_SearchPanel.cshtml" />
+    <Content Include="Views\CarRental\_CarRentalList.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\v2\_RegistedPopOutLoginModal.cshtml" />
+    <Content Include="Views\Hotel\v2\_PopRoomInfo.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\Payment.cshtml" />
+    <Content Include="Views\AddOnMiniScreen\AddOnRegister.cshtml" />
+    <Content Include="Views\EventBundle\EventBundle.cshtml" />
+    <Content Include="Views\TourPackage\Search.cshtml" />
+    <Content Include="Views\TourPackage\_FormTourDate_v2.cshtml" />
+    <Content Include="Views\TourPackage\_ReservationDetailsTour.cshtml" />
+    <Content Include="Views\TourPackage\Hotel.cshtml" />
+    <Content Include="Views\TourPackage\_FormTourHotel_v2.cshtml" />
+    <Content Include="Views\TourPackage\Addon.cshtml" />
+    <Content Include="Views\TourPackage\_FormTourAddon_v2.cshtml" />
+    <Content Include="Views\TourPackage\Contact.cshtml" />
+    <Content Include="Views\TourPackage\_FormTourContact_v2.cshtml" />
+    <Content Include="Views\Checkout\SharedPartials\_ProgressBar.cshtml" />
+    <Content Include="Views\Flight\Search\_PackageReservationDetails.cshtml" />
+    <Content Include="Views\Checkout\OfflinePaymentConfirmation.cshtml" />
+    <Content Include="Views\Flight\Search\_PopHotelInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\Alphared.Module.BAWebService\" />
+    <WCFMetadataStorage Include="Service References\TCGBookServiceReference\" />
+    <WCFMetadataStorage Include="Service References\TCGFareServiceReference\" />
+    <WCFMetadataStorage Include="Service References\TCGLookupServiceReference\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Code\" />
+    <Folder Include="Areas\BOS\Models\" />
+    <Folder Include="Areas\BOS\Views\Shared\" />
+    <Folder Include="Areas\BOS\Views\Tools\" />
+    <Folder Include="Areas\InternalApps\Views\Shared\" />
+    <Folder Include="Areas\Notification\Models\" />
+    <Folder Include="Areas\Notification\Views\Shared\" />
+    <Folder Include="Areas\SessionLess\Models\" />
+    <Folder Include="Areas\SessionLess\Views\Hotel\" />
+    <Folder Include="Areas\SessionLess\Views\Shared\" />
+    <Folder Include="Areas\SPAgent\Models\" />
+    <Folder Include="Areas\SPAgent\Views\SessionSetter\" />
+    <Folder Include="B2B_Agent_Doc\Borang9\" />
+    <Folder Include="B2B_Agent_Doc\BusinessRegistration\" />
+    <Folder Include="B2B_Agent_Doc\KPL\" />
+    <Folder Include="Content\themes\base\minified\images\" />
+    <Folder Include="Views\Shared\DisplayTemplates\" />
+    <Folder Include="Views\Shared\EditorTemplates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ApplicationSource\BatchPrograms\HotelBookingHandler\HotelBookingHandler.csproj">
+      <Project>{4262ab55-df79-4c8b-a088-cc912fd6bdac}</Project>
+      <Name>HotelBookingHandler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ApplicationSource\BatchPrograms\SendPDFQueueHandler\SendPDFQueueHandler.csproj">
+      <Project>{9de63f34-d0e8-4253-85e0-4149b6093e05}</Project>
+      <Name>SendPDFQueueHandler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.AAWebService\Alphareds.Module.AAWebService.csproj">
+      <Project>{eb2c1c89-adff-4dc5-8c0e-c5f308747ff1}</Project>
+      <Name>Alphareds.Module.AAWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.ACEInsuranceWebService\Alphareds.Module.ACEInsuranceWebService.csproj">
+      <Project>{ce7d6916-c1ae-4628-80db-8e1b7c9db510}</Project>
+      <Name>Alphareds.Module.ACEInsuranceWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.AgentController\Alphareds.Module.AgentController.csproj">
+      <Project>{9eca86be-b5c3-4b48-a5fd-da800d20c8db}</Project>
+      <Name>Alphareds.Module.AgentController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.BAWebService\Alphareds.Module.BAWebService.csproj">
+      <Project>{bb6eb555-68e6-4eb3-8036-8b2918c593cf}</Project>
+      <Name>Alphareds.Module.BAWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.BookingController\Alphareds.Module.BookingController.csproj">
+      <Project>{3e47661b-a3d1-47aa-a685-bc5bb3ea2c43}</Project>
+      <Name>Alphareds.Module.BookingController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.CarRentalWebService\Alphareds.Module.CarRentalWebService.csproj">
+      <Project>{2852aac4-f510-4a77-ac08-a107c9a1711c}</Project>
+      <Name>Alphareds.Module.CarRentalWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.CommonController\Alphareds.Module.CommonController.csproj">
+      <Project>{aa252c8d-6ca8-46c7-a972-edde4a25d0ac}</Project>
+      <Name>Alphareds.Module.CommonController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Common\Alphareds.Module.Common.csproj">
+      <Project>{fc2c2437-d2f7-4d2f-a759-05196c317c80}</Project>
+      <Name>Alphareds.Module.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.CompareToolWebService\Alphareds.Module.CompareToolWebService.csproj">
+      <Project>{00330227-6b66-4afc-b8f7-93c9b2b82eb5}</Project>
+      <Name>Alphareds.Module.CompareToolWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Cryptography\Alphareds.Module.Cryptography\Alphareds.Module.Cryptography.csproj">
+      <Project>{cd219564-730c-4602-a750-900110865977}</Project>
+      <Name>Alphareds.Module.Cryptography</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Data\Alphareds.Module.Data.csproj">
+      <Project>{739f1537-4a4b-4145-8a93-00dff5246479}</Project>
+      <Name>Alphareds.Module.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.EANRapidHotels\Alphareds.Module.EANRapidHotels.csproj">
+      <Project>{8f94f6bb-50bd-4154-bd09-c5a7c5b46524}</Project>
+      <Name>Alphareds.Module.EANRapidHotels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.ESBHotelComparisonWebService\Alphareds.Module.ESBHotelComparisonWebService.csproj">
+      <Project>{286F3CA5-8894-46A9-A849-D6CAF7F51050}</Project>
+      <Name>Alphareds.Module.ESBHotelComparisonWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Event\Alphareds.Module.Event.csproj">
+      <Project>{150002f2-584e-49bb-a135-55f3342db956}</Project>
+      <Name>Alphareds.Module.Event</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.ExpediaHotels\Alphareds.Module.ExpediaHotelsWebService.csproj">
+      <Project>{11c65841-1c6a-4585-b545-0849539a4062}</Project>
+      <Name>Alphareds.Module.ExpediaHotelsWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.ExpediaTAAPWebService\Alphareds.Module.ExpediaTAAPWebService.csproj">
+      <Project>{7b012b1c-5083-4a7c-91c2-d2732e5d7e0e}</Project>
+      <Name>Alphareds.Module.ExpediaTAAPWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.FlightRedirectService\Alphareds.Module.FlightRedirectService.csproj">
+      <Project>{7ca8f7aa-eeba-4e36-911f-c6bdd6616c93}</Project>
+      <Name>Alphareds.Module.FlightRedirectService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.FlightSearchController\Alphareds.Module.FlightSearchController.csproj">
+      <Project>{760d336c-ba3c-4509-9d46-d810cb8ca6b2}</Project>
+      <Name>Alphareds.Module.FlightSearchController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Flight_Converter\Alphareds.Module.Flight_Converter.csproj">
+      <Project>{bb3fb33c-a08a-4b07-bd72-4cd2aba38ff6}</Project>
+      <Name>Alphareds.Module.Flight_Converter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.FYWebservice\Alphareds.Module.FYWebservice.csproj">
+      <Project>{a65650e4-69d8-4704-ae9c-3e56d341e8bb}</Project>
+      <Name>Alphareds.Module.FYWebservice</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.GateWebService\Alphareds.Module.GateWebService.csproj">
+      <Project>{8bc606d4-faf5-47be-866c-125c0d5d9f64}</Project>
+      <Name>Alphareds.Module.GateWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.HomeController\Alphareds.Module.HomeController.csproj">
+      <Project>{ace17cbb-095a-4a57-a3ca-93eb51199d82}</Project>
+      <Name>Alphareds.Module.HomeController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.HotelBedsWebService\Alphareds.Module.HotelBedsWebService.csproj">
+      <Project>{cc005248-c5c7-4526-ac7b-fd30c6270c54}</Project>
+      <Name>Alphareds.Module.HotelBedsWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.HotelController\Alphareds.Module.HotelController.csproj">
+      <Project>{b10c0ef0-f305-4329-92c0-aa36d7f00f45}</Project>
+      <Name>Alphareds.Module.HotelController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.InsuranceController\Alphareds.Module.InsuranceController.csproj">
+      <Project>{50361253-22da-44dd-b947-68cd89be1fc8}</Project>
+      <Name>Alphareds.Module.InsuranceController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.JacTravelWebService\Alphareds.Module.JacTravelWebService.csproj">
+      <Project>{4975f26d-2dbf-495e-a1a1-3038bcf6669c}</Project>
+      <Name>Alphareds.Module.JacTravelWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.MemberController\Alphareds.Module.MemberController.csproj">
+      <Project>{81e346aa-3e20-4af3-81de-4ec618878778}</Project>
+      <Name>Alphareds.Module.MemberController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Model\Alphareds.Module.Model.csproj">
+      <Project>{6a832675-a4c7-403c-801f-ef8790cf50eb}</Project>
+      <Name>Alphareds.Module.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.PaymentController\Alphareds.Module.PaymentController.csproj">
+      <Project>{b8d9e3f1-e4aa-4fed-93f3-22f81be1bb00}</Project>
+      <Name>Alphareds.Module.PaymentController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.PDFEngineWebService\Alphareds.Module.PDFEngineWebService.csproj">
+      <Project>{12d0aefc-3bbf-4aa9-be69-b082a0cf6177}</Project>
+      <Name>Alphareds.Module.PDFEngineWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.Public\Alphareds.Module.Public.csproj">
+      <Project>{ddcd887f-c12d-4212-8edf-c084da8311c3}</Project>
+      <Name>Alphareds.Module.Public</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.SabreWebService\Alphareds.Module.SabreWebService.csproj">
+      <Project>{927817b6-5eaf-47d9-b23d-cfc24f40b91c}</Project>
+      <Name>Alphareds.Module.SabreWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.ServiceCall\Alphareds.Module.ServiceCall\Alphareds.Module.ServiceCall.csproj">
+      <Project>{4f8ea063-8d27-4f45-b382-62b89abc60d3}</Project>
+      <Name>Alphareds.Module.ServiceCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Module\Alphareds.Module.TourplanWebService\Alphareds.Module.TourplanWebService.csproj">
+      <Project>{ecbf6dc2-5b9d-4fab-9d43-49be8f2dbcb0}</Project>
+      <Name>Alphareds.Module.TourplanWebService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\v3.0\hotel-search\general.js" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alphareds.Module.TourplanWebService|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>52197</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:59297/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <UserProperties CSS_4bootstrap_3v4_11_11_4bootstrap_1css_1map__JSONSchema="" _UserPromptedForCS6Upgrade="true" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

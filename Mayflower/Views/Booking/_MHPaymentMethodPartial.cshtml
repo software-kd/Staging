@@ -1,0 +1,49 @@
+﻿@model Alphareds.Module.Model.PaymentCheckout
+
+@{
+    string lastPaymentRecord = null;
+
+    switch (Model.PaymentMethod)
+    {
+        case "ipacc":
+            lastPaymentRecord = "ipacc";
+            break;
+        case "ipafpx":
+            lastPaymentRecord = "ipafpx";
+            break;
+        default:
+            lastPaymentRecord = "ipafpx";
+            break;
+    }
+
+    bool isAgent = User.Identity.IsAuthenticated ?
+                   Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+
+    //bool isLive = false;
+    //bool validateConfigure = bool.TryParse(System.Web.Configuration.WebConfigurationManager.AppSettings["IsSabreLive"], out isLive);
+}
+
+<div id="iPayCreditCard_div" class="s4_png_inner_row s4_png_inner_row1" data-pmethod="IPACC">
+    <div class="s4_png_boxleft">
+        <input id="visaMaster" class="paymentMethod" type="radio" name="paymentMethod" value="@(isAgent ? "IPACC" : "IPACC")" @checkLastPayment("IPACC", lastPaymentRecord) />
+        <label class="paymentMethodLabel" for="visaMaster">Pay with Credit / Debit card</label>
+    </div>
+    <div class="s4_png_boxright"><img src="~/images/cards.jpg" width="153" height="50" alt=""></div>
+    <div class="s4_png_boxright_price" style="line-height: 50px; margin-top: 0px;"></div>
+    <div class="clear"></div>
+</div>
+<div class="s4_png_line"></div>
+<div id="iPayFPX_div" class="s4_png_inner_row" data-pmethod="IPAFPX">
+    <input id="fpx" type="radio" class="paymentMethod" name="paymentMethod" value="@(isAgent ? "IPAFPX" : "IPAFPX")" @checkLastPayment("IPAFPX", lastPaymentRecord) />
+    <label class="paymentMethodLabel" for="fpx">Pay with FPX</label>
+    <div class="s4_png_boxright_price"></div>
+</div>
+
+@functions{
+    string checkLastPayment(string radioPayment, string lastPaymentMethod)
+    {
+        radioPayment = radioPayment ?? "";
+        lastPaymentMethod = lastPaymentMethod ?? "";
+        return radioPayment.ToLower() == lastPaymentMethod.ToLower() ? "checked" : "";
+    }
+}

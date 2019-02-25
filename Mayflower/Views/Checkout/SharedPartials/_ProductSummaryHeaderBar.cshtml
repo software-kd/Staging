@@ -1,0 +1,682 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@functions{
+    #region Global Variable
+    string returnUrl;
+    bool hasFlight;
+    bool hasHotel;
+    bool hasAddOnProduct;
+    bool hasInsurance;
+    ProductHotel hotelInfo;
+    int itemCounter = 0;
+
+    // Flight Start
+    SearchFlightResultViewModel searchCriteria;
+    FlightMasterInfo flightInfo;
+    bool isDomestic;
+    bool isOneWay;
+    string cabinClass;
+    string adl;
+    string child;
+    string inf;
+
+    // Flight End
+
+    // Hotel Start
+    int totalRoom = 0;
+    string room = null;
+    int totalDays = 0;
+    string dayDisplay = null;
+    string totalNight = null;
+    string numOfDays = null;
+    string numOfNights = null;
+    DateTime hotelArrivalDate = new DateTime();
+    DateTime hotelDepartureDate = new DateTime();
+    #endregion
+}
+
+@{
+    returnUrl = Url.Action("Index", "Home", new { @ref = Url.RequestContext.RouteData.Values["action"].ToString() }, Request.Url.Scheme);
+    string tripid = ViewBag.tripid;
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.ReturnAction))
+    {
+        returnUrl = ViewBag.ReturnAction;
+    }
+    #region Global Variable
+    hasFlight = Model.Flight != null;
+    hasHotel = Model.Hotel != null && Model.Hotel.RoomDetails != null;
+    hasAddOnProduct = Model.AddOnProduct != null;
+    hasInsurance = Model.Insurance != null;
+    hotelInfo = Model.Hotel;
+
+    if (hasHotel)
+    {
+        hotelArrivalDate = hotelInfo.SearchHotelInfo.ArrivalDate;
+        hotelDepartureDate = hotelInfo.SearchHotelInfo.DepartureDate;
+
+        totalRoom = hotelInfo.RoomDetails.Count;
+        room = totalRoom > 1 ? "Rooms" : "Room";
+        totalDays = hotelInfo.SearchHotelInfo.TotalStayDays;
+        dayDisplay = (totalDays + 1) > 1 ? "Days" : "Day";
+        totalNight = (totalDays) > 1 ? "Nights" : "Night";
+        numOfDays = (totalDays + 1).ToString("n0");
+        numOfNights = (totalDays).ToString("n0");
+    }
+
+    if (hasFlight)
+    {
+        searchCriteria = Model.Flight.SearchFlightInfo;
+        flightInfo = Model.Flight.FlightInfo.FlightDetailInfo;
+        isDomestic = searchCriteria.isDomesticFlight;
+        isOneWay = !searchCriteria.isReturn;
+        cabinClass = UtilitiesService.GetCabinNameByCode(searchCriteria.CabinClass);
+
+        adl = searchCriteria.Adults > 1 ? "Adults" : "Adult";
+        child = searchCriteria.Childrens > 1 ? "Children" : "Child";
+        inf = searchCriteria.Infants > 1 ? "Infants" : "Infant";
+    }
+    #endregion
+}
+
+<div class="s3_1_flight_details_box s3_1_flight_details_box2">
+    <div class="s3_1_fdb_inner">
+        @foreach (var item in Model.Products.OrderBy(x => x.ProductSeq))
+        {
+            @RenderPaymentSummaryBar(item);
+        }
+
+        <div class="clear"></div>
+    </div>
+</div>
+
+<div class="nav-booking-section">
+    <!-- MORE FLIGHTS BOX START -->
+    <div class="moreflight_container">
+        <div class="moreflight_box">
+            <div class="more_flight_innerbox">
+                <div class="mf_content_container">
+                    <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+
+                    @if (hasFlight)
+                    {
+                        @Html.Partial("~/Views/Checkout/FlightPartials/_FlightSummary.cshtml", Model.Flight)
+                    }
+
+                    @if (hasHotel)
+                    {
+                        @Html.Partial("~/Views/Checkout/HotelPartials/_HotelSummary.cshtml", Model.Hotel)
+                    }
+
+                    @if (hasAddOnProduct)
+                    {
+                        @Html.Partial("~/Views/Checkout/AddOnPartials/_ConcertSummary.cshtml", Model.AddOnProduct)
+                    }
+
+                    @if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "guestdetails")
+                    {
+                        @Html.Partial("~/Views/Checkout/SharedPartials/_ContactInformation.cshtml", Model)
+                    }
+
+                </div>
+            </div>
+            <div class="show_more_flight_icon">Show more booking details</div>
+        </div>
+    </div>
+    <!-- MORE FLIGHTS BOX END -->
+</div>
+
+@helper RenderPaymentSummaryBar(ICheckoutProduct product)
+{
+    var pType = product.GetType();
+
+    <div class="row flex">
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="row">
+                <div class="hidden-xs hidden-sm col-md-2">
+                    @if (itemCounter == 0)
+                    {
+                        <a href="javascript:;" class="back-sp" data-location="@returnUrl"><img src="@Url.Content("~/images/arrow_left.jpg")" width="40" height="29" alt=""></a>
+                    }
+                </div>
+
+                <div class="col-xs-12 col-sm-12 col-md-10">
+
+                    @if (pType == typeof(ProductFlight))
+                    {
+                        @RenderFlightInformation()
+                    }
+
+                    @if (pType == typeof(ProductHotel))
+                    {
+                        @RenderHotelInformation(hotelInfo.RoomSelected.HotelRoomInformationList, false)
+                    }
+
+                    @if (pType == typeof(ProductEventTicket))
+                    {
+                        @RenderConcertTicketInformation((ProductEventTicket)product);
+                    }
+
+                    @if (pType == typeof(ProductInsurance))
+                    {
+                        @RenderInsuranceInformationBar((ProductInsurance)product)
+                    }
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4 ars-block-border">
+            @if (pType == typeof(ProductFlight))
+            {
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                Depart
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                &nbsp;>&nbsp;
+                                @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).ArriveDateTime.ToString("HHmm")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                Return
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @if (!isOneWay)
+                                {
+                                    @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                    @:&nbsp;>&nbsp;
+                                    @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).ArriveDateTime.ToString("HHmm")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (pType == typeof(ProductHotel))
+            {
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                Check In
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @hotelArrivalDate.ToString("dd-MMM-yy, ddd")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                Check Out
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @hotelDepartureDate.ToString("dd-MMM-yy, ddd")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (pType == typeof(ProductEventTicket))
+            {
+                var p = (ProductEventTicket)product;
+                bool isGroundTour = p.TicketInfo.All(x => x.EventTypeCode == "GT");
+                bool includeConcert = p.TicketInfo.Any(x => x.EventTypeCode == "CT");
+                bool includeEntrance = p.TicketInfo.Any(x => x.EventTypeCode == "TH");
+                bool dtPackageProduct = p.TicketInfo.All(x => x.EventTypeCode != "TH" && x.EventTypeCode != "CT" && x.EventTypeCode != "GT") && false;
+                var pGrp = p.TicketInfo.GroupBy(grp => new { grp.ItemDesc, grp.OrderedDateTime, grp.EventStartTime, grp.EventEndTime });
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                @(includeConcert ? "Event Date" : "Date")
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @if (isGroundTour)
+                                {
+                                    foreach (var item in pGrp.Where(x => x.Any(s => s.EventTypeCode == "GT")).Select(x => x.Key.OrderedDateTime).Distinct())
+                                    {
+                                        @item.ToString("dd-MMM-yy, ddd") <br />
+                                    }
+                                }
+                                else if (includeConcert)
+                                {
+                                    foreach (var item in pGrp.Where(x => x.Any(s => s.EventTypeCode == "CT")).Select(x => x.Key.OrderedDateTime).Distinct())
+                                    {
+                                        @item.ToString("dd-MMM-yy, ddd") <br />
+                                    }
+                                }
+                                else if (includeEntrance)
+                                {
+                                    foreach (var item in pGrp.Where(x => x.Any(s => s.EventTypeCode == "TH")).Select(x => x.Key.OrderedDateTime).Distinct())
+                                    {
+                                        @item.ToString("dd-MMM-yy, ddd") <br />
+                                    }
+                                }
+                                else if (dtPackageProduct)
+                                {
+                                    var _dtGrp = pGrp.Select(x => x.Key.OrderedDateTime).Distinct();
+                                    @_dtGrp.Min(x => x).ToString("dd-MMM-yy, ddd") @:- @_dtGrp.Max(x => x).ToString("dd-MMM-yy, ddd")
+                                }
+                                else
+                                {
+                                    @:-
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                @(includeConcert ? "Event Time" : "Time")
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @if (includeConcert)
+                                {
+                                    foreach (var item in pGrp.Where(x => x.Any(s => s.EventTypeCode == "CT"))
+                                        .Select(x => x.Key.EventStartTime.ToHoursMinutesTT()).Distinct())
+                                    {
+                                        @item<br />
+                                    }
+                                }
+                                else
+                                {
+                                    @:-
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (pType == typeof(ProductInsurance))
+            {
+            }
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="s3_1_fdb4_inner">
+                @if (pType == typeof(ProductFlight))
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room">
+                            @if (searchCriteria.Adults > 0)
+                            {
+                                <span>@searchCriteria.Adults</span> @adl
+                            }
+                            @if (searchCriteria.Childrens > 0)
+                            {
+                                <span>@searchCriteria.Childrens</span> @child
+                            }
+                            @if (searchCriteria.Infants > 0)
+                            {
+                                <span>@searchCriteria.Infants</span> @inf
+                            }
+                            | @cabinClass
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                }
+
+                @if (pType == typeof(ProductHotel))
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room"><span>@totalRoom</span> @room <span>@numOfDays</span> @dayDisplay <span>@numOfNights</span> @totalNight</div>
+                    </div>
+                }
+
+                @if (pType == typeof(ProductEventTicket))
+                {
+                    <div class="hotelpart">
+                        @{
+                            var p = (ProductEventTicket)product;
+                            var pGrp = p.TicketInfo;
+                        }
+                        @foreach (var ticket in pGrp.OrderByDescending(o => o.EventTypeCode == "CT")
+            .GroupBy(x => new { x.EventTypeCode, x.TicketCategory }))
+                        {
+                            if (ticket.Key.EventTypeCode == "CT" || ticket.Key.EventTypeCode == "TH" || true)
+                            {
+                                <div class="s3_1_fdb_room"><span> @ticket.Sum(s => s.OrderedQty)</span> @ticket.Key.TicketCategory</div>
+                            }
+                            else
+                            {
+                                int typeCount = ticket.Select(c => c.EventID).Distinct().Count();
+                                int _attempQty = ticket.Sum(x => x.OrderedQty) / typeCount;
+                                <div class="s3_1_fdb_room"><span> @typeCount</span> @ticket.Key.TicketCategory (@_attempQty @(_attempQty <= 1 ? "day" : "days"))</div>
+                            }
+                        }
+                    </div>
+                    <div class="clear"></div>
+                }
+
+                @if (itemCounter == Model.Products.Count - 1)
+                {
+                    <div class="totalpricepart">
+                        <div class="s3_1_fdb4_inner_ri_ans">
+                            <div class="s3_1_ans_myr">MYR</div>
+                            <div class="s3_1_ans_fig TotalPrice">@Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary.ToString("n2")</div>
+                            <div class="s3_1_fdb4_inner_lf_lable2">
+                                Include tax
+                                <div class="show_toltip2 add-cursor-pointer">
+                                    <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="">
+                                    <div class="s3_form_toll_tip">
+                                        <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt="" class="marginbottomzero"></div>
+                                        <div class="s3-1_form_toll_tip_b">
+                                            @RenderPaymentSummaryBox(Model)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb4_inner_lf_lable">Total</div>
+                    </div>
+                }
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    itemCounter++;
+}
+
+@helper RenderPaymentSummaryBox(CheckoutProduct checkoutProduct)
+{
+    var hotelCountry = Model.Hotel != null ? Model.Hotel.RoomSelected.HotelRoomInformationList.FirstOrDefault().hotelCountry : null;
+    Func<ICheckoutProduct, bool> _discExpression = (x => x.PricingDetail.Discounts.Count > 0
+    && x.PricingDetail.Discounts.Any(a => a.DiscType != DiscountType.TC && a.DiscType != DiscountType.TW));
+
+    foreach (ICheckoutProduct product in checkoutProduct.Products)
+    {
+        <div class="eachSection">
+            <div style="font-weight: bold;">@product.ProductType.ToString() :</div>
+            @foreach (var item in product.PricingDetail.Items)
+            {
+                var allInPrice = item.TTlBaseRate + item.TtlSurcharge + item.TtlGST;
+                <div class="s2-1_tt_left">@item.ItemDetail x @item.ItemQty</div>
+                <div class="s2-1_tt_right">MYR<span>@allInPrice.ToString("#,##0.00")</span></div>
+                <div class="clear"></div>
+            }
+        </div>
+    }
+
+    if (checkoutProduct.Products.Any(_discExpression))
+    {
+        <div class="eachSection pcode-summary">
+            <div style="font-weight: bold;">Discount :</div>
+            @foreach (ICheckoutProduct product in checkoutProduct.Products.Where(_discExpression))
+            {
+                var discList = product.PricingDetail.Discounts.Select(x => x.DiscType.ToString());
+                <div class="s2-1_tt_left">@product.ProductType.ToString() - @string.Join(", ", discList)</div>
+                <div class="s2-1_tt_right">MYR<span>@((-Math.Abs(product.PricingDetail.Discounts.Sum(s => s.Disc_Amt))).ToString("#,##0.00"))</span></div>
+            }
+            <div class="clear"></div>
+        </div>
+    }
+    else
+    {
+        <div class="eachSection pcode-summary" style="display: none">
+            <div style="font-weight: bold;">Discount :</div>
+            <div class="s2-1_tt_left"></div>
+            <div class="s2-1_tt_right"></div>
+            <div class="clear"></div>
+        </div>
+    }
+    if (checkoutProduct.IsDynamic && checkoutProduct.CheckOutSummary.DiscountDetails.Count() > 0)
+    {
+        <div class="eachSection pcode-summary">
+            <div style="font-weight: bold;">Discount :</div>
+            @foreach (var product in checkoutProduct.CheckOutSummary.DiscountDetails.Where(x => x.DiscType != DiscountType.TC && x.DiscType != DiscountType.TW))
+            {
+                bool isHidePromoCode = Model.PromoCodeFunctions.GetFrontendFunction.FlightAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.HotelAutoApplied
+                    || Model.PromoCodeFunctions.GetFrontendFunction.PackageAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.PromoCodeHideForCustomer;
+                <div class="s2-1_tt_left">@(!isHidePromoCode ? product.Disc_Desc : "Package - CODE")</div>
+                <div class="s2-1_tt_right">MYR<span>@((-Math.Abs(product.Disc_Amt)).ToString("#,##0.00"))</span></div>
+            }
+            <div class="clear"></div>
+        </div>
+    }
+
+    <div class="eachSection">
+        <div style="font-weight: bold;">Prevailing Charges :</div>
+        @*<div class="s2-1_tt_left">Taxes and Fees</div>
+            <div class="s2-1_tt_right">MYR<span>@checkoutProduct.CheckOutSummary.TtlSurchage.ToString("#,##0.00")</span></div>
+            <div class="clear"></div>*@
+
+        <div class="pFeeArea @(checkoutProduct.CheckOutSummary.ProcessingFee != null ? "" : "hidden")">
+            <div class="s2-1_tt_left">Processing Fee</div>
+            @if (checkoutProduct.CheckOutSummary.ProcessingFee != null)
+            {
+                <div class="s2-1_tt_right">MYR<span class="ProcessingFee">@checkoutProduct.CheckOutSummary.ProcessingFee.TtlAmt.ToString("#,##0.00")</span></div>
+            }
+            else
+            {
+                <div class="s2-1_tt_right">MYR<span class="ProcessingFee"></span></div>
+            }
+            <div class="clear"></div>
+        </div>
+
+        @*<div class="s2-1_tt_left">GST</div>
+            <div class="s2-1_tt_right">MYR<span class="Gst">@checkoutProduct.CheckOutSummary.TtlGST.ToString("#,##0.00")</span></div>
+            <div class="clear"></div>*@
+    </div>
+
+    <div class="s2-1_tt_left blackLine boldText margintopzero" style="line-height:30px;">Grand Total :</div>
+    <div class="s2-1_tt_right1 blackLine" style="line-height:35px;">MYR<span class="TotalPrice inline">@checkoutProduct.CheckOutSummary.GrandTtlAmt_InPaymentSummary.ToString("#,##0.00 ")</span></div>
+    <div class="clear1"></div>
+    if (hotelCountry != null && (hotelCountry == "MY" || hotelCountry == "MYS" || hotelCountry == "Malaysia"))
+    {
+        <div class="s2-1_tt_notice">
+            *From 1st September 2017 all foreign guests may be levied a Tourism Tax of MYR10.00 per room/ per night by the hotel. This is accordance with the new law gazette.
+        </div>
+    }
+}
+
+@helper RenderFlightInformation(FlightTripInfo tripInfo)
+{
+    if (tripInfo == null)
+    {
+        <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+            @for (int a = 0; a < tripInfo.FlightRouteInfo.Count; a++)
+            {
+                string airlineList = string.Empty;
+                var seg = tripInfo.FlightRouteInfo[a];
+                <span>@seg.DepartAirportCode</span>
+                <span> > </span>
+
+                if (a + 1 == tripInfo.FlightRouteInfo.Count)
+                {
+                    <span>@seg.ArriveAirportCode</span>
+                    airlineList = string.Format("{0}{1}"
+                                    , seg.AirlineCode
+                                    , seg.AirlineFlightNo);
+                    <span class="s3_1_fdb4_inner_lf_lable4">
+                        @airlineList
+                    </span>
+                }
+            }
+        </div>
+
+        <div class="date_L">@tripInfo.DepartDateTime.ToString("dd-MMM-yy, ddd")</div>
+        <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+            <div class="tim_box" style="display:inline-block">@tripInfo.DepartDateTime.ToString("HHmm")</div>
+            <div class="img_box" style="display:inline-block">></div>
+            <div class="tim_box" style="display:inline-block">@tripInfo.ArriveDateTime.ToString("HHmm")</div>
+            <div class="clear"></div>
+        </div>
+    }
+    else
+    {
+        <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+            <span class="s3_1_fdb_big">-</span>
+            <p>-</p>
+        </div>
+        <div class="date_L">-</div>
+        <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+            <div class="tim_box">-</div>
+            <div class="date_L">-</div>
+            <div class="clear"></div>
+        </div>
+    }
+}
+
+@helper RenderFlightInformation()
+{
+    <div class="hotelpart">
+        <div class="">
+            <img class="pull-left" src="@Url.Content("~/Images/fl_t_ico.png")" />
+            <div class="s3_1_fdb_hotel_name bolder-size">
+                @for (int i = 0; i < flightInfo.FlightTrip.Count; i++)
+                {
+                    var trip = flightInfo.FlightTrip[i];
+                    string airlineList = string.Empty;
+                    for (int a = 0; a < trip.FlightRouteInfo.Count; a++)
+                    {
+                        var seg = trip.FlightRouteInfo[a];
+                        airlineList += string.Format("{0}{1}{2}", seg.AirlineCode
+                                        , seg.AirlineFlightNo
+                                        , (a + 1 == trip.FlightRouteInfo.Count ? "" : ", "));
+                        <span>@seg.DepartAirportCode</span>
+                        <span> > </span>
+
+                        if (a + 1 == trip.FlightRouteInfo.Count)
+                        {
+                            <span>@seg.ArriveAirportCode</span>
+
+                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                @airlineList
+                            </span>
+                        }
+                    }
+                    <br />
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@helper RenderHotelInformation(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelRoomInformation[] selectedRoomList, bool includeCheckInOutInfo)
+{
+    DateTime? hotelArrivalDate = null;
+    DateTime? hotelDepartureDate = null;
+    <div class="hotelpart">
+        <div class="">
+            @{ var hotel = selectedRoomList.FirstOrDefault();
+                var tphotelid = hotel.hotelId.Remove(hotel.hotelId.Length - 3, 3);
+                var hotelsearch = Model.Hotel.SearchHotelInfo.ValidBundle() && hotel.hotelSupplierCode == "TP" ? Model.Hotel.HotelSelected.FirstOrDefault(x => x.hotelId.StartsWith(tphotelid)) : Model.Hotel.HotelSelected.FirstOrDefault(x => x.hotelId == hotel.hotelId);
+                int hotelstar = hotelsearch != null ? Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelsearch.hotelRating))) : 0;
+                if (includeCheckInOutInfo)
+                {
+                    hotelArrivalDate = hotel.arrivalDate.ToDateTimeNullable();
+                    hotelDepartureDate = hotel.departureDate.ToDateTimeNullable();
+                }
+
+                <img class="pull-left" src="@Url.Content("../../Images/ht_t_ico.png")" />
+                <div class="s3_1_fdb_hotel_name bolder-size">
+                    @hotel.hotelName
+                    <div class="hidden-xs hidden-sm hstar-rating">
+                        @for (int i = 0; i < hotelstar; i++)
+                        {
+                            <img src="/images/hotel_star_am.png" width="10" height="10" alt="star-rating">
+                        }
+                    </div>
+                </div>
+            }
+            @if (includeCheckInOutInfo && hotelArrivalDate != null && hotelDepartureDate != null)
+            {
+                <div class="s3_1_fdb_inner_b4 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkin">
+                    <div class="check_in bolder-size">
+                        Check In
+                    </div>
+                    <div class="tim_box1">@hotelArrivalDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                </div>
+                <div class="s3_1_fdb_inner_b3 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkout">
+                    <div class="check_out bolder-size">
+                        Check Out
+                    </div>
+                    <div class="tim_box2">@hotelDepartureDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@helper RenderConcertTicketInformation(ProductEventTicket productConcert)
+{
+    foreach (var item in productConcert.TicketInfo.GroupBy(x => x.EventTypeCode).OrderByDescending(o => o.Key == "CT"))
+    {
+        string _icon = Url.Content($"~/images/ico/{item.Key}.png");
+
+        if (!File.Exists(Server.MapPath(_icon)))
+        {
+            _icon = Url.Content("~/images/ico/wf.png");
+        }
+
+        <div class="hotelpart">
+            <div class="">
+                <div class="clear"></div>
+                <img class="pull-left" src="@_icon" width="35" height="35">
+                <div class="s3_1_fdb_hotel_name bolder-size">
+                    @foreach (var itemDtl in item.Select(x => x.ItemDesc).Distinct())
+                    {
+                        @(itemDtl ?? "Ticket")<br />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @*<div class="hotelpart">
+            <div class="">
+
+                <img class="pull-left" src="@Url.Content("../../Images/icon-ticket.png")" width="35" height="35">
+                <div class="s3_1_fdb_hotel_name bolder-size">
+                    @foreach (var item in productConcert.TicketInfo.GroupBy(x => x.ItemDesc))
+                    {
+                    @(item.Key ?? "Ticket")<br />
+                    }
+                </div>
+            </div>
+        </div>*@
+
+    @*<img class="pull-left" src="@Url.Content("~/images/ico/" + item.Key + ".png")" width="35" height="35">*@
+}
+
+@helper RenderInsuranceInformationBar(ProductInsurance productInsurance)
+{
+    <div class="hotelpart">
+        <div class="">
+
+            <img class="pull-left" src="@Url.Content("../../Images/icon-ticket.png")" width="35" height="35">
+            <div class="s3_1_fdb_hotel_name bolder-size">
+                Insurance
+                @*@foreach (var item in productInsurance)
+                    {
+                        @(item.Key ?? "Ticket")<br />
+                    }*@
+            </div>
+        </div>
+    </div>
+}

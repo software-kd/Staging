@@ -1,0 +1,78 @@
+﻿@using Mayflower.General;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.FrequentFlyerEditModel
+
+@{
+    ViewBag.Title = "Delete Frequent Flyer";
+    ViewBag.RenderSideBar = true;
+    ViewBag.RenderRedLine = true;
+
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+    object NationalityAttr = new { data_val_required = "Nationality is required.", data_val = "true" };
+}
+
+@if (Request.QueryString["themes"] == "v1" && !Request.IsAjaxRequest())
+{
+    //Layout = "~/Views/Shared/_SMCLayout.cshtml";
+}
+else
+{
+    ViewBag.TableContent = true;
+}
+
+@if (Request.IsAjaxRequest())
+{
+    Layout = null;
+}
+
+@section style{
+    <style>
+    </style>
+
+}
+
+<div>
+    <div class='session_lb_text' style="text-align:left;border-bottom:1px #808080 solid"><br />Delete Frequent Traveller</div><br /><br />
+    <h4 style="text-align:left;">Frequent Traveller Info<br /><br /></h4>
+    <div style="text-align:left">
+        Title Code: @Html.DisplayFor(model => Model.TitleCode, new { @class = "s3-1_title" })
+    </div>
+
+    <div style="text-align:left">
+        First Name: @Html.DisplayFor(model => Model.FirstName, new { @class = "s3-1_full_textbox_name_com" })
+    </div>
+
+    <div style="text-align:left">
+        Family Name: @Html.DisplayFor(model => Model.FamilyName, new { @class = "s3-1_full_textbox_name_com" })
+
+    </div>
+
+    <div style="text-align:left">
+        Date Of Birth: @Html.DisplayFor(model => Model.DOBDays, new { @class = "s3-1_dob month" })/@Html.DisplayFor(model => Model.DOBMonths, new { @class = "s3-1_dob month" })/@Html.DisplayFor(model => Model.DOBYears, new { @class = "s3-1_dob month" })
+
+    </div>
+
+    <div style="text-align:left">
+        Nationality: @Html.DisplayFor(model => Model.Nationality, new { @class = "s3-1_full_selectbox_com" })
+
+    </div>
+
+    <div style="text-align:left">
+        Passport Number: @Html.DisplayFor(model => Model.Passport, new { @class = "s3-1_full_selectbox_com" })
+
+    </div>
+
+    <div style="text-align:left">
+        Passport Expiry Dae: @Html.DisplayFor(model => Model.PassportExpiryDateDays, new { @class = "s3-1_dob month" })/@Html.DisplayFor(model => Model.PassportExpiryDateMonths, new { @class = "s3-1_dob month" })/@Html.DisplayFor(model => Model.PassportExpiryDateYears, new { @class = "s3-1_dob month" })
+
+    </div>
+
+    <div style="text-align:left">
+        Passport Issue Country: @Html.DisplayFor(model => Model.PassportIssuePlace, new { @class = "s3-1_full_selectbox_com" })
+
+    </div>
+    <div class='session_lb_text1'><br /><br />This Frequent Traveller will be REMOVE<br />Continue proceed?</div>
+    <a href='@Url.Action("DeleteFrequentFlyer","Tools", new { id=Model.TravellerID })' class='clear-guest1'><div class='redbacktohome_button modal-confirm-btn'>Yes</div></a>
+    <a href='/Tools/FrequentFlyer' class='modal-close' id="closbtn" data-dismiss="modal" aria-hidden="true"><div class='redbacktohome_button modal-cancel-btn'>Cancel</div></a>
+</div>

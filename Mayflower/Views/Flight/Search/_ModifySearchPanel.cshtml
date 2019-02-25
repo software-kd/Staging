@@ -1,0 +1,257 @@
+﻿@model Alphareds.Module.Model.FlightBookingModel
+@using Alphareds.Module.Common;
+@{
+    List<SelectListItem> numberOfRooms = new List<SelectListItem>();
+    numberOfRooms.Add(new SelectListItem { Text = "1 Room", Value = "1", Selected = true });
+    numberOfRooms.Add(new SelectListItem { Text = "2 Rooms", Value = "2" });
+    numberOfRooms.Add(new SelectListItem { Text = "3 Rooms", Value = "3" });
+    numberOfRooms.Add(new SelectListItem { Text = "4 Rooms", Value = "4" });
+    numberOfRooms.Add(new SelectListItem { Text = "5 Rooms", Value = "5", });
+    numberOfRooms.Add(new SelectListItem { Text = "6 Rooms", Value = "6" });
+    numberOfRooms.Add(new SelectListItem { Text = "7 Rooms", Value = "7" });
+    numberOfRooms.Add(new SelectListItem { Text = "8 Rooms", Value = "8", });
+
+    List<SelectListItem> numberOfAdults = new List<SelectListItem>();
+    numberOfAdults.Add(new SelectListItem { Text = "1 Adult", Value = "1", Selected = true });
+    numberOfAdults.Add(new SelectListItem { Text = "2 Adults", Value = "2" });
+    numberOfAdults.Add(new SelectListItem { Text = "3 Adults", Value = "3" });
+    numberOfAdults.Add(new SelectListItem { Text = "4 Adults", Value = "4" });
+    numberOfAdults.Add(new SelectListItem { Text = "5 Adults", Value = "5", });
+    numberOfAdults.Add(new SelectListItem { Text = "6 Adults", Value = "6" });
+    numberOfAdults.Add(new SelectListItem { Text = "7 Adults", Value = "7" });
+    //numberOfAdults.Add(new SelectListItem { Text = "8 Adults", Value = "8", });
+
+    List<SelectListItem> numberOfChildren = new List<SelectListItem>();
+    numberOfChildren.Add(new SelectListItem { Text = "0 Child", Value = "0", Selected = true });
+    numberOfChildren.Add(new SelectListItem { Text = "1 Child", Value = "1" });
+    numberOfChildren.Add(new SelectListItem { Text = "2 Children", Value = "2" });
+    numberOfChildren.Add(new SelectListItem { Text = "3 Children", Value = "3" });
+    numberOfChildren.Add(new SelectListItem { Text = "4 Children", Value = "4" });
+    numberOfChildren.Add(new SelectListItem { Text = "5 Children", Value = "5" });
+    numberOfChildren.Add(new SelectListItem { Text = "6 Children", Value = "6" });
+    //numberOfChildren.Add(new SelectListItem { Text = "7 Children", Value = "7" });
+    //numberOfChildren.Add(new SelectListItem { Text = "8 Children", Value = "8" });
+
+    List<SelectListItem> numberOfInfants = new List<SelectListItem>();
+    numberOfInfants.Add(new SelectListItem { Text = "0 Infant", Value = "0", Selected = true });
+    numberOfInfants.Add(new SelectListItem { Text = "1 Infant", Value = "1" });
+    numberOfInfants.Add(new SelectListItem { Text = "2 Infants", Value = "2" });
+    numberOfInfants.Add(new SelectListItem { Text = "3 Infants", Value = "3" });
+    //numberOfInfants.Add(new SelectListItem { Text = "4 Infants", Value = "4" });
+    //numberOfInfants.Add(new SelectListItem { Text = "5 Infants", Value = "5" });
+    //numberOfInfants.Add(new SelectListItem { Text = "6 Infants", Value = "6" });
+    //numberOfInfants.Add(new SelectListItem { Text = "7 Infants", Value = "7" });
+    //numberOfInfants.Add(new SelectListItem { Text = "8 Infants", Value = "8" });
+
+    var cabinXML = UtilitiesService.getCabin();
+    var cabin = new List<SelectListItem>();
+    for (int index = 0; index < cabinXML.Count; index++)
+    {
+        cabin.Add(new SelectListItem { Text = cabinXML[index].cabinName, Value = cabinXML[index].cabinCode });
+    }
+}
+
+<style>
+    .ffc2_r1_b2 input, .ffc2_r1_b4 {
+        background-color: transparent;
+        /*background-image: url(../images/dd_arrow.png);*/
+        background-image: url('../../Images/calenderr.png');
+        background-repeat: no-repeat;
+        background-position: right center;
+        padding-left: 5px;
+    }
+</style>
+
+<div class="fullcover_div6" style="overflow: auto;">
+    <div class="modifysearch_white1nn">
+        <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></div>
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+        {
+            <div>
+                <div class="tabs_content_container fullwidth">
+                    <div class="mswi_searchleft">I'm looking for</div>
+                    <div class="mswi_searchright">
+                        @if (!Model.SearchFlightResultViewModel.IsDynamic)
+                        {
+                            <div class="tcc_threetabs">
+                                <div class="tcc_threetabs_inner return_icon return_icon_active tcct1" onclick="$('#btm_radio_return').prop('checked', true)">Return</div>
+                            </div>
+                            <div class="tcc_threetabs">
+                                <div class="tcc_threetabs_inner tcc_ti_center oneway_icon tcct2" onclick="$('#btm_radio_oneway').prop('checked', true)">One Way</div>
+                            </div>
+                        }
+                        <div style="display:none">
+                            @Html.RadioButtonFor(model => model.SearchFlightResultViewModel.TripType, "Return", new { @id = "btm_radio_return" })
+                            @Html.RadioButtonFor(model => model.SearchFlightResultViewModel.TripType, "OneWay", new { @id = "btm_radio_oneway" })
+                        </div>
+                        <div class="tcc_threetabs">
+                            @*<div class="tcc_threetabs_inner tcc_ti_right multi_icon tcct3">Multi City</div>*@
+                            <div class="clear"></div>
+                        </div>
+                        @Html.HiddenFor(x => x.SearchFlightResultViewModel.TripType)
+                        @Html.HiddenFor(x => x.SearchFlightResultViewModel.IsDynamic)
+                        @Html.HiddenFor(x => x.SearchFlightResultViewModel.IsFixedPrice)
+                        @Html.HiddenFor(model => model.SearchFlightResultViewModel.DepartureTime, new { @id = "DepartureTime" })
+                        @Html.HiddenFor(model => model.SearchFlightResultViewModel.ReturnTime, new { @id = "ReturnTime" })
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="flight_form_container1">
+
+                        <div class="modifysearch_left_box">
+                            <div class="ffc1_left ffc1spwidth">From</div>
+                            @*<div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b1b">From</div>*@
+                            <div class="ffc1_right ffc1_rightb">
+                                @Html.TextBoxFor(model => model.SearchFlightResultViewModel.DepartureStation,
+                 new { @id = "from", @name = "from", @class = "form-control from-value", @placeholder = "Enter city or airport" })
+                                <input type="hidden" id="project-id">
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.DepartureStation, null, new { @class = "textforerrormsg" })
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.DepartureStationCode, null, new { @class = "textforerrormsg" })
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+
+                        <div class="modifysearch_right_box">
+                            <div class="ffc1_left ffc1spwidth1">To</div>
+                            @*<div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b1b">To</div>*@
+                            <div class="ffc1_right ffc1_rightb">
+                                @Html.TextBoxFor(model => model.SearchFlightResultViewModel.ArrivalStation,
+                 new { @id = "to", @name = "to", @class = "form-control to-value", @placeholder = "Enter city or airport" })
+                                <input type="hidden" id="project-id1">
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.ArrivalStation, null, new { @class = "textforerrormsg" })
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.ArrivalStationCode, null, new { @class = "textforerrormsg" })
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                    <div class="flight_form_container2 flight_form_container2b">
+                        <div class="flight_oneway">
+                            <div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b1b">On</div>
+                            <div class="ffc2_r1_b2 ffc2_r1_b2b">
+                                @Html.TextBoxFor(model => model.SearchFlightResultViewModel.BeginDate, "{0:dd-MMM-yyyy}", new { @id = "datep", @name = "depart", @class = "", @placeholder = "Departing On", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.BeginDate, null, new { @class = "textforerrormsg" })
+                            </div>
+                        </div>
+                        <div class="flight_twoway">
+                            <div class="ffc2_r1_b3 ffc1spwidth2 ffc2_r1_b3b">Till</div>
+                            @*<div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b3b">Till</div>*@
+                            <div class="ffc2_r1_b4">
+                                @Html.TextBoxFor(model => model.SearchFlightResultViewModel.EndDate, "{0:dd-MMM-yyyy}", new { @id = "datep1", @name = "return", @class = "", @placeholder = "Return On", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.EndDate, null, new { @class = "textforerrormsg" })
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                    <div class="flight_form_container1 flight_form_container1b">
+                        <div class="ffc1_left ffc1_left ffc1spwidth2">By</div>
+                        @*<div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b1b">By</div>*@
+                        <div class="ffc1_right ffc1_rightb">
+                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCode,
+new { @id = "airline", @name = "airline", @class = "form-control", @placeholder = "Enter preferred airline" })
+                            <input type="hidden" id="project-id2">
+                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCode, null, new { @class = "textforerrormsg" })
+                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCodeSub, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="flight_form_container2">
+                        <div class="ffc2_r2_b1  ffc1spwidth2">For</div>
+                        @*<div class="ffc2_r1_b1 ffc1spwidth2 ffc2_r1_b1b">For</div>*@
+                        @if (Model.SearchFlightResultViewModel.IsDynamic)
+                        {
+                            <div class="ffc2_r2_b2">
+                                @Html.DropDownListFor(model => model.SearchFlightResultViewModel.NoOfRoom, numberOfRooms, null, null)
+                            </div>
+                        }
+                        <div class="ffc2_r2_b2">
+                            @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Adults, numberOfAdults, null, null)
+                        </div>
+                        <div class="ffc2_r2_b3">
+                            @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Childrens, numberOfChildren, null, null)
+                        </div>
+                        <div class="ffc2_r2_b4">
+                            @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Infants, numberOfInfants, null, null)
+                            <p id="infantremindertext" @*style="display:none; text-align: left; font-size: 12px"*@>Please select CHILD if date of birth exceed infant age of 2 (24 months) either traveling or returning.</p>
+                        </div>
+                        <div class="ffc2_r2_b5">
+                            <img src="@Url.Content("~/images/i-icon.png")" style="width: 12px; height: 12px;" alt="">
+                            <div class="yellow_toll_tip">
+                                <div class="ttt"><img src="@Url.Content("~/images/toll_tip_top.png")" width="215" height="13" alt=""></div>
+                                <div class="ttt1">
+                                    <ul>
+                                        <li>Adult 12 Years Old and above</li>
+                                        <li>Child 2-11 Years Old</li>
+                                        <li>
+                                            Infant 0-23 Months Old<br>
+                                            (Under 2 Years Old)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+
+                        <div>
+                            @Html.ValidationMessage("validateForm", new { @class = "textforerrormsg" })
+                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Adults, null, new { @class = "textforerrormsg" })
+                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Childrens, null, new { @class = "textforerrormsg" })
+                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Infants, null, new { @class = "textforerrormsg" })
+                        </div>
+
+                        <div class="mswi_withflying_left">
+                            <div class="ffc2_r3_b1 ">Flying</div>
+                            <div class="ffc2_r3_b4">
+                                @Html.DropDownListFor(model => model.SearchFlightResultViewModel.CabinClass, cabin, null, null)
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                            @{
+                                string displayCode = Model?.SearchFlightResultViewModel?.PromoCode;
+                                bool hidePromoCode = false;
+                                if (Model?.SearchFlightResultViewModel?.IsPromoCodeUsed ?? false)
+                                {
+                                    var dbEntities = new Alphareds.Module.Model.Database.MayFlower();
+                                    Mayflower.Controllers.FlightController fc = new Mayflower.Controllers.FlightController();
+                                    var pRules = fc.GetPromoCodeDiscountRule(Model.SearchFlightResultViewModel, dbEntities);
+                                    var promoCodeFunctions = new Alphareds.Module.Model.PromoCodeFunctions(pRules?.PromoID ?? -1, dbEntities);
+
+                                    if (promoCodeFunctions.GetFrontendFunction.PromoCodeHideForCustomer)
+                                    {
+                                        hidePromoCode = true;
+                                    }
+                                }
+
+                                if (hidePromoCode)
+                                {
+                                    string nameFor = Html.NameFor(x => x.SearchFlightResultViewModel.PromoCode)?.ToString() ?? "promocode";
+                                    @Html.Hidden(nameFor, displayCode, new { @id = "promocode", @class = "form-control", @placeholder = "Enter promo code" })
+                                }
+                                else
+                                {
+                                    <div class="modifysearch_right_box">
+                                        <div class="ffc1_left ffc1spwidth1">With</div>
+                                        <div class="ffc1_right ffc1_rightb">
+                                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.PromoCode, new { @id = "promocode", @name = "promocode", @class = "form-control", @placeholder = "Enter promo code" })
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                }
+                            }
+                        <div class="clear"></div>
+                        <div class="mswi_withflying_right flight_form_container3">
+                            @Html.StyledCheckBoxFor(model => model.SearchFlightResultViewModel.DirectFlight)<br>
+                            <button type="submit" class="add-cursor-pointer">OK, show me!</button>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+
+                </div>
+            </div>
+        }
+    </div>
+</div>

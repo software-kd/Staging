@@ -1,0 +1,50 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+
+    ViewBag.Title = "Tour Package";
+    ViewBag.HeaderRed = true;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+}
+
+<div class="booker-details m-u-20">
+    <div class="container">
+        <div class="row tour-package-page">
+        @if (Model.TourPackage != null && Model.TourPackage.TourPackageDetails != null)
+        {
+            var tourbreadcrumbcss = Model.TourPackage.skipAddon ? "tourbreadcrumb4" : "tourbreadcrumb";
+            <div class="col-lg-8">
+                <div class="booker-details-left">
+                    <ul class="breadcrumb @tourbreadcrumbcss">
+                        <li><span><span class="breadcrumbno">1. </span>Dates</span></li>
+                        <li><span><span class="breadcrumbno">2. </span>Hotel</span></li>
+                        @if (!Model.TourPackage.skipAddon)
+                        {
+                            <li><span><span class="breadcrumbno">3. </span>Add-On</span></li>
+                        }
+                        <li class="active"><span><span class="breadcrumbno">4. </span>Contact Details</span></li>
+                        <li><span><span class="breadcrumbno">5. </span>Payment</span></li>
+                    </ul>
+                </div>
+                @using (Html.BeginForm("Contact", "TourPackage", new { tripid, affiliationId }, FormMethod.Post, new { @id = "TourPackageForm" }))
+                {
+                    @Html.Hidden("tripid", tripid)
+                    @Html.Partial("~/Views/TourPackage/_FormTourContact_v2.cshtml", Model.TourPackage)
+                }
+            </div>
+            @*use shared layout for product summary*@
+            @Html.Partial("~/Views/TourPackage/_ReservationDetailsTour.cshtml", Model)
+        }
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript" src="~/Scripts/tour/general_v2.js"></script>
+}
+
+

@@ -1,0 +1,112 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.BookingController
+@using Alphareds.Module.Model.Database
+
+@model dynamic
+
+@{
+    Booking flightBooking = Model.Flight;
+    BookingHotel hotelBooking = Model.Hotel;
+    var superPNROrder = flightBooking.SuperPNR.SuperPNROrders.FirstOrDefault(x => x.OrderID == flightBooking.OrderID);
+
+    Func<Alphareds.Module.Model.Database.FlightSegmentCharge, bool> flightChargeCode = (x => (x.ChargeTypeCode == "FARE" && x.ChargeCode == "FLFARE"));
+    Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxChargeCode = (x => x.ChargeCode == "BRATE");
+
+    var flightBreakeDown = flightBooking.FlightSegmentPaxTypes.SelectMany(x => x.FlightSegmentCharges);
+    var roomPax = hotelBooking.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value);
+    var roomPaxCharge = roomPax.SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxChargeCode);
+
+    //int totalPaxs = flightBooking.Paxes.Count(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value);
+
+    decimal totalTaxAndFees = Math.Round(flightBooking.FlightSegmentPaxTypes.SelectMany(x => x.FlightSegmentCharges).Where(x => x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "GST" && x.ChargeCode != "MARKUP").Sum(y => y.ChargeAmount * y.FlightSegmentPaxType.NoOfPax), 2);
+    var flightFeeCharge = superPNROrder.FeeChargeOrders.LastOrDefault();
+    decimal totalProcessingFees = flightFeeCharge != null ? flightFeeCharge.FeeChargeAmount : 0;
+    decimal totalGST = flightBooking.GSTAmt + (flightFeeCharge != null ? flightFeeCharge.TaxAmount : 0);
+    decimal totalBookingAmt = flightBooking.TotalBookingAmt + ((flightBooking.IsCreditUsed ?? false) ? flightBooking.CreditAmount ?? 0 : 0);
+
+    decimal hotelTotalTax = roomPax.SelectMany(x => x.RoomPaxCharges).Where(q => q.ChargeCode == "TAX" && q.IsDisplay).Sum(x => x.ChargeAmount);
+
+    var feeChargeHotel = hotelBooking.FeeChargeHotels != null && hotelBooking.FeeChargeHotels.LastOrDefault() != null ? hotelBooking.FeeChargeHotels.Last() : null;
+    decimal hotelTotalProcessingFees = feeChargeHotel != null ? feeChargeHotel.FeeChargeAmount : 0;
+    decimal hotelTotalGST = hotelBooking.GSTAmt + (feeChargeHotel != null ? feeChargeHotel.TaxAmount : 0);
+
+    decimal flightTotalAmtExTax = 0m;
+    var paxGrp = flightBooking.Paxes.Where(x => !x.IsContactPerson ?? false).GroupBy(x => x.PassengerType);
+    foreach (var psType in paxGrp)
+    {
+        var typeCharge = flightBreakeDown.Where(flightChargeCode).Where(x => x.FlightSegmentPaxType.PassengerType == psType.Key);
+        flightTotalAmtExTax += typeCharge.Sum(x => x.ChargeAmount * psType.Count());
+    }
+
+    decimal hotelTotalAmtExTax = hotelBooking.TotalBookingAmt - hotelTotalTax - hotelTotalProcessingFees - hotelTotalGST;
+
+    totalTaxAndFees += hotelTotalTax;
+    totalProcessingFees += hotelTotalProcessingFees;
+    totalGST += hotelTotalGST;
+    totalBookingAmt += hotelTotalAmtExTax;
+
+    totalBookingAmt += flightFeeCharge != null ? flightFeeCharge.TaxAmount + flightFeeCharge.FeeChargeAmount : 0;
+    totalBookingAmt += (superPNROrder.IsCreditUsed ?? false) ? superPNROrder.CreditAmount ?? 0 : 0;
+
+    //SSR
+    var flightSegmentPaxCharge = flightBooking.FlightSegments.Where(x => x.SegmentOrder == "I1" || x.SegmentOrder == "O1").SelectMany(x => x.FlightSegmentPaxCharges);
+    var flightSegmentServiceType = flightBooking.FlightSegments.Where(x => x.SegmentOrder == "I1" || x.SegmentOrder == "O1").SelectMany(x => x.FlightSegmentPaxServiceTypes);
+    var ssrList = (from a in flightSegmentPaxCharge
+                   join b in flightSegmentServiceType
+                   on new { flightSegmentID = a.FlightSegmentID, paxID = a.PaxID }
+                   equals new { flightSegmentID = b.FlightSegmentID, paxID = b.PaxID }
+                   where a.ChargeTypeCode == "SSR"
+                   select new
+                   {
+                       value = b.ServiceValue,
+                       price = a.ChargeAmount,
+                   }).GroupBy(x => x.value)
+                   .Select(a => new { value = a.FirstOrDefault().value, price = a.Sum(b => b.price), count = a.Count() })
+                   .ToList();
+}
+
+<div class="row clr payment-row">
+    <div class="payment-desc">Flight</div>
+    <div class="total text-right">
+        <span class="currency">MYR</span> @flightTotalAmtExTax.ToString("n2")
+    </div>
+</div>
+<div class="row clr payment-row">
+    <div class="payment-desc">Hotel</div>
+    <div class="total text-right">
+        <span class="currency">MYR</span> @hotelTotalAmtExTax.ToString("n2")
+    </div>
+</div>
+
+@if (ssrList != null && ssrList.Count > 0 && flightBooking.SupplierCode == "AASA")
+{
+    foreach (var ssr in ssrList.OrderBy(x => x.value))
+    {
+        <div class="row clr payment-row">
+            <div class="payment-desc">Checked Baggage @ssr.value x@(ssr.count)</div>
+            <div class="total text-right">
+                <span class="currency">MYR</span> @ssr.price.ToString("n2")
+            </div>
+        </div>
+    }
+}
+
+<div class="row clr payment-row">
+    <div class="payment-desc">Taxes & Fees</div>
+    <div class="total text-right">
+        <span class="currency">MYR</span> @totalTaxAndFees.ToString("n2")
+    </div>
+</div>
+<div class="row clr payment-row">
+    <div class="payment-desc">Processing Fee</div>
+    <div class="total text-right">
+        <span class="currency">MYR</span> @totalProcessingFees.ToString("n2")
+    </div>
+</div>
+<div class="row clr payment-row">
+    <div class="payment-desc">GST</div>
+    <div class="total text-right">
+        <span class="currency">MYR</span> @totalGST.ToString("n2")
+    </div>
+</div>

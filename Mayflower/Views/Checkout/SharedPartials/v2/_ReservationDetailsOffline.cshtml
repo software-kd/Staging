@@ -1,0 +1,86 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@{
+    var SubmitBtnId = !string.IsNullOrEmpty(ViewBag.SubmitBtnId) ? ViewBag.SubmitBtnId : "";
+}
+
+<div class="col-lg-4">
+    <div class="booker-details-right">
+        <h3>Customer Details</h3>
+        <div class="reservation-body">
+            <div class="reservation-table shadow">
+                <div class="reservation-table-top">
+                    <ul>
+                        <li>
+                            <span>Name</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.CustomerFullname</span>
+                        </li>
+                        <li>
+                            <span>Email</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.CustomerEmail</span>
+                        </li>
+                        <li>
+                            <span>Phone</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.CustomerPhone</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-2 reservation-table-mid">
+                         <ul><li><span>Subtotal</span><span>MYR @((Model.PaymentDetails.OfflinePaymentDetails.PaymentAmt).ToString("n2"))</span></li></ul>
+                        <ul>
+                            <li>
+                                <span>Processing Fee</span>
+                                <span>MYR <span class="ProcessingFee">@(Model.PaymentDetails.OfflinePaymentDetails.Processingfee.ToString("n2") ?? (0m).ToString("n2"))</span></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="reservation-table-bottom">
+                    <ul>
+                        <li>
+                            <span>Total</span>
+                            <span class="reservation-total">MYR @((Model.PaymentDetails.GrandTotalForPayment).ToString("n2"))</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <h3>Staff Details</h3>
+        <div class="reservation-body">
+            <div class="reservation-table shadow">
+                <div class="reservation-table-top">
+                    <ul>
+                        <li>
+                            <span>Employee Name</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.StaffName</span>
+                        </li>
+                        <li>
+                            <span>Employee Contact</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.StaffContact</span>
+                        </li>
+                        <li>
+                            <span>Employee Email</span>
+                            <span>@Model.PaymentDetails.OfflinePaymentDetails.StaffEmail</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div><button type="button" id="@(!string.IsNullOrEmpty(SubmitBtnId) ? SubmitBtnId : "btnPageSubmit")" value="Complete form to continue" class="btn btn-primary btn--red">Confirm &amp; continue</button></div>
+
+        @*<a href="javascript:;" id="btnPageSubmit" class="btn btn-primary btn--red">Confirm & continue</a>*@
+        @if (string.IsNullOrEmpty(SubmitBtnId) || SubmitBtnId == "btnPageSubmit")
+        {
+            <button type="submit" id="submitpayment" href="javascript:;" class="d-none" value="Pay"></button>
+        }
+
+        @if (ViewBag.IsAllowPaymentLater == true && ViewContext.RouteData.Values["action"]?.ToString().ToLower() == "payment")
+        {
+            <a href="javascript:;" id="payment-later" class="btn btn-primary btn--red"
+               style="color: #fff;background-color: #007bff;border-color: #007bff;">Payment Later</a>
+        }
+    </div>
+</div>

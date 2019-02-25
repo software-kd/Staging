@@ -1,0 +1,300 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Cryptography;
+@using Microsoft.Owin.Security
+
+@model Alphareds.Module.Model.UserProfileEditModel
+@{
+    ViewBag.Title = "My Profile";
+
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = null;
+    }
+
+    string text = Model.JoinFirstLastName;
+    string firstLetters = "";
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    foreach (var part in text.Split(' '))
+    {
+        if (part.Any(x => x != ' ' && firstLetters.Length != 2))
+        {
+            firstLetters += part.First();
+        }
+    }
+}
+
+@* Whole page reload method. *@
+@*<a href="@Url.Action("UpdateProfile", "User")"><span class="pull-right">Edit</span></a>*@
+@* AjaxReplaceLoad Method. *@
+@*<a id="btnLoad" href="javascript:;" data-url="@Url.Action("UpdateProfile", "User")"><span class="pull-right">Edit</span></a>*@
+@* Popout Method. *@
+@*<a class="popout-content" href="javascript:;" data-url='@Url.Action("UpdateProfile", "User")' data-toggle="modal" data-target="#PopModal"><span class="pull-right">Edit</span></a>*@
+
+@if (!customPrincipal.IsAgent || customPrincipal.IsProfileActive)
+{
+    <div class="mpm_editprofile"><a href="@Url.Action("UpdateProfile", "Member")">Edit Profile</a></div>
+    <div class="clear"></div>
+}
+
+<div class="mpm_content_container">
+    <div class="mpm_cc_left">
+        <ul>
+            <li class="mpm_cc_icon1 mpm_cc_icon1_active">Personal Details</li>
+            <li class="mpm_cc_icon2">Contact Details</li>
+            <li class="mpm_cc_icon3">Company Details</li>
+        </ul>
+    </div>
+    <div class="mpm_cc_right">
+        <div class="mpjm_ccr_inner">
+            <div class="mpjmhdans_mobile_tab mpg_mt_minus mobileonly">
+                <div class="mpj_personal_details">Personal Details</div>
+            </div>
+            <!-- PERSONAL DETAIL START -->
+            <div id="personaldetail">
+
+                <div class="mpjm_pd_heading_left">@firstLetters.ToUpper()</div>
+                <div class="mpjm_pd_heading_right">
+                    @(!string.IsNullOrEmpty(Model.TitleCode) ? Model.TitleCode : "")<br><span>@Html.DisplayTextFor(model => model.FirstName)<br> @Html.DisplayTextFor(model => model.LastName)</span>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Date of Birth</div>
+                    <div class="mpjmhd_ans">@(Model.DOB != null ? Model.DOB.Value.ToShortDateString() : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">NRIC</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.IdentityNo) ? Model.IdentityNo : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Frequent Traveller Number</div>
+                    <div class="mpjmhd_ans">
+                        @foreach (var frequentFlyer in Model.FrequentFlyerList)
+                        {
+                            <div class="mpjmhdans_left">
+                                <img src="@Url.Content(UtilitiesService.GetAirlineImagePath(frequentFlyer.AirlineCode))" width="37" height="40" alt="">
+                            </div>
+
+                            <div class="mpjmhdans_right" style="line-height: 1.1; max-width:220px;">
+                                <span style="font-size: small;color: gray;">@UtilitiesService.GetAirlineName(frequentFlyer.AirlineCode)</span><br>
+                                @frequentFlyer.FrequentFlyerNumber
+                            </div>
+                            <div class="clear"></div>
+                        }
+                    </div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Email Address</div>
+                    <div class="mpjmhd_ans">
+                        @Html.DisplayTextFor(model => model.Email)
+                        @{
+                            if (!customPrincipal.IsAgent)
+                            {
+                                if (Model.IsProfileActivated)
+                                {
+                                    <span class="e-verified" style="font-size: 13px">(Verified)</span>
+                                }
+                                else
+                                {
+                                    int tokenValidateHour = 24;
+                                    int.TryParse(Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("TokenValidateHour"), out tokenValidateHour);
+
+                                    using (Ajax.BeginForm("resendverificationemail", "member", new { ureq = Cryptography.AES.Encrypt(Guid.NewGuid().ToString()) },
+                                                        new AjaxOptions { HttpMethod = "Post" }, new { id = "memact-fm", style = "display: inline;" }))
+                                    {
+                                        @Html.Hidden("uid", Cryptography.AES.Encrypt(customPrincipal.UserId.ToString()))
+                                        @Html.Hidden("email", customPrincipal.Email)
+                                        @Html.Hidden("t", Cryptography.AES.Encrypt(Guid.NewGuid().ToString()))
+                                        @Html.Hidden("token", Alphareds.Module.MemberController.MemberServiceController.GenerateToken(customPrincipal.Email, customPrincipal.UserId, Model.OrganizationID, "MEM", tokenValidateHour))
+                                        <span class="e-verified" style="font-size: 13px">(<a href="javascript:;" id="memact" onclick="$('#memact-fm').submit();">Resend activation email</a>)</span>
+                                    }
+                                    <div id="popup-modal" class="fullcover_div5 popup" style="display: none; overflow:auto">
+                                        <div class="fcd_white3_op" style="height: initial">
+                                            <div class="tl_right add-cursor-pointer modal-close"><img src="/images/close.jpg" alt="" width="31" height="29"></div>
+                                            <div class="fcd_op_inner modal-container" id="modal-container">
+                                            </div>
+                                            <div class="ars-spacer"></div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Passport Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.PassportNo) ? Model.PassportNo : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Passport Expiry Date</div>
+                    <div class="mpjmhd_ans">@(Model.PassportExpiryDate != null ? Model.PassportExpiryDate.Value.ToShortDateString() : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Passport Issuing Country</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.PassportIssuePlace) ? Model.PassportIssuePlace : "-")</div>
+                </div>
+                @*<div class="clear"></div>*@
+
+                @if (!customPrincipal.IsAgent)
+                {
+                    <div class="mpjm_halfdiv">
+                        <div class="mpjmhd_lable">Social Account</div>
+                        <div class="mpjmhd_ans">
+                            @{
+                                int userId = User.Identity.Name.ToInt();
+                                Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+                                var userContext = db.Users.FirstOrDefault(x => x.UserID == userId);
+
+                                if (userContext.UserLogins.Count > 0)
+                                {
+                                    @:Connected with @string.Join(", ", userContext.UserLogins.Select(x => $"{x.LoginProvider} ({x.ProviderEmail})"))
+                                }
+                                else
+                                {
+                                    if (loginProviders.Count() == 0)
+                                    {
+                                    }
+                                    else
+                                    {
+                                        using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = "/member/manageprofile" }, FormMethod.Post, new { /*target = "_blank"*/ }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <div id="socialLoginList">
+                                                @foreach (AuthenticationDescription p in loginProviders)
+                                                {
+                                                    if (p.AuthenticationType == "Facebook")
+                                                    {
+                                                        <button type="submit" class="btn btn-default btn-fb-ars" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Connect with Facebook">
+                                                            <i class="fa fa-facebook-official" aria-hidden="true"></i>
+                                                            <span>Connect with Facebook</span>
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                                                    }
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="clear"></div>
+            </div>
+            <!-- PERSONAL DETAIL END -->
+
+            <div class="mpjmhdans_mobile_tab  mobileonly">
+                <div class="mpj_contact_details">Contact Details</div>
+            </div>
+            <!-- CONTACT DETAIL START -->
+            <div id="contactdetail">
+                <div class="mpjm_pd_heading_right"> <span>Contact details</span></div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Primary Phone Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.PrimaryPhone) ? Model.PhoneCode1 + Model.PrimaryPhone : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Secondary Phone Number</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.SecondaryPhone) ? Model.PhoneCode2 + Model.SecondaryPhone : "-")</div>
+                </div>
+
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Address line1</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Address1) ? Model.Address1 : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Address line2</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Address2) ? Model.Address2 : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">City</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.City) ? Model.City : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Postal Code</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.Postcode) ? Model.Postcode : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">State</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.AddressProvinceState) ? Model.AddressProvinceState : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Country</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.AddressCountryCode) ? UtilitiesService.GetCountryName(Model.AddressCountryCode) : "-")</div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!-- CONTACT DETAIL END -->
+            <div class="mpjmhdans_mobile_tab  mobileonly">
+                <div class="mpj_company_details">Company Details</div>
+            </div>
+            <div id="companydetail">
+                <div class="mpjm_pd_heading_right"><span>Company details</span></div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Name</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyName) ? Model.CompanyName : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Address line 1</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyAddress1) ? Model.CompanyAddress1 : "-")</div>
+                </div>
+
+                <div class="clear"></div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Address line2</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyAddress2) ? Model.CompanyAddress2 : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's City</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyCity) ? Model.CompanyCity : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Postal Code</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyPostcode) ? Model.CompanyPostcode : "-")</div>
+                </div>
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's State</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyAddressProvinceState) ? Model.CompanyAddressProvinceState : "-")</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mpjm_halfdiv">
+                    <div class="mpjmhd_lable">Company's Country</div>
+                    <div class="mpjmhd_ans">@(!string.IsNullOrEmpty(Model.CompanyAddressCountryCode) ? UtilitiesService.GetCountryName(Model.CompanyAddressCountryCode) : "-")</div>
+                </div>
+
+                <div class="clear"></div>
+            </div>
+            <!-- COMPANY DETAIL END -->
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+

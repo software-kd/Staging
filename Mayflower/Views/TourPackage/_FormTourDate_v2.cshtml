@@ -1,0 +1,86 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.ProductTourPackage
+@{
+    var Extension = UtilitiesService.GetTourExtension(Model.TourPackageID);
+    var TravelerNoList = Enumerable.Range(1, 10).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+    var ExtensionNoList = Enumerable.Range(0, 10).Select(i => new SelectListItem {
+        Text = i == 0? "No Extension" : i.ToString() + " Night" + (i > 1? "s" :""),
+        Value = i.ToString()
+    });
+}
+
+    <div class="booker-body shadow bg-white mb-0 pb-3">
+        <div class="px-4">
+            <div class="row">
+                <div class="col-sm">
+                    <h4 class="tour-title">Traveling Date</h4>
+                    <div class="tour-input">
+                        <div class="tour-input grey-bg">
+                            <div class="left-filter red-border-bottom">
+                                <div class="accordion p-0 calender" id="accordion0">
+                                    <div class="card grey-bg">
+                                        <div class="card-header" id="headingOne">
+                                            <div class="mb-0">
+                                                <div class="btn btn-link text-center px-0" data-toggle="collapse" data-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+                                                    <div class="col-4 p-0 tour_datelbl d-none d-lg-block">Pick Your Date</div>@Html.TextBoxFor(model => Model.TourPackagesInfo.TravelDateFrom, "{0:dd/MM/yyyy}", new { @class = "form-control col-8 col-lg-6 datepicker2 tour_dateinput", placeholder = "dd/mm/yyyy", autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="collapseZero" class="collapse" aria-labelledby="collapseZero" data-parent="#accordion0" style="">
+                                            <div class="card-body">
+                                                <div class="form-group form-inline">
+                                                    <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.TravelDateFrom, null)</div>
+                                                </div>
+                                                <small class="col-12 default-red">*date subject to availability, please contact us for more</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-sm col-md-6">
+                        <h4 class="tour-title"> &nbsp;</h4>
+                        <div class="tour-input">
+                            <div class="tour-input grey-bg">
+                                <div class="left-filter red-border-bottom">
+                                    <div class="accordion p-0" id="accordion2">
+                                        <div class="card grey-bg">
+                                            <div class="card-header" id="headingOne">
+                                                <div class="mb-0">
+                                                    <div class="btn btn-link text-center px-0" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                                        <div class="col-4 p-0 tour_datelbl">Extension</div>@Html.DropDownListFor(model => Model.TourPackagesInfo.ExtensionNight, ExtensionNoList, new { @class = "form-control col-6 tour_dateinput py-0"})
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="collapseTwo" class="collapse" aria-labelledby="collapseTwo" data-parent="#accordion2" style="">
+                                                <div class="card-body">
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.ExtensionNight, null)</div>
+                                                <small class="col-12 default-red">*optional</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <h4 class="tour-title">Number of Traveler(s)</h4>
+                    <div class="small">(Kindly specific no. of pax in the special request field if you have more)</div>
+                    <div class="tour-input">
+                        @Html.DropDownListFor(model => model.TourPackagesInfo.NoOfPax, TravelerNoList, new { @class = "form-control grey-bg card tour-textbox"})
+                        <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.NoOfPax, null)</div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                </div>
+            </div>
+        </div>
+    </div>

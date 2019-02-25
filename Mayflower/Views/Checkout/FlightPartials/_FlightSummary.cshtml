@@ -1,0 +1,129 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model ProductFlight
+
+@{
+    var outbound = Model.FlightInfo.FlightDetailInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound);
+    var inbound = Model.FlightInfo.FlightDetailInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound);
+    var Borderbox = inbound != null ? "mf_ib_border_box" : "mf_ib_border_box2";
+    var addClass2 = inbound != null ? "mf_ib_bb_lrbox" : "mf_ib_bb_lrbox2";
+    string outboundDepartDate = outbound.DepartDateTime.ToString("dd-MMM-yyyy, ddd");
+    string inboundDepartDate = string.Empty;
+    string serviceSource = Mayflower.General.CustomizeBaseEncoding.CodeBase64(Model.FlightInfo.Supplier.ToString());
+
+    if (inbound != null)
+    {
+        inboundDepartDate = inbound.DepartDateTime.ToString("dd-MMM-yyyy, ddd");
+    }
+}
+
+<!-- MORE FLIGHTS BOX START -->
+@if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "bookingdetail")
+{
+    <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+}
+<div class="s3_blue_linetop"></div>
+<div class="s3_blt_heading flight">Flight Itinerary</div>
+<div class="@Borderbox">
+
+    <div class="@addClass2">
+        <div class="inboundoutbound_heading">Outbound – @outboundDepartDate</div>
+    </div>
+
+    @if (inbound != null)
+    {
+        <div class="mf_ib_bb_lrbox">
+            <div class="inboundoutbound_heading destoponly">Inbound – @inboundDepartDate</div>
+        </div>
+    }
+    <!-- left detail start -->
+    @FlightStopDetail(outbound, 0, serviceSource)
+    <!-- left detail end -->
+    @if (inbound != null)
+    {
+        //<div class="mf_ib_gray_bar mb10 mt10 mobileonly">Inbound – @inboundDepartDate</div>
+        /* FIXED INBOUND & OUTBOUND TITLE NOT ALIGNED */
+        <div class="inboundoutbound_heading mobileonly">Inbound – @inboundDepartDate</div>
+
+                    <!-- right detail start -->
+        @FlightStopDetail(inbound, 1, serviceSource)
+                    <!-- right detail end -->
+    }
+    <div class="clear"></div>
+</div>
+<!-- MORE FLIGHTS BOX END -->
+@helper FlightStopDetail(FlightTripInfo routeInfo, int outInBIndicator, string serviceSource)
+{
+string cabinClass = Model.SearchFlightInfo.CabinClassName;
+int counter = 1;
+double totalNextDay = 0;
+TimeSpan totalTripElapsedTime = TimeSpan.FromMinutes(routeInfo.TotalElapsedTime);
+double totalFlightElapsedTimeHour = Math.Floor(totalTripElapsedTime.TotalHours);
+var addClass2 = routeInfo != null && routeInfo.RouteType == RouteType.Outbound ? "mf_ib_bb_lrbox" : "mf_ib_bb_lrbox2";
+
+    <div class="@addClass2">
+        <div class="mf_ib_bb_lrbox_inner">
+            <div class="mf_ib_bb_dep_heading">Departs on @routeInfo.DepartDateTime.ToString("dd-MMM-yyyy, ddd")</div>
+
+            @foreach (var item in routeInfo.FlightRouteInfo)
+            {
+                double NextCountDay = item.DepartDateTime.TimeOfDay.Add(item.ArriveDateTime.Subtract(item.DepartDateTime)).Days;
+                totalNextDay = totalNextDay + NextCountDay;
+                string nextCountDayText = totalNextDay != 0 ? "(+" + totalNextDay + ")" : "";
+                TimeSpan segmentElapsedTime = TimeSpan.FromMinutes(item.ElapsedTime);
+
+            <!-- row start -->
+                <div class="mf_ibbbin_left">@item.DepartDateTime.ToString("HHmm")</div>
+                <div class="mf_ibbbin_right">
+                    <div class="black_color_font">@UtilitiesService.GetAirportName(item.DepartAirportCode)</div>
+                    <div class="ub_regular">(@item.DepartAirportCode)</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mf_ibbbin_left mt20"><img src="@Url.Content("~/images/arrow_d.jpg")" width="25" height="15" alt=""></div>
+                <div class="mf_ibbbin_right mt20">
+                    <div class="ub_regular relative_div">
+                        <div class="mf_right_timings">@(segmentElapsedTime.Hours)h @(segmentElapsedTime.Minutes)m </div>
+                        @(item.AirlineCode + item.AirlineFlightNo)<br>
+                        @UtilitiesService.GetAirlineName(item.AirlineCode)<br>
+                        Operated by @UtilitiesService.GetAirlineName(item.OpeAirlineCode)<br>
+                        @cabinClass @(string.IsNullOrWhiteSpace(item.ResBookClass) ? "" : "(" + item.ResBookClass + ")")<br>
+                        @item.AirEquipType<br />
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="mf_border_gfull"></div>
+
+                <div class="mf_ibbbin_left">
+                    @item.ArriveDateTime.ToString("HHmm")<br />
+                    <span style="font-size: 0.9em;color: gray;">@item.DepartDateTime.ToString("ddd, dd MMM") @nextCountDayText</span>
+                </div>
+                <div class="mf_ibbbin_right">
+                    <div class="black_color_font">@UtilitiesService.GetAirportName(item.ArriveAirportCode)</div>
+                    <div class="ub_regular">(@item.ArriveAirportCode)</div>
+                </div>
+                <div class="clear"></div>
+                if (item.LayoverMin > 0)
+                {
+                    TimeSpan transitTime = TimeSpan.FromMinutes(item.LayoverMin);
+                    //DateTime nextFlightDateTime = segmentList.BookingSummaryFlightSegmentList[counter].DepartureDateTime;
+                    //TimeSpan transitTime = nextFlightDateTime.Subtract(item.ArrivalDateTime);
+                    counter += 1;
+
+                    <div class="mf_red_transit_time mt30 mb30">
+                        <div class="mf_rtt_left">Transit Time</div>
+                        <div class="mf_rtt_right">@(transitTime.Hours)h @(transitTime.Minutes)m </div>
+                        <div class="clear"></div>
+                    </div>
+                }
+            <!-- row end -->
+            }
+
+            <div class="mf_arrival_conainer mt40">
+                Arrives on @routeInfo.ArriveDateTime.ToString("dd-MMM-yyyy, ddd")<br>
+                Total flight time <span>@(totalFlightElapsedTimeHour)h @(totalTripElapsedTime.Minutes)m</span>
+            </div>
+            <a class="farerules" data-servicesource="@serviceSource" data-indicator="@outInBIndicator"><span style="cursor:pointer;">View Fare Rules</span></a>
+        </div>
+    </div>
+}

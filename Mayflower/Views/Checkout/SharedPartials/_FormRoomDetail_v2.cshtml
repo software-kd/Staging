@@ -1,0 +1,234 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@model Alphareds.Module.Model.ProductHotel
+
+@{
+    int counter = 0;
+    List<RoomDetail> room = Model.RoomDetails;
+}
+<!-- guest form start -->
+@foreach (var item in room)
+{
+    counter += 1;
+    string selector = "guest" + counter.ToString() + "form";
+    string roomTypeCode = item.RoomTypeCode;
+    string RoomTypeName = item.RoomTypeName;
+    int totalRoom = Model.RoomDetails.Count;
+    @guestForm(selector, counter - 1, totalRoom, item.RoomTypeCode, item)
+}
+
+@functions{
+    private IEnumerable<SelectListItem> SetSelectedItem(IEnumerable<SelectListItem> list, string value)
+    {
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = a.Text,
+                   Value = a.Value,
+                   Selected = a.Value == value
+               };
+    }
+
+    private IEnumerable<SelectListItem> getHotelBundleTicketList(HotelBundleTicketSet item)
+    {
+
+        List<HotelBundleTicketTimeSlot> list = item.HotelBundleTicketTimeSlots.ToList();
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = (a.Day + " " + a.StartTime.ToString("hh:mm tt")).ToString(),
+                   Value = item.Description +" - ("+a.Day + ", " + a.StartTime.ToString("hh:mm tt")+")",
+                   Selected = false
+               };
+    }
+
+}
+
+<!-- HOTEL FORM CONTAINER END -->
+@helper guestForm(string guestValue, int counter, int totalGuest, string roomTypeCode, RoomDetail room)
+{
+    <!-- guest form start -->
+    <div class="tab-pane booking-form fade" id="nav-guest-@counter" role="tabpanel" aria-labelledby="nav-guest-tab">
+        <div class="form-wrapper" id="@guestValue">
+            <span class="pb-2 color_red">Mandatory fields (*) are required.</span>
+            <div class="row">
+                @{
+                    Func<SelectListItem, bool> dobYear = (x => true);
+                    object DOBHtmlAttr = null;
+                    MvcHtmlString DOBRequired = new MvcHtmlString("");
+                    MvcHtmlString InfMonth = new MvcHtmlString("");
+                    bool hvDOBValue = Model.RoomDetails[counter].DateOfBirth != null;
+
+                    dobYear = (x => Convert.ToInt32(x.Value) <= DateTime.Now.Year - 12);
+                    InfMonth = new MvcHtmlString("<span>Age</span>");
+                }
+                <div class="col-lg-2 col-md-4 col-12">
+                    <div class="form-group">
+                        <label>Title <span>*</span></label>
+                        @Html.DropDownListFor(model => Model.RoomDetails[counter].Title, UtilitiesService.GetTitleListNotSabre(true, "ADT", Model.RoomDetails[counter].Title), "-", new { @class = "form-control", @required = "required" })
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].Title, null)</div>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-4 col-6">
+                    <div class="form-group">
+                        <label>First Name <span>* (Same as passport)</span>@Html.Partial("~/Views/Shared/Theme_3/_NameGuideTooltip.cshtml")</label>
+                        @Html.TextBoxFor(model => Model.RoomDetails[counter].GivenName, new { @class = "form-control", @required = "required" })
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].GivenName, null)</div>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-4 col-6">
+                    <div class="form-group">
+                        <label>Last Name <span>* (Same as passport)</span></label>
+                        @Html.TextBoxFor(model => Model.RoomDetails[counter].Surname, new { @class = "form-control", @required = "required" })
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].Surname, null)</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>D.O.B</label>
+                        @Html.HiddenFor(model => model.RoomDetails[counter].DateOfBirth.Day)
+                        @Html.HiddenFor(model => model.RoomDetails[counter].DateOfBirth.Month)
+                        @Html.HiddenFor(model => model.RoomDetails[counter].DateOfBirth.Year)
+
+                        @Html.TextBoxFor(model => Model.RoomDetails[counter].GuestDOB, "{0:dd-MMM-yyyy}", new { @class = "form-control datepicker2 guest", placeholder = "DD-MMM-YYYY", autocomplete = "off" })
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].GuestDOB, null)</div>
+                    </div>
+                </div>
+                @{
+                    var customizedfield1 = ViewData["CUSTOMIZEDFIELD1"] != null ? ViewData["CUSTOMIZEDFIELD1"].ToString() : null;
+                    var customizedfield2 = ViewData["CUSTOMIZEDFIELD2"] != null ? ViewData["CUSTOMIZEDFIELD2"].ToString() : null;
+                    var customizedfield3 = ViewData["CUSTOMIZEDFIELD3"] != null ? ViewData["CUSTOMIZEDFIELD3"].ToString() : null;
+                    var customizedfield4 = ViewData["CUSTOMIZEDFIELD4"] != null ? ViewData["CUSTOMIZEDFIELD4"].ToString() : null;
+
+                    if (customizedfield1 != null)
+                    {
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>@customizedfield1<span>*</span></label>
+                                @Html.TextBoxFor(model => Model.RoomDetails[counter].CustomizedField1, new { @class = "form-control", @required = "required" })
+                                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].CustomizedField1, null)</div>
+                            </div>
+                        </div>
+                    }
+                    if (customizedfield2 != null)
+                    {
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>@customizedfield2<span>*</span></label>
+                                @Html.TextBoxFor(model => Model.RoomDetails[counter].CustomizedField2, new { @class = "form-control", @required = "required" })
+                                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].CustomizedField2, null)</div>
+                            </div>
+                        </div>
+                    }
+                    if (customizedfield3 != null)
+                    {
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>@customizedfield3<span>*</span></label>
+                                @Html.TextBoxFor(model => Model.RoomDetails[counter].CustomizedField3, new { @class = "form-control", @required = "required" })
+                                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].CustomizedField3, null)</div>
+                            </div>
+                        </div>
+                    }
+                    if (customizedfield4 != null)
+                    {
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>@customizedfield4<span>*</span></label>
+                                @Html.TextBoxFor(model => Model.RoomDetails[counter].CustomizedField4, new { @class = "form-control", @required = "required" })
+                                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].CustomizedField4, null)</div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-tag">Special Guest Requirements**</div>
+                </div>
+                @if (Model.HasHotelBundleTicket && ViewBag.HotelBundleTicketSet != null)
+                {
+                    HotelBundleTicketSet hotelBundleSet = ViewBag.HotelBundleTicketSet;
+                    <div class="col-12">
+                        <div class="form-group custom-radio">
+                            Bundle Event Time Slot (@hotelBundleSet.Description):&nbsp;
+                            <div>
+                                @Html.DropDownListFor(model => Model.RoomDetails[counter].HotelBundleTicketSelected, getHotelBundleTicketList(hotelBundleSet), "-", new { @class = "form-control", data_val_required = "Hotel Bundle Event Time Slot is required.", data_val = "true" })
+                            </div>
+                        </div>
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].HotelBundleTicketSelected, null)</div>
+                    </div>
+                }
+                <div class="col-12">
+                    <div class="form-group custom-radio">
+                        Smoking
+                        <div>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].SpecialRequest.SmokingPreferences, "Smoking", new { id = "smoking_" + counter })<span>Smoking</span></label>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].SpecialRequest.SmokingPreferences, "NonSmoking", new { id = "nosmoking_" + counter })<span>No-Smoking</span></label>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].SpecialRequest.SmokingPreferences, "Either", new { id = "eithersmoke_" + counter })<span>No Preference</span></label>
+                        </div>
+                    </div>
+                </div>
+                @if (Model.RoomDetails[counter].SpecialRequestAvailable != null && Model.RoomDetails[counter].SpecialRequestAvailable.BeddingRequest.Count > 1)
+                {
+                    int bedCount = 0;
+                    var isEANRapid = Model.HotelSelected.All(x => x.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.EANRapid);
+                    <div class="col-12">
+                        <div class="form-group custom-radio">
+                            Bedding request
+                            <div>
+                                @foreach (var bed in Model.RoomDetails[counter].SpecialRequestAvailable.BeddingRequest)
+                                {
+                                    string bedEleName = Html.ClientNameFor(model => Model.RoomDetails[counter].SpecialRequest.BetTypeID).ToHtmlString();
+                                    var test = Html.DisplayFor(model => Model.RoomDetails[counter].SpecialRequest.BetTypeID);
+
+                                    <label>
+                                        <input id="@(bed.BedName + "_" + counter)" name="@bedEleName" type="radio"
+                                               value="@bed.BetTypeID" @(isEANRapid && bedCount++ == 0 ? "checked" : "")>
+                                        <span>@bed.BedName</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model.RoomSelected.HotelRoomInformationList[0].hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.ExpediaTAAP && Model.RoomDetails[counter].SpecialRequestAvailable != null && Model.RoomDetails[counter].SpecialRequestAvailable.BeddingRequest.Count == 1)
+                {
+                    @Html.HiddenFor(model => Model.RoomDetails[counter].SpecialRequest.BetTypeID, new { @Value = Model.RoomDetails[counter].SpecialRequestAvailable.BeddingRequest.FirstOrDefault().BetTypeID })
+                }
+                <div class="col-12">
+                    <div class="form-group custom-radio">
+                        Check In
+                        <div>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].CheckInMode, "Early", new { id = "checkinearly_" + counter })<span>Early</span></label>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].CheckInMode, "Late", new { id = "checkinlate_" + counter })<span>Late</span></label>
+                            <label>@Html.RadioButtonFor(model => Model.RoomDetails[counter].CheckInMode, "Either", new { id = "checkineither_" + counter })<span>No Preference</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Additional Requests***</label>
+                        @Html.TextAreaFor(model => Model.RoomDetails[counter].AdditionalRequest, new { @class = "form-control", maxlength = "230" })
+                    </div>
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.RoomDetails[counter].AdditionalRequest, null)</div>
+                </div>
+                <div class="col-12">
+                    <label>* &nbsp; No special characters are allowed</label><br />
+                    <label>** Special request subject to availablity</label><br>
+                    <label>*** Additional request must be max 230 characters only</label>
+                </div>
+                @if (((counter + 1) == 1) && (Model.RoomDetails.Count > 1))
+                {
+                    <div class="form-group custom-checkbox">
+                        <label>
+                            <input type="checkbox" name="ApplyInfo" id="checkbox4" value="true" /><span>Apply same info to all rooms</span>
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- guest form end -->
+}

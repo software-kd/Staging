@@ -1,0 +1,84 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+
+@model CheckoutProduct
+
+@{ 
+    int counter = 0;
+    string boxLabel = "GUEST";
+    IEnumerable<SelectListItem> selectorList = new List<SelectListItem>();
+
+    if (Model.Flight != null && Model.Hotel == null)
+    {
+        boxLabel = "GUEST";
+        int j = 1;    
+        selectorList.Concat(Model.Flight.TravellerDetails.Select(x => new SelectListItem
+        {
+        Text = "Guest" + (j++).ToString("D2") + "" + x.PassengerType,
+        Value = x.PassengerType
+        }));
+        
+        //selectorList.Concat(new List<SelectListItem>
+        //{
+        //    new SelectListItem
+        //    {
+        //        Text = "Dump",
+        //        Value = "Customer Type",
+        //    }
+        //});
+    }
+    else if (Model.Hotel != null && Model.Flight == null)
+    {
+        boxLabel = "ROOM";
+        int j = 1;
+        selectorList.Concat(Model.Hotel.RoomDetails.Select(x => new SelectListItem
+        {
+            Text = "Room " + (j++).ToString("D2") + " " + x.RoomTypeName,
+            Value = x.RoomTypeName
+        }));
+    }
+}
+
+<!-- GUEST DETAIL BOX START -->
+<div class="s3-1_guestdetail_box"><h2>Guest Details</h2></div>
+
+<div class="s3-1_guestdetail_box" style="overflow: auto;">
+    <ul class="ulforhotels">
+        <li class="s3-1_inactive_cd s3-1_activli" value="contactform">Contact<br>Details</li>
+        @foreach (var item in selectorList)
+        {
+            counter += 1;
+            string selector = "guest" + counter.ToString() + "form";
+            <li class="s3-1_inactive_guest" value="@selector">
+                <div class="igb1">@boxLabel</div>
+                <div class="igb2">@counter.ToString("D2")</div>
+                <div class="igb3">@UtilitiesService.GetPassengerTypeName(item)</div>
+            </li>
+        }
+        @{ counter = 0;}
+    </ul>
+    <div class="clear"></div>
+</div>
+
+<div class="s3-1_guestdetail_box"><h2>Contact Details</h2></div>
+
+<div class="s3-1_guestdetail_box" style="overflow: auto;">
+    <ul class="ulforhotels">
+        <li class="s3-1_inactive_cd s3-1_activli" value="contactform">Contact<br>Details</li>
+        @foreach (var item in selectorList)
+        {
+            counter += 1;
+            string selector = "guest" + counter.ToString() + "form";
+            <li class="s3-1_inactive_guest" value="@selector">
+                <div class="igb1">ROOM</div>
+                <div class="igb2">@counter.ToString("D2")</div>
+                <div class="igb3 igbguest">Guest</div>
+            </li>
+        }
+        @{ counter = 0;}
+    </ul>
+    <div class="clear"></div>
+</div>
+
+<div class="cdhs_heading" id="headingforsmall">Contact Details</div>
+

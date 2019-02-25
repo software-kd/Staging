@@ -1,0 +1,74 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.ProductEventTicket
+@{
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+
+    TimeSpan checkSTime = new TimeSpan();
+    TimeSpan checkETime = new TimeSpan();
+    DateTime useSTime = new DateTime();
+    string displaySTime = "";
+    DateTime useETime = new DateTime();
+    string displayETime = "";
+
+    var productGrp = Model.TicketInfo.GroupBy(x => x.ProductType).OrderByDescending(o => o.Key == Alphareds.Module.Model.ProductTypes.CT);
+}
+
+@foreach (var product in productGrp)
+{
+    <div class="s3_purple_linetop"></div>
+    <div class="s3_blt_heading concert" style="background-image: url(@Url.Content("~/images/ico/" + product.Key.ToString() + ".png"))!important;">
+        @product.Key.ToDescription()
+    </div>
+
+    if (product.Key == Alphareds.Module.Model.ProductTypes.CT)
+	{
+        <div class="s3_hoteltop_dates">
+    @foreach (var item in product.GroupBy(x => new { x.EventStartTime, x.EventEndTime }))
+    {
+        checkSTime = item.Key.EventStartTime;
+        checkETime = item.Key.EventEndTime;
+        useSTime = DateTime.Today + checkSTime;
+        displaySTime = useSTime.ToString("h:mm tt");
+        useETime = DateTime.Today + checkETime;
+        displayETime = useETime.ToString("h:mm tt");
+
+        @item.FirstOrDefault().ItemDesc @:| @item.FirstOrDefault().OrderedDateTime.ToString("dd-MMM-yy, ddd") | <span>@displaySTime @*- @displayETime*@</span>
+        <br />
+        foreach (var itemChild in item)
+        {
+            @(itemChild.TicketCategory + " x " + itemChild.OrderedQty)
+        }
+    }
+    </div>
+    }
+    else if (product.Key == Alphareds.Module.Model.ProductTypes.TH || product.Key == Alphareds.Module.Model.ProductTypes.WF
+        || product.Key == Alphareds.Module.Model.ProductTypes.CR)
+    {
+        // Maybe be can display last redempt date.
+        <div class="s3_hoteltop_dates">
+            @foreach (var item in product.GroupBy(grp => grp.ItemDesc))
+            {
+                @item.Key @:x @item.Sum(s => s.OrderedQty)
+            }
+        </div>
+    }
+    else
+    {
+        <div class="s3_hoteltop_dates">
+            @foreach (var item in product.GroupBy(grp => grp.ItemDesc))
+            {
+                @item.Key @:x @item.First().OrderedQty
+                <br />
+                <div style="color: #3847f2">
+                    @foreach (var itemChild in item)
+                    {
+                        @(itemChild.OrderedDateTime.ToString("dd MMM yyyy, ddd") + " x " + itemChild.OrderedQty)<br />
+                    }
+                </div>
+            }
+        </div>
+    }
+
+}
+

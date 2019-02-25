@@ -1,0 +1,716 @@
+﻿@model Alphareds.Module.Model.SearchHotelModel
+@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@using Alphareds.Module.ServiceCall;
+@using PagedList;
+@using PagedList.Mvc;
+@using System.Text.RegularExpressions;
+
+@functions{
+    string[] supplierReflec = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.Suppliers).GetEnumNames();
+}
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    Mayflower.General.CustomPrincipal customPrincipal = User as Mayflower.General.CustomPrincipal;
+}
+
+@{
+    FilterHotelResultModel filterModel = new FilterHotelResultModel();
+    filterModel = (FilterHotelResultModel)Core.GetSession(Enumeration.SessionName.FilterHotelResult, tripid);
+    bool isDumpRes = false;
+
+    // Affiliate handle (Trivago)
+    if (Model?.AffiliateID == "TR")
+    {
+        filterModel = filterModel ?? new FilterHotelResultModel
+        {
+            IPagedHotelList = Model?.Result?.HotelList.ToPagedList(1, 1),
+            Result = Model?.Result?.HotelList?.ToList()
+        };
+    }
+
+    if (Model?.Result?.HotelList != null && filterModel == null)
+    {
+        var dumList = Model.Result.HotelList.Take(5);
+        filterModel = filterModel ?? new FilterHotelResultModel
+        {
+            Result = dumList.ToList(),
+            IPagedHotelList = dumList.ToPagedList(1, 5)
+        };
+        isDumpRes = true;
+    }
+
+    if (ViewData["ERRMSG"] == null && (filterModel != null && filterModel.Result?.Count > 0) && ViewBag.SysErrMsg == null)
+    {
+
+        bool IncludeTax = true, IncludeAllNights = false;
+
+        IncludeTax = filterModel.IncludeTax;
+        IncludeAllNights = filterModel.IncludeAllNights;
+        PagedList.IPagedList<Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation> HotelList = null;
+        HotelList = filterModel.IPagedHotelList;
+
+        if (HotelList != null)
+        {
+            int odoCounter = 0;
+            string optionColor = "";
+            string optionBgcolor = "";
+            bool pCodeUsed = Model.IsPromoCodeUsed;
+            PromoCodeFunctions promoCodeFunctions = null;
+
+            if (pCodeUsed)
+            {
+                promoCodeFunctions = new PromoCodeFunctions(Model.PromoId, new Alphareds.Module.Model.Database.MayFlower());
+            }
+
+            if (isDumpRes && false)
+            {
+                    <div class="dump-res-visual" style="text-align: center;">
+                        Estimate loading times - <b id="pageTimer"></b><img src="/Images/txt_load.gif" style="max-height: 45px;">
+                        <script type="text/javascript" src="~/Scripts/countdown.min.js"></script>
+                        <script>
+                            countdown.setLabels(
+                                ' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium',
+                                ' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
+                                ' ',
+                                ', ',
+                                '',
+                                function (n) { return n.toString(); });
+
+                            var timerId =
+                                countdown(
+                                    moment(new Date()).add(1.5, 'm').toDate(),
+                                    function (ts) {
+                                        document.getElementById('pageTimer').innerHTML = ts.toString(); //.toHTML("strong");
+                                    },
+                                    countdown.MINUTES | countdown.SECONDS);
+                        </script>
+                        
+                    </div>
+            }
+
+            foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation HotelInfo in HotelList)
+            {
+                optionColor = odoCounter % 2 == 0 ? "s2mdb_orange_bg" : "s2mdb_violet_bg";
+                optionBgcolor = odoCounter % 2 == 0 ? "s2mc_orgcolorbg" : "s2mc_graycolorbg";
+                string encSupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(HotelInfo.hotelSupplierCode);
+                string jsHotelId = HotelInfo.hotelId.Replace(" ", "-");
+
+                <div class="s2_main_container @optionBgcolor" data-pid="@jsHotelId" data-htres="@(isDumpRes ? "empty" : "nonempty")">
+                    <!-- FULL CONTAINER BOX START -->
+                    @*<div class="s2_mc_offer">10% OFF till October 2016</div>*@
+                    <!-- main row start -->
+                    <div class="s2_mc_border_conainer">
+
+                        @if (pCodeUsed && !string.IsNullOrWhiteSpace(HotelInfo.FrontEnd_PromoDesc) && false)
+                        {
+                            <div class="ipromo-container">
+
+                                <div class="ipromo-highlight">
+                                    <div class="cr-icon-container">
+                                        <span class="glyphicon glyphicon-tags ipromo"></span>
+                                    </div>
+                                    <div class="ipromo-textcontainer">
+                                        <p>Discount Applied</p>
+                                        <p>@(HotelInfo.FrontEnd_PromoDesc)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <!--  Inner all detail start -->
+                        <div class="ht-block-main">
+                            <div class="h2_mainhoteldetail_box1 ShowHotelInfo" data-sr="@encSupplierCode" data-hotelid="@HotelInfo.hotelId" style="background-color: #fff; max-width: 320px">
+                                @if (HotelInfo.imagesURL != null)
+                                {
+                                    <img data-src="@(string.IsNullOrEmpty(HotelInfo.imagesURL.Big_350x350) ? Url.Content("~/Images_hotel/no-img-01.png") : Url.Content(HotelInfo.imagesURL.Big_350x350))"
+                                         class="ht-img" @*style="width: 323px; height: 213px;"*@ alt="">
+                                }
+                                else
+                                {
+                                    <img data-src="@Url.Content("~/Images_hotel/no-img-01.png")" style="width: 323px; min-height: 213px;" alt="">
+                                }
+                                <div class="lazy-loading"></div>
+                                <div class="h2_mainhoteldetail_boxM_overlay"></div>
+                                <div class="h2_mainhoteldetail_boxM"></div>
+                            </div>
+                            <div class="h2_mainhoteldetail_box2">
+                                <div class="h2_mainhoteldetail_box2_inner">
+                                    <div class="h2_mhdb2_heading">
+                                        <div class="words">
+                                            <div class="words-innertext add-cursor-pointer ShowHotelInfo2" data-sr="@encSupplierCode" data-hotelid="@HotelInfo.hotelId">
+                                                @Html.Raw(HotelInfo.name)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="star">
+                                        @{
+                                            if (!string.IsNullOrEmpty(HotelInfo.hotelRating))
+                                            {
+                                                Html.Raw(@"<div class=""h2_mhdb2_starbox"">");
+                                                int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(HotelInfo.hotelRating)));
+                                                for (int i = 1; i <= NoOfStar; i++)
+                                                {
+                                                    <img src="@Url.Content("~/images_hotel/hotel_red_star.png")" width="18" height="16" alt="">
+                                                }
+                                                Html.Raw("</div>");
+                                            }
+                                        }
+                                        @if (Core.IsForStaging || customPrincipal.IsAgent)
+                                        {
+                                            <i><small>(@HotelInfo.hotelSupplier.ToString())</small></i>
+                                        }
+                                    </div>
+                                    <div class="h2_mhdb2_mapbox">@Html.Raw(HttpUtility.HtmlDecode(HotelInfo.locationDescription)) @(!string.IsNullOrEmpty(HotelInfo.locationDescription) && !string.IsNullOrEmpty(HotelInfo.Addresses.city) ? ", " : "") @(HotelInfo.Addresses.city != null ? "" + Html.Raw(HttpUtility.HtmlDecode(HotelInfo.Addresses.city)) : "") <span class="add-cursor-pointer ShowMap" data-name="@HotelInfo.name" data-city="@(HotelInfo.Addresses.city == null ? HotelInfo.Addresses.address4 : HotelInfo.Addresses.city)" style="font-size: 14px;">map</span><div class="h2_mhdb2_heading2 add-cursor-pointer ShowHotelInfo2" data-sr="@encSupplierCode" data-hotelid="@HotelInfo.hotelId"></div></div>
+                                    @*<div class="h2_mhdb2_heading2"></div>*@
+                                    <div class="h2_mhdb2_iconbox">
+                                        <div class="h2_mhdb3_trip_adv" data-hotelid="@HotelInfo.hotelId" data-sr="@encSupplierCode" data-method="amenities" style="cursor:pointer; width:240px">
+                                            @*<a href="@ExpediaHotelsServiceCall.GetTripAdvisorWidget(WidgetEnum.Detail, HotelInfo.hotelId, ViewData["PARTNERID"].ToString())" target="_blank">*@
+                                            <div class="tripadivisor_left">
+                                                <div class="ta_center"><img src="@Url.Content("../images/ta_icon.png")" alt="" width="34" height="19"></div>
+                                                @{
+                                                    string rating = HotelInfo.tripAdvisor != null ? HotelInfo.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "") : "0";
+                                                    if (rating.Length == 1 && (rating != "0"))
+                                                    {
+                                                        if (!rating.Equals(5))
+                                                        {
+                                                            rating += "0";
+                                                        }
+                                                    }
+
+                                                }
+                                                <div class="ta_center sm-circle-rating-@rating"></div>
+                                            </div>
+                                            <div class="tripadivisor_right">
+                                                <div class="ta_text1">TripAdvisor Traveller Rating</div>
+                                                <div class="ta_text2">Based on @(HotelInfo.tripAdvisor != null ? HotelInfo.tripAdvisor.tripAdvisorReviewCount : 0.0) review ></div>
+                                            </div>
+                                            <div class="clear"></div>
+                                            @*</a>*@
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="h2_mainhoteldetail_box3">
+                                <div class="h2_mainhoteldetail_box3_inner">
+                                    <div class="h2_tempdoleft">
+                                        @*<div class="h2_mhdb3_heading">@(IncludeAllNights ? "total price from" : "per night from")</div>*@
+
+                                        <div class="h2_mhdb3_heading">
+                                            @if (HotelInfo.FrontEnd_StarBuyFlag)
+                                            {
+                                                <div class="s2_starbuy_flag">
+                                                    @if (!string.IsNullOrEmpty(HotelInfo.FrontEnd_MarketingMsg))
+                                                    {
+                                                        <div class="s2_marketingMsg_toll_tip">
+                                                            <div class="s2_marketingMsg_toll_tip_b">
+                                                                <div class="tl_right marketingMsgclose">X</div>
+                                                               @Html.Raw(HttpUtility.HtmlDecode(HotelInfo.FrontEnd_MarketingMsg))  
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <img src="~/Images/mayflower_starbuy.gif">
+                                                </div>
+                                            }
+                                         from @HotelInfo.rateCurrencyCode
+                                        </div>
+                                        @{
+                                            decimal displayPrice = 0m;
+
+                                            if (isDumpRes)
+                                            {
+                                                <div class="h2_mhdb3_price_full">
+                                                    <span class="desc-price">
+                                                         <img src="/Images/txt_load.gif" style="max-height: 45px;float: right;display: inline-block;">
+                                                        <br><span class="h2_mhdb3_tax" style="font-size: 14px;font-style: italic;float: right;">Getting latest price</span>
+                                                     </span>
+                                                </div>
+                                            }
+                                            else if (!isDumpRes && HotelInfo.RoomRateDetailsList != null && HotelInfo.RoomRateDetailsList.Length > 0)
+                                            {
+                                                decimal AverageBaseRate = (HotelInfo.lowRate == 0 ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.averageRate) : HotelInfo.lowRate);
+                                                SearchHotelModel modelResult = Model;
+                                                int totalNights = Convert.ToInt32(modelResult.totalDays ?? "1");
+                                                if (IncludeAllNights)
+                                                {
+                                                    //int TotalNights = Convert.ToInt16(ViewData["TOTALNIGHTS"] != null ? ViewData["TOTALNIGHTS"].ToString() : "1");
+                                                    AverageBaseRate = AverageBaseRate * totalNights;
+                                                }
+                                                if (IncludeTax)
+                                                {
+                                                    if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal))
+                                                    {
+                                                        AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / Model.NoOfRoom : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / Model.NoOfRoom) / totalNights;
+                                                        AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.GST) : Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.GST) / totalNights;
+                                                    }
+                                                }
+                                                var chargeableRateInfo = HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo;
+                                                @*<div class="h2_mhdb3_price_full">@HotelInfo.rateCurrencyCode <span>@AverageBaseRate.ToString("#,##0.00")</span></div>*@
+                                                <div class="h2_mhdb3_price_full"><span><span class="desc-price">@AverageBaseRate.ToString("#,##0.00")</span>@(IncludeAllNights ? "" : "/night")</span></div>
+                                                if (HotelInfo.lowRate_Source > HotelInfo.lowRate && HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService != null)
+                                                {
+                                                    AverageBaseRate = (HotelInfo.lowRate_Source == 0 ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.averageRate) : HotelInfo.lowRate_Source);
+                                                    if (IncludeAllNights)
+                                                    {
+                                                        //int TotalNights = Convert.ToInt16(ViewData["TOTALNIGHTS"] != null ? ViewData["TOTALNIGHTS"].ToString() : "1");
+                                                        AverageBaseRate = AverageBaseRate * totalNights;
+                                                    }
+                                                    if (IncludeTax)
+                                                    {
+                                                        if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal))
+                                                        {
+                                                            AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / Model.NoOfRoom : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / Model.NoOfRoom) / totalNights;
+                                                            AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.GST) : Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.GST) / totalNights;
+                                                        }
+                                                    }
+
+                                                    displayPrice = AverageBaseRate;
+                                                }
+                                                else if (Convert.ToDecimal(chargeableRateInfo.averageBaseRate) > Convert.ToDecimal(chargeableRateInfo.averageRate))
+                                                {
+                                                    decimal AverageBaseRateWithoutPromo = Convert.ToDecimal(@chargeableRateInfo.averageBaseRate);
+                                                    if (IncludeAllNights)
+                                                    {
+                                                        AverageBaseRateWithoutPromo = AverageBaseRateWithoutPromo * totalNights;
+                                                    }
+                                                    if (IncludeTax)
+                                                    {
+                                                        if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal))
+                                                        {
+                                                            AverageBaseRateWithoutPromo += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / Model.NoOfRoom : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / Model.NoOfRoom) / totalNights;
+                                                        }
+                                                    }
+                                                    displayPrice = AverageBaseRateWithoutPromo;
+                                                }
+
+                                                <div class="clear"></div>
+                                                if (pCodeUsed && !string.IsNullOrWhiteSpace(HotelInfo.FrontEnd_PromoDesc) && HotelInfo.FrontEnd_PromoId != 0 && HotelInfo.FrontEnd_PromoDesc != "0%" && !HotelInfo.FrontEnd_PromoDesc.Contains(" 0.00"))
+                                                {
+                                                    if (promoCodeFunctions != null && promoCodeFunctions.GetFrontendFunction.DisplayPromoEvent)
+                                                    {
+                                                        <div class="h2_mhdb3_promo" style="color: #fff;background-color: #ed1c24">Special Deal</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="h2_mhdb3_promo">@(promoCodeFunctions != null && promoCodeFunctions.GetFrontendFunction.PackageAutoAppliedHotel ? "Discount Applied" : "Discount Applied")</div>
+                                                    }
+                                                }
+
+                                                if (AverageBaseRate < displayPrice)
+                                                {
+                                                    <div class="h2_mhdb3_price_cutting" style="margin-top:0">@HotelInfo.rateCurrencyCode @displayPrice.ToString("#,##0.00")</div>
+                                                }
+                                                
+                                                <div class="slider-sup">
+                                                    <ul class="collapsed">
+                                                        @GenerateSupplierPriceList(HotelInfo.hotelSupplier.ToString(), HotelInfo, customPrincipal.IsAgent)
+                                                    </ul>
+                                                </div>
+
+                                                <div class="clear"></div>
+                                            
+                                                <div class="h2_mhdb3_tax">@(IncludeTax ? "All-In" : "tax exclusive")</div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+
+                            @if (!isDumpRes && false)
+                            {
+                                <div class="h2_mhd3_selectroom_bar h2_mhd3_srb_org ShowMoreRoom @optionColor" data-hotelid="@jsHotelId">Select your room<span class="ars-img-icon ars-arrowdown-white"></span></div>
+                            }
+
+                            <!-- Inner all detail end -->
+                        </div>
+                        <!-- main row end -->
+                        <!-- FULL CONTAINER BOX END -->
+                    </div>
+
+                    @using (Html.BeginForm("ReserveRoom", "Hotel", new { tripid }, FormMethod.Post, new { @id = "reserveRoom_" + HotelInfo.hotelId.Replace(" ", "-") }))
+                    {
+                        <div id="showmoreroom_@jsHotelId" class="IsDesktopView IsShowMoreRooms room-result-list" style="display: none;">
+                            @* 2017/03/15 - Disabled, caused repeat unique ID issues *@
+                            @*@{ Html.RenderPartial("_ShowMoreRoom"); }*@
+                        </div>
+                        <button class="submit hidden" data-url="@Url.Action("ReserveRoom", "Hotel", new { tripid })"></button>
+                        <div id="more_@jsHotelId" style="display:none;width:120px;position: absolute;left: 0px;right: 0px;" class="show_more_hotel_icon1 ShowMoreRoom IsDesktopView ShowRoomBar" data-hotelid="@jsHotelId" data-pid="@jsHotelId">Show room option</div>
+                        <div class="spacer"></div>
+                    }
+                </div>
+
+                odoCounter++;
+            }
+
+            if (Model.ValidBundle())
+            {
+                <div class="s2_main_container">
+                    <p>
+                        <small>*None of the above is in your favour? Buzz us now at <a href="mailto:cs@mayflower-group.com" target="_top">cs@mayflower-group.com</a> or +603 9232 1999.</small>
+                    </p>
+                </div>
+            }
+
+            <div class="s2_main_container">
+                @if (!isDumpRes)
+                {
+                    <div class="float" id="myPager">
+                        @Html.PagedListPager(HotelList, page => Url.Action("GetHotelList", new { tripid, page = page }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(PagedListRenderOptions.ClassicPlusFirstAndLast, new AjaxOptions()
+                        {
+                            HttpMethod = "POST",
+                            InsertionMode = InsertionMode.Replace,
+                            UpdateTargetId = "hotelresultlist",
+                            OnBegin = "toggleLoadSection()",
+                            OnSuccess = "lazyPreLoad();$('.s2_main_container .loading').hide();upPc();",
+                            OnFailure = "toggleLoadSection()",
+                        }))
+                    </div>
+                }
+            </div>
+            <div class="clear"></div>
+        }
+    }
+    else if (filterModel == null && Model?.Destination == null)
+    {
+        <div class="s2_main_container" data-htres="empty">
+            <div class="s2_mc_border_conainer no-result">
+                <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                    <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                        <h2 style="color:#be2e30">Look like no search performed.</h2><br /><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (filterModel == null && Model?.Destination != null && ((Model?.SearchProgress.Any(x => x.GetProgress == SearchProgress.Progress.Searching) ?? false)
+            || Model.SearchProgress.Count == 0) && Model?.Result?.Errors == null)
+    {
+        <div class="s2_main_container" data-htres="empty">
+            <div class="s2_mc_border_conainer loading">
+                <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                    <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                        <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120">
+                        <p id="" style="color:#808080;margin:1em">Hold on, your holiday is on the way...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.SearchProgress.All(x => x.GetProgress == SearchProgress.Progress.Complete) && Model?.Result?.Errors == null &&
+                (Model?.Result != null && (Model.Result.HotelList == null || Model.Result.HotelList.Length == 0)))
+    {
+        <div class="s2_main_container">
+            <div class="s2_mc_border_conainer no-result">
+                <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                    <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                        <h2 style="color:#be2e30">Sorry, there aren't any hotels on your search destination.</h2>
+                        <div class="member_fp_text" style="text-align:left;display:inline-block">
+                            <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                                <li>Try changing some of the other destination or date.</li>
+                                <li>Contact us for support.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        string ErrMsg = "Sorry, there aren't any hotels that match your filters.";
+
+        if (ViewData["PromoErrMsg"] != null)
+        {
+            ErrMsg = ViewData["PromoErrMsg"].ToString();
+            Core.SetSession(Enumeration.SessionName.ErrorMessage, null);
+        }
+        else if (ViewData["ERRMSG"] != null)
+        {
+            ErrMsg = ViewData["ERRMSG"].ToString();
+            Core.SetSession(Enumeration.SessionName.ErrorMessage, null);
+        }
+
+        if (ErrMsg.Equals("EXCEED"))
+        {
+            <div class="s2_main_container">
+                <div class="s2_mc_border_conainer no-result">
+                    <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                        <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                            <h2 style="color:#be2e30">Thank you for choosing to travel with Mayflower.</h2><br /><br />
+                            Your selected number of room(s) has exceeded the maximum limit; <br />please contact our Customer Service Team &#64; email: cs@mayflower-group.com to proceed further.<br /><br />
+                            Alternatively, kindly segregate your booking and try again.<br /><br />
+                            @*<input name="" type="button" value="Back to results" class="ReserveButton" onclick="location.reload();">*@
+                            <button name="" type="button" value="Back to results" class="ReserveButton" onclick="location.reload();">Back to results</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.SysErrMsg != null)
+        {
+            <div class="s2_main_container">
+                <div class="s2_mc_border_conainer no-result">
+                    <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                        <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                            <h2 style="color:#be2e30">@ViewBag.SysErrMsg</h2>
+                            <div class="member_fp_text" style="text-align:left;display:inline-block">
+                                <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                                    <li>Please try again later.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="s2_main_container">
+                <div class="s2_mc_border_conainer no-result">
+                    <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                        <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                            <h2 style="color:#be2e30">@ErrMsg</h2>
+                            <div class="member_fp_text" style="text-align:left;display:inline-block">
+                                <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                                    @if (ViewData["PromoErrMsg"] == null)
+                                    {
+                                        <li>Undo your last action</li>
+                                        <li>Try changing some of the other filters or reset fitlers and show all hotels</li>
+                                    }
+                                    else
+                                    {
+                                        if (ViewData["PromoErrDetail"] != null)
+                                        {
+                                            var listInsDtl = (IEnumerable<string>)ViewData["PromoErrDetail"];
+                                            foreach (var item in listInsDtl)
+                                            {
+                                                <li>@item</li>
+                                            }
+                                        }
+                                    }
+
+
+                                    @if (Model.BundleExist() && Model.Bundle == "1")
+                                    {
+                                        <li>If you are looking for hotel without MAYDAY tickets, please click the button below to find your desire hotel.</li>
+                                    }
+                                    else if (Model.BundleType() == BundleTypes.TPConcert)
+                                    {
+                                        <li>If you are looking for hotel without @Model.BundleInfo.EventDesc tickets, please click the button below to find your desire hotel.</li>
+                                    }
+                                </ul><br /><br />
+                                @if (Model.DynamicStationCode != null)
+                                {
+                                    using (Html.BeginForm("GetDPHotelSearch", "Hotel", new { tripid }, FormMethod.Post))
+                                    {
+                                        <div class="hotel">
+                                            <div id="search_hotel" class="dpmodifydiv">
+                                                <div class="ttcc_text1_lb dpmodifytitle"><b>Can't find hotel you want? Search here</b></div>
+                                                <div class="hotel_form_container1">
+                                                    <div class="ffc1_left1 dpmodifylbl"><b>Going to</b></div>
+                                                    <div class="ffc1_right1 dpmodifyinput">
+                                                        <div class="clearTxt_wrap">
+                                                            @Html.TextBox("DPDestination", "", new { @id = "DPdestination", @placeholder = "Enter Destination" })
+                                                            <span class="clearTxt destinationClear" style="display: none;"></span>
+                                                        </div>
+                                                        <ul class="list-group to_from_ul" id="from_locations"></ul>
+                                                        <input type="hidden" id="project-id">
+                                                    </div>
+                                                    <div class="flight_form_container3">
+                                                        <button name="dpmodifiySubBtn" type="submit" value="OK,show me!">OK, show me!</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+@*hotel list paging*@
+
+@{
+    string GTM_trackHotelSearchResults = "";
+    if (Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelSearchResults, tripid) != null)
+    {
+        GTM_trackHotelSearchResults = Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelSearchResults, tripid).ToString();
+        Alphareds.Module.Common.Core.SetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelSearchResults, tripid, null);
+    }
+}
+
+<script type="text/javascript">
+@Html.JsMinify(@<text>
+    try {
+        var GTM_trackHotelSearchResults = '@Html.Raw(GTM_trackHotelSearchResults)'; // fix double close bracket issues
+        if (GTM_trackHotelSearchResults.length > 1) {
+            trackHotelSearchResults(GTM_trackHotelSearchResults, 'MYR');
+        }
+    } catch (e) {
+        //alert(e.message);
+    }
+    </text>
+)
+</script>
+
+@{
+    if (false && ViewData["PAGING"] != null)
+    {
+        <div class="s2_main_container">
+            <div class="pagination_container">
+                @{
+                    int RecordFromSelectedPage = 0;
+                    if (Core.GetSession(Enumeration.SessionName.SelectedPage) != null)
+                    {
+                        PagingModel SelectedPage = (PagingModel)Core.GetSession(Enumeration.SessionName.SelectedPage);
+                        RecordFromSelectedPage = SelectedPage.FirstRecord;
+                    }
+
+                    Dictionary<int, string> Numbering = new Dictionary<int, string>();
+                    List<PagingModel> Pages = (List<PagingModel>)ViewData["PAGING"];
+                    for (int i = 0; i < Pages.Count; i++)
+                    {
+                        if (Pages[i].FirstRecord.Equals(RecordFromSelectedPage))
+                        {
+                            Numbering.Add(i + 1, "selected");
+                        }
+                        else
+                        {
+                            Numbering.Add(i + 1, "");
+                        }
+                    }
+
+                    int SelectedPos = Numbering.Where(x => x.Value.Length > 3).First().Key;
+                    int FrontIndex = SelectedPos - 2;
+                    int EndIndex = SelectedPos + 2;
+                    int PrevIndex = SelectedPos - 1;
+                    int NextIndex = SelectedPos + 1;
+                    int LastPage = Numbering.Count;
+
+                    bool hideNext = false, hidePrev = false;
+
+                    hidePrev = (SelectedPos == 1 ? true : false);
+                    if (!hidePrev)
+                    {
+                        <div class="pagination_blocks ">@Html.ActionLink("<<", "SelectedPage", "Hotel", new { page = 1 }, new { @class = "red_pagifont" })</div>
+                        <div class="pagination_blocks ">@Html.ActionLink("<", "SelectedPage", "Hotel", new { page = (PrevIndex <= 0 ? 1 : PrevIndex) }, new { @class = "red_pagifont" })</div>
+                    }
+
+                    int StartPos, EndPos;
+                    StartPos = (FrontIndex <= 0 ? 1 : FrontIndex);
+                    EndPos = (EndIndex <= 5 ? 5 : EndIndex);
+
+                    if (Numbering.Count == 1)
+                    {
+                        EndPos = 0;
+                    }
+                    else if (Numbering.Count < EndPos)
+                    {
+                        EndPos = Numbering.Count;
+                    }
+
+                    for (int i = StartPos; i <= EndPos; i++)
+                    {
+                        if (Numbering.Where(n => n.Key.Equals(i)).Count() == 0)
+                        {
+                            break;
+                        }
+                        string Highlighter = (Numbering[i].Length > 1 ? "activepagination" : "");
+                        <div class="pagination_blocks @Highlighter">@Html.ActionLink((i).ToString(), "SelectedPage", "Hotel", new { page = i }, new { @class = "black_pagifont" })</div>
+                    }
+
+                    if (SelectedPos < Numbering.Count)
+                    {
+                        <div class="pagination_blocks">@Html.ActionLink(">", "SelectedPage", "Hotel", new { page = NextIndex }, new { @class = "red_pagifont" })</div>
+                        <div class="pagination_blocks">@Html.ActionLink(">>", "SelectedPage", "Hotel", new { page = LastPage }, new { @class = "red_pagifont" })</div>
+                    }
+                }
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    }
+}
+
+@helper GenerateSupplierPriceList(string supplier, Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo, bool isAgent)
+    {
+        if (isAgent)
+        {
+            foreach (var item in supplierReflec)
+            {
+                var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(item);
+                <li class="@(supplier == item ? "active ShowMoreRoom": "disabled")" data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">
+                    <img src="@Url.Content($"~/Images/ht-supp/{item.Replace(" ", "").ToLower()}.png")" alt="@displayTxt">
+                </li>
+            }
+        }
+        else
+        {
+            var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(supplier);
+            <li class="ShowMoreRoom" data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">
+                <div class="showroom-btn">SHOW ROOM</div>
+            </li>
+        }
+}
+
+@functions{
+    private decimal CalculateDisplayRate(bool IncludeAllNights, bool IncludeTax, int totalNights, int noOfRooms,
+        Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation HotelInfo)
+    {
+        decimal AverageBaseRate = (HotelInfo.lowRate == 0 ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.averageRate) : HotelInfo.lowRate);
+        if (IncludeAllNights)
+        {
+            AverageBaseRate = AverageBaseRate * totalNights;
+        }
+        if (IncludeTax)
+        {
+            if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal))
+            {
+                AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRooms : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRooms) / totalNights;
+                AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.GST) : Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.GST) / totalNights;
+            }
+        }
+        var chargeableRateInfo = HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo;
+
+        if (HotelInfo.lowRate_Source > HotelInfo.lowRate && HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService != null)
+        {
+            AverageBaseRate = (HotelInfo.lowRate_Source == 0 ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.averageRate) : HotelInfo.lowRate_Source);
+            if (IncludeAllNights)
+            {
+                AverageBaseRate = AverageBaseRate * totalNights;
+            }
+            if (IncludeTax)
+            {
+                if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal))
+                {
+                    AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / noOfRooms : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / noOfRooms) / totalNights;
+                    AverageBaseRate += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.GST) : Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].ChargeableRateInfo_FromService.GST) / totalNights;
+                }
+            }
+
+        }
+        else if (Convert.ToDecimal(chargeableRateInfo.averageBaseRate) > Convert.ToDecimal(chargeableRateInfo.averageRate))
+        {
+            decimal AverageBaseRateWithoutPromo = Convert.ToDecimal(chargeableRateInfo.averageBaseRate);
+            if (IncludeAllNights)
+            {
+                AverageBaseRateWithoutPromo = AverageBaseRateWithoutPromo * totalNights;
+            }
+            if (IncludeTax)
+            {
+                if (!string.IsNullOrEmpty(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal))
+                {
+                    AverageBaseRateWithoutPromo += IncludeAllNights ? Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRooms : (Convert.ToDecimal(HotelInfo.RoomRateDetailsList[0].RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRooms) / totalNights;
+                }
+            }
+        }
+        return AverageBaseRate;
+    }
+}

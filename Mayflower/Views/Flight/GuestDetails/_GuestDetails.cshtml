@@ -1,0 +1,707 @@
+﻿@model Alphareds.Module.Model.FlightBookingModel
+@using Alphareds.Module.Common;
+
+@* 2016/12/07 - 17:35 Merge Remark *@
+
+@{
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+    List<SelectListItem> contactTitleList = UtilitiesService.GetTitleList(true, "ADT", Model.BookingContactPerson != null ? Model.BookingContactPerson.Title : string.Empty);
+
+    List<string> guestValue = new List<string>();
+    int counter = 0;
+
+    foreach (var item in Model.FlightInformation.SupplierFlightInfo.PricingInfo.FareBreakDown.Where(x => x.PassengerTypeQuantity > 0))
+    {
+        for (int i = 0; i < item.PassengerTypeQuantity; i++)
+        {
+            guestValue.Add(item.PassengerTypeCode);
+        }
+    }
+}
+
+<style>
+    .s3-1_full_textbox_name_com, .s3-1_phonenumber_right, .s3-1_full_textbox_com, .s3-1_flyer_right {
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+</style>
+
+<!-- GUEST DETAIL BOX START -->
+<div class="s3-1_guestdetail_box ">
+    <h2>Guest Details</h2>
+    <ul>
+        <li class="s3-1_inactive_cd s3-1_activli" value="contactform">Contact<br>Details</li>
+        @foreach (var item in guestValue)
+        {
+            counter += 1;
+            string selector = "guest" + counter.ToString() + "form";
+            <li class="s3-1_inactive_guest" value="@selector">
+                <div class="igb1">GUEST</div>
+                <div class="igb2">@counter.ToString("D2")</div>
+                <div class="igb3">@UtilitiesService.GetPassengerTypeName(item)</div>
+            </li>
+        }
+        @{ counter = 0;}
+    </ul>
+    <div class="clear"></div>
+</div>
+<!-- GUEST DETAIL BOX END -->
+
+<div class="cdhs_heading" id="headingforsmall" style="padding-top: 3%">Contact Details</div>
+
+<!-- FORM CONTAINER START -->
+<div class="s3-1_form" id="bookingDetailForm">
+    <div class="s3-1_form_inner">
+        @Html.ValidationMessage("passportValidation", new { @class = "textforerrormsg" })
+        <!-- contact form start -->
+        <div class="contact_detail_heading_small" value="contactform" headname="Contact Detail" aria-expanded="true">
+            <div class="chhc_bar cdhc_redbar default_but tab_l">Contact Details</div>
+        </div>
+        <div id="contactform" class="booking-form">
+
+            <div class="s3-1_fi_flying_icon">
+                @Html.StyledCheckBoxFor(model => model.BookingContactPerson.ImFlying, "I'm Flying", "checkbox2")
+            </div>
+            <!-- line start -->
+            <div class="s3-1_fi_row1">
+                <div class="s3-1_contactform_title_first_row">
+                    <div class="s3-1_cf_lable_text">Title<span>*</span></div>
+                    <div class="s3-1_fir1_b1">
+                        <div>
+                            @Html.DropDownListFor(model => model.BookingContactPerson.Title, contactTitleList, new { @class = "s3-1_title" })
+                        </div>
+                    </div>
+                </div>
+                <div class="s3_1_contactform_name">
+                    <div class="s3-1_contactform_firstname_first_row">
+                        <div class="s3-1_cf_lable_text">First Name<span>*</span>(As per passport)</div>
+                        <div class="s3-1_fir1_b2">
+                            <div>
+                                @* Alvinloo 7/121/2016 start *@
+                                @Html.TextBoxFor(model => Model.BookingContactPerson.GivenName, new { @class = "s3-1_full_textbox_name_com" })
+                                @Html.ValidationMessageFor(model => Model.BookingContactPerson.GivenName, null, new { @class = "textforerrormsg" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="s3-1_contactform_familyname_first_row">
+                        <div class="s3-1_cf_lable_text">Family Name<span>*</span></div>
+                        <div class="s3-1_fir1_b3">
+                            <div>
+                                @Html.TextBoxFor(model => Model.BookingContactPerson.Surname, new { @class = "s3-1_full_textbox_name_com" })
+                                @Html.ValidationMessageFor(model => Model.BookingContactPerson.Surname, null, new { @class = "textforerrormsg" })
+                                @* Alvinloo 7/121/2016 end *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_fi_row1-right">
+                <img src="@Url.Content("~/images/i-icon.png")" style="width: 12px; height: 12px;" alt="">
+                <div class="s3-1_form_toll_tip">
+                    <div class="tt_top_form_y"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                    <div class="s3-1_form_toll_tip_b">
+                        <div class="s3-1_fttp_redcolor s3-1_fttp_marbot">
+                            Please enter your name as it appears in
+                            your passport, see guide below:
+                        </div>
+                        <div class="s3-1_fttp_marbot">
+                            <span class="s3-1_fttp_redcolor">Example 1: Mr.Mohammad Ali Bin Abdullah</span><br>
+                            Title: Mr.<br>
+                            First / Given Name : Abdullah<br>
+                            Last Name / Surname: Mohammad Ali Bin<br>
+                        </div>
+                        <div class="s3-1_fttp_marbot">
+                            <span class="s3-1_fttp_redcolor">Example 2:Ms.Janet Low Ying Ying</span><br>
+                            Title: Ms.<br>
+                            First / Given Name : Ying Ying Janet<br>
+                            Last Name / Surname: Low<br>
+                        </div>
+                        <div class="s3-1_fttp_marbot">
+                            <span class="s3-1_fttp_redcolor">Example 3: Mr.Nathan A/L Mogan</span><br>
+                            Title: Mr.<br>
+                            First / Given Name : Mogan<br>
+                            Last Name / Surname: Nathan<br>
+                        </div>
+                        <div>
+                            <span class="s3-1_fttp_redcolor">Example 4: Ms.May Anne Lee</span><br>
+                            Title: Ms.<br>
+                            First / Given Name : Marry Anne<br>
+                            Last Name / Surname: Lee<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <!-- line end -->
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">
+                        @*<div class="s3-1_b1_lable">*@
+                        Email<span>*</span>
+                        @*</div>*@
+                    </div>
+                    <div>
+                        <div>
+                            @Html.TextBoxFor(model => Model.BookingContactPerson.Email, new { @class = "s3-1_full_textbox_name_com", maxlength = "50" })
+                            @Html.ValidationMessageFor(model => model.BookingContactPerson.Email, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="s3-1_contactform_right">
+                    <div class="s3-1_cf_lable_text">D.O.B</div>
+                    <div class="s3-1_ff_black_border_box">
+                        <div class="s3-1_dob_container">
+                            <div class="s3-1_b1_lable">Day</div>
+                            <div>
+                                @Html.DropDownListFor(model => model.BookingContactPerson.DOBDays, Mayflower.General.Utilities.DaysDropList, "-", new { @class = "s3-1_dob day" })
+                            </div>
+                        </div>
+                        <div class="s3-1_dob_container">
+                            <div class="s3-1_b1_lable">Month</div>
+                            <div>
+                                @Html.DropDownListFor(model => model.BookingContactPerson.DOBMonths, Mayflower.General.Utilities.MonthsDropList2(1), "-", new { @class = "s3-1_dob month" })
+                            </div>
+                        </div>
+                        <div class="s3-1_dob_container">
+                            <div class="s3-1_b1_lable">Year</div>
+                            <div>
+                                @Html.DropDownListFor(model => model.BookingContactPerson.DOBYears, Mayflower.General.Utilities.DOBYearsDropList.Where(x => Convert.ToInt32(x.Value) <= DateTime.Now.Year - 18), "-", new { @class = "s3-1_dob year" })
+                            </div>
+                        </div>
+                        @Html.HiddenFor(model => model.BookingContactPerson.DOB)
+                        <div class="clear"></div>
+                    </div>
+                    @Html.ValidationMessageFor(model => Model.BookingContactPerson.DOB, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_fullform_right"></div>
+            <div class="clear"></div>
+            <!-- line end -->
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">Primary Phone Number<span>*</span></div>
+                    <div>
+                        @Html.DropDownListFor(x => x.BookingContactPerson.Phone1Prefix, Mayflower.General.Utilities.PhoneCodeList("MYS").OrderBy(x => x.Text), new { @class = "s3-1_phonenumber_left" })
+                        @Html.TextBoxFor(x => x.BookingContactPerson.Phone1, new { @class = "s3-1_phonenumber_right" })
+                        @Html.ValidationMessageFor(x => x.BookingContactPerson.Phone1, null, new { @class = "textforerrormsg" })
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="s3-1_contactform_right">
+                    <div class="s3-1_cf_lable_text">Secondary Phone Number</div>
+                    <div>
+                        @Html.DropDownListFor(x => x.BookingContactPerson.Phone2Prefix, Mayflower.General.Utilities.PhoneCodeList().OrderBy(x => x.Text), "-", new { @class = "s3-1_phonenumber_left" })
+                        @Html.TextBoxFor(x => x.BookingContactPerson.Phone2, new { @class = "s3-1_phonenumber_right" })
+                        @Html.ValidationMessageFor(x => x.BookingContactPerson.Phone2Prefix, null, new { @class = "textforerrormsg", style = "float: left;width: 37%;clear: none;" })
+                        @Html.ValidationMessageFor(x => x.BookingContactPerson.Phone2, null, new { @class = "textforerrormsg", style = "float: left;width: 63%;clear: none;padding-left: 15px;" })
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+            <!-- line end -->
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">Address Line1</div>
+                    <div>
+                        @Html.TextBoxFor(model => Model.BookingContactPerson.Address1, new { @class = "s3-1_full_textbox_com" })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.BookingContactPerson.Address1, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="s3-1_contactform_right">
+                    <div class="s3-1_cf_lable_text">Address Line2</div>
+                    <div>
+                        @Html.TextBoxFor(model => Model.BookingContactPerson.Address2, new { @class = "s3-1_full_textbox_com" })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.BookingContactPerson.Address2, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_fullform_right"></div>
+            <div class="clear"></div>
+            <!-- line end -->
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">City</div>
+                    <div>
+                        @Html.TextBoxFor(model => Model.BookingContactPerson.City, new { @class = "s3-1_full_textbox_com" })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.BookingContactPerson.City, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="s3-1_contactform_right">
+                    <div class="s3-1_cf_lable_text">Postal Code</div>
+                    <div>
+                        @Html.TextBoxFor(model => Model.BookingContactPerson.PostalCode, new { @class = "s3-1_full_textbox_com" })
+                    </div>
+                    @Html.ValidationMessageFor(model => Model.BookingContactPerson.PostalCode, null, new { @Class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_fullform_right"></div>
+            <div class="clear"></div>
+            <!-- line end -->
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">State</div>
+                    <div>
+                        @Html.TextBoxFor(model => Model.BookingContactPerson.State, new { @class = "s3-1_full_textbox_com" })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.BookingContactPerson.State, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="s3-1_contactform_right">
+                    <div class="s3-1_cf_lable_text">Country</div>
+                    <div class="layout_M">
+                        @Html.DropDownListFor(model => Model.BookingContactPerson.Country, Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_fullform_right"></div>
+            <div class="clear"></div>
+            <!-- line end -->
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <div class="check_create_acc">@Html.CheckBoxFor(model => model.isRegister, new { @class = "hidden", @id = "registerCheckBox" })<label for="isRegister" class="s3_create_account add-cursor-pointer" style="margin-left: 20px" tabindex="0"><span><span></span></span>Would you like to create an account with us ?</label></div>
+                @*@Html.TextBoxFor(model => model.MemberRegisterModels.Email, new { @name = "Email", @data_val_remote_url = "/Member/IsEmailAvailable", @style = "display: none;" })*@
+
+                <div class="s3_optional_register" id="optional_register">
+                    <div class="s3-1_fullform_left">
+                        @Html.ValidationMessageFor(model => model.MemberRegisterModels.Email, null, new { @class = "textforerrormsg" })
+                        <div class="s3-1_contactform_left">
+                            <div class="s3-1_cf_lable_text">Password</div>
+                            <div>@Html.PasswordFor(model => model.MemberRegisterModels.Password, new { @class = "s3-1_full_textbox_com" })</div>
+                            @Html.ValidationMessageFor(model => model.MemberRegisterModels.Password, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="s3-1_contactform_right">
+                            <div class="s3-1_cf_lable_text">Confirm Password</div>
+                            <div>@Html.PasswordFor(model => model.MemberRegisterModels.ConfirmPassword, new { @class = "s3-1_full_textbox_com" })</div>
+                        </div>
+                        @*<div class="s3-1_contactform_left">
+                                @Html.ValidationMessageFor(model => model.MemberRegisterModels.Password, null, new { @class = "textforerrormsg" })
+                            </div>*@
+                        <div class="s3-1_contactform_right">
+                            @Html.ValidationMessageFor(model => model.MemberRegisterModels.ConfirmPassword, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="s3-1_fullform_right"></div>
+                    <div class="clear"></div>
+                    <div class="s2_ca_text" style="margin-bottom: 0">Your new password must contain a minimun length of 6 characters.</div>
+                    <div class="mr_form_confirm">
+                        <input id="checkbox_news" type="checkbox" name="subscribeNews" value="1">
+                        <label for="checkbox_news" class="add-cursor-pointer" style="text-align:justify;">
+                            Yes, I expressly agree for you to process, disclose and share my personal data to/with your Group of Companies for the purposes of promoting your Group of Companies’ and/or your products and services. (<a href="@Url.Action("PDPA", "Public")" target="_blank">Personal Data Protection Act 2010</a>)
+                        </label>
+
+                        <input id="MemberRegisterModels_AgreeTnC" type="checkbox" name="MemberRegisterModels.AgreeTnC" value="1">
+                        <label for="MemberRegisterModels_AgreeTnC" class="add-cursor-pointer" style="text-align:justify;">
+                            I confirm that the above information provided by me is true and accurate. I have read and hereby agree to the <a href="@Url.Action("TermsConditions", "Public")" target="_blank">Terms & Conditions</a> of Mayflower Holidays Sdn Bhd, which shall be binding on me.
+                        </label>
+
+                        @*@Html.StyledCheckBoxFor(model => model.MemberRegisterModels.AgreeTnC, "I confirm that the above information provided by me is true and accurate. I have read and hereby agree to the terms and conditions of Mayflower Holidays Sdn Bhd, which shall be binding on me.")*@
+                        @Html.ValidationMessageFor(model => model.MemberRegisterModels.AgreeTnC, null, new { @class = "textforerrormsg" })
+                    </div>
+                    <div class="reminder">
+                        Reminder : Please ensure that all of your contact information are correct, then click "Complete form to continue" to continue. You then
+                        be taken to the payment page.
+                    </div>
+                    <div class="s2_ca_text1">A verification email will be sent to your inbox to complete your registration.</div>
+                </div>
+
+            }
+
+            <div>
+                <button name="" type="button" class="s3-1_form_button add-cursor-pointer">Complete form to continue</button>
+                @*<input name="" type="button" value="Complete form to continue" class="s3-1_form_button add-cursor-pointer">*@
+            </div>
+
+        </div>
+        <!-- contact form end -->
+        @foreach (var item in guestValue)
+        {
+            counter += 1;
+            string selector = "guest" + counter.ToString() + "form";
+            int totalGuest = guestValue.Count;
+            @guestForm(selector, counter - 1, totalGuest, item)
+        }
+
+        @*<div>
+                <input id="guest-submit-btn" name="" type="button" value="Complete form to continue" class="s3-1_form_button add-cursor-pointer incompleted">
+            </div>*@
+    </div>
+</div>
+<!-- FORM CONTAINER END -->
+@helper guestForm(string guestValue, int counter, int totalGuest, string guestType)
+{
+List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, guestType == "INF" || guestType == "CNN" ? "CNN" : guestType);
+bool isGATE = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Chn
+              || Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int;
+bool isAirAsia = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia;
+bool isReturn = Model.SearchFlightResultViewModel.TripType == "Return";
+bool gotBaggage = Model.FlightInformation.AvaBaggage != null
+                  && Model.FlightInformation.AvaBaggage.Count > 0;
+
+string outboundSegment = Model.FlightInformation.FlightDetailInfo.Origin + " > "
+                         + Model.FlightInformation.FlightDetailInfo.FlightTrip
+                         .FirstOrDefault(x => x.RouteType == Alphareds.Module.Model.RouteType.Outbound)
+                         .FlightRouteInfo.Select(x => x.ArriveAirportCode)
+                         .Aggregate((current, next) => current + " > " + next);
+
+string inboundSegment = isReturn ? Model.FlightInformation.FlightDetailInfo.Destination + " > "
+                         + Model.FlightInformation.FlightDetailInfo.FlightTrip
+                         .FirstOrDefault(x => x.RouteType == Alphareds.Module.Model.RouteType.Inbound)
+                         .FlightRouteInfo.Select(x => x.ArriveAirportCode)
+                         .Aggregate((current, next) => current + " > " + next)
+                         : string.Empty;
+
+DateTime departDate = Model.SearchFlightResultViewModel.BeginDate.Value;
+
+    <!-- guest form start -->
+    <div class="contact_detail_heading_small" value="@guestValue" aria-expanded="false">
+        <div class="chhc_bar tab_l">Guest @(counter + 1) Details</div>
+    </div>
+    <div id="@guestValue" class="booking-form">
+
+        @Html.HiddenFor(model => Model.PassengerDetailBooking[counter].PassengerType, new { Value = guestType })
+        @Html.HiddenFor(model => Model.PassengerDetailBooking[counter]._DepartureDate, new { Value = departDate.ToString("yyyy-MM-dd") })
+
+        <div class="s3-1_fi_flying_icon s3-1_fi_flying_icon2"></div>
+        <!-- line start -->
+        <div class="s3-1_fi_row1">
+            <div class="s3-1_contactform_title_first_row">
+                <div class="s3-1_cf_lable_text">Title<span>*</span></div>
+                <div class="s3-1_fir1_b1">
+                    <div>
+                        @Html.DropDownListFor(model => Model.PassengerDetailBooking[counter].Title, titleList, new { @class = "s3-1_title" })
+
+                    </div>
+                </div>
+            </div>
+            <div class="s3_1_contactform_name">
+                <div class="s3-1_contactform_firstname_first_row">
+                    <div class="s3-1_cf_lable_text">First Name<span>*</span>(As per passport)</div>
+                    <div class="s3-1_fir1_b2">
+                        <div>
+                            @Html.TextBoxFor(model => Model.PassengerDetailBooking[counter].GivenName, new { @class = "s3-1_full_textbox_name_com", @required = "required" })
+                            @Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].GivenName, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                </div>
+                <div class="s3-1_contactform_familyname_first_row">
+                    <div class="s3-1_cf_lable_text">Family Name<span>*</span></div>
+                    <div class="s3-1_fir1_b3">
+                        <div>
+                            @Html.TextBoxFor(model => Model.PassengerDetailBooking[counter].Surname, new { @class = "s3-1_full_textbox_name_com", @required = "required" })
+                            @Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].Surname, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="s3-1_fi_row1-right">
+            <img src="@Url.Content("~/images/i-icon.png")" style="width: 12px; height: 12px;" alt="">
+            <div class="s3-1_form_toll_tip">
+                <div class="tt_top_form_y"><img src="@Url.Content("~/images/tt_top.png")" alt="" width="34" height="19"></div>
+                <div class="s3-1_form_toll_tip_b">
+                    <div class="s3-1_fttp_redcolor s3-1_fttp_marbot">
+                        Please enter your name as it appears in
+                        your passport, see guide below:
+                    </div>
+                    <div class="s3-1_fttp_marbot">
+                        <span class="s3-1_fttp_redcolor">Example 1: Mr.Mohammad Ali Bin Abdullah</span><br>
+                        Title: Mr.<br>
+                        First / Given Name : Abdullah<br>
+                        Last Name / Surname: Mohammad Ali Bin<br>
+                    </div>
+                    <div class="s3-1_fttp_marbot">
+                        <span class="s3-1_fttp_redcolor">Example 2:Ms.Janet Low Ying Ying</span><br>
+                        Title: Ms.<br>
+                        First / Given Name : Ying Ying Janet<br>
+                        Last Name / Surname: Low<br>
+                    </div>
+                    <div class="s3-1_fttp_marbot">
+                        <span class="s3-1_fttp_redcolor">Example 3: Mr.Nathan A/L Mogan</span><br>
+                        Title: Mr.<br>
+                        First / Given Name : Mogan<br>
+                        Last Name / Surname: Nathan<br>
+                    </div>
+                    <div>
+                        <span class="s3-1_fttp_redcolor">Example 4: Ms.May Anne Lee</span><br>
+                        Title: Ms.<br>
+                        First / Given Name : Marry Anne<br>
+                        Last Name / Surname: Lee<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*@Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].GivenName, null, new { @class = "textforerrormsg" })
+            @Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].Surname, null, new { @class = "textforerrormsg" })*@
+
+        <div class="clear"></div>
+        <!-- line end -->
+        <!-- line start -->
+        @{
+            Func<SelectListItem, bool> dobYear = (x => true);
+            object DOBHtmlAttr = null;
+            object NationalityAttr = null;
+            MvcHtmlString DOBRequired = new MvcHtmlString("");
+            MvcHtmlString InfMonth = new MvcHtmlString("");
+            MvcHtmlString NationalityRequired = new MvcHtmlString("");
+
+            if (guestType == "ADT")
+            {
+                //DOBRequired = new MvcHtmlString("<span>*</span>");
+                //DOBHtmlAttr = new { data_val_required = "DOB is required.", data_val = "true" };
+                dobYear = (x => Convert.ToInt32(x.Value) <= DateTime.Now.Year - 12);
+                InfMonth = new MvcHtmlString("<span>Age</span>");
+            }
+            else if (guestType == "CNN")
+            {
+                DOBRequired = new MvcHtmlString("<span>*</span>");
+                DOBHtmlAttr = new { data_val_required = "DOB is required for Child.", data_val = "true" };
+                dobYear = (x => Convert.ToInt32(x.Value) >= DateTime.Now.Year - 12 && Convert.ToInt32(x.Value) <= DateTime.Now.Year - 2);
+                InfMonth = new MvcHtmlString("<span>Age</span>");
+            }
+            else if (guestType == "INF")
+            {
+                DOBRequired = new MvcHtmlString("<span>*</span>");
+                DOBHtmlAttr = new { data_val_required = "DOB is required for Infant.", data_val = "true" };
+                dobYear = (x => Convert.ToInt32(x.Value) >= DateTime.Now.Year - 2 && Convert.ToInt32(x.Value) <= DateTime.Now.Year);
+                InfMonth = new MvcHtmlString("<span>Age (In Months)</span>");
+            }
+
+            if (guestType == "ADT" && (isAirAsia || isGATE))
+            {
+                DOBRequired = new MvcHtmlString("<span>*</span>");
+                DOBHtmlAttr = new { data_val_required = "DOB is required.", data_val = "true" };
+            }
+
+            if (isAirAsia)
+            {
+                NationalityRequired = new MvcHtmlString("<span>*</span>");
+                NationalityAttr = new { data_val_required = "Nationality is required.", data_val = "true" };
+            }
+        }
+
+        <div class="s3-1_fullform_left">
+            <div class="s3-1_contactform_left">
+                <div class="s3-1_cf_lable_text">
+                    D.O.B @DOBRequired
+                </div>
+                <div class="s3-1_ff_black_border_box">
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Day</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].DOBDays, Mayflower.General.Utilities.DaysDropList, "-", new { @class = "s3-1_dob day" })
+                        </div>
+                    </div>
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Month</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].DOBMonths, Mayflower.General.Utilities.MonthsDropList2(1), "-", new { @class = "s3-1_dob month" })
+                        </div>
+                    </div>
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Year</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].DOBYears, Mayflower.General.Utilities.DOBYearsDropList.Where(dobYear), "-", new { @class = "s3-1_dob year" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => Model.PassengerDetailBooking[counter].DOB, DOBHtmlAttr)
+                    <div class="clear"></div>
+                </div>
+                @Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].DOB, null, new { @class = "textforerrormsg" })
+            </div>
+
+            <div class="s3-1_contactform_right">
+                <div class="s3-1_cf_lable_text label_month">@InfMonth</div>
+                @Html.TextBoxFor(model => model.PassengerDetailBooking[counter].Age, new { @class = "s3-1_full_textbox_com", disabled = "true" })
+            </div>
+            @Html.ValidationMessageFor(model => Model.PassengerDetailBooking[counter].Age, null, new { @class = "textforerrormsg" })
+
+            <div class="clear"></div>
+        </div>
+        <div class="s3-1_fullform_right"></div>
+        <div class="s3-1_fi_row1-right">
+            <img src="@Url.Content("~/images/i-icon.png")" style="width: 12px; height: 12px;" alt="">
+            <div class="s3-1_form_toll_tip">
+                <div class="tt_top_form_y"><img src="@Url.Content("~/images/tt_top.png")" alt="" width="34" height="19"></div>
+                <div class="s3-1_form_toll_tip_b">
+                    <div class="s3-1_fttp_redcolor s3-1_fttp_marbot">
+                        Age shown based on passenger's age on first departure date
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+        <!-- line end -->
+        <!-- line start -->
+        <div class="s3-1_fullform_left">
+            <div class="s3-1_contactform_left">
+                <div class="s3-1_cf_lable_text">Nationality @NationalityRequired</div>
+                <div>
+                    @Html.DropDownListFor(model => Model.PassengerDetailBooking[counter].Nationality,
+                       Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })
+                </div>
+                @Html.HiddenFor(model => model.PassengerDetailBooking[counter].Nationality, NationalityAttr)
+                @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].Nationality, null, new { @class = "textforerrormsg" })
+            </div>
+            <div class="s3-1_contactform_right switch-able" id="passpno_@counter">
+                <div class="passport-field">
+                    <div class="s3-1_cf_lable_text">
+                        Passport Number @if (isGATE)
+                        {<span>*</span>}
+                    </div>
+                    @Html.TextBoxFor(model => model.PassengerDetailBooking[counter].PassportNumber, new { @class = "s3-1_full_textbox_com" })
+                    @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].PassportNumber, null, new { @class = "textforerrormsg" })
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        <!-- line end -->
+        <!-- line start -->
+        <div class="s3-1_fullform_left passport-field">
+            <div class="s3-1_contactform_left" id="passpexp_@counter">
+                <div class="s3-1_cf_lable_text">
+                    Passport Expiry date @if (isGATE)
+                    {<span>*</span>}
+                </div>
+                <div class="s3-1_ff_black_border_box">
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Day</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].PassportExpiryDateDays, Mayflower.General.Utilities.DaysDropList, "-", new { @class = "s3-1_dob day" })
+                        </div>
+                    </div>
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Month</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].PassportExpiryDateMonths, Mayflower.General.Utilities.MonthsDropList2(1), "-", new { @class = "s3-1_dob month" })
+                        </div>
+                    </div>
+                    <div class="s3-1_dob_container">
+                        <div class="s3-1_b1_lable">Year</div>
+                        <div>
+                            @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].PassportExpiryDateYears, Mayflower.General.Utilities.ExpiredYearsDropList(6), "-", new { @class = "s3-1_dob year" })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.PassengerDetailBooking[counter].PassportExpiryDate, new { })
+                    <div class="clear"></div>
+                </div>
+                @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].PassportExpiryDate, null, new { @class = "textforerrormsg" })
+            </div>
+            <div class="s3-1_contactform_right" id="passpcountry_@counter">
+                <div class="s3-1_cf_lable_text">Passport Issuing country</div>
+                <div>
+                    @Html.DropDownListFor(model => model.PassengerDetailBooking[counter].PassportIssueCountry, Mayflower.General.Utilities.CountryDropList(), "-", new { @class = "s3-1_full_selectbox_com" })
+                    @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].PassportIssueCountry, null, new { @class = "textforerrormsg" })
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="s3-1_fullform_right"></div>
+        <div class="clear"></div>
+        <!-- line end -->
+        <!-- line start -->
+        <div class="s3-1_fullform_left">
+            <div class="s3-1_contactform_left">
+                @* 20161230 - Hide in Phase 1
+                    <div class="s3-1_cf_lable_text">Frequent traveller number</div>
+                    <div class="ffn_inputbox">
+                        <div class="s3-1_flyer_left_dupinput" data-ffair="ffair_@counter"></div>
+                        <input name="@Model.PassengerDetailBooking[counter].FrequrntFlyerNoAirline" type="hidden" value="" id="frquentflyer">
+                        @Html.TextBoxFor(model => Model.PassengerDetailBooking[counter].FrequentFlyerNo, new { @class = "s3-1_flyer_right" })
+                        <div class="clear"></div>
+                        @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].FrequentFlyerNo, null, new { @class = "textforerrormsg" })
+                        <div class="ffn_inputboxulli_container">
+                            <ul id="ffair_@counter">
+                                @foreach (var airlineCode in Model.FlightSearchResultViewModel.FlightSelected.AirlineInclude)
+                                {
+                                    string airlineName = UtilitiesService.GetAirlineName(airlineCode);
+                                    string airlineImagePath = UtilitiesService.GetAirlineImagePath(airlineCode);
+                                    <li inpvalue="@airlineCode">
+                                        <div class="ffn_ulli_left"><img src="@Url.Content(airlineImagePath)" width="34" height="39" alt=""></div>
+                                        <div class="ffn_ulli_right">@airlineName</div>
+                                        <div class="clear"></div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                *@
+            </div>
+            <div class="s3-1_contactform_right" id="icno_@counter">
+                @if (Model.SearchFlightResultViewModel.isDomesticFlight)
+                {
+                    <div class="nric-field">
+                        <div class="s3-1_cf_lable_text">NRIC number</div>
+                        <div>@Html.TextBoxFor(model => Model.PassengerDetailBooking[counter].IdentityNumber, new { @class = "s3-1_full_textbox_com" })</div>
+                        @Html.ValidationMessageFor(model => model.PassengerDetailBooking[counter].IdentityNumber, null, new { @class = "textforerrormsg" })
+                    </div>
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="s3-1_fullform_right"></div>
+        <div class="clear"></div>
+        <!-- line end -->
+        @if ((Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia
+        || Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.TCG)
+        && gotBaggage && guestType != "INF")
+        {
+            <div class="full_line"></div>
+
+            <div class="special_request_box">Special Request</div>
+
+            <!-- line start -->
+            <div class="s3-1_fullform_left">
+                <div class="clear">Checked Baggage</div>
+                <div class="s3-1_contactform_left">
+                    <div class="s3-1_cf_lable_text">@outboundSegment</div>
+                    <div>
+                        @Html.DropDownListFor(model => Model.PassengerDetailBooking[counter].OutboundBaggageCode,
+                            (gotBaggage ? UtilitiesService.GetBaggageList(Model.FlightInformation.AvaBaggage.Where(x => x.IsOutBoundBaggage).ToList()) : new List<SelectListItem>())
+                            , "No checked baggage", new { @class = "s3-1_full_selectbox_com" })
+                    </div>
+                </div>
+
+                @if (isReturn)
+                {
+                    <div class="s3-1_contactform_right">
+                        <div class="s3-1_cf_lable_text">@inboundSegment</div>
+                        <div>
+                            @Html.DropDownListFor(model => Model.PassengerDetailBooking[counter].InboundBaggageCode,
+                                (gotBaggage ? UtilitiesService.GetBaggageList(Model.FlightInformation.AvaBaggage.Where(x => !x.IsOutBoundBaggage).ToList()) : new List<SelectListItem>())
+                                , "No checked baggage", new { @class = "s3-1_full_selectbox_com" })
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                }
+            </div>
+            <div class="s3-1_fullform_right"></div>
+            <div class="clear"></div>
+            <!-- line end -->
+        }
+
+        @{ string buttonType = (counter + 1 == totalGuest) ? "submit" : "button"; }
+        <div>
+            <button name="" type="@buttonType" class="s3-1_form_button add-cursor-pointer">Complete form to continue</button>
+            @*<input name="" type="@buttonType" value="Complete form to continue" class="s3-1_form_button add-cursor-pointer">*@
+        </div>
+
+    </div>
+    <!-- guest form end -->
+}

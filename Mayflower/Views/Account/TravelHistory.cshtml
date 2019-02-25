@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "My Travel History";
+    ViewBag.RenderSideBar = true;
+    ViewBag.RenderRedLine = true;
+}
+
+@if (Request.QueryString["themes"] == "v1" && !Request.IsAjaxRequest())
+{
+    //Layout = "~/Views/Shared/_SMCLayout.cshtml";
+}
+else
+{
+    ViewBag.TableContent = true;
+}
+
+@if (Request.IsAjaxRequest())
+{
+    Layout = null;
+}
+@{
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+}
+@section style{
+    <style>
+    .mcp_inner_b6{
+	    width:17%;
+	    float:left;
+    }
+    .mcp_inner_b7{
+	    width:10%;
+	    float:left;
+    }
+    .mcp_inner_b0{
+        width:6%;
+    }
+    .mcp_inner_b1 {
+        width:10%;
+    }
+
+    .mcp_inner_b2 {
+        width:15%;
+    }
+    .mcp_inner_b3 {
+        width:12%;
+    }
+    </style>
+}
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">@(IsAgent ? "Booking History" : "Travel History")</div>
+    <div class="mphc_t2">Below are your list of @(IsAgent ? "Booking History" : "Travel History")</div>
+</div>
+        
+<div class="member_profile_container">
+    <div class="mpc_inner_container">
+        <div class="mpc_inner">
+            <!-- red tab start -->
+            <div class="mcp_inner_tabred">
+                <div class="mcp_inner_b0 mcp_whitefont">&nbsp</div>
+                <div class="mcp_inner_b2 mcp_whitefont mcp_sort_icon">Description</div>
+                <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">From</div>
+                <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">To</div>
+                <div class="mcp_inner_b3 mcp_whitefont mcp_sort_icon">Guest Name</div>
+                <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">Status</div>
+                <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">Booking Date</div>
+                <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">Booking No.</div>
+                @*<div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">Depart Date</div>
+        <div class="mcp_inner_b2 mcp_whitefont mcp_sort_icon">Return Date</div>
+        <div class="mcp_inner_b3 mcp_whitefont mcp_sort_icon">Origin</div>
+        <div class="mcp_inner_b4 mcp_whitefont mcp_sort_icon">Destination</div>
+        <div class="mcp_inner_b5 mcp_whitefont mcp_sort_icon">Booking No.</div>
+        <div class="mcp_inner_b6 mcp_whitefont mcp_sort_icon">Guest Name</div>*@
+                <div class="mcp_inner_b0 mcp_whitefont"></div>
+                <div class="clear"></div>
+            </div>
+            <!-- red tab end -->
+            <!-- row start -->
+            @Html.Action("_ListPartial", "Account", new { HasPassed = "true"})
+        </div>
+    </div>
+</div>
+<!-- MAIN CONTENT PORTION END -->
+
+@section scripts{
+    @*<script src="~/Scripts/bootstrap-select/js/bootstrap-select.min.js"></script>*@
+    <script type="text/javascript">
+        $('#sortOrder').on('change', function (e) {
+            var selectedVal = tjq(this).val();
+            var remoteUrl = "@Url.Action("TravelHistory", "Account")" + "?" + "sortOrder=" + selectedVal;
+            run_waitMe('load-section', 'ios');
+            $('#Pending .booking').load(remoteUrl + "&BookingStatus=Pending");
+            $('#Confirm .booking').load(remoteUrl + "&BookingStatus=Confirm");
+            $('#Failed .booking').load(remoteUrl + "&BookingStatus=Failed");
+        });
+
+        function focusTab() {
+            $('html, body').animate({
+                scrollTop: $(".tab-content").offset().top
+            }, 200);
+        }
+
+        $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            var currTabTarget = $(e.target).attr('href');
+
+            var remoteUrl = "@Url.Action("TravelHistory", "Account")" + "?" + "BookingStatus=" + currTabTarget.substr(1);
+            var loadedOnce = $(this).data('loaded');
+
+            //$(currTabTarget + ' .booking').empty();
+            run_waitMe('load-section', 'ios');
+            @*$.ajax({
+                type: "GET",
+                url: remoteUrl,
+                beforeSend: function () { run_waitMe('load-section', 'ios'); },
+                success: function (data) {
+                    $(currTabTarget + ' .booking').html(data);
+                }
+            });*@
+
+            if (!loadedOnce) {
+                run_waitMe('load-section', 'ios');
+                $(currTabTarget + ' .booking').load(remoteUrl, function (responseTxt, statusTxt, xhr) {
+                    if (statusTxt == "error")
+                        $(currTabTarget + ' .booking').html("<h2 style='margin: 10px 25px'>Error: " + xhr.status + ": " + xhr.statusText + "</h2>");
+                });
+                $(this).data('loaded', true);
+            }
+            else {
+                $('.waitMe').hide();
+            }
+
+            $('.waitMe').hide();
+        });
+
+        @*tjq(document).ready(function () {
+            tjq('#book-filter').on('change', function (e) {
+                run_waitMe('load-section', 'ios');
+                var statusCode = tjq(this).val();
+                if (statusCode == null || statusCode == "") {
+                    tjq('#book-filter option:first').text('Select to filter...')
+                    tjq.get(
+                        "@Url.Action("_ListPartial", "Account")",
+                            function (result) {
+                                tjq('#booking').html(result);
+                            });
+                }
+                else {
+                    tjq('#book-filter option:first').text('Reset filter...')
+                    tjq.get(
+                        "@Url.Action("_ListPartial", "Account")" + "?BookingStatus=" + tjq("#book-filter").val(),
+                        function (result) {
+                            tjq('#booking').html(result);
+                        });
+                };
+            })
+        });*@
+
+    </script>
+}

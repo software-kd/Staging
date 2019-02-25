@@ -1,0 +1,124 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.ESBHotelComparisonWebService.ESBHotel
+
+@model Alphareds.Module.Model.CrossSellModels
+
+@{
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+}
+
+<div class="hlist-container addon_filter HTL">
+    @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotel in Model.HotelInformation)
+    {
+        List<string> hotelAddress = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(hotel.locationDescription))
+        {
+            hotelAddress.Add(HttpUtility.HtmlDecode(hotel.locationDescription));
+        }
+
+        if (!string.IsNullOrWhiteSpace(hotel.Addresses?.city))
+        {
+            hotelAddress.Add(HttpUtility.HtmlDecode(hotel.Addresses.city));
+        }
+
+        if (hotelAddress.Count == 0)
+        {
+            hotelAddress.Add("-");
+        }
+
+        var crossSellRulesUsed = Model.CrossSellRules.FirstOrDefault(x => x.HotelID == hotel.hotelId ||
+(hotel.hotelId.StartsWith(x.HotelID.Replace("?", "")) && hotel.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan));
+        string enc_SupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(hotel.hotelSupplierCode ?? "");
+
+        var rateInfo = hotel.RoomRateDetailsList.First().RateInfos.First();
+        hotel.imagesURL = hotel.imagesURL ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL();
+        hotel.imagesURL.y_500x500 = string.IsNullOrWhiteSpace(hotel.imagesURL.y_500x500) ? null : (Core.IsUrlAvailable(hotel.imagesURL.y_500x500) ? hotel.imagesURL.y_500x500 : Url.Content("~/Images/no-img-01.jpg"));
+        var hotelImg = hotel.imagesURL.y_500x500 ?? Url.Content("~/Images/no-img-01.jpg");
+
+        <div class="search-item bg-white">
+            <div class="search-item-top shadow">
+                <div class="slider-wrap addon-ht-info" data-hotelid="@hotel.hotelId" data-hotelname="@hotel.name" data-sr="@enc_SupplierCode">
+                    <div id="carousel-1" class="carousel slide" data-ride="carousel">
+                        @*<ol class="carousel-indicators">
+                                <li data-target="#carousel-1" data-slide-to="0" class="active"></li>
+                            </ol>*@
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="d-block w-100 show-ht-info" data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))"
+                                     src="@Url.Content(hotelImg)" alt="img_slide_@(hotel?.hotelId)_1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mid-content addonh_mid">
+                    <div class="mid-top">
+                        <div class="mid-left">
+                            <h2 class="show-ht-info" data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">@Html.Raw(hotel.name)</h2>
+                            <div class="rating-display">
+                                @for (int i = 0; i < Math.Floor(hotel.hotelRating.ToDecimal()); i++)
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                                @if (Core.IsForStaging)
+                                {
+                                    <small class="text-muted font-italic">&nbsp;&nbsp;(@hotel.hotelSupplier.ToString())</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mid-bottom" data-hotelid="@hotel.hotelId">
+                        <div>@(hotel.tripAdvisor?.tripAdvisorRating.ToString("n1") ?? "-")</div>
+                        <div class="ht-trip-rate">
+                            <span class="@(hotel.hotelSupplier == HotelSupplier.Expedia ? "show-review" : "")" data-ht-lon="@(hotel?.Addresses?.longitude)" data-ht-lat="@(hotel?.Addresses?.latitude)"
+                                  data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">
+                                @(hotel.tripAdvisor?.tripAdvisorReviewCount.ToString() ?? "-")<br />reviews
+                                @if (hotel.hotelSupplier == HotelSupplier.Expedia)
+                                {
+                                    <br />
+                                    <img class="ht-tr-logo" src="~/Images/sp-logo/ht-tr-logo-sm.png" alt="tripadvisor" />
+                                }
+                            </span>
+                            <br />
+                        </div>
+                        <div>
+                            Location
+                            <span class="ht-map-icon"><i class="fa fa-map-marker text-danger" aria-hidden="true"></i></span>
+                            @if (hotel.hotelSupplier == HotelSupplier.Expedia)
+                            {
+                                <span class="ht-trip-rate show-tr-nearby" data-ht-lon="@(hotel?.Addresses?.longitude)" data-ht-lat="@(hotel?.Addresses?.latitude)"
+                                      data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">
+                                    (Nearby)
+                                </span>
+                            }
+                            <br /><p class="show-map" role="button" data-name="@hotel.name" data-city="@(hotel.Addresses.city == null ? hotel.Addresses.address4 : hotel.Addresses.city)">@Html.Raw(string.Join(", ", hotelAddress))</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="price-div">
+                    <h3>from <span>@hotel.rateCurrencyCode @hotel.lowRate.ToString("#,##0.00")</span>/night</h3>
+                    <p>tax excluded</p>
+                    <span class="ht-pkglbl btn btn-sm btn-success mb-3 disabled">Package Deals</span>
+                    @{
+                        var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString());
+                        <a href="#" class="room-trigger btn btn-primary btn--red" data-rtoken="@hotel.OptionalCode"
+                           data-supp="@displayTxt" data-hotelid="@hotel.hotelId" data-pid="@(hotel.hotelId.Replace(" ", "-"))">Show Rooms</a>
+                    }
+                </div>
+                @*<a href="#" id="more_@hotelInfo.hotelId" class="room-trigger btn btn-primary btn--red full--width" data-hotelid="@hotelInfo.hotelId" data-box="hotel_@(hotelInfo.hotelId)" data-type="hotel">Show Rooms <i class="fa fa-angle-down"></i></a>*@
+            </div>
+
+            <div class="room-container">
+
+            </div>
+
+        </div>
+
+
+        @*<div class="room-wrapper">
+            </div>*@
+    }
+</div>
+
+

@@ -1,0 +1,51 @@
+﻿/* payment page */
+.payment-top.custom-checkbox {
+    display: flex;
+}
+
+.customize-tooltips-list ul {
+    list-style-type: disc;
+    text-align: left
+}
+
+.customize-tooltips-list li {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-style: italic;
+    display: list-item !important;
+    margin-left: 1.7em !important;
+}
+
+.payment-single {
+    p {
+        display: none;
+    }
+
+    &.in {
+        p {
+            display: block !important;
+        }
+    }
+}
+
+.sec-print {
+    margin: 1em;
+    margin-right: 22px;
+
+    a {
+        color: #888888;
+        text-decoration: underline;
+    }
+}
+
+.sec-send-mail {
+    margin: 1em 11px;
+    margin-top: 5em;
+
+    .sec-info {
+        margin-top: -0.8em;
+        line-height: 1;
+    }
+}
+/* payment page */

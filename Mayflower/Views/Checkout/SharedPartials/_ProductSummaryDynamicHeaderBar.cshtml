@@ -1,0 +1,351 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@functions{
+    #region Global Variable
+    string returnUrl;
+    bool hasFlight;
+    int itemCounter = 0;
+
+    // Flight Start
+    SearchFlightResultViewModel searchCriteria;
+    FlightMasterInfo flightInfo;
+    bool isDomestic;
+    bool isOneWay;
+    string cabinClass;
+    string adl;
+    string child;
+    string inf;
+    // Flight End
+    #endregion
+}
+
+@{
+    string tripid = ViewBag.tripid;
+    returnUrl = Url.Action("Search", "Flight", new { @tripid = tripid }, Request.Url.Scheme);
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.ReturnAction))
+    {
+        returnUrl = ViewBag.ReturnAction;
+    }
+    #region Global Variable
+    hasFlight = Model.Flight != null;
+
+    if (hasFlight)
+    {
+        searchCriteria = Model.Flight.SearchFlightInfo;
+        flightInfo = Model.Flight.FlightInfo.FlightDetailInfo;
+        isDomestic = searchCriteria.isDomesticFlight;
+        isOneWay = !searchCriteria.isReturn;
+        cabinClass = UtilitiesService.GetCabinNameByCode(searchCriteria.CabinClass);
+
+        adl = searchCriteria.Adults > 1 ? "Adults" : "Adult";
+        child = searchCriteria.Childrens > 1 ? "Children" : "Child";
+        inf = searchCriteria.Infants > 1 ? "Infants" : "Infant";
+    }
+    #endregion
+}
+
+<div class="s3_1_flight_details_box s3_1_flight_details_box2">
+    <div class="s3_1_fdb_inner">
+        @foreach (var item in Model.Products.Where(x => x.GetType() == typeof(ProductFlight)))
+        {
+            @RenderPaymentSummaryBar(item);
+        }
+
+        <div class="clear"></div>
+    </div>
+</div>
+
+<div class="nav-booking-section">
+    <!-- MORE FLIGHTS BOX START -->
+    <div class="moreflight_container">
+        <div class="moreflight_box">
+            <div class="more_flight_innerbox">
+                <div class="mf_content_container">
+                    <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+
+                    @if (hasFlight)
+                    {
+                        @Html.Partial("~/Views/Checkout/FlightPartials/_FlightSummary.cshtml", Model.Flight)
+                    }
+
+                </div>
+            </div>
+           <div class="show_more_flight_icon">Show more booking details</div>
+        </div>
+    </div>
+    <!-- MORE FLIGHTS BOX END -->
+</div>
+
+@helper RenderPaymentSummaryBar(ICheckoutProduct product)
+{
+var pType = product.GetType();
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="row">
+                <div class="hidden-xs hidden-sm col-md-2">
+                    @if (itemCounter == 0)
+                    {
+                        <a href="javascript:;" class="back-sp" data-location="@returnUrl"><img src="@Url.Content("~/images/arrow_left.jpg")" width="40" height="29" alt=""></a>
+                    }
+                </div>
+
+                <div class="col-xs-12 col-sm-12 col-md-10">
+
+                    @if (pType == typeof(ProductFlight))
+                    {
+                        @RenderFlightInformation()
+                    }
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4 ars-block-border">
+            @if (pType == typeof(ProductFlight))
+            {
+                <div class="hotelpart timebox">
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_in">
+                                Depart
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box1">
+                                @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                &nbsp;>&nbsp;
+                                @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).ArriveDateTime.ToString("HHmm")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 ars-border-left-xs ars-border-left-sm">
+                        <div class="s3_1_fdb_i3_da_lable">
+                            <div class="check_out">
+                                Return
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb_i3_da_timing">
+                            <div class="tim_box2">
+                                @if (!isOneWay)
+                                {
+                                    @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                                    @:&nbsp;>&nbsp;
+                                    @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).ArriveDateTime.ToString("HHmm")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4">
+            <div class="s3_1_fdb4_inner">
+                @if (pType == typeof(ProductFlight))
+                {
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room">
+                            @if (searchCriteria.Adults > 0)
+                            {
+                                <span>@searchCriteria.Adults</span> @adl
+                            }
+                            @if (searchCriteria.Childrens > 0)
+                            {
+                                <span>@searchCriteria.Childrens</span> @child
+                            }
+                            @if (searchCriteria.Infants > 0)
+                            {
+                                <span>@searchCriteria.Infants</span> @inf
+                            }
+                            | @cabinClass
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                }
+
+                @if (itemCounter == Model.Products.Count - 1)
+                {
+                    <div class="totalpricepart">
+                        <div class="s3_1_fdb4_inner_ri_ans">
+                            <div class="s3_1_ans_myr">MYR</div>
+                            <div class="s3_1_ans_fig TotalPrice">@Model.CheckOutSummary.GrandTtlAmt.ToString("n2")</div>
+                            <div class="s3_1_fdb4_inner_lf_lable2">
+                                Include tax
+                                <div class="show_toltip2 add-cursor-pointer">
+                                    <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="">
+                                    <div class="s3_form_toll_tip">
+                                        <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                        <div class="s3-1_form_toll_tip_b">
+                                            @RenderPaymentSummaryBox(Model)
+                                            <div class="clear1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="s3_1_fdb4_inner_lf_lable">Total</div>
+                    </div>
+                }
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+
+itemCounter++;
+}
+
+@helper RenderPaymentSummaryBox(CheckoutProduct checkoutProduct)
+{
+foreach (ICheckoutProduct product in checkoutProduct.Products)
+{
+    if (product.GetType() == typeof(ProductFlight))
+    {
+        <div class="eachSection">
+            <div style="font-weight: bold;">@product.ProductType.ToString() :</div>
+            @foreach (var item in product.PricingDetail.Items)
+            {
+                <div class="s2-1_tt_left">@item.ItemDetail x @item.ItemQty</div>
+                <div class="s2-1_tt_right">MYR<span>@item.TTlBaseRate.ToString("#,##0.00")</span></div>
+                <div class="clear"></div>
+            }
+        </div>
+    }
+}
+
+if (checkoutProduct.Products.Any(x => x.PricingDetail!=null && x.PricingDetail.Discounts.Count > 0))
+{
+        <div class="eachSection pcode-summary">
+            <div style="font-weight: bold;">Discount :</div>
+            @foreach (ICheckoutProduct product in checkoutProduct.Products.Where(x => x.PricingDetail.Discounts.Count > 0 && x.GetType() == typeof(ProductFlight)))
+            {
+                var discList = product.PricingDetail.Discounts.Select(x => x.DiscType.ToString());
+                <div class="s2-1_tt_left">@product.ProductType.ToString() - @string.Join(", ", discList)</div>
+                <div class="s2-1_tt_right">MYR<span>@((-Math.Abs(product.PricingDetail.Discounts.Sum(s => s.Disc_Amt))).ToString("#,##0.00"))</span></div>
+            }
+            <div class="clear"></div>
+        </div>
+    }
+    else
+    {
+        <div class="eachSection pcode-summary" style="display: none">
+            <div style="font-weight: bold;">Discount :</div>
+            <div class="s2-1_tt_left"></div>
+            <div class="s2-1_tt_right"></div>
+            <div class="clear"></div>
+        </div>
+    }
+
+    <div class="eachSection">
+        <div style="font-weight: bold;">Prevailing Charges :</div>
+        <div class="s2-1_tt_left">Taxes and Fees</div>
+        <div class="s2-1_tt_right">MYR<span>@checkoutProduct.CheckOutSummary.TtlSurchage.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+
+        <div class="pFeeArea @(checkoutProduct.CheckOutSummary.ProcessingFee != null ? "" : "hidden")">
+            <div class="s2-1_tt_left">Processing Fee</div>
+            @if (checkoutProduct.CheckOutSummary.ProcessingFee != null)
+            {
+                <div class="s2-1_tt_right">MYR<span class="ProcessingFee">@checkoutProduct.CheckOutSummary.ProcessingFee.Amt.ToString("#,##0.00")</span></div>
+            }
+            else
+            {
+                <div class="s2-1_tt_right">MYR<span class="ProcessingFee"></span></div>
+            }
+            <div class="clear"></div>
+        </div>
+
+        <div class="s2-1_tt_left">GST</div>
+        <div class="s2-1_tt_right">MYR<span class="Gst">@checkoutProduct.CheckOutSummary.TtlGST.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="s2-1_tt_left blackLine boldText" style="line-height:30px;">Grand Total :</div>
+    <div class="s2-1_tt_right1 blackLine" style="line-height:35px;">MYR<span class="TotalPrice">@checkoutProduct.CheckOutSummary.GrandTtlAmt.ToString("#,##0.00 ")</span></div>
+}
+
+@helper RenderFlightInformation(FlightTripInfo tripInfo)
+{
+if (tripInfo == null)
+{
+        <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+            @for (int a = 0; a < tripInfo.FlightRouteInfo.Count; a++)
+            {
+                string airlineList = string.Empty;
+                var seg = tripInfo.FlightRouteInfo[a];
+                <span>@seg.DepartAirportCode</span>
+                <span> > </span>
+
+                if (a + 1 == tripInfo.FlightRouteInfo.Count)
+                {
+                    <span>@seg.ArriveAirportCode</span>
+                    airlineList = string.Format("{0}{1}"
+                                    , seg.AirlineCode
+                                    , seg.AirlineFlightNo);
+                    <span class="s3_1_fdb4_inner_lf_lable4">
+                        @airlineList
+                    </span>
+                }
+            }
+        </div>
+
+        <div class="date_L">@tripInfo.DepartDateTime.ToString("dd-MMM-yy, ddd")</div>
+        <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+            <div class="tim_box" style="display:inline-block">@tripInfo.DepartDateTime.ToString("HHmm")</div>
+            <div class="img_box" style="display:inline-block">></div>
+            <div class="tim_box" style="display:inline-block">@tripInfo.ArriveDateTime.ToString("HHmm")</div>
+            <div class="clear"></div>
+        </div>
+}
+else
+{
+        <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+            <span class="s3_1_fdb_big">-</span>
+            <p>-</p>
+        </div>
+        <div class="date_L">-</div>
+        <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+            <div class="tim_box">-</div>
+            <div class="date_L">-</div>
+            <div class="clear"></div>
+        </div>
+}
+}
+
+@helper RenderFlightInformation()
+{
+    <div class="hotelpart">
+        <div class="">
+            <img class="pull-left" src="@Url.Content("~/Images/fl_t_ico.png")" />
+            <div class="s3_1_fdb_hotel_name bolder-size">
+                @for (int i = 0; i < flightInfo.FlightTrip.Count; i++)
+                {
+                    var trip = flightInfo.FlightTrip[i];
+                    string airlineList = string.Empty;
+                    for (int a = 0; a < trip.FlightRouteInfo.Count; a++)
+                    {
+                        var seg = trip.FlightRouteInfo[a];
+                        airlineList += string.Format("{0}{1}{2}", seg.AirlineCode
+                                        , seg.AirlineFlightNo
+                                        , (a + 1 == trip.FlightRouteInfo.Count ? "" : ", "));
+                        <span>@seg.DepartAirportCode</span>
+                        <span> > </span>
+
+                        if (a + 1 == trip.FlightRouteInfo.Count)
+                        {
+                            <span>@seg.ArriveAirportCode</span>
+
+                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                @airlineList
+                            </span>
+                        }
+                    }
+                    <br />
+                }
+            </div>
+        </div>
+    </div>
+}

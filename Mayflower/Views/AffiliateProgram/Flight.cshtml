@@ -1,0 +1,26 @@
+﻿<style>
+    .top_red_portion {
+        display: none;
+    }
+
+    .footer {
+        display: none;
+    }
+
+    @@media screen and (min-width:901px) {
+        .flight-loading-page {
+            margin-top:100px auto;
+        }
+    }
+        @@media screen and (max-width : 1130px) {
+        .flight-loading-page {
+            margin-top:200px auto;
+        }
+    }
+</style>
+
+<div class="flight-loading-page" style="max-width:120px; margin:150px auto">
+    <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120" alt="" />
+    <h1>Loading...</h1>
+</div>
+

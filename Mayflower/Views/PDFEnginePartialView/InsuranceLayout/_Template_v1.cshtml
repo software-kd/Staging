@@ -1,0 +1,41 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@model ICollection<BookingInsurance>
+
+@if (Model != null && Model.Count > 0)
+{
+    <section class='flight-details clr fl' style='width: 100%'>
+        <h3 class='heading-blue font-blue'>Insurance Details</h3>
+
+        @foreach (var item in Model)
+        {
+            <div class='row subdetails clr'>
+                <table cellpadding='0' cellspacing='0' border='0' class='details'>
+                    <tbody>
+                        <tr>
+                            <td width='251'>Insurance</td>
+                            <td width='2'>:</td>
+                            <td>
+                                &nbsp;@item.ProductName  &nbsp;x&nbsp; @item.NumberOfPax
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>:</td>
+                            <td>
+                                @*@{ int totalDays = item.NoOfDays.HasValue ? item.NoOfDays.Value : 0; }*@
+                                &nbsp;@item.EffectiveDate.Value.ToString("dd MMMM yyyy") - @item.ExpiryDate.Value.ToString("dd MMMM yyyy") @*[@totalDays @(totalDays > 1 ? "Days" : "Day" )]*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Insurance Policy Number</td>
+                            <td>:</td>
+                            <td>&nbsp;@item.PolicyNumber</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}

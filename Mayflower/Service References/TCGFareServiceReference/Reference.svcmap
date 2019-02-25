@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="e783665f-9bce-483e-8bac-e03be231a89c" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://23.97.52.180/TCG_Malindo/fareservice.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="FareService5.xsd" MetadataType="Schema" ID="ebb13736-dfe2-4626-8cd6-8f2db9f83a9d" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd4" />
+    <MetadataFile FileName="FareService51.xsd" MetadataType="Schema" ID="a210f3b1-78a8-40c7-bb75-f56426ba7e0f" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd3" />
+    <MetadataFile FileName="FareService52.xsd" MetadataType="Schema" ID="53d68004-740b-4a24-b8b9-198219dd4952" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd1" />
+    <MetadataFile FileName="Fare1.wsdl" MetadataType="Wsdl" ID="757491f1-fb6b-4152-b0da-38ee0ddd6366" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?wsdl" />
+    <MetadataFile FileName="FareService53.xsd" MetadataType="Schema" ID="cb1daef2-661d-4bde-983a-a24bceb33d7c" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd2" />
+    <MetadataFile FileName="FareService54.xsd" MetadataType="Schema" ID="6fdf7cd7-fb71-456a-983d-02e0840df127" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd0" />
+    <MetadataFile FileName="FareService1.disco" MetadataType="Disco" ID="9930b5ea-d381-4d7b-836f-a2799fb672a1" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/FareService.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,76 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<Alphareds.Module.Model.TravellerGroupInsert>
+
+@{
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+}
+
+@{ int i = 1; }
+@foreach (var item in Model)
+{
+
+    //string current_item = item.Key.GroupName;
+    //string previous_item = item.GroupName;
+
+    //string current = item.GroupName;
+    //string previous = null;
+
+    <div class="clearfix @if (i % 2 == 0){<text>booking_history_gray_bg</text>} else {<text>booking_history_white_bg</text>}">
+        <div class="mcp_inner_b0 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">&nbsp</div>
+        <div class="mcp_inner_b2 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.GroupName</div>
+
+        <div class="mcp_inner_b2 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+            @foreach (var group in item.TravellerList)
+            {
+                @(group.FirstName + "/" + group.FamilyName)<br />
+            }
+
+        </div>
+        <div class=" mcp_inner_b4 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+            <a style="cursor:pointer;text-decoration:none" href="@Url.Action("EditTraveller", "Tools", new { name = item.GroupName })"><img src="../Images/modify_icon.png" style="padding-right:10px" />Edit</a>
+        </div>
+        <div class=" mcp_inner_b4 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+            <a id="deleteTvl" class="popout" data-name="@item.GroupName" style="cursor:pointer;text-decoration:none"><img src="../Images/dustbin_icon.png" style="padding-right:10px" />Delete</a>
+
+        </div>
+
+        <div class="mcp_inner_b0 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">&nbsp</div>
+    </div>
+    i++;
+
+}
+
+<div id="popup-modal" class='fullcover_div5 popup' style="display: none; overflow:auto">
+
+    <div class="fcd_white3_op" style="height: initial">
+
+        <div class="fcd_op_inner modal-container" id="modal-container">
+
+        </div>
+        <div class="ars-spacer"></div>
+    </div>
+
+</div>
+
+@{
+    string pagingUrl = ViewContext.ParentActionViewContext != null ? ViewContext.ParentActionViewContext.RouteData.Values["Action"].ToString()
+        : ViewContext.RouteData.Values["Action"].ToString();
+
+    if (Model.TotalItemCount > 10)
+    {
+        <div style="margin: 20px">
+            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+            @Html.PagedListPager(Model, page => Url.Action(pagingUrl, new { page, sortOrder = ViewBag.CurrentSort   , currentFilter = ViewBag.CurrentFilter, BookingStatus = ViewBag.BookingStatus }))
+        </div>
+    }
+}
+
+
+
+
+
+
+
+

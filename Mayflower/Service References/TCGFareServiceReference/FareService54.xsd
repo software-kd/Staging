@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://23.97.52.180/TCG_Malindo/FareService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/TCG.Entities" />
+  <xs:element name="GetAvailability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objTripAvailabilityRequest" nillable="true" type="q1:TripAvailabilityRequest" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAvailabilityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="GetAvailabilityResult" nillable="true" type="q2:AvailabilityResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAvailabilityWithTaxes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objTripAvailabilityRequest" nillable="true" type="q3:TripAvailabilityRequest" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAvailabilityWithTaxesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="GetAvailabilityWithTaxesResult" nillable="true" type="q4:AvailabilityResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFareRule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objFareRuleRequestData" nillable="true" type="q5:FareRuleRequestData" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFareRuleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="GetFareRuleResult" nillable="true" type="q6:FareRuleInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetItineraryPrice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objItineraryPriceRequest" nillable="true" type="q7:ItineraryPriceRequest" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetItineraryPriceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="GetItineraryPriceResult" nillable="true" type="q8:ItineraryPriceResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLowFareAvailability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objAvailabilityRequest" nillable="true" type="q9:AvailabilityRequest" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLowFareAvailabilityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="GetLowFareAvailabilityResult" nillable="true" type="q10:AvailabilityResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAvailability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="strSessionID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="objSetAvailabilityRequest" nillable="true" type="q11:SetAvailabilityRequest" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAvailabilityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/TCG.Entities" minOccurs="0" name="SetAvailabilityResult" nillable="true" type="q12:AvailabilityResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

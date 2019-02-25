@@ -1,0 +1,344 @@
+﻿@model Alphareds.Module.Model.FlightBookingModel
+@using Alphareds.Module.Common;
+
+@if (Model.FlightSearchResultViewModel.GroupFullFlightSearchReseult2 != null)
+{
+    var preRequestResult = Model.FlightSearchResultViewModel.FullFlightSearchResult.AsQueryable();
+    bool isRoundTrip = Model.SearchFlightResultViewModel.TripType == "Return";
+
+    <div class="s2_filer_container">
+        <div class="s2_filter_inner">
+            <!-- mobile filter tag start -->
+            <div class="flight_filter_tag filtertag">
+                <div class="fft_left">Filter</div>
+                <div class="fft_right"><a class="reset-filter" href="javascript:;">Reset Filter ></a></div>
+                <div class="clear"></div>
+            </div>
+            <!-- mobile filter tag end -->
+            <div class="s2_fil_in_left">
+                <div class="s2_fil_inl_filboxes1 s2_fil_redfont">Flight filter by:<span><a class="reset-filter" href="javascript:;">Reset Filter ></a></span></div>
+                <div class="s2_fil_inl_filboxes fillink tabfil1" value="filter-airlines">
+                    <div class="s2fil_filboxes_inner filterico1 s2fill_icofontblue">
+                        Airlines
+                    </div>
+                </div>
+                <div class="s2_fil_inl_filboxes fillink tabfil2" value="times-filter">
+                    <div class="s2fil_filboxes_inner filterico2 s2fill_icofontgreen">
+                        Times
+                    </div>
+                </div>
+                <div class="s2_fil_inl_filboxes fillink tabfil3" value="stop_filter">
+                    <div class="s2fil_filboxes_inner filterico3 s2fill_icofontpink">
+                        Stops
+                    </div>
+                </div>
+                <div class="s2_fil_inl_filboxes fillink tabfil4" value="price-filter">
+                    <div class="s2fil_filboxes_inner filterico4 s2fill_icofontyello">
+                        Price
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="s2_fil_in_right">
+                @{
+                    string tripid = ViewBag.tripid;
+
+                    string selectedSort = Session["sortType" + tripid] == null ? "" : Session["sortType" + tripid].ToString();
+                    var sortOption = new List<SelectListItem>
+                    {
+                       new SelectListItem { Text = "Best Deal", Value = "PriceAsc" },
+                       new SelectListItem { Text = "Earliest Departure Time", Value = "DepartureTimeAsc" },
+                       new SelectListItem { Text = "Shortest Duration", Value = "DurationAsc"},
+                    };
+                    var sOption = sortOption.FirstOrDefault(x => x.Value.ToLower() == selectedSort);
+                    if (sOption != null)
+                    {
+                        sOption.Selected = true;
+                    }
+                }
+                @Html.DropDownList("sorting", sortOption, new { id = "sort-option", onchange = "filterAirline()" })
+                @*<select id="sort-option" name="sorting" onchange="filterAirline()">
+                        <option value="PriceAsc">Best Deal</option>
+                        <option value="DepartureTimeAsc">Earliest Departure Time</option>
+                        <option value="DurationAsc">Shortest Duration</option>
+                    </select>*@
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    <div class="tabsformobile1">Airlines</div>
+    <div class="newcontainer1">
+        <div class="s2filter_cc_inner">
+            <!-- AIRLINES START -->
+            <div id="filter-airlines" class="filcont">
+                <div id="content-4" class="content1">
+                    @{
+                        string isFilteredAirline = Model.FilterFlightModel != null && Model.FilterFlightModel.Airline != null &&
+                                                        Model.FilterFlightModel.Airline.Any(x => x != "") ? "" : "filter-airline-active";
+                        decimal fromPrice = Model.FlightSearchResultViewModel.GroupFullFlightSearchReseult2.OrderBy(x => x.Price).First().Price;
+                        decimal filterPriceFrom = Model.SearchFlightResultViewModel.IsFixedPrice ? fromPrice - Model.SearchFlightResultViewModel.FixedPriceFrom : fromPrice;
+                    }
+                    <ul>
+                        <li class="mTSThumbContainer">
+                            <div id="show-allairline" class="s2_filter_air_bg @isFilteredAirline" data-air="">
+                                @* Alvinloo 7/12/2016 start *@
+                                <div class="s2_filter_ab_flilogo"><img src="@Url.Content("~/images/flight8.jpg")" alt="" class="mTSThumb"></div>
+                                @* Alvinloo 7/12/2016 end *@
+                                <div class="s2_filter_ab_flifrom">From</div>
+                                <div class="s2_filter_ab_flimoney">@(Model.SearchFlightResultViewModel.IsFixedPrice ? "+ " : "")MYR<span>@(filterPriceFrom.ToString("#,##0.00"))</span></div>
+                            </div>
+                            <img src="@Url.Content("~/images/filter_img.png")" width="152" height="215" alt="" class="mTSThumb">
+                        </li>
+                        @{ bool isMultiRendered = false; }
+
+                        @foreach (var item in Model.FlightSearchResultViewModel.GroupFullFlightSearchReseult2.OrderBy(x => x.Price).GroupBy(x => x.AirlineGroup, y => y.Price))
+                        {
+                            string airlineImg = "";
+                            string airlineName = "";
+                            string airlineGroup = "";
+                            string ishightLight = isFilteredAirline == "" && item.Key == Model.FilterFlightModel.Airline[0] ? "filter-airline-active" : "";
+                            bool isAuthorizedAAFlight = item.Key == "AK";
+
+                            if (!isAuthorizedAAFlight)
+                            {
+                                airlineName = item.Key.Contains("-") ? "Multiple Airline" : UtilitiesService.GetAirlineName(item.Key);
+                                airlineImg = UtilitiesService.GetAirlineImagePath(item.Key);
+                                airlineGroup = item.Key;
+                            }
+                            else
+                            {
+                                airlineName = "AIR ASIA";
+                                airlineImg = UtilitiesService.GetAirlineImagePath("AK");
+                                airlineGroup = item.Key;
+                            }
+
+                            if (!isMultiRendered || !item.Key.Contains("-"))
+                            {
+                                <li>
+                                    <div class="s2_filter_air_bg @ishightLight" data-air="@airlineGroup">
+                                        <div class="s2_filter_ab_flilogo"><img src="@Url.Content(airlineImg)" alt=""></div>
+                                        <div class="s2_filter_ab_fli_airlineName">@airlineName</div>
+                                        <div class="s2_filter_ab_flifrom">From</div>
+                                        <div class="s2_filter_ab_flimoney">@(Model.SearchFlightResultViewModel.IsFixedPrice ? "+ " : "")MYR<span>@((Model.SearchFlightResultViewModel.IsFixedPrice ? item.First() - Model.SearchFlightResultViewModel.FixedPriceFrom : item.First()).ToString("#,##0.00"))</span></div>
+                                    </div>
+                                    <img src="@Url.Content("~/images/filter_img.png")" width="152" height="215" alt="">
+                                </li>
+                                if (!isMultiRendered)
+                                {
+                                    isMultiRendered = item.Key.Contains("-");
+                                }
+                            }
+                        }
+                    </ul>
+                    @Html.HiddenFor(model => model.FilterFlightModel.Airline[0])
+                </div>
+            </div>
+            <!-- AIRLINES END -->
+        </div>
+    </div>
+
+    <div class="tabsformobile2">Times</div>
+    <div class="s2_filter_content_container newcontainer2">
+        <div class="s2filter_cc_inner">
+            <!-- TIMES START -->
+            <div id="times-filter" class="filcont">
+                <div class="filter_timer_half_left">
+                    <div class="fthl_inner">
+                        <h3>Outbound</h3>
+
+                        <!-- outbound dep slider start -->
+
+                        <div class="fth_left_lable">
+                            Departure Time<br>
+                            <span id="outDepMinIni" class="slider-time"></span> - <span id="outDepMaxIni" class="slider-time2"></span>
+                        </div>
+                        <div class="fth_left_slide">
+                            <div id="slider-range-out-dep"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <!-- outbound dep slider end -->
+                        <!-- outbound arrival slider start -->
+                        <div class="fth_left_lable mt30">
+                            Arrival Time<br>
+                            <span id="outArrMinIni" class="slider-time_1"></span> - <span id="outArrMaxIni" class="slider-time2_1"></span>
+                        </div>
+                        <div class="fth_left_slide1">
+                            <div id="slider-range-out-arr"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <!-- outbound arrival slider end -->
+                    </div>
+                </div>
+                @if (isRoundTrip)
+                {
+                    <div class="filter_timer_half_right">
+                        <div class="fthr_inner">
+                            <h3>Inbound</h3>
+
+                            <!-- inbound dep slider start -->
+                            <div class="fth_left_lable">
+                                Departure Time<br>
+                                <span id="inDepMinIni" class="slider-time_2"></span> - <span id="inDepMaxIni" class="slider-time2_2"></span>
+                            </div>
+                            <div class="fth_left_slide">
+                                <div id="slider-range-in-dep"></div>
+                            </div>
+                            <div class="clear"></div>
+                            <!-- inbound dep slider end -->
+                            <!-- inbound arrival slider start -->
+                            <div class="fth_left_lable mt30">
+                                Arrival Time<br>
+                                <span id="inArrMinIni" class="slider-time_3"></span> - <span id="inArrMaxIni" class="slider-time2_3"></span>
+                            </div>
+                            <div class="fth_left_slide1">
+                                <div id="slider-range-in-arr"></div>
+                            </div>
+                            <div class="clear"></div>
+                            <!-- inbound arrival slider end -->
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                }
+                <div class="clear"></div>
+                @Html.HiddenFor(model => Model.FilterFlightModel.OutDepartureTimeMin, new { Id = "outDepMin" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.OutDepartureTimeMax, new { Id = "outDepMax" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.OutArrivalTimeMin, new { Id = "outArrMin" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.OutArrivalTimeMax, new { Id = "outArrMax" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.InDepartureTimeMin, new { Id = "inDepMin" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.InDepartureTimeMax, new { Id = "inDepMax" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.InArrivalTimeMin, new { Id = "inArrMin" })
+                @Html.HiddenFor(model => Model.FilterFlightModel.InArrivalTimeMax, new { Id = "inArrMax" })
+            </div>
+            <!-- TIMES END -->
+        </div>
+    </div>
+
+
+    <div class="tabsformobile3">Stops</div>
+    <div class="s2_filter_content_container newcontainer3">
+        <div class="s2filter_cc_inner">
+            <!-- STOPS START -->
+            <div id="stop_filter" class="filcont">
+                @{
+                    //Compare Tool - Change to Compare Tool
+                    //var grpSegment = preRequestResult.SelectMany(x => x.OriginDestinationOptions).GroupBy(g => g.FlightSegments);
+                    var grpSegment = preRequestResult.SelectMany(x => x.pricedItineryModel.OriginDestinationOptions).GroupBy(g => g.FlightSegments);
+                    List<int> segmentStop = new List<int>();
+
+                    foreach (var item in grpSegment)
+                    {
+                        segmentStop.Add(item.Key.Length - 1);
+                    }
+
+                    // 2017/01/09 - Ask KC, will temp. disable this flight stop counter first
+                    //IEnumerable<int> outStop = Model.FlightSearchResultViewModel.GroupFullFlightSearchReseult2.SelectMany(x => x.Outbound).Select(y => y.Tag.Split(',').Length - 1);
+                    //IEnumerable<int> inStop = new List<int>();
+
+                    //if (isRoundTrip)
+                    //{
+                    //    inStop = Model.FlightSearchResultViewModel.GroupFullFlightSearchReseult2.SelectMany(x => x.Inbound).Select(y => y.Tag.Split(',').Length - 1);
+                    //}
+
+                    //var listStop = outStop.Concat(inStop);
+
+                }
+
+                @foreach (var stop in segmentStop.Distinct().Where(x => x <= 2).OrderBy(x => x))
+                {
+                    string displayStop = stop == 0 ? "Direct flights" : stop + " Stop" + (stop >= 2 ? " and more" : "");
+                    string locked = stop == 0 ? "disabled" : "";
+                    string isChecked = Model.FilterFlightModel == null ||
+                        (Model.FilterFlightModel != null && Model.FilterFlightModel.StopList == null) || Model.FilterFlightModel.StopList.Contains(stop) ? "checked" : "";
+                    //int displayFlightCount = listStop.Count(x => x == stop);
+
+
+                    //Compare Tool - Change to Compare Tool
+                    //var displayFlight = preRequestResult.Where(x => (x.OriginDestinationOptions.First().FlightSegments.Length - 1 == stop) &&
+                    //                        (x.OriginDestinationOptions.Last().FlightSegments.Length - 1 == stop));
+
+                    //if (stop >= 2)
+                    //{
+                    //    displayFlight = preRequestResult.Where(x => (x.OriginDestinationOptions.First().FlightSegments.Length - 1 >= 2) ||
+                    //        (x.OriginDestinationOptions.Last().FlightSegments.Length - 1 >= 2));
+                    //}
+                    var displayFlight = preRequestResult.Where(x => (x.pricedItineryModel.OriginDestinationOptions.First().FlightSegments.Length - 1 == stop) &&
+                            (x.pricedItineryModel.OriginDestinationOptions.Last().FlightSegments.Length - 1 == stop));
+
+                    if (stop >= 2)
+                    {
+                        displayFlight = preRequestResult.Where(x => (x.pricedItineryModel.OriginDestinationOptions.First().FlightSegments.Length - 1 >= 2) ||
+                            (x.pricedItineryModel.OriginDestinationOptions.Last().FlightSegments.Length - 1 >= 2));
+                    }
+
+                    if (displayFlight.FirstOrDefault() != null)
+                    {
+                        //Compare Tool - Change to Compare Tool
+                        //var displayFlightMinPrice = displayFlight.Min(x => x.PricingInfo.TotalAfterTax).ToString("#,##0.00");
+                        var displayFlightMinPrice = displayFlight.Min(x => x.pricedItineryModel.PricingInfo.TotalAfterTax).ToString("#,##0.00");
+                        var checkboxId = "stopCheckBox_" + stop;
+
+                        <div class="s2_sf_left">
+                            <input id="@checkboxId" type="checkbox" name="@checkboxId.Replace("_", ".")" value="@stop" @isChecked>
+                            <label for="@checkboxId" class="add-cursor-pointer">@displayStop</label>
+                        </div>
+                        <div class="s2_sf_mid">@*@displayFlightCount Flights*@</div>
+                        <div class="s2_sf_right">From MYR<span>@displayFlightMinPrice</span></div>
+                        <div class="clear"></div>
+                    }
+                }
+            </div>
+            <!-- STOPS END -->
+        </div>
+    </div>
+
+    <div class="tabsformobile4">Price</div>
+    <div class="s2_filter_content_container newcontainer4">
+        <div class="s2filter_cc_inner">
+            <!-- PRICE START -->
+            <div id="price-filter" class="filcont">
+                <div class="s2_pf_left"><p id="amount"></p></div>
+                <div class="s2_pf_right">
+                    <div id="slider-range"></div>
+                </div>
+                @Html.HiddenFor(model => model.FilterFlightModel.PriceMin)
+                @Html.HiddenFor(model => model.FilterFlightModel.PriceMax)
+                <div class="clear"></div>
+            </div>
+            <!-- PRICE END -->
+        </div>
+    </div>
+
+
+    <div class="hidefilter_icon">
+        <div class="hidden_icon_for_color"><img src="@Url.Content("~/Images/hide_arrow_white.png")" width="19" height="12" alt=""></div>
+        Hide Filter
+    </div>
+            <!-- mobile sorting tag start -->
+                    <div class="flight_filter_tag sorttag">
+                        <div class="fft_left">Sort by</div>
+                        <div class="fft_right"> </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight bestdeal">Best Deal</div>
+                    <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight fastroute">Earliest Departure Time</div>
+                    <div class="s2_fil_in_right_sm s2_fil_in_right_sm_flight shortduration">Shortest Duration</div>
+            <!-- mobile sorting tag end -->
+            <!-- FILLTER PORTION END -->
+                    <div class="s2_ib_inner">
+                        <div class="fillter_tags Bottom_blue_bg"></div>
+                        <div class="fillter_tags Bottom_green_bg outdep"></div>
+                        <div class="fillter_tags Bottom_green_bg outarr"></div>
+                        <div class="fillter_tags Bottom_green_bg indep"></div>
+                        <div class="fillter_tags Bottom_green_bg inarr"></div>
+                        <div class="fillter_tags Bottom_pink_bg"></div>
+                        <div class="fillter_tags Bottom_yellow_bg"></div>
+                        <div class="clear"></div>
+                    </div>
+                    if (!Model.SearchFlightResultViewModel.IsFixedPrice)
+                    {
+                        <h4 style="text-align: center;">Step 1: Choose a flight</h4>
+                    }
+                    }

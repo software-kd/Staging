@@ -1,0 +1,136 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.ProductTourPackage
+@{
+    Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+    List<SelectListItem> travelMethodList = (from a in db.FlightTravelMethods
+                                             select new SelectListItem
+                                             {
+                                                 Text = a.Method.ToString(),
+                                                 Value = a.MethodID.ToString()
+                                             }).ToList();
+}
+
+    <div class="booker-body shadow bg-white mb-0 pb-3">
+        <div class="px-4">
+            <div class="row">
+                <div class="col-sm col-md-12">
+                    <h4 class="tour-title">Contact Information</h4>
+                    <div class="tour-input">
+                        <div class="tour-input grey-bg">
+                            <div class="left-filter">
+                                <div class="accordion p-0" id="accordion7">
+                                    <div class="card grey-bg">
+                                        <div class="card-header" id="headingOne">
+                                            <h5 class="mb-0">
+                                                <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+                                                    Contact Detail
+                                                </button>
+                                            </h5>
+                                        </div>
+
+                                        <div id="collapseSeven" class="collapse show" aria-labelledby="collapseSeven" data-parent="#accordion7" style="">
+                                            <div class="card-body form-inline">
+                                                <div class="col-4">First name</div>
+                                                @Html.TextBoxFor(model => Model.ContactPerson.GivenName, new { @class = "form-control col-8", placeholder = "" })
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.GivenName, null)</div>
+                                                <div class="col-4">Last name</div>
+                                                @Html.TextBoxFor(model => Model.ContactPerson.Surname, new { @class = "form-control col-8", placeholder = "" })
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Surname, null)</div>
+                                                <div class="col-4">Email</div>
+                                                @Html.TextBoxFor(model => Model.ContactPerson.Email, new { @class = "form-control col-8", placeholder = "" })
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Email, null)</div>
+                                                <div class="col-4">Contact No</div>
+                                                @Html.DropDownListFor(model => Model.ContactPerson.Phone1LocationCode, Mayflower.General.Utilities.PhoneCodeList("MYS").OrderBy(x => x.Text), new { @class = "form-control col-3", placeholder = "" })
+                                                @Html.TextBoxFor(model => Model.ContactPerson.Phone1, new { @class = "form-control col-5", placeholder = "", maxlength = "11" })
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.ContactPerson.Phone1, null)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h4 class="tour-title">Flight Information <span>(optional)</span></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="tour-input">
+                        <div class="tour-input grey-bg">
+                            <div class="left-filter red-border-bottom">
+                                <div class="accordion p-0" id="accordion5">
+                                    <div class="card grey-bg">
+                                        <div class="card-header" id="headingOne">
+                                            <h5 class="mb-0">
+                                                <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                                                    Fly From
+                                                </button>
+                                            </h5>
+                                        </div>
+
+                                        <div id="collapseFive" class="collapse" aria-labelledby="collapseFive" data-parent="#accordion5" style="">
+                                            <div class="card-body form-inline">
+                                                @*<div class="col-5">Travel Method</div>
+                                                @Html.DropDownListFor(model => Model.TourPackagesInfo.DepartFlightDetails.MethodID, travelMethodList, new { @class = "form-control col-7" })*@
+                                                <div class="col-5">Flight No.</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.DepartFlightDetails.FlightNo, new { @class = "form-control col-7", placeholder = "eg. XX 000" })
+                                                <div class="col-5">From</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.DepartFlightDetails.Origin, new { @class = "form-control col-7", placeholder = "eg. KUL" })
+                                                <div class="col-5">To</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.DepartFlightDetails.Destination, new { @class = "form-control col-7", placeholder = "eg. HKT" })
+                                                <div class="col-5">Depart Date</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.DepartFlightDetails.DepartureDatetime, "{0:dd/MM/yyyy}", new { @class = "form-control col-7 datepicker2", placeholder = "dd/MM/yyyy", autocomplete = "off" })
+                                                <div class="col-5">Arrive Date</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.DepartFlightDetails.ArrivalDatetime, "{0:dd/MM/yyyy}", new { @class = "form-control col-7 datepicker2", placeholder = "dd/MM/yyyy", autocomplete = "off" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="tour-input">
+                        <div class="tour-input grey-bg">
+                            <div class="left-filter red-border-bottom">
+                                <div class="accordion p-0" id="accordion6">
+                                    <div class="card grey-bg">
+                                        <div class="card-header" id="headingOne">
+                                            <h5 class="mb-0">
+                                                <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+                                                    Fly Back To
+                                                </button>
+                                            </h5>
+                                        </div>
+
+                                        <div id="collapseSix" class="collapse" aria-labelledby="collapseSix" data-parent="#accordion6" style="">
+                                            <div class="card-body form-inline">
+                                                @*<div class="col-5">Travel Method</div>
+                                                @Html.DropDownListFor(model => Model.TourPackagesInfo.ArriveFlightDetails.MethodID, travelMethodList, new { @class = "form-control col-7" })*@
+                                                <div class="col-5">Flight No.</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.ArriveFlightDetails.FlightNo, new { @class = "form-control col-7", placeholder = "eg. XX 000" })
+                                                <div class="col-5">From</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.ArriveFlightDetails.Origin, new { @class = "form-control col-7", placeholder = "eg. KUL" })
+                                                <div class="col-5">To</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.ArriveFlightDetails.Destination, new { @class = "form-control col-7", placeholder = "eg. HKT" })
+                                                <div class="col-5">Depart Date</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.ArriveFlightDetails.DepartureDatetime, "{0:dd/MM/yyyy}", new { @class = "form-control col-7 datepicker2", placeholder = "dd/MM/yyyy", autocomplete = "off" })
+                                                <div class="col-5">Arrive Date</div>
+                                                @Html.TextBoxFor(model => Model.TourPackagesInfo.ArriveFlightDetails.ArrivalDatetime, "{0:dd/MM/yyyy}", new { @class = "form-control col-7 datepicker2", placeholder = "dd/MM/yyyy", autocomplete = "off" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

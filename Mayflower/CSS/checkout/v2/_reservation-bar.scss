@@ -1,0 +1,27 @@
+﻿.reservation-table-mid li span:first-child {
+    flex-basis: 60%;
+}
+
+.resbar-htlist-btn, .resbar-fltlist-btn {
+    a {
+        color: #989898;
+        font-family: 'SFPro Regular';
+        display: inline-block;
+        font-size: 14px;
+        padding: 2px 13px;
+        margin-left: auto;
+        margin: 10px 0px;
+        border: 1px solid #868686;
+    }
+}
+.spbtwreverse {
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+.reservation-body {
+    a.ht-view-dt {
+        margin: 0 1em;
+        font-size: 65%;
+        color: #007bff;
+    }
+}

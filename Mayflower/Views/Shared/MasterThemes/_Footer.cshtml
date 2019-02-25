@@ -1,0 +1,52 @@
+﻿@* Please don't add style tag at partial view. *@
+<div class="footer">
+    <div class="footer_inner">
+        <div class="fi_col1">
+            <a href="https://customerservice.mayflower.com.my/"><img src="@Url.Content("~/images/customer-service.png")" width="200" height="80" alt=""></a>
+            <br><br><div><span style="font-size:13px;">General Line: +603-9232-1888</span></div>
+        </div>
+        <div class="fi_col2">
+            <div class="followus_mob mobileonly2">
+                <div>Follow us on</div><br>
+                <a href='https://www.facebook.com/mayflowerholidaysMH' style="display: inline-block; padding-right:10px; padding-left:10px; "><img src="@Url.Content("~/images/Facebook-icon.png")" width="50" height="50" alt=""></a>
+                <a href='https://www.instagram.com/mayflowerholidays/' style="display: inline-block; padding-right:10px; padding-left:10px; "><img src="@Url.Content("~/images/Instagram-Icon.png")" width="50" height="50" alt=""></a>
+                <a href='https://twitter.com/mayflowerhdays' style="display: inline-block; padding-right:10px; padding-left:10px; "><img src="@Url.Content("~/images/Tweeter-Icon.png")" width="50" height="50" alt=""></a>
+            </div>
+        </div>
+        <div class="fi_col3">
+            @* This is mayflower dunregistered script, will auto have logo while correct domain with https. *@
+            @* 2017/06/02 - Mayflower said DUN expired, hide it now *@
+            @if (false)
+            {
+                if (Alphareds.Module.Common.Core.IsForStaging) 
+                {
+                    <img src="@Url.Content("~/images/fl1.jpg")" width="114" height="97" alt="">
+                }
+                else
+                {
+                    <script language="JavaScript" src="https://dunsregistered.dnb.com" type="text/javascript"></script>
+                }
+            }
+            <img src="@Url.Content("~/images/Trip-Advisor-Logo.png")" width="129" height="98" alt="">
+        </div>
+        <div class="clear"></div>
+
+        @*<div class="fi_r2_c1">
+                Website Support Internet Explorer 10 & above. Best view from Google Chrome Version 55.0.2883.87 m<br>
+                Copyright &copy; Mayflower Holidays Sdn Bhd (843960-T) (KPK/LN 7367) 2017. All rights reserved.
+            </div>
+            <div class="fi_r2_c2">
+            </div>
+            <div class="clear"></div>*@
+        <div class="disclaimer">
+            <h4><p class="otherservice_link">Other Services</p></h4><p></p>
+            <p style="font-size:11px;text-decoration-color:black;" class="otherservice_link"><a href="http://www.mayflowerborneo.com/">Mayflower Holidays Borneo</a> | <a href="https://www.mayflower-gbt.com/">Mayflower Corporate Travel Services</a> | <a href="http://cn.mayflower.com.my/">Mayflower Greater China Inbound</a> | <a href="http://www.mayflowerholidays.com/">Mayflower International Sales Inbound</a> | <a href="http://www.mayflowercarrental.com.my/">Mayflower Car Rental</a> | <a href="http://www.mayflower.com.my/image/TransportServices.pdf">Mayflower Transport Services</a> | <a href="http://www.mayflower.com.my/MM2H">Mayflower-My 2nd Home(MM2H)</a></p>
+            <br><br>
+            <p style="text-align:center;color:black;"> Website Support Internet Explorer 10 &amp; above. Best view from Google Chrome Version 36.0.1985.125</p>
+            <p style="text-align:center;color:black;">
+                Copyright © Mayflower Holidays Sdn Bhd (843960-T) (KPK/LN 7367) 2017. All rights reserved.<a href="https://book.mayflower.com.my/Public/PDPA"><u>Privacy Policy</u></a>
+                <a href="https://book.mayflower.com.my/public/cancel"><u>Refund Policy</u></a>
+            </p><p></p>
+        </div>
+    </div>
+</div>

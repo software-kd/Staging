@@ -1,0 +1,29 @@
+﻿@{
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+
+<!-- OPS CONTAINER START -->
+<div id="oopsbox" class="fullcover_div4" style="display: none">
+    <div class="fcd_white3_op">
+        @*<div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" alt="" width="31" height="29"></div>*@
+        <div class="fcd_op_inner" style="margin-top:50px">
+            <div><img src="@Url.Content("~/images/ops.jpg")" width="87" height="118" alt=""></div>
+            <div class="fcd_op_text">OOPS!</div>
+            <div class="fcd_op_text1" id="oops-msg">Looks like there's a glitch in the system.<br>Try finding your way back?</div>
+            @if (!isEnableCMS)
+            {
+                <div class="redbacktohome_button"><a href="@Url.Action("Index", "Home")">Back to Homepage</a></div>
+            }
+            else
+            {
+                @*<div class="redbacktohome_button">
+                        <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none" class="add-cursor-pointer">
+                                <input type="button" class="redbacktohome_button" value="Back to Homepage" />
+                            </a>
+                    </div>*@
+                <div class="redbacktohome_button"><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })'>Back to Homepage</a></div>
+            }
+        </div>
+    </div>
+</div>
+<!-- OPS CONTAINER END -->

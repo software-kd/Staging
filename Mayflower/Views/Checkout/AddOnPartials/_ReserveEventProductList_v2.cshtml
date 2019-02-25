@@ -1,0 +1,139 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@model Alphareds.Module.Model.CrossSellItemsAvailable.EventProductInformation
+
+@{
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    var eventTypeGrp = Model.HeaderInfo.GroupBy(x => new { x.EventTypeCode, x.EventType });
+    var productTypeGrp = Model.DetailsInfo.GroupBy(x => x.EventTypeCode);
+
+    List<SelectListItem> AddonDateList = new List<SelectListItem>();
+}
+
+<div class="addon-body">
+    <!-- Item Single -->
+    @foreach (var eventType in eventTypeGrp.OrderByDescending(x => x.Key.EventTypeCode == "CT"))
+    {
+        @Html.Hidden(eventType.Key.EventTypeCode, null, new { @class = "token event-product " + (eventType.Key.EventTypeCode == "CT" || eventType.Key.EventTypeCode == "GT" || eventType.Key.EventTypeCode == "TH" ? "" : "etc") })
+        int eventTypeCounter = eventType.Count();
+
+        foreach (var headerInfo in eventType)
+        {
+            bool onlyOneRecord = eventTypeCounter == 1;
+            string identifyClass = string.Format("{0}_{1}", headerInfo.EventTypeCode, headerInfo.EventID);
+            string bannerSrcServerPath = Server.MapPath(headerInfo.EventImageWeb);
+            string sqServerFilePath = "";
+            string sqBannerSrcServerPath = "";
+            var ticketDetails = Model.DetailsInfo.Where(x => x.EventID == headerInfo.EventID);
+            bool isAnyItemHas = ticketDetails.Any(x => x.TicketBalance > 0);
+
+
+            try
+            {
+                string fileExtension = Path.GetExtension(headerInfo.EventImageWeb);
+                string fileName = Path.GetFileName(headerInfo.EventImageWeb);
+
+                if (!string.IsNullOrWhiteSpace(fileExtension))
+                {
+                    sqServerFilePath = bannerSrcServerPath.Replace(fileName, fileName.Replace(fileExtension, "_sq" + fileExtension));
+                }
+
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    sqBannerSrcServerPath = headerInfo.EventImageWeb.Replace(fileName, fileName.Replace(fileExtension, "_sq" + fileExtension));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write(ex);
+            }
+            string bannerSrc = File.Exists(sqServerFilePath) ? Url.Content(sqBannerSrcServerPath) : (File.Exists(bannerSrcServerPath) ? Url.Content(headerInfo.EventImageWeb) : Url.Content("~/Images/no-img-01.jpg"));
+            if (onlyOneRecord)
+            {
+                bannerSrc = File.Exists(bannerSrcServerPath) ? Url.Content(headerInfo.EventImageWeb) : bannerSrc;
+            }
+
+            bool gotTicket = false;
+            DateTime? firstDetailDate = null;
+            var addonDateList = ticketDetails.Select(x => x.EventDate).Distinct().ToList();
+            var datelist = from a in addonDateList
+                           select new SelectListItem
+                           {
+                               Text = a.Date.ToString("dd MMM yyyy"),
+                               Value = a.Date.ToString("dd-MM-yyyy"),
+                           };
+            firstDetailDate = addonDateList.FirstOrDefault().Date;
+            string bundleTWAnountText = headerInfo.BundleTWPrice != 0 ? "+ MYR" + headerInfo.BundleTWPrice.ToString("n2") + " Travel Wallet Per Ticket" : "";
+            <div class="addon-single addon_filter @eventType.Key.EventTypeCode">
+                <div class="item-left">
+                    <img class="popOut add-cursor-pointer" data-sdate="@headerInfo.EventStartDate" data-edate="@headerInfo.EventEndDate" data-id="@headerInfo.EventID" src="@bannerSrc" />
+                </div>
+                <div class="item-right">
+                    <div class="addon-sec-top">
+                        <h2>
+                            @headerInfo.EventName @bundleTWAnountText 
+                            @if (headerInfo.BundleTWPrice != 0)
+                            {
+                                <a href='javascript:;' role='button' data-container='body' data-toggle='popover' data-placement='bottom' data-html='true' data-content="<div>a 'virtual-wallet' that provides all smart travellers an easy booking on all flight/hotel deals available in <a href='https://www.mayflower.com.my/'>mayflower.com.my</a>. Click <a href='https://www.mayflower.com.my/self-help#usetravelwallet'>here</a> for more details.</div>"><img class='tooltip-ico-name' src='~/images/i-icon.png' /></a>
+                            }
+                        </h2>
+                        @Html.DropDownList("tk_date", datelist, new { @class = "cuntom-unit-inner ml-0" })
+                    </div>
+                    @foreach (Alphareds.Module.Model.Database.usp_EventProductSelect_Result detailInfo in ticketDetails.OrderByDescending(x => x.TicketCategory.Contains("MyKad")).ThenBy(x => x.EventProductID))
+                    {
+                        var eventselected = "date_" + detailInfo.EventDate.ToString("ddMMyyyy");
+                        var showevent = detailInfo.EventDate.Date == firstDetailDate ? "" : "d-none";
+                        if (detailInfo.TicketBalance > 0)
+                        {
+                            var maxQty = detailInfo.TicketBalance > headerInfo.TotalQtyAcceptable ? headerInfo.TotalQtyAcceptable : detailInfo.TicketBalance;
+                            <div class="item-bottom @eventselected @showevent">
+                                <div>
+                                    <p>
+                                        + MYR @detailInfo.FrontEndTicketPrice.ToString("n2")
+                                        <span>
+                                            @if (detailInfo.EventTypeCode == "CR")
+                                            {
+                                                @:per car
+                                            }
+                                            else if (detailInfo.EventTypeCode == "CT")
+                                            {
+                                                @:per ticket
+                                            }
+                                            else
+                                            {
+                                            @:per set
+                                            }
+                                            @if (detailInfo.TicketBalance <= 1)
+                                            {
+                                                <span style="color: #ff0000;font-style: italic;display:inline;"> (LAST UNIT)</span>
+                                            }
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <div class="custom-unit">
+                                        <span class="addoncat">@detailInfo.TicketCategory</span>
+                                        <div class="cuntom-unit-inner" data-quantity="@maxQty">
+                                            <span>@detailInfo.ReservedQty</span>
+                                        </div>
+                                        <input class="tk_type_selector" type="hidden" value="@detailInfo.ReservedQty" data-cat="@detailInfo.TicketCategoryCode" data-catname="@detailInfo.TicketCategory" data-tick="@detailInfo.EventProductID" data-price="@detailInfo.FrontEndTicketPrice" data-cc="@headerInfo.TotalQtyAcceptable"
+                                    data-type="@headerInfo.EventTypeCode" data-name="@headerInfo.EventName" data-master="@headerInfo.EventID" data-date="@detailInfo.EventDate.Date.ToString("dd-MM-yyyy")"> <!-- Hidden input -->
+                                        @if (bundleTWAnountText != "")
+                                        {
+                                            <div style="display:none" class="TWinfo" data-twdesc="Travel Wallet" data-twamount="@headerInfo.BundleTWPrice.ToString("n2")"></div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+    }
+
+</div>

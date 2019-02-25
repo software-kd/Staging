@@ -1,0 +1,43 @@
+﻿@model Mayflower.Models.UserFrequentFlyerModel
+@using Alphareds.Module.Common;
+
+@using (Ajax.BeginForm("_UpdateFrequentFlyerNumber", "User", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "ffndiv", OnSuccess = "OnSuccessMethod" }))
+{
+
+    @Html.ValidationSummary(true)
+
+    <div class="s3-1_fullform_left">
+        <div class="s3-1_contactform_left_lb">
+            <div class="s3-1_cf_lable_text">Frequent traveller number</div>
+            <div class="ffn_inputbox">
+                <div class="ffn_inputbox" style="position: relative">
+                    <div class="ff-img-container"><img src="@Url.Content(UtilitiesService.GetAirlineImagePath(Model.AirlineCode))"></div>
+                    @Html.EditorFor(model => model.AirlineCode, "PreferenceUsage/PreferredAirline", new { disabled = "true" })
+                </div>
+                @Html.TextBoxFor(model => model.FrequentFlyerNumber, new { @class = "s3-1_flyer_right" })
+                <div class="clear"></div>
+                @Html.ValidationMessageFor(model => model.AirlineCode, null, new { @class = "textforerrormsg" })
+                @Html.ValidationMessageFor(model => model.FrequentFlyerNumber, null, new { @class = "textforerrormsg" })
+                <div class="ffn_inputboxulli_container">
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="s3-1_fullform_right"></div>
+    <div class="clear"></div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <button id="btnSubmit" type="submit" value="Save FrequentFlyer Info" name="btnUpdateFrequentInfo" class="s3-1_form_button_nopromp add-cursor-pointer">Save</button>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    function OnSuccessMethod() {
+        $('.fullcover_div2').fadeOut();
+       $('#ffndiv').load('/User/_FrequentFlyerSection');
+   };
+</script>

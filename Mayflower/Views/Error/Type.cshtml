@@ -1,0 +1,165 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "Error";
+    bool isAjaxRequest = Request.IsAjaxRequest();
+    if (isAjaxRequest)
+    {
+        Layout = null;
+    }
+    else
+    {
+
+    }
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+    bool haveUserCookies = Request.Cookies["SaveUserCookies"] != null;
+}
+
+@if (ViewBag.ErrorCode == "session-error")
+{
+    <!-- SESSION CONTAINER START -->
+    if (isAjaxRequest)
+    {
+        @Html.Raw("<div class='fullcover_div5'>")
+    }
+    <div class="fcd_white3_op" id="sessionExpired">
+        <div class="fcd_op_inner" style="margin-top:50px">
+            <div><img src="@Url.Content("~/images/session_clock.jpg")" width="126" height="149" alt=""></div>
+            <div class="session_lb_text">Your session has expired!</div>
+            <div class="session_lb_text1">For the latest prices and availability,<br> we need to refresh your result</div>
+            <div class="clear"></div>
+            @if (isAjaxRequest)
+            {
+                if (!isEnableCMS)
+                {
+                    <a href="@Url.Action("Index", "Home")" style="text-decoration: none ; color: white" class="add-cursor-pointer"><div class="redbacktohome_button">Go To Homepage</div></a>
+                    @*<a href="javascript:;" style="text-decoration: none" class="add-cursor-pointer" data-url="@Url.Action("Index", "Home")" onclick="submit_form(this, $.param(typeof searchCriteria != 'undefined' ? searchCriteria : ''))"><div class="redbacktohome_button">Go To Homepage</div></a>*@
+                }
+                else
+                {
+                    @*<a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none" class="add-cursor-pointer">
+                            <button type="button" class="redbacktohome_button" value="Back to Homepage" />
+                        </a>*@
+
+                    <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none ; color:white" class="add-cursor-pointer"><div class="redbacktohome_button">Go To Homepage</div></a>
+                }
+            }
+            else
+            {
+                if (!isEnableCMS)
+                {
+                    <a href="@Url.Action("Index", "Home")" style="text-decoration:none"><div class="redbacktohome_button">Back to Homepage</div></a>
+                }
+                else
+                {
+                    @*<a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none">
+                            <button type="button" class="redbacktohome_button" value="Back to Homepage" />
+                        </a>*@
+
+                    <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration:none"><div class="redbacktohome_button">Back to Homepage</div></a>
+                }
+            }
+            @if (haveUserCookies)
+            {
+                @*show recent search start*@
+                <div style="margin: 2em 0"></div>
+                <h2 style="color:#be2e30">Or</h2>
+                <div class="member_fp_text" style="color:#616161;display:inline-block">
+                    <div style="font-size:1.3em">You want to research your recent search?</div>
+                    <div style="margin: 2em 0"></div>
+                </div>
+                @Html.Partial("~/Views/Home/_RecentSearchFlight.cshtml", new Alphareds.Module.Model.FlightBookingModel())
+                <div class="clear"></div>
+                @Html.Partial("~/Views/Home/_RecentSearchHotel.cshtml", new Alphareds.Module.Model.SearchHotelModel())
+                
+                @*show recent search end*@
+            }
+            
+        </div>
+    </div>
+    if (isAjaxRequest)
+    {
+        @Html.Raw("</div>")
+    }
+    <!-- SESSION CONTAINER END -->
+}
+else if (ViewBag.ErrorCode == "session-conflict")
+{
+    <!-- SESSION CONTAINER START -->
+    if (isAjaxRequest)
+    {
+        @Html.Raw("<div class='fullcover_div5'>")
+    }
+    <div class="fcd_white3_op">
+        <div class="fcd_op_inner" style="margin-top:50px">
+            <div><img src="@Url.Content("~/images/session_clock.jpg")" width="126" height="149" alt=""></div>
+            <div class="session_lb_text">Oops!</div>
+            <div class="session_lb_text1">Looks like you have an active search or booking in another window. Click "Back to Homepage" to restart your journey.</div>
+            <div class="clear"></div>
+            @if (!isEnableCMS)
+            {
+                <a href="@Url.Action("Index", "Home")" style="text-decoration:none"><div class="redbacktohome_button">Back to Homepage</div></a>
+            }
+            else
+            {
+                @*<a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none">
+                    <input type="button" class="redbacktohome_button" value="Back to Homepage" />
+                </a>*@
+                <div class="redbacktohome_button"><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="text-decoration: none">Back to Homepage</a></div>
+            }
+        </div>
+    </div>
+    if (isAjaxRequest)
+    {
+        @Html.Raw("</div>")
+    }
+    <!-- SESSION CONTAINER END -->
+}
+else if (ViewBag.ErrorCode == "authorized")
+{
+    string AuthUserName = (User as Mayflower.General.CustomPrincipal).FirstName;
+    <p>You are currently logged in as @AuthUserName. Please <a href="javascript:document.getElementById('logoutForm').submit()">logout</a> first before proceed.</p>
+}
+else
+{
+    <!-- MID CONTENT AREA START -->
+    <div class="s2_main_container">
+        <div class="s2_mc_border_conainer" style="background: #fff">
+            <div style="min-height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    <div><img src="@Url.Content("~/images/ops.jpg")" width="87" height="118" alt=""></div>
+                    <h2 style="color:#be2e30">OOPS!</h2>
+                    <div class="member_fp_text" style="color:#616161;display:inline-block">
+                        <div style="font-size:1.3em">Looks like there's a glitch in the system. Try finding your way back?</div>
+                        <div style="margin: 2em 0"></div>
+                    </div>
+                    @if (!isEnableCMS)
+                    {
+                        <div class="redbacktohome_button"><a href="@Url.Action("Index", "Home")" style="padding: 8% 17%;">Back to Homepage</a></div>
+                    }
+                    else
+                    {
+                        @*<a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="padding: 8% 17%;">
+                                <input type="button" class="redbacktohome_button" value="Back to Homepage" />
+                            </a>*@
+                        <div class="redbacktohome_button"><a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })' style="padding: 8% 17%;">Back to Homepage</a></div>
+                    }
+                    @if (haveUserCookies)
+                    {
+                         @*show recent search start*@
+                        <div style="margin: 2em 0"></div>
+                        <h2 style="color:#be2e30">Or</h2>
+                        <div class="member_fp_text" style="color:#616161;display:inline-block">
+                            <div style="font-size:1.3em">You want to research your recent search?</div>
+                            <div style="margin: 2em 0"></div>
+                        </div>
+                        @Html.Partial("~/Views/Home/_RecentSearchFlight.cshtml", new Alphareds.Module.Model.FlightBookingModel())
+                        <div class="clear"></div>
+                        @Html.Partial("~/Views/Home/_RecentSearchHotel.cshtml", new Alphareds.Module.Model.SearchHotelModel())
+                        @*show recent search end*@
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MID CONTENT AREA END -->
+}

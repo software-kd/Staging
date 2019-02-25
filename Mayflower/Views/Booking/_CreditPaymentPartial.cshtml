@@ -1,0 +1,20 @@
+﻿@model Alphareds.Module.Model.CreditAmountModels
+
+@if (User.Identity.IsAuthenticated)
+{
+    var credit = Model.AvailableCredit;
+    bool isAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+    string label = isAgent ? "Agent Credit" : "Travel Credit";
+    object checkBoxHtmlCSS = credit <= 0 ? new { @class = "disddd", @disabled = "disabled" } : null;
+
+    string clientName = Html.NameFor(m => m.UseCredit).ToString();
+
+    <div id="travelCredit_div" class="s4_png_inner_row">
+
+        <input id="@clientName" name="@clientName" type="checkbox" value="true" @(Model.UseCredit ? "checked" : "")>
+        <label for="@clientName" class="add-cursor-pointer">Pay with your @label</label><div class="s4_png_boxright_credit"></div><br />
+        <small>You have MYR @Model.AvailableCredit.ToString("#,##0.00") available in @label.ToLower()</small>
+
+    </div>
+    <div class="s4_png_line"></div>
+}

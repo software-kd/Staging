@@ -1,0 +1,33 @@
+﻿@using Alphareds.Module.Common;
+@model IQueryable<Alphareds.Module.Model.Airlines>
+
+<div class="modal fade" id="ffleyer_popModal" tabindex="-1" role="dialog" aria-labelledby="ffleyer_popModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ffleyer_popModalLabel">Choose Frequent Traveller</h5>
+                <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body viewmorehotel_container setwidth" id="ffleyer_pop">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Search By:</label>
+                    <div class="col-sm-7">
+                        @Html.TextBox("filter", null, new { @class = "form-control", @id = "filterforffair" })
+                    </div>
+                    <div class="col-12">
+                        <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal">No, Thanks!</button>
+                    </div>
+                </div>
+                <div class="loadingBackground">
+            
+                </div>
+                <div id="AirLineList">@*here add the list by script*@
+                </div>
+                <input name="guestNo" type="hidden" value="" id="guestnoforffair" />
+                <input name="airLine" type="hidden" value="" id="airlinetype" /> @*for get airline type*@
+            </div>
+        </div>
+    </div>
+</div>

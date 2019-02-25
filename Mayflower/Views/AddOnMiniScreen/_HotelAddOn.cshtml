@@ -1,0 +1,247 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CrossSellModels
+
+@{ 
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+}
+
+<div class="section-BRD section-hotel" style="margin-bottom: 0px;">
+    <h3 class="box-heading blue-bg">
+        <span class="addon-ico">
+            <img src="~/Images/ico/hotel.png" />
+        </span>
+        <span class="addon-title">Hotel Deals</span>
+    </h3>
+    <div class="collapse in Hotel" id="collapseExample">
+
+        <!--For desktop view-->
+        <div class="row visible-lg visible-md">
+            <div id="hotelresultlist" class="s2_main_container" style="margin: 0 12px; width: auto; max-width: none;">
+                @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo in Model.HotelInformation)
+                {
+                    var crossSellRulesUsed = Model.CrossSellRules.FirstOrDefault(x => x.HotelID == hotelInfo.hotelId ||
+                    (hotelInfo.hotelId.StartsWith(x.HotelID.Replace("?", "")) && hotelInfo.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan));
+                    string enc_SupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(hotelInfo.hotelSupplierCode ?? "");
+
+                    @* // For testing Expedia returned Image size by looping with Reflection Property method
+                        foreach (var item in typeof(Alphareds.Module.ExpediaHotelsWebService.ExpediaHotels.ImagesURL).GetProperties())
+                        {
+                            var img = item.GetValue(hotelInfo.imagesURL).ToString();
+                            if (img.Contains("http"))
+                            {
+                                <img src="@img" />
+                            }
+                        }*@
+                var rateInfo = hotelInfo.RoomRateDetailsList.First().RateInfos.First();
+                hotelInfo.imagesURL = hotelInfo.imagesURL ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL();
+                hotelInfo.imagesURL.y_500x500 = string.IsNullOrWhiteSpace(hotelInfo.imagesURL.y_500x500) ? null : (Core.IsUrlAvailable(hotelInfo.imagesURL.y_500x500) ? hotelInfo.imagesURL.y_500x500 : Url.Content("~/Images/no-img-01.jpg"));
+                var hotelImg = hotelInfo.imagesURL.y_500x500 ?? Url.Content("~/Images/no-img-01.jpg");
+                <div class="col-md-4" style="height:550px">
+                    <div class="addhotel-widget" data-hotelid="@hotelInfo.hotelId">
+                        <div class="fix-img-container ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode">
+                            <img src="@Url.Content(hotelImg)" class="img-responsive fix-height-img">
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(crossSellRulesUsed.MarketingMessage))
+                        {
+                            <div class="offer_tag">
+                                @(crossSellRulesUsed.MarketingMessage)@*<span class="offer_value">@* Big size font here </span>&nbsp;*@
+                            </div>
+                        }
+                        <div class="col-md-12 hotel_name_container">
+                            <h3 class="hotel_name ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-hotelname="@hotelInfo.name" data-sr="@enc_SupplierCode">
+                                @hotelInfo.name
+                                <a class="pull-right"><img class="info-ico" src="@Url.Content("~/Images/ico/info-ico.png")"></a>
+                            </h3>
+
+                            <div class="font-red">
+                                @{
+                                    int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelInfo.hotelRating)));
+                                    for (int i = 0; i < NoOfStar; i++)
+                                    {
+                                        @:<i class="fa fa-star" aria-hidden="true"><img src="@Url.Content("~/Images_hotel/hotel_red_star.png")"></i>&nbsp;
+                                            }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-right" style=" margin-bottom:15px ;height:90px">
+                            @if (Core.IsForStaging && false)
+                            {
+                                <div style="background: #fff;">
+                                    <i>Original Lowest From: &nbsp;&nbsp;</i>
+                                    <i>
+                                        <b>@hotelInfo.rateCurrencyCode @hotelInfo.lowRate_Source.ToString("n2")</b>
+                                    </i><br />
+
+                                    <i>Discount Type: &nbsp;&nbsp;</i>
+                                    <i>
+                                        <b>@crossSellRulesUsed.PricingTypeCode @crossSellRulesUsed.Discount</b>
+                                    </i><br />
+                                </div>
+                            }
+                            per night from<br>
+                            <span class="currency">@hotelInfo.rateCurrencyCode</span> <span class="price">@hotelInfo.lowRate.ToString("#,##0.00")</span><br>
+                            <i>tax exclusive</i>
+                        </div>
+
+                        <div class="col-md-12 h2_mhdb3_trip_ad" data-hotelid="@hotelInfo.hotelId" style="cursor:pointer;height:30px; margin-bottom:17px">
+                            @*<img src="@Url.Content("~/Images/tripadviser-logo-small.png")" class="pull-left mrgnR10">*@
+                            <img src="@Url.Content("../images/ta_icon_hi_res.png")" alt="" width="34" height="19" class="pull-left mrgnR10">
+                            @{
+                                string rating = hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "") : "0";
+                                if (rating.Length == 1 && (rating != "0"))
+                                {
+                                    if (!rating.Equals(5))
+                                    {
+                                        rating += "0";
+                                    }
+                                }
+
+                            }
+                            <p>
+                                TripAdvisor Traveller Rating<br>
+                                <span class="font-red">Based on @(hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorReviewCount : 0) reviews ></span>
+                            </p>
+                            <div class="ta_center sm-circle-rating-@rating"></div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div id="more_@hotelInfo.hotelId" class="row ticket_select ShowMoreRoom"
+                                 data-hotelid="@hotelInfo.hotelId" data-box="hotel_@(hotelInfo.hotelId)" data-type="hotel">
+                                <label>Select Rooms</label>
+                            </div>
+                        </div>
+                        @*<a id="more_@hotelInfo.hotelId" href="javascript:;" class="ShowMoreRoom" data-hotelid="@hotelInfo.hotelId">Select Rooms</a>*@
+                    </div>
+                </div>
+
+                                }
+            </div>
+        </div>
+        <!--//-->
+        <!--For mobile and tab-->
+        <div class="row visible-sm visible-xs">
+            <!---->
+            <div id="hotelresultlist_m" class="s2_main_container" style="margin: 0px; width: auto; max-width: none;">
+                @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo in Model.HotelInformation)
+                {
+                    string enc_SupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(hotelInfo.hotelSupplierCode ?? "");
+                    var crossSellRulesUsed = Model.CrossSellRules.FirstOrDefault(x => x.HotelID == hotelInfo.hotelId ||
+                    (hotelInfo.hotelId.StartsWith(x.HotelID.Replace("?", "")) && hotelInfo.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan));
+
+                    var rateInfo = hotelInfo.RoomRateDetailsList.First().RateInfos.First();
+                    hotelInfo.imagesURL = hotelInfo.imagesURL ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL();
+                    hotelInfo.imagesURL.y_500x500 = string.IsNullOrWhiteSpace(hotelInfo.imagesURL.y_500x500) ? null : hotelInfo.imagesURL.y_500x500;
+                    var hotelImg = hotelInfo.imagesURL.y_500x500 ?? Url.Content("~/Images/no-img-01.jpg");
+                    <div class="col-sm-12 col-xs-12 btmPadding2">
+                        <div class="addhotel-widget" data-hotelid="@hotelInfo.hotelId">
+                            <div class="row">
+                                <div class="col-sm-4 col-xs-5 padR0">
+                                    <div class="fix-img-container ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode">
+                                        <img src="@Url.Content(hotelImg)" class="img-responsive fix-height-img">
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(crossSellRulesUsed.MarketingMessage))
+                                    {
+                                        <div class="offer_tag">
+                                            @(crossSellRulesUsed.MarketingMessage)<span class="offer_value">@* Big size font here *@</span>&nbsp;
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-sm-8 col-xs-7 padL0">
+                                    <div class="col-xs-12 col-sm-12 hotel_name_container">
+                                        <h3 class="hotel_name ShowHotelInfo hotelName" data-hotelid="@hotelInfo.hotelId" data-hotelname="@hotelInfo.name" data-sr="@enc_SupplierCode">
+                                            @hotelInfo.name
+                                        </h3>
+                                        <a class="pull-right ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode"><img class="info-ico" src="~/Images/ico/info-ico.png"></a><br> @*Kuala Lumpur*@
+                                        <div class="font-red">
+                                            @{
+                                                int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelInfo.hotelRating)));
+                                                for (int i = 0; i < NoOfStar; i++)
+                                                {
+                                                    @:<i class="fa fa-star" aria-hidden="true"><img src="@Url.Content("~/Images_hotel/hotel_red_star.png")"></i>&nbsp;
+                                            }
+                                            }
+                                        </div>
+
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-xs-12a">
+                                        <div class="pull-left h2_mhdb3_trip_ad" data-hotelid="@hotelInfo.hotelId" style="cursor:pointer">
+                                            <p class="mrgn0">&nbsp;</p>
+                                            @*<a href="#"><img src="~/Images/tripadviser-logo-small.png"></a>*@
+                                            <img src="@Url.Content("../images/ta_icon_hi_res.png")" alt="" width="34" height="19">
+                                            @{
+                                                string rating = hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "") : "0";
+                                                if (rating.Length == 1 && (rating != "0"))
+                                                {
+                                                    if (!rating.Equals(5))
+                                                    {
+                                                        rating += "0";
+                                                    }
+                                                }
+
+                                            }
+                                            <div class="ta_center sm-circle-rating-@rating"></div>
+                                        </div>
+
+                                        <div class="text-right pull-right">
+                                            per night from<br>
+                                            <span class="currency">@hotelInfo.rateCurrencyCode</span> <span class="price">@hotelInfo.lowRate.ToString("#,##0.00")</span><br>
+                                            <i>tax exclusive</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12">
+                                    <div id="more_@hotelInfo.hotelId" class="row ticket_select ShowMoreRoom"
+                                         data-hotelid="@hotelInfo.hotelId" data-box="hotel_@(hotelInfo.hotelId)" data-type="hotel">
+                                        <label>Select Rooms</label>
+                                    </div>
+                                    <div class="form-container2 ticket_list hide"
+                                         data-box="hotel_@(hotelInfo.hotelId)" data-type="hotel">
+                                    @*@using (Html.BeginForm("AddOn", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { @id = "more_" + hotelInfo.hotelId }))*@
+                                    @{
+                                        string checkingf = "roomlist2_" + hotelInfo.hotelId;
+
+                                        <div id="@checkingf" data-hotelid="@hotelInfo.hotelId"></div>
+                                        <div class="btn-container">
+                                            <div class="hide">
+                                                <button type="button" class="btn btn-red btn-select"
+                                                        data-hotelid="@hotelInfo.hotelId" onclick="checkRoomInvent(this);">
+                                                    Select Room
+                                                </button>
+
+                                                @*<a class="btn btn-red btn-md btn-select" id="ReserveButton" onclick="checkRoomInvent(this);">Select Hotel</a>*@
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <!--//-->
+        </div>
+        <!--//-->
+        @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo in Model.HotelInformation)
+        {
+            string checkingf = "roomlist2_" + hotelInfo.hotelId;
+
+            <div class="form-container2 hide-table ticket_list hide" style="background-color: #fbf7eb !important;border: 1px solid #BCBEC0;"
+                 data-box="hotel_@(hotelInfo.hotelId)" data-type="hotel">
+                <div class="col4_BRD_left" style="width: 100%;border: none">
+                    <div id="@checkingf" data-hotelid="@hotelInfo.hotelId" style="margin-bottom: 1em"></div>
+                    @*<div id="roomlist" data-hotelid=""></div>*@
+                </div>
+                @*<div class="col4_BRD_right">
+                    <button type="button" class="btn btn-red btn-select"
+                            data-hotelid="@hotelInfo.hotelId" onclick="checkRoomInvent(this);">Select</button>
+                </div>*@
+            </div>
+        }
+    </div>
+
+</div>
+
+

@@ -1,0 +1,601 @@
+.lg-owl-circle-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px 0px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -20px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -40px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -60px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -80px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -100px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -120px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -140px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -160px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -180px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -200px; 
+	width: 118px;
+	height: 19px;
+}
+
+.lg-owl-circle-rating-disabled{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: 0px -220px; 
+	width: 118px;
+	height: 19px;
+}
+
+.md-owl-circle-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px 0px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -18px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -36px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -54px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -72px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -90px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -108px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -126px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -144px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -162px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -180px; 
+	width: 101px;
+	height: 18px;
+}
+
+.md-owl-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -119px -180px; 
+	width: 101px;
+	height: 18px;
+}
+
+.lg-circle-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px 0px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -14px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -28px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -42px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -56px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -70px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -84px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -98px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -112px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -126px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -140px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-circle-rating-disabled{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -220px -154px; 
+	width: 69px;
+	height: 14px;
+}
+
+.md-circle-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -1px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -12px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -23px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -34px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -45px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -56px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -67px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -78px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -89px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -100px; 
+	width: 51px;
+	height: 10px;
+}
+
+.md-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -358px -111px; 
+	width: 51px;
+	height: 10px;
+}
+
+.sm-circle-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px 0px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -8px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -16px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -24px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -32px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -40px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -48px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -56px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -64px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -72px; 
+	width: 41px;
+	height: 8px;
+}
+
+.sm-circle-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -409px -80px; 
+	width: 41px;
+	height: 8px;
+}
+
+.lg-bar-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px 0px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -14px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -28px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -42px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -56px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -70px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -84px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -98px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -112px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -126px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-bar-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -289px -140px; 
+	width: 69px;
+	height: 14px;
+}
+
+.lg-star-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px 0px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-45{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -144px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -12px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-35{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -156px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -24px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-25{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -168px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -36px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-15{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -180px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -48px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-5{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -192px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-star-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -60px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-50{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -72px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-40{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -84px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-30{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -96px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-20{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -108px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-10{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -120px; 
+	width: 60px;
+	height: 13px;
+}
+
+.lg-gold-star-rating-0{
+	background: url('images/tripadvisoricons.png') no-repeat 0 0;
+	background-position: -450px -132px; 
+	width: 60px;
+	height: 13px;
+}

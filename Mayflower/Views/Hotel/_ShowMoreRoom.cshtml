@@ -1,0 +1,483 @@
+﻿@using System.Reflection;
+@using Alphareds.Module.Model;
+@using Alphareds.Module.ESBHotelComparisonWebService.ESBHotel;
+@using Alphareds.Module.Common;
+@using Alphareds.Module.ServiceCall;
+@using System.Text.RegularExpressions;
+
+@{
+    Mayflower.General.CustomPrincipal customPrincipal = (Mayflower.General.CustomPrincipal)User;
+
+    SearchRoomModel model = new SearchRoomModel();
+    SearchHotelModel hotelModel = new SearchHotelModel();
+    CheckoutProduct productModel = new CheckoutProduct();
+    string tripid = ViewBag.sessionId != null ? ViewBag.sessionId : Request.QueryString["tripid"];
+    int noOfRoom = 8;
+    if (Core.GetSession(Enumeration.SessionName.RoomAvail, tripid) != null)
+    {
+        model = (SearchRoomModel)Core.GetSession(Enumeration.SessionName.RoomAvail, tripid);
+        hotelModel = (SearchHotelModel)Core.GetSession(Enumeration.SessionName.HotelList, tripid);
+        productModel = (CheckoutProduct)Core.GetSession(Enumeration.SessionName.CheckoutProduct, tripid);
+        noOfRoom = hotelModel.NoOfRoom;
+    }
+
+    bool isCrossSell = Session["CrossSaleRules" + tripid] != null;
+    bool IncludeTax = true, IncludeAllNights = false;
+    if (Core.GetSession(Enumeration.SessionName.FilterHotelResult, tripid) != null)
+    {
+        FilterHotelResultModel filterModel = (FilterHotelResultModel)Core.GetSession(Enumeration.SessionName.FilterHotelResult, tripid);
+        IncludeTax = filterModel.IncludeTax;
+        IncludeAllNights = filterModel.IncludeAllNights;
+    }
+
+    // Cross Sales Usage
+    if (isCrossSell)
+    {
+        IncludeTax = false;
+        IncludeAllNights = false;
+    }
+
+    if (model.Result != null)
+    {
+        List<SelectListItem> numberOfRooms = new List<SelectListItem>();
+
+        /* Only display qty match with Search */
+        numberOfRooms.AddRange(new List<SelectListItem> {
+    new SelectListItem
+    {
+        Text = 0.ToString(),
+        Value = 0.ToString()
+    }, new SelectListItem
+    {
+        Text = noOfRoom.ToString(),
+        Value = noOfRoom.ToString()
+    }
+});
+
+        //for (int i = 0; i <= noOfRoom; i++)
+        //{
+        //    numberOfRooms.Add(new SelectListItem
+        //    {
+        //        Text = i.ToString(),
+        //        Value = i.ToString(),
+        //        Selected = (i.Equals(0) ? true : false)
+        //    });
+        //}
+
+        if (model.Result.HotelRoomInformationList == null || model.Result.HotelRoomInformationList.Length <= 0
+             || model.Result.HotelRoomInformationList.Any(x => x.roomAvailabilityDetailsList == null || x.roomAvailabilityDetailsList.Length <= 0))
+        {
+            if (model.Result.Errors != null && model.Result.Errors.Category?.ToString() == "SOLD_OUT")
+            {
+                <div class="error-message">Sold out for your selected date, try search other date?</div>
+            }
+            else
+            {
+                <div class="error-message">Unexpected error. Please try again later.</div>
+            }
+            goto last;
+        }
+
+        List<string> Filters = new List<string>();
+        List<string> filterValueAdds = new List<string>();
+        var roomResultList = model.Result.HotelRoomInformationList[0].roomAvailabilityDetailsList;
+        roomResultList = model.Result.HotelRoomInformationList.SelectMany(x => x.roomAvailabilityDetailsList).ToArray();
+
+        if (hotelModel.BundleType() == BundleTypes.TPConcert)
+        {
+            // filter for Mayday Bundel, after apply will filter out ori result, caused no result, so disabled.
+            //roomResultList = roomResultList.Where(x => x.rateOccupancyPerRoom.ToDecimal() <= hotelModel.NoOfAdult + hotelModel.NoOfInfant).ToArray();
+        }
+
+        var grpRoomList = roomResultList.GroupBy(x => new { x.roomTypeCode });
+        var sortedRoomList = grpRoomList.OrderBy(a => a.Min(x => x.RateInfos[0].chargeableRateInfo?.averageRate.ToDecimal()));
+
+        int count_room = 0;
+        foreach (var roomGrp in sortedRoomList)
+        {
+            foreach (var detail in roomGrp.OrderBy(x => x.RateInfos[0].chargeableRateInfo?.total.ToDecimal()))
+            {
+                filterValueAdds = new List<string>();
+                if (Filters.Where(x => x.Equals(detail.roomTypeCode)).Count() == 0)
+                {
+                    Filters.Add(detail.roomTypeCode);
+                }
+                else
+                {
+                    ;// goto next_record;
+                }
+
+                count_room++;
+                string id = model.Result.HotelRoomInformationList[0].hotelId;
+                var supplierType = model.Result.HotelRoomInformationList[0].hotelSupplier;
+                var suppliername = supplierType.ToString();
+                string encSupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(model.Result.HotelRoomInformationList[0].hotelSupplierCode);
+                detail.roomTypeCode = !string.IsNullOrWhiteSpace(detail.roomTypeCode) ? detail.roomTypeCode : detail.jacTravelPropertyRoomTypeID == "0" ? detail.jacTravelBookingToken : detail.jacTravelPropertyRoomTypeID;
+                string popupRoomInfoClickEvent = string.Format("ShowRoomInfo('{0}','{1}')", id, detail.roomTypeCode);
+                string policyId = string.Format("policy_{0}_{1}", id, count_room);
+                string popupPolicyClickEvent = string.Format("ShowPolicy('{0}')", policyId);
+                bool containPlusChar = supplierType == HotelSupplier.Tourplan && detail.rateDescription != null && detail.rateDescription.Contains('+');
+
+                string mayDayTicketTypeDesc = null;
+                if (model.Result.HotelRoomInformationList[0].hotelSupplier == HotelSupplier.Tourplan && (hotelModel.ValidBundle() || containPlusChar))
+                {
+                    var splitDesc = detail.rateDescription.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+                    int loopIndex = 0;
+                    foreach (var item in splitDesc)
+                    {
+                        if (loopIndex == 0)
+                        {
+                            mayDayTicketTypeDesc += item + "<br>";
+                        }
+                        else
+                        {
+                            var _temp = "<small> + {0}<br></small>";
+                            if (item.ToLower().Contains("ticket"))
+                            {
+                                mayDayTicketTypeDesc += string.Format(_temp, detail.quotedOccupancy + " x " + item);
+                            }
+                            else
+                            {
+                                mayDayTicketTypeDesc += string.Format(_temp, item);
+                            }
+                        }
+                        loopIndex++;
+                    }
+
+                    string requiredS = detail.quotedOccupancy.ToDecimal() > 1 ? "s" : "";
+                    switch (detail.RateInfos[0].rateType)
+                    {
+                        default:
+                            //mayDayTicketTypeDesc = detail.rateDescription;
+                            break;
+                    }
+                }
+
+                <!-- row start -->
+                <div class="h2_mhd3_rl_row">
+                    <div class="h2_mhd3_rl_row_b1">
+                        <div class="h2_mhd3_rl_row_b_heading">
+                            @*<div class="h2_mhd3_r1bh_left" onclick="@popupRoomInfoClickEvent"><img src="@Url.Content("~/Images/ico/info-ico.png")" width="15" height="15" alt=""></div>*@
+                            @*<div class="h2_mhd3_r1bh_right">@detail.description</div>*@
+                            <img src="@Url.Content("~/Images/ico/info-ico.png")" width="15" height="15" alt="" onclick="@popupRoomInfoClickEvent" class="add-cursor-pointer">
+                            <div class="ht-subtitle">
+                                <div class="h2_mhd3_r1bh_left" onclick="@popupRoomInfoClickEvent"> @((hotelModel.ValidBundle() || containPlusChar) ? Html.Raw(mayDayTicketTypeDesc) : Html.Raw(detail.description))</div>
+                                <div class="clear"></div>
+                                <div class="policy-info" onclick="@popupPolicyClickEvent" style="font-size: 13px; cursor:pointer; width:115px">
+                                    @Html.Raw(detail.RateInfos[0].nonRefundable ? "<span class='xs-font' style='color: grey;'>Non-Refundable</span>" :
+                                        "<span class='xs-font' style='color: #009444;'>Cancellation Policy</span>")
+                                    @(Core.IsForStaging && supplierType == HotelSupplier.Tourplan ? Html.Raw("<br /><small><i>Room Type Code: " + detail.roomTypeCode + "</i></small>") : null)
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <div id="@policyId" class="hidden">
+                                @Html.Raw(HttpUtility.HtmlDecode(detail.RateInfos[0].cancellationPolicy))
+                            </div>
+                        </div>
+                        @*<div class="h2_mhd3_rl_row_b_nortext">@Html.Raw(detail.RateInfos[0].nonRefundable ? "<span style='color: grey;'>Non-Refundable</span>" : "<span>Free Cancellation</span>")</div>*@
+                        <!-- mobile icons start-->
+                        <div class="h2_mhd3_rl_row_b2_mobile show_toltip1">
+                            @{
+                                @valueAddIcon(detail);
+                                var lst = _generateIconList(detail).Select(x => "- " + (string)x.full_desc).ToList();
+                                filterValueAdds.AddRange(lst);
+
+                                if (detail.rateOccupancyPerRoom != "0")
+                                {
+                                    string maxPax = (Convert.ToInt16(detail.rateOccupancyPerRoom) >= 10 ? "10+" : detail.rateOccupancyPerRoom);
+                                    string Descs = "", ImagePaths = "";
+                                    Alphareds.Module.ServiceCall.ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["PAXES"].ToString(), Alphareds.Module.ServiceCall.SearchImageColumn.ID, maxPax, ref Descs, ref ImagePaths);
+                                    if (detail.rateOccupancyPerRoom != null)
+                                    {
+                                        //ImagePaths = suppliername == "JacTravel" ? "~/Images/general-icon-02.png": ImagePaths;
+                                        <img width="34" height="24" alt="" src="@Url.Content(ImagePaths)" class="add-cursor-pointer">
+                                    }
+                                    <div class="s2-1_form_toll_tip_1">
+                                        <div class="tt_top_form_y_1"><img class="position" style="filter:initial" src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                        <div class="s3-1_form_toll_tip_b s3-1_form_toll_tip_b2">
+                                            @{
+                                                if (filterValueAdds.Count > 0)
+                                                {
+                                                    <span>@Html.Raw(string.Join("<br />", filterValueAdds))</span>
+                                                    <br />
+                                                }
+                                                if (detail.rateOccupancyPerRoom != null)
+                                                {
+                                                    var taapdesc = "";
+                                                    if (suppliername == "ExpediaTAAP" && detail.quotedChildOccupancy != null && detail.quotedChildOccupancy != "0")
+                                                    {
+                                                        taapdesc += "(up to " + detail.quotedChildOccupancy + (detail.quotedChildOccupancy == "1" ? " child)" : " children)");
+                                                    }
+                                                    <div class="Descs">- @Descs @taapdesc<br />Max no of guests the room can accommodate, including guests who may incur extra person fees.</div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <!-- mobile icons end -->
+                    </div>
+                    <div class="h2_mhd3_rl_row_b2 show_toltip1">
+                        @{
+                            @valueAddIcon(detail);
+
+                            if (detail.rateOccupancyPerRoom != "0")
+                            {
+                                string maxPax = (Convert.ToInt16(detail.rateOccupancyPerRoom) >= 10 ? "10+" : detail.rateOccupancyPerRoom);
+                                string Descs = "", ImagePaths = "";
+                                Alphareds.Module.ServiceCall.ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["PAXES"].ToString(), Alphareds.Module.ServiceCall.SearchImageColumn.ID, maxPax, ref Descs, ref ImagePaths);
+                                if (detail.rateOccupancyPerRoom != null)
+                                {
+                                    //ImagePaths = suppliername == "JacTravel" ? "~/Images/general-icon-02.png": ImagePaths;
+                                    <img width="34" height="24" alt="" src="@Url.Content(ImagePaths)" class="add-cursor-pointer">
+                                }
+                                <div class="s2-1_form_toll_tip_1">
+                                    <div class="tt_top_form_y_1"><img class="position" style="filter:initial" src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                    <div class="s3-1_form_toll_tip_b s3-1_form_toll_tip_b2">
+                                        @{
+                                            if (filterValueAdds.Count > 0)
+                                            {
+                                                <span>@Html.Raw(string.Join("<br />", filterValueAdds))</span>
+                                                <br />
+                                            }
+                                            if (detail.rateOccupancyPerRoom != null)
+                                            {
+                                                var taapdesc = "";
+                                                if (suppliername == "ExpediaTAAP" && detail.quotedChildOccupancy != null && detail.quotedChildOccupancy != "0")
+                                                {
+                                                    taapdesc += "(up to " + detail.quotedChildOccupancy + (detail.quotedChildOccupancy == "1" ? " child)" : " children)");
+                                                }
+                                                <div class="Descs">- @Descs @taapdesc<br />Max no of guests the room can accommodate, including guests who may incur extra person fees.</div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="h2_mhd3_rl_row_b3">
+                        @{
+                            string ratetype = detail.RateInfos[0].rateType;
+                            string rateKey = string.Join("|", detail.RateInfos.SelectMany(x => x.Rooms).Select(x => x.rateKey));
+                            string nameid = "rooms_" + (id.Contains(" ") ? id.Replace(" ", "-") : id) + "_" + (detail.roomTypeCode != "" ? detail.roomTypeCode : detail.jacTravelPropertyRoomTypeID) + "_" + (detail.rateCode != null ? detail.rateCode.Replace(" ", "-") : "0") + "_" + count_room;
+                            string name = "rooms_" + (id.Contains(" ") ? id.Replace(" ", "-") : id) + "_" + (detail.roomTypeCode != "" ? detail.roomTypeCode : (detail.jacTravelPropertyRoomTypeID != "0" ? detail.jacTravelPropertyRoomTypeID : detail.jacTravelBookingToken)) + "_" + (detail.rateCode != null ? detail.rateCode.Replace(" ", "-") : "0") + "_" + count_room;
+                            string roomTypeCode = detail.roomTypeCode != "" ? detail.roomTypeCode : (detail.jacTravelPropertyRoomTypeID != "0" ? detail.jacTravelPropertyRoomTypeID : detail.jacTravelBookingToken);
+                            string rateCode = detail.rateCode != null ? detail.rateCode : "0";
+                            string propertyId = detail.propertyId;
+                            decimal totalprice = Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.total);
+                            <div class="h2_mhd3_rlr_b3_right roomdropd_desk">
+                                @*@Html.DropDownList(name, numberOfRooms, new { @id = nameid, data_roomtypecode = roomTypeCode, data_ratecode = rateCode, data_roomname = Html.Raw(detail.description), data_propertyid = propertyId, data_ratetype = ratetype })*@
+                                <button class="room-select-btn" type="button" data-roomtypecode="@roomTypeCode" data-ratecode="@rateCode" data-roomname="@Html.Raw(detail.description)" data-propertyid="@propertyId"
+                                        data-ratetype="@ratetype" data-ratekey="@rateKey" data-totalPrice ="@totalprice"
+                                        data-hid="@id" data-qty="@noOfRoom" data-encsupp="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(suppliername))">
+                                    Select
+                                </button>
+                                @*<div class="room-label">No. Rooms</div>*@
+                            </div>
+                        }
+                        <div class="h2_mhd3_rlr_b3_left">
+                            @{
+                                decimal averageBaseRate = Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.averageBaseRate);
+                                decimal averageRate = Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.averageRate);
+                                int TotalNights = Convert.ToInt16(ViewData["TOTALNIGHTS"] != null ? ViewData["TOTALNIGHTS"].ToString() : "1");
+                                if (IncludeAllNights)
+                                {
+                                    averageRate = averageRate * TotalNights;
+                                }
+                                if (IncludeTax)
+                                {
+                                    if (!string.IsNullOrEmpty(detail.RateInfos[0].chargeableRateInfo.surchargeTotal))
+                                    {
+                                        averageRate += IncludeAllNights ? Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRoom : (Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.surchargeTotal) / noOfRoom) / TotalNights;
+                                        averageRate += IncludeAllNights ? Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.GST) : Convert.ToDecimal(detail.RateInfos[0].chargeableRateInfo.GST) / TotalNights;
+                                    }
+                                }
+                            }
+                            <div class="h2_mhd3_rlr_b3l_regulartext ">
+                                @if (productModel != null)
+                                {
+                                    var dynamic = (productModel.IsDynamic ? "+" : "");
+                                    @dynamic
+                                }
+                                @detail.RateInfos[0].chargeableRateInfo.currencyCode<span>@averageRate.ToString("n2")</span>
+                            </div>
+                            @if (detail.RateInfos[0].ChargeableRateInfo_FromService != null &&
+                                detail.RateInfos[0].ChargeableRateInfo_FromService.averageRate != detail.RateInfos[0].chargeableRateInfo.averageRate)
+                            {
+                                averageRate = Convert.ToDecimal(detail.RateInfos[0].ChargeableRateInfo_FromService.averageRate);
+                                if (IncludeAllNights)
+                                {
+                                    averageRate = averageRate * TotalNights;
+                                }
+                                if (IncludeTax)
+                                {
+                                    if (!string.IsNullOrEmpty(detail.RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal))
+                                    {
+                                        averageRate += IncludeAllNights ? Convert.ToDecimal(detail.RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / noOfRoom : (Convert.ToDecimal(detail.RateInfos[0].ChargeableRateInfo_FromService.surchargeTotal) / noOfRoom) / TotalNights;
+                                        averageRate += IncludeAllNights ? Convert.ToDecimal(detail.RateInfos[0].ChargeableRateInfo_FromService.GST) : Convert.ToDecimal(detail.RateInfos[0].ChargeableRateInfo_FromService.GST) / TotalNights;
+                                    }
+                                }
+                                <div class="h2_mhd3_rlr_b3l_cuttingtext">MYR @averageRate.ToString("n2")</div>
+                            }
+                            <div class="clear"></div>
+                            <div class="h2_mhd3_blue_sm_text">@(IncludeAllNights ? "total price" : "avg/night") @(IncludeTax ? "" : "(tax exclusive)")</div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    @if (false && Core.IsForStaging)
+                    {
+                        var chargeInfo_Source = detail.RateInfos[0].chargeableRateInfo_source ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ChargeableRateInfo();
+                        var esbChargeInfo_Source = detail.RateInfos[0].ChargeableRateInfo_FromService ?? chargeInfo_Source;
+                        var chargeInfo = detail.RateInfos[0].chargeableRateInfo;
+                        //PropertyInfo[] chargeaInfoProperties = typeof(ChargeableRateInfo).GetProperties();
+                        @*@foreach (var item in chargeaInfoProperties)
+                            {
+                            if (item.PropertyType == typeof(string))
+                            {
+                            <i>@item.Name <b>@item.GetValue(chargeInfo)</b></i><br />
+                            }
+                            }*@
+
+                        <div style="background-color: #fff;margin: 5px;width: 47%;display: inline-block;">
+                            <i><b>Before Markup</b></i><br /><br />
+                            <i>Average Rate: <b>@chargeInfo_Source.currencyCode @chargeInfo_Source.averageRate</b></i><br />
+                            <i>Nightly Rate Total: <b>@chargeInfo_Source.currencyCode @chargeInfo_Source.nightlyRateTotal</b></i><br />
+                            <i>Surcharge Total: <b>@chargeInfo_Source.currencyCode @chargeInfo_Source.surchargeTotal</b></i><br />
+                            <i>Grand Total: <b>@chargeInfo_Source.currencyCode @chargeInfo_Source.total</b></i><br />
+                        </div>
+
+                        <div style="background-color: #fff;margin: 5px;width: 47%;display: inline-block;">
+                            <i><b>ESB Markup</b></i><br /><br />
+                            <i>Average Rate: <b>@esbChargeInfo_Source.currencyCode @esbChargeInfo_Source.averageRate</b></i><br />
+                            <i>Nightly Rate Total: <b>@esbChargeInfo_Source.currencyCode @esbChargeInfo_Source.nightlyRateTotal</b></i><br />
+                            <i>Surcharge Total: <b>@esbChargeInfo_Source.currencyCode @esbChargeInfo_Source.surchargeTotal</b></i><br />
+                            <i>Grand Total: <b>@esbChargeInfo_Source.currencyCode @esbChargeInfo_Source.total</b></i><br />
+                        </div>
+
+                        <div style="background-color: #fff;margin: 5px;width: 47%;display: inline-block;">
+                            <i><b>After Markup</b></i><br /><br />
+                            <i>Average Rate: <b>@chargeInfo.currencyCode @chargeInfo.averageRate</b></i><br />
+                            <i>Nightly Rate Total: <b>@chargeInfo.currencyCode @chargeInfo.nightlyRateTotal</b></i><br />
+                            <i>Surcharge Total: <b>@chargeInfo.currencyCode @chargeInfo.surchargeTotal</b></i><br />
+                            <i>Grand Total: <b>@chargeInfo.currencyCode @chargeInfo.total</b></i><br />
+                        </div>
+                        <div class="clear"></div>
+
+                    }
+                </div>
+                <!-- row end -->
+
+                if (count_room != roomResultList.Length)
+                {
+                    <hr class="room-seperator" />
+                }
+
+                next_record:;
+                
+            }
+
+        }
+        last:;
+    }
+
+    <div id="PopupErr_NotEnoughPax" class="hidden">
+        Total number of room(s) selected is unable to cater for the total travelers inserted, please select again to proceed. Thank you.
+    </div>
+
+    <div id="PopupErr_SelectFirst" class="hidden">
+        Please select room first.
+    </div>
+
+    <div id="PopupErr_Exceed" class="hidden">
+        <h2 style="color:#be2e30">Thank you for choosing to travel with Mayflower.</h2><br /><br />
+        Your selected number of room(s) has exceeded the maximum limit; <br /><br />please contact our Customer Service Team &#64; email: cs@mayflower-group.com to proceed further.<br /><br />
+        Alternatively, kindly segregate your booking and try again.
+    </div>
+
+    <div id="PopupErr_ExceedSearch" class="hidden">
+        <h2 style="color:#be2e30">Thank you for choosing to travel with Mayflower.</h2><br /><br />
+        Your selected number of room(s) has exceeded the number of room(s) you searched; <br /><br />please contact our Customer Service Team &#64; email: cs@mayflower-group.com to proceed further.<br /><br />
+        Alternatively, kindly segregate your booking and try again.
+    </div>
+
+    <div id="PopupErr_SaveSuccess" class="hidden">
+        Your selected hotel are saved in your profile for easy booking in future
+    </div>
+}
+
+@{
+    string GTM_trackHotelDetail = "";
+    if (Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid) != null)
+    {
+        GTM_trackHotelDetail = Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid).ToString();
+        Alphareds.Module.Common.Core.SetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackHotelDetail, tripid, null);
+    }
+}
+
+<script type="text/javascript">
+@Html.JsMinify(@<text>
+    try {
+        var GTM_trackHotelDetail = '@Html.Raw(GTM_trackHotelDetail)'
+        if (GTM_trackHotelDetail.length > 1) {
+            trackHotelDetail(GTM_trackHotelDetail, 'detail');
+        }
+    } catch (e) {
+        //alert(e.message);
+    }
+    </text>
+)
+
+</script>
+
+@functions {
+    private List<dynamic> _generateIconList(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityDetails roomAvail)
+    {
+        roomAvail.ValueAdds = roomAvail.ValueAdds ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ValueAdd[0];
+
+        var orderedValueAdds = roomAvail.ValueAdds.OrderByDescending(x => x.description.ToLower().Contains("internet") || x.description.ToLower().Contains("wifi"));
+
+        var ico_grp = orderedValueAdds.Select(x => new { full_desc = x.description, desc = x.description.ToLower(), id = x.id }).Select(x =>
+        new
+        {
+            desc = x.desc.Contains("internet") || x.desc.Contains("wifi") || x.desc.Contains("wi-fi") ? "internet" :
+        x.desc.Contains("breakfast") ? "breakfast" : x.desc
+        ,
+            img = x.desc.Contains("internet") || x.desc.Contains("wifi") || x.desc.Contains("wi-fi") ? "~/Images_Hotel/Hotel_Icons/16-Free-wireless-internet.png" :
+            x.desc.Contains("breakfast") ? "~/Images_Hotel/Hotel_Icons/05-Continental-breakfast.png" : "unknown-icon.png"
+        ,
+            id = x.id,
+            full_desc = x.full_desc
+        }).Distinct();
+
+        // for jactravel breakfast
+        if (!string.IsNullOrWhiteSpace(roomAvail.jacTravelMealBasis) && !string.IsNullOrWhiteSpace(roomAvail.jacTravelMealBasisID) &&
+            roomAvail.jacTravelMealBasisID != "1" && roomAvail.jacTravelMealBasisID != "136")
+        {
+            var breakfast = new[] { new { desc = "breakfast", img = "~/Images_Hotel/Hotel_Icons/05-Continental-breakfast.png", id = "", full_desc = roomAvail.jacTravelMealBasis } };
+            ico_grp = ico_grp.Union(breakfast);
+        }
+
+        // distinct list
+        List<dynamic> obj = new List<dynamic>();
+        foreach (var grpItem in ico_grp.GroupBy(x => x.desc))
+        {
+            var item = grpItem.First();
+            obj.Add(item);
+        }
+        return obj;
+    }
+}
+
+@helper valueAddIcon(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityDetails roomAvail)
+    {
+        foreach (var item in _generateIconList(roomAvail))
+        {
+            string chkDesc = item.desc;
+            if (chkDesc.Contains("breakfast") || chkDesc.Contains("wifi") || chkDesc.Contains("internet"))
+            {
+                <img data-valueaddid="@item.id" src="@Url.Content(item.img)" width="29" height="24" alt="" class="add-cursor-pointer">@Html.Raw("&nbsp");
+            }
+        }
+}

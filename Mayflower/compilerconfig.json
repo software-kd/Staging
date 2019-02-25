@@ -1,0 +1,22 @@
+﻿[
+  {
+    "outputFile": "CSS/checkout/style.css",
+    "inputFile": "CSS/checkout/style.scss"
+  },
+  {
+    "outputFile": "CSS/checkout/styles_v2.css",
+    "inputFile": "CSS/checkout/styles_v2.scss"
+  },
+  {
+    "outputFile": "CSS/checkout/adyencc.css",
+    "inputFile": "CSS/checkout/adyencc.scss"
+  },
+  {
+    "outputFile": "CSS/checkout/v2/styles.css",
+    "inputFile": "CSS/checkout/v2/styles.scss"
+  },
+  {
+    "outputFile": "CSS/v3.0/styles.css",
+    "inputFile": "CSS/v3.0/styles.scss"
+  }
+]

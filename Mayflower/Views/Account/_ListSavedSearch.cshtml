@@ -1,0 +1,152 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using Alphareds.Module.Common;
+@model  IPagedList<Alphareds.Module.Model.SavedSearchModel>
+
+@{
+    ViewBag.Title = "Saved Search List";
+    Layout = null;
+
+    bool isFlight = Model.Any(x => x.PrdType == Alphareds.Module.Model.ProductTypes.Flight);
+    bool isHotel = Model.Any(x => x.PrdType == Alphareds.Module.Model.ProductTypes.Hotel);
+
+    string pagingUrl = ViewContext.ParentActionViewContext != null ? ViewContext.ParentActionViewContext.RouteData.Values["Action"].ToString()
+                   : ViewContext.RouteData.Values["Action"].ToString();
+}
+
+@using (Html.BeginForm("ContinueBook", "Account", FormMethod.Post, new { @id = "printForm", @target = "_blank" }))
+{
+    if (isFlight)
+    {
+        @FlightSavedSearch();
+    }
+    else if (isHotel)
+    {
+        @HotelSavedSearch();
+    }
+    else if (Model.Count == 0)
+    {
+        @EmptyResult();
+    }
+
+}
+
+@if (Model.Count > 0)
+{
+    <div style="margin: 20px">
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+        @Html.PagedListPager(Model, page => Url.Action("_ListSavedSearch", new { page = page, prdType = (isFlight ? "FLT" : "HTL") }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(PagedListRenderOptions.ClassicPlusFirstAndLast, new AjaxOptions()
+   {
+       HttpMethod = "GET",
+       InsertionMode = InsertionMode.Replace,
+       UpdateTargetId = "saved_search_content",
+       OnBegin = "$('#loading-modal').show();",
+       OnComplete = "$('#loading-modal').hide();"
+   }))
+    </div>
+}
+
+@helper FlightSavedSearch()
+{
+    <div class="mpc_inner">
+        <!-- red tab start -->
+        <div class="mcp_inner_tabred">
+
+            <div class="mcp_inner_b2 mcp_whitefont">Description</div>
+            <div class="mcp_inner_b1 mcp_whitefont">From</div>
+            <div class="mcp_inner_b1 mcp_whitefont">To</div>
+            <div class="mcp_inner_b1 mcp_whitefont">Passenger(s)</div>
+            <div class="mcp_inner_b1 mcp_whitefont">Class</div>
+            <div class="mcp_inner_b1 mcp_whitefont">Total Price (RM)</div>
+            <div class="mcp_inner_b0 mcp_whitefont"></div>
+            <div class="clear"></div>
+        </div>
+        <!-- red tab end -->
+        <!-- row start -->
+        @{ int i = 1; }
+        @foreach (var item in Model)
+        {
+            string isHeaderBgWhite = (i % 2 == 0) ? "booking_history_gray_bg" : "booking_history_white_bg";
+            string isBgWhite = (i % 2 == 0) ? "mcp_gray_bg" : "mcp_white_bg";
+            <div class="clearfix @isHeaderBgWhite">
+                <div class="mcp_inner_b2 mcp_grayfont @isBgWhite">@Html.Raw(item.Description)</div>
+                <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@item.TravelDateStart.ToString("dd-MMM-yy, ddd")</div>
+                <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@item.TravelDateEnd.ToString("dd-MMM-yy, ddd")</div>
+                <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">
+                    Adult : @item.FlightSearchDtl.Adult <br>
+                    @if (item.FlightSearchDtl.Child > 0)
+                    {
+                        @:Child: @item.FlightSearchDtl.Child <br>
+                    }
+                    @if (item.FlightSearchDtl.Infant > 0)
+                    {
+                        @:Infant : @item.FlightSearchDtl.Infant <br>
+                    }
+                </div>
+                <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@UtilitiesService.GetCabinNameByCode(item.FlightSearchDtl.CabinClass)</div>
+                <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@item.TotalSavedPrice.ToString("#,##0.00")</div>
+                <div class="mcp_grayfont mcp_text-center @isBgWhite">
+                    <a href="javascript:;" data-saveid="@item.SavedID" data-valueid="1" class="add-cursor-pointer @isBgWhite continue_button_btn">Continue Booking</a><br /><br />
+                    <a href="javascript:;" data-saveid="@item.SavedID" class="add-cursor-pointer @isBgWhite remove_button_btn">Remove</a>
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+}
+
+@helper HotelSavedSearch()
+{
+//Hotel table saved search
+    <div class="mpc_inner">
+            <!-- red tab start -->
+            <div class="mcp_inner_tabred">
+                <div class="mcp_inner_b2 mcp_whitefont">Description</div>
+                <div class="mcp_inner_b2 mcp_whitefont">Hotel</div>
+                <div class="mcp_inner_b1 mcp_whitefont">From</div>
+                <div class="mcp_inner_b1 mcp_whitefont">To</div>
+                <div class="mcp_inner_b1 mcp_whitefont">Pax(s)</div>
+                <div class="mcp_inner_b4 mcp_whitefont">Total Price (RM)</div>
+                <div class="mcp_inner_b0 mcp_whitefont"></div>
+                <div class="clear"></div>
+            </div>
+            <!-- red tab end -->
+            <!-- row start -->
+            @{ int i = 1; }
+            @foreach (var item in Model)
+            {
+                string isHeaderBgWhite = (i % 2 == 0) ? "booking_history_gray_bg" : "booking_history_white_bg";
+                string isBgWhite = (i % 2 == 0) ? "mcp_gray_bg" : "mcp_white_bg";
+                <div class="clearfix @isHeaderBgWhite">
+                    <div class="mcp_inner_b2 mcp_grayfont @isBgWhite">@Html.Raw(item.Description)</div>
+                    <div class="mcp_inner_b2 mcp_grayfont @isBgWhite">@Html.Raw(item.HotelSearchInfo.HotelName)</div>
+                    <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@item.TravelDateStart.ToString("dd-MMM-yy, ddd")</div>
+                    <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">@item.TravelDateEnd.ToString("dd-MMM-yy, ddd")</div>
+                    <div class="mcp_inner_b1 mcp_grayfont @isBgWhite">
+                        Room : @item.HotelSearchInfo.NoOfRoom<br/>
+                        Adult : @item.HotelSearchInfo.Adult<br/>
+                        @if (item.HotelSearchInfo.Child > 0)
+                        {
+                            @:Child: @item.HotelSearchInfo.Child <br>
+                        }
+                    </div>
+                    <div class="mcp_inner_b4 mcp_grayfont @isBgWhite">
+                        @item.TotalSavedPrice.ToString("#,##0.00")<br/>
+                    </div>
+                    <div class="mcp_inner_b0 mcp_grayfont mcp_text-center @isBgWhite">
+                        <a href="javascript:;" data-saveid="@item.SavedID" data-valueid="1" class="add-cursor-pointer @isBgWhite continue_button_btn">Continue Booking</a><br /><br />
+                        <a href="javascript:;" data-saveid="@item.SavedID" class="add-cursor-pointer @isBgWhite remove_button_btn">Remove</a>
+                    </div>
+                </div>
+                i++;
+            }
+        </div>
+}
+
+@helper EmptyResult()
+{
+    <div class="mpc_inner">
+        There no saved search for now.
+    </div>
+}

@@ -1,0 +1,133 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.ProductTourPackage
+@{
+    var entrances = Model.TourPackageDetails.EntranceTickets.ToList();
+    var transport = Model.TourPackageDetails.TransportPackages.ToList();
+    var langList = UtilitiesService.GetTourLanguageList(Model.TourPackageID);
+}
+
+    <div class="booker-body shadow bg-white mb-0 pb-3">
+        <div class="px-4">
+            <div class="row">
+                <div class="col-sm col-md-12">
+                    <h4 class="tour-title">Special Request</h4>
+                    <div class="tour-input grey-bg">
+                        @Html.TextAreaFor(model => Model.TourPackagesInfo.SpecialRequest, new { @class = "form-control", maxlength = "200", cols = "30", rows = "3", placeholder = "eg. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam" })
+                    </div>
+                    <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.SpecialRequest, null)</div>
+                </div>
+            </div>
+            <div class="row">
+                @if (langList != null && langList.Count > 0)
+                {
+                    <div class="col-sm col-md-6">
+                        <h4 class="tour-title">Tour Guide</h4>
+                        <div class="tour-input">
+                            <div class="tour-input grey-bg">
+                                <div class="left-filter red-border-bottom">
+                                    <div class="accordion p-0" id="accordion2">
+                                        <div class="card grey-bg">
+                                            <div class="card-header" id="headingOne">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                                        Pick Spoken Language
+                                                    </button>
+                                                </h5>
+                                            </div>
+
+                                            <div id="collapseTwo" class="collapse" aria-labelledby="collapseTwo" data-parent="#accordion2" style="">
+                                                <div class="card-body">
+                                                    <ul class="selectopt">
+                                                        @foreach (var lang in langList)
+                                                        {
+                                                            <li>@Html.RadioButtonFor(model => Model.TourPackagesInfo.LanguageID, lang.LanguageID, new { @class = "d-none" })<span>@lang.Language</span></li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.LanguageID, null)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                @if (entrances != null && entrances.Count > 0)
+                {
+                    <div class="col-sm col-md-6">
+                        <h4 class="tour-title">Entrance Ticket</h4>
+                        <div class="tour-input">
+                            <div class="tour-input grey-bg">
+                                <div class="left-filter red-border-bottom">
+                                    <div class="accordion p-0" id="accordion3">
+                                        <div class="card grey-bg">
+                                            <div class="card-header" id="headingOne">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                                        Pick Entrance Ticket
+                                                    </button>
+                                                </h5>
+                                            </div>
+
+                                            <div id="collapseThree" class="collapse" aria-labelledby="collapseThree" data-parent="#accordion3" style="">
+                                                <div class="card-body">
+                                                    <ul class="selectopt">
+                                                        @foreach (var entrance in entrances)
+                                                        {
+                                                            <li>@Html.RadioButtonFor(model => Model.TourPackagesInfo.EntranceID, entrance.EntranceID, new { @class = "d-none" })<span>@entrance.Ticket</span></li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.EntranceID, null)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                @if (transport != null && transport.Count > 0)
+                {
+                    <div class="col-sm col-md-6">
+                        <h4 class="tour-title">Transport Package</h4>
+                        <div class="tour-input">
+                            <div class="tour-input grey-bg">
+                                <div class="left-filter red-border-bottom">
+                                    <div class="accordion p-0" id="accordion4">
+                                        <div class="card grey-bg">
+                                            <div class="card-header" id="headingOne">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link text-center" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                                                        Pick Transport Package
+                                                    </button>
+                                                </h5>
+                                            </div>
+
+                                            <div id="collapseFour" class="collapse" aria-labelledby="collapseFour" data-parent="#accordion4" style="">
+                                                <div class="card-body">
+                                                    <ul class="selectopt">
+                                                        @foreach (var trans in transport)
+                                                        {
+                                                            <li>@Html.RadioButtonFor(model => Model.TourPackagesInfo.TransportPackageID, trans.TransportPackageID, new { @class = "d-none" })<span>@trans.Description</span></li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="col-12 field_error_msg">@Html.ValidationMessageFor(model => Model.TourPackagesInfo.TransportPackageID, null)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>

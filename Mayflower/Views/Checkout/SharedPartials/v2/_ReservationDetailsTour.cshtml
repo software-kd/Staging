@@ -1,0 +1,95 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@{
+    double totalNight = 0;
+    var SubmitBtnId = !string.IsNullOrEmpty(ViewBag.SubmitBtnId) ? ViewBag.SubmitBtnId : "";
+    var TourPackage = Model.TourPackage.TourPackageDetails;
+    var TourInfo = Model.TourPackage.TourPackagesInfo;
+    int NoOfPax = TourInfo != null ? TourInfo.NoOfPax : 0;
+    bool displayEnquiry = ViewBag.displayEnquiry ?? false;
+
+}
+
+<div class="col-lg-4">
+    <div class="booker-details-right">
+        <h3>Reservation Details</h3>
+        <div class="reservation-body">
+            <img src="@(string.IsNullOrEmpty(TourPackage.TourPackageImage) ? Url.Content("~/Images_hotel/no-img-01.png") : Url.Content(TourPackage.TourPackageImage))" alt="hotel-img-thumb">
+            <div class="reservation-table shadow">
+                <div class="reservation-table-top">
+                    <h2>@TourPackage.TourPackageName<span>@TourPackage.Country</span></h2>
+                </div>
+                <div class="reservation-table shadow">
+                    <div class="reservation-table-top">
+                        <ul>
+                            <li>
+                                <span>Check In</span>
+                                <span id="checkin">@(TourInfo !=null ? TourInfo.TravelDateFrom.ToString("dd-MMM-yyyy") : "dd-MMM-yyyy")</span>
+                            </li>                    
+                        </ul>
+                    </div>
+                    <div class="reservation-table-mid">
+                        <ul>
+                            @if (TourInfo != null && TourInfo.TourRoomPackages != null)
+                            {
+                                foreach(var room in TourInfo.TourRoomPackages)
+                                {
+                                    var roomitem = Model.TourPackage.PricingDetail.Items.Where(x => x.ItemDetail == room.RoomTypeName + " room").FirstOrDefault();
+                                    <li class="reservation-room">
+                                        <span>@room.RoomTypeName room x @room.Qty</span>
+                                        <span> MYR @roomitem.TTlBaseRate.ToString("n2")</span>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="reservation-room">
+                                    <span>Room x 0</span>
+                                    <span> MYR 0.00</span>
+                                </li>
+                            }
+                            <li>
+                                <span>Number of Travelers</span>
+                                <span class="reservation-pax"> @NoOfPax</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="reservation-table-bottom">
+                        <ul>
+                            <li>
+                                <span>Total</span>
+                                <span class="reservation-total">MYR @(Model.CheckOutSummary != null ? Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary.ToString("n2") : "0.00")</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="reservation-table-per">
+                        <ul>
+                            <li>
+                                <span>Total payable deposit</span>
+                                <span class="DepositPrice">MYR @(Model.CheckOutSummary != null ? Model.CheckOutSummary.DepositAmt.ToString("n2") : "0.00")</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @if(displayEnquiry)
+            {
+            <div class="col-5 pr-2">
+            <button type="button" id="enquiry" class="btn btn-primary btn--red">Enquiry</button>
+            </div>
+            }
+            <div class="@(displayEnquiry ? "col-7" :"col") pl-2">
+            <button type="button" id="@(!string.IsNullOrEmpty(SubmitBtnId) ? SubmitBtnId : "btnPageSubmit")" value="Complete form to continue" class="btn btn-primary btn--red">Confirm &amp; continue</button>
+            </div>
+        </div>
+        
+        @if (string.IsNullOrEmpty(SubmitBtnId) || SubmitBtnId == "btnPageSubmit")
+        {
+            <button type="submit" id="submitpayment" href="javascript:;" class="d-none" value="Pay"></button>
+        }
+    </div>
+</div>

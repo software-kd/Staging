@@ -1,0 +1,440 @@
+﻿@using Alphareds.Module.Common;
+
+@{
+    var useCustomJQueryValidation = Core.GetSettingValue("usecustomjqueryvalidation");
+    var tripType = Model.SearchFlightResultViewModel.TripType;
+}
+
+<link href="~/CSS/bootstrap/bootstrap-datepicker.min.css" rel="stylesheet" />
+<link href="~/CSS/bootstrap/bootstrap-select.min.css" rel="stylesheet" />
+<link href="~/CSS/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-select.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+<!-- Initialize -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Initialize Trip Type
+        if('@tripType' == 'Return')
+        {
+            $(".tcct1").click();
+        }
+        else if('@tripType' == 'OneWay')
+        {
+            $(".tcct2").click();
+        }
+    });
+</script>
+
+<!-- date picker end -->
+<!-- Autocomplete -->
+@Scripts.Render(Url.Action("AirportCompleteList", "Home"))
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+            if(this.element.attr('id') == "from" || this.element.attr('id') == "to"){
+                var customize = item.value.split(',');
+                customize.pop();
+                return $("<li></li>")
+                        .data("item.autocomplete", item)
+                        .append("<div style='text-decoration:none;cursor:pointer;'>" + customize + "<br/><span class='ui-auto-span'>" + item.value.split(',').pop() + "</span>" + "</a>")
+                        .appendTo(ul);
+            }
+            else if(this.element.attr('id') == "destination"){
+                return $("<li></li>")
+                        .data("item.autocomplete", item)
+                        .append("<div style='text-decoration:none;cursor:pointer;'>" + item.label + "<br/><span class='ui-auto-span'>" + item.type + "</span>" + "</a>")
+                        .appendTo(ul);
+            }
+            else{
+                item.label = item.label.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(this.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+                return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append("<div style='text-decoration:none;cursor:pointer;'>" + item.label + "</a>")
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    if($("#airline").val() != '')
+    {
+        //alert('bind airline');
+        $("#airline").bind("input propertychange paste", function(event)
+        {
+            $(this).val('');
+            $(this).unbind("input propertychange paste");
+        });
+    }
+
+    $("#from, #to").autocomplete({
+        //source: completeAirport,
+        source: function (request, response) {
+            var term = $.ui.autocomplete.escapeRegex(request.term)
+                , startsWithMatcher = new RegExp("^" + term, "i")
+                , startsWith = $.grep(completeAirport, function(value) {
+                    return startsWithMatcher.test(value);
+                })
+                , endWithMatcher = new RegExp(term + "$", "i")
+                , endWith = $.grep(completeAirport, function(value) {
+                    return endWithMatcher.test(value);
+                })
+                , containsMatcher = new RegExp(term, "i")
+                , contains = $.grep(completeAirport, function (value) {
+                    return $.inArray(value, request.term.length == 2 ? endWith : startsWith) < 0 &&
+                        containsMatcher.test(value);
+                });
+            var mergeResult = startsWith.concat(contains);
+            // ready for country code purpose
+            @*var mergeResult = request.term.length == 2 ? endWith.concat(contains) : startsWith.concat(contains);*@
+
+            if(this.element.attr('id') == "to"){
+                var from = $('#from').val();
+                mergeResult = $.grep(mergeResult, function(val){
+                    return val != from;
+                });
+            }
+
+            if(!mergeResult.length){ mergeResult = ['No matches found'] };
+            // slice out result to prevent browser lang overlimit result
+            response(mergeResult.slice(0, 30));
+        },
+        select: function (event, ui) {
+            event.preventDefault();
+            if (ui.item.value == 'No matches found') {
+                $(this).val('');
+            }
+            else
+            {
+                if (this.id == "from") {
+                    $(this).val(ui.item.value);
+                    //$('#to').focus();
+                    setTimeout( function(){$( '#to' ).focus()}, 0 );
+                    $('#to').val('');
+                    $(this).bind("propertychange paste", function(event)
+                    {
+                        $(this).val('');
+                        $(this).unbind("propertychange paste");
+                    });
+                    return false;
+                } else if (this.id == "to") {
+                    if(ui.item.value == $('#from').val()){
+                        $(this).val('');
+                    }
+                    else{
+                        $(this).val(ui.item.value);
+                        //if ($(window).width() > 900){
+                        $('#datep').datepicker('show');
+                        setTimeout( function(){$('#datep').datepicker('show')}, 0 );
+                        //}
+                    }
+                    $(this).bind("propertychange paste", function(event)
+                    {
+                        $(this).val('');
+                        $(this).unbind("propertychange paste");
+                    });
+                    return false;
+                }
+            }
+        },
+        delay: 100,
+        minLength: 1,
+        autoFocus: true,
+        focus: function( event, ui ) {
+            //$(this).val(ui.item.value);
+            //var focusOption = $("li:has(a.ui-state-active)");
+            //$("li.ui-autocomplete-focus").removeClass("ui-autocomplete-focus");
+            //focusOption.addClass("ui-autocomplete-focus");
+        },
+        close : function (event, ui){
+            //var regex = new RegExp("\\w{3} - ?[a-zA-Z,. ]*$"); //this method need double backslash
+            var regex = /\w{3} - ?[a-zA-Z,. ]*$/g; //this method apped '/' infront, '/g' at the back
+            if (!regex.test($(this).val())) {
+                $(this).val('');
+            }
+        }
+    });
+
+    $("#airline").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("AirlineAutoComplete", "Home")',
+                type: "POST",
+                dataType: "json",
+                data: { Prefix: request.term },
+                success: function (data) {
+                    if(!data.length){
+                        var result = [
+                         {
+                             label: 'No matches found',
+                             value: -1
+                         }
+                        ];
+                        response(result);
+                    }
+                    else{
+                        // normal response
+                        response($.map(data, function (item) {
+                            return {
+                                'label': item.label,
+                                'value': item.value,
+                                'id': item.id
+                            };
+                        }))
+                    }
+                }
+            })
+        },
+        select: function (event, ui) {
+            event.preventDefault();
+            if (ui.item.value == -1) {
+                $(this).val('');
+            }
+            else
+            {
+                $(this).val(ui.item.value);
+                $(this).bind("input propertychange paste", function(event)
+                {
+                    $(this).val('');
+                    $(this).unbind("input propertychange paste");
+                });
+                return false;
+            }
+        },
+        autoFocus: true,
+        focus: function( event, ui ) {
+            //$(this).val(ui.item.value);
+            var focusOption = $("li:has(a.ui-state-active)");
+            $("li.ui-autocomplete-focus").removeClass("ui-autocomplete-focus");
+            focusOption.addClass("ui-autocomplete-focus");
+        },
+        close : function (event, ui){
+            //var regex = new RegExp("\\w{3} - ?[a-zA-Z,. ]*$"); //this method need double backslash
+            var regex = /\w{2} - ?[a-zA-Z,. ]*$/g; //this method apped '/' infront, '/g' at the back
+            if (!regex.test($(this).val())) {
+                $(this).val('');
+            }
+        }
+    });
+
+</script>
+
+<!-- Check Required -->
+<script type="text/javascript">
+    function swapFromAndTo() {
+        var from = $('#from').val();
+        var to = $('#to').val();
+
+        $('#from').val(to);
+        $('#to').val(from);
+    }
+
+
+    var valFlightWidget = function () {
+        var message = '';
+        var checkRequired = function () {
+            if ($.trim($('#from').val()) == '' || $.trim($('#to').val()) == '') {
+                message += 'From / To cannot blank, please type to search a location.\n\r';
+            }
+        }
+        var chkPassenger = function () {
+            var aud = parseInt($('#SearchFlightResultViewModel_Adults').val());
+            var chd = parseInt($('#SearchFlightResultViewModel_Childrens').val());
+            var inf = parseInt($('#SearchFlightResultViewModel_Infants').val());
+
+            if(inf > aud){
+                message += 'Each adult can only accompany up to ONE (1) infant.\n\r';
+            }
+
+            if (sum(aud,chd,inf) > 7) {
+                message += 'If your trip consists more than seven (7) passengers, please click <a href="https://www.mayflower.com.my/flightgroupform">here</a> to make a group booking. \n\r';
+                //message += 'Popup Group Booking Form Function call over here.\n\r';
+            }
+
+            function sum() {
+                var total = 0;
+                for (var i = 0; i < arguments.length; i++) {
+                    total += arguments[i];
+                }
+                return total;
+            }
+        }
+
+        //var isValid = function () {
+        //checkRequired();
+        //chkPassenger();
+        //    return message == '' ? true : false;
+        //}
+        //checkRequired();
+        chkPassenger();
+
+        if(message != ""){
+            message = '<span style="display: block;margin-bottom: 15px;">' + message + '</span>';
+        }
+        $('[data-valmsg-for="validateForm"]').html(message);
+        return message == '' ? true : false;
+    }
+
+    $('#SearchFlightResultViewModel_Adults,#SearchFlightResultViewModel_Childrens,#SearchFlightResultViewModel_Infants').change(function(e){
+        valFlightWidget();
+    });
+
+    $('form').submit(function(e){
+        var isValid = false;
+        if('@useCustomJQueryValidation' == 'true')
+        {
+            valFlightWidget();
+        }
+        else
+        {
+            isValid = valFlightWidget();
+            //isValid = true;
+        }
+        if(!isValid){
+            e.preventDefault();
+        }
+    });
+</script>
+
+<!--Datepicker-->
+<script>
+    var date = ServerDateTime;
+    var dayadvance = @Core.GetSettingValue("dayadvance");
+    var checkInDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayadvance);
+    var endDay = new Date(date.getFullYear() + 1, date.getMonth(), date.getDate() + dayadvance);
+    var endDay2 = new Date(date.getFullYear() + 1, date.getMonth(), date.getDate());
+    var CheckClick = false;
+
+    $("#datep").on('show' ,function () {
+        CheckClick = true;
+    });
+    $("#datep").datepicker({
+        startDate: checkInDay,
+        endDate: endDay,
+        format: 'dd-M-yyyy',
+        autoclose: true,
+    }).on('changeDate', function (selected) {
+
+        var selectedBeginDate = $('#datep').datepicker('getDate');
+        var selectedEndDate = $('#datep1').datepicker('getDate');
+        var default_start = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate()); 
+        var setStartDate = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate());
+        $('#datep1').datepicker("setStartDate", setStartDate);
+
+        if (selectedBeginDate > selectedEndDate - 1) {
+            $('#datep1').datepicker("setDate", default_start);
+        }
+
+        if (CheckClick){
+            $('#datep1').datepicker('show');
+        }
+    });
+
+    var getArrivalDate = $('#datep').datepicker('getDate')
+    var setForDepart = new Date(getArrivalDate.getFullYear(), getArrivalDate.getMonth(), getArrivalDate.getDate());
+
+    $("#datep1").datepicker({
+        startDate: setForDepart,
+        endDate: endDay2,
+        format: 'dd-M-yyyy',
+        autoclose: true,
+    });
+</script>
+@*<script type="text/javascript">
+    var returndate = "show";
+    var dayadvance = @Core.GetSettingValue("dayadvance");
+    var dateOnSelect = false;
+    var displayMonth = $(window).width() > 900 ? 2 : 1;
+
+    $("#datep").datepicker({
+        numberOfMonths: displayMonth,
+        showButtonPanel: true,
+        minDate: dayadvance,
+        maxDate: '+1Y',
+        dateFormat: 'dd-M-yy',
+        dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+        beforeShow: function (input, inst) {
+        },
+        onClose: function (selectedDate) {
+            if (returndate == "show") {
+                if ($.trim($('#datep').val()) != '') {
+                    $('#datep').datepicker("option", "buttonText", selectedDate.substr(0,10));
+                }
+            }
+            if(dateOnSelect == true){
+                setTimeout( function(){$('#datep1').datepicker('show')}, 0 );
+                dateOnSelect = false;
+            }
+        },
+        onSelect: function (selectedDate) {
+            if ($.trim($('#datep').val()) != '') {
+                var selectedBeginDate = $('#datep').datepicker('getDate');
+                var selectedEndDate = $('#datep1').datepicker('getDate');
+                var default_end = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate() + 2); //this parses date to overcome new year date weirdness
+
+                $('#datep1').datepicker("option", "minDate", selectedBeginDate);
+                if(selectedBeginDate > selectedEndDate){
+                    $('#datep1').datepicker("setDate", default_end);
+                }
+                if($("input[name='SearchFlightResultViewModel.TripType']:checked").val() == 'Return'){
+                    dateOnSelect = true;
+                }
+            }
+        }
+    });
+
+    $("#datep1").datepicker({
+        numberOfMonths: displayMonth,
+        showButtonPanel: true,
+        defaultDate: dayadvance + 1,
+        minDate: $('#datep').datepicker('getDate'),
+        maxDate: '+1Y',
+        dateFormat: 'dd-M-yy',
+        dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+        beforeShow: function (input, inst) {
+            var beginDate = $('#datep').datepicker('getDate');
+            $('#datep1').datepicker("option", "minDate", new Date(beginDate.getFullYear(), beginDate.getMonth(), beginDate.getDate() + 1));
+        },
+        onClose: function (selectedDate) {
+            if (returndate == "show") {
+                if ($.trim($('#datep1').val()) != '') {
+                    $('#datep1').datepicker("option", "buttonText", selectedDate.substr(0,10));
+                }
+            }
+        },
+        onSelect: function (selectedDate) {
+            if ($.trim($('#datep1').val()) != '') {
+            }
+        }
+    });
+</script>*@
+
+<!-- Widget -->
+<script type="text/javascript">
+    var origin = document.getElementById('from');
+    var destination = document.getElementById('to');
+
+    var widgetJS = function () {
+        var fn = function (){
+            if (origin.value != "" && $.inArray(origin.value.toUpperCase(), completeAirport) == -1){
+                this.value = "";
+            }
+            else if (origin.value == destination.value.toUpperCase() || this.value.length <= 2){
+                this.value = "";
+            }
+        }
+
+        var fn2 = function () {
+            this.setSelectionRange(0, 9999);
+        }
+
+        origin.onblur = fn;
+        destination.onblur = fn;
+        origin.onclick = fn2;
+        destination.onclick = fn2;
+    }
+
+    widgetJS();
+
+</script>

@@ -1,0 +1,61 @@
+﻿@model Alphareds.Module.Model.LoginModel
+@using Microsoft.Owin.Security
+
+@{
+    var tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+
+    UriBuilder builder = Request.Url == null ? null : new UriBuilder(Request.Url);
+    string returnUrl = builder == null ? Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString(), new { tripid })
+        : builder.ToString();
+
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+
+}
+<!-- LOGIN LITEBOX START -->
+<div class="modal" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login to Mayflower Account</h5>
+                <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Login", "Account", new { returnUrl }, FormMethod.Post, new { id = "loginForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">E-mail</label>
+                            <div class="col-sm-10 mb-2">
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                <div class="field_error_msg mt-1">@Html.ValidationMessageFor(model => Model.Email, null)</div>
+                            </div>
+                            <div class="col-12"></div>
+                            <label class="col-sm-2 col-form-label">Password</label>
+                            <div class="col-sm-10 mb-2">
+                                @Html.PasswordFor(model => model.Pwd, new { @class = "form-control" })
+                                <div class="field_error_msg mt-1">@Html.ValidationMessageFor(model => Model.Pwd, null)</div>
+                            </div>
+                            <div class="textforerrormsg">@TempData["loginerr"]</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 custom-checkbox">
+                            <label><input type="checkbox" name="rememberMe" id="rememberMe" value="true" /><span>Stay logged in</span></label>
+                        </div>
+                        <div class="col-6">
+							<a href="@Url.Action("ResetPassword", "Account")" target="_blank" class="text-right p-0 pull-left mt-2 mb-2 col-sm-12 col-md-6"><small>Forgot Password?</small></a>
+                            <button type="submit" value="Login" name="btnLogin" class="pull-right btn btn-primary modal-confirm">Login Now</button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <div class="fcd_nc_left">Not a Member?</div>
+                <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal">Continue as guest</button>
+            </div>
+        </div>
+    </div>
+</div>

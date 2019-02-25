@@ -1,0 +1,82 @@
+﻿@model Alphareds.Module.Model.MemberRegisterModels
+@using Alphareds.Module.Common;
+
+@{
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+
+    string refCode = Request.QueryString["ref"];
+}
+
+@using (Html.BeginForm("SimpleRegister", "Member", FormMethod.Post, new { @Id = "register-form", @role = "form", @class = "contact-form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("codeToken")
+    @*@Html.ValidationSummary()*@
+
+    @Html.ValidationMessage("Error", new { @class = "textforerrormsg" })
+
+    <!-- user name pass start -->
+    <div class="rpc_redtabs rpc_minustab" value="mem-userpass">Username</div>
+    <div class="mem-userpass rpc_white_tabcontainer" id="userpasss">
+        <div class="rpc_wtc_inner">
+            <div class="s3-1_cf_lable_text">Email Address<span>*</span></div>
+            <div>@Html.TextBoxFor(model => model.Email, new { @class = "s3-1_full_textbox_com", maxlength = "50" })</div>
+            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "textforerrormsg" })
+            <div class="clearfix"></div>
+
+
+            <div class="s3-1_contactform_left mt20">
+                <div class="s3-1_cf_lable_text">Password<span>*</span></div>
+                <div>@Html.PasswordFor(model => model.Password, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+                @Html.ValidationMessageFor(model => model.Password, null, new { @class = "textforerrormsg" })
+            </div>
+            <div class="s3-1_contactform_right mt20">
+                <div class="s3-1_cf_lable_text">Confirm Password<span>*</span></div>
+                <div>@Html.PasswordFor(model => model.ConfirmPassword, new { @class = "s3-1_full_textbox_com", @style = "padding-right:24px" })</div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="s3-1_contactform_right">
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, null, new { @class = "textforerrormsg" })
+            </div>
+
+
+            <div class="clear"></div>
+        </div>
+    </div>
+    <!-- user name pass end -->
+
+    <!-- Referral Program Start -->
+    <div class="rpc_redtabs rpc_minustab" value="mem-refprog">Activation Program <span class="optional-label">(Optional)</span></div>
+    <div class="mem-refprog rpc_white_tabcontainer" style="display:block">
+        <div class="rpc_wtc_inner">
+            <div class="s3-1_cf_lable_text">Activation Code</div>
+            <div>@Html.TextBox("ActivationCode", refCode, new { @class = "s3-1_full_textbox_com", maxlength = "20" })</div>
+            @Html.ValidationMessageFor(model => model.ActivationCode, null, new { @class = "textforerrormsg" })
+            <span style="margin-top: 5px;display: block;font-family: 'UbuntuBold';font-size: 16px;">
+                <img class="code-checking" src="/Images/loading_40x40.gif" style="width: 20px;float: left;display: none">
+                <span class="code-msg"></span>
+            </span>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+        <!-- Referral Program End -->
+
+    <div class="mr_form_confirm">
+        <input id="checkbox_news" type="checkbox" name="subscribeNews" value="true">
+        <label for="checkbox_news" class="add-cursor-pointer">
+            Yes, I expressly agree for you to process, disclose and share my personal data to/with your Group of Companies for the purposes of promoting your Group of Companies’ and/or your products and services. (<a href="@(Core.IsForStaging ? Url.Action("PDPA", "Public") : "https://www.mayflower.com.my/pdpa")" target="_blank">Personal Data Protection Act 2010</a>)
+        </label>
+
+        <input id="checkbox_tnc" type="checkbox" name="agreeTnC" value="true" required data-val="true" data-val-required="Terms & Conditions is required to check.">
+        <label for="checkbox_tnc" class="add-cursor-pointer">
+            I confirm that the above information provided by me is true and accurate. I have read and hereby agree to the <a href="@(Core.IsForStaging ? Url.Action("TermsConditions", "Public" ) : "https://www.mayflower.com.my/tnc")" target="_blank">Terms & Conditions</a> of Mayflower Holidays Sdn Bhd, which shall be binding on me.
+        </label>
+        @Html.ValidationMessage("agreeTnc")
+
+        <button type="submit" id="btnSubmit" class="add-cursor-pointer" value="Create">
+            <span>Submit</span><img class="btn-loadstate" src="/Images/loading_40x40.gif" style="width: 20px;display: none;vertical-align: middle;margin-left: 1em;">
+        </button>
+
+    </div>
+
+}

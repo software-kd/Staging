@@ -1,0 +1,937 @@
+﻿@charset "UTF-8";
+.block {
+  display: block !important; }
+
+.pop-container {
+  margin: 1em auto; }
+
+/* Progress Bar */
+.pg-title {
+  text-align: center;
+  color: #EC1C24;
+  font-family: 'UbuntuMedium';
+  font-size: 32px;
+  margin: 0.5em 0; }
+
+/* Progress Bar */
+/* box area */
+.section-BRD {
+  background-color: #fff;
+  border-radius: 2em 2em 0 0;
+  margin-top: 20px;
+  padding: 1em; }
+
+.btn-select:hover {
+  background-color: #b90309;
+  color: #fff; }
+
+.btn-cus-gry {
+  background-color: #BCBEC0;
+  color: #fff; }
+  .btn-cus-gry:hover {
+    color: #fff;
+    background-color: #aaacad; }
+
+.white-bg {
+  background-color: #fff;
+  color: #000; }
+
+.info-ico {
+  max-height: 30px; }
+
+.box-heading {
+  line-height: 50px;
+  margin: 0;
+  margin-bottom: 10px; }
+  .box-heading span.addon-ico {
+    display: inline-block; }
+  .box-heading span.addon-ico img {
+    max-height: 55px; }
+  .box-heading span.addon-title {
+    margin-left: 10px; }
+
+/* box area */
+/* Box Image Bg */
+.addon-car-bg {
+  max-height: 196px;
+  overflow: hidden; }
+
+.addon-cr-title {
+  line-height: 80px;
+  height: 80px;
+  background: #f1f2f2;
+  overflow: hidden; }
+  .addon-cr-title .addon-cr-inf {
+    max-height: 30px; }
+  .addon-cr-title .add-cr-subtitle {
+    margin-left: 1em; }
+
+.fullw-banner.col3_BRD .desk_dtWrapper {
+  max-width: 100%; }
+
+.fullw-banner.col1_BRD {
+  width: 100%; }
+  .fullw-banner.col1_BRD .poster-wrapper {
+    text-align: center;
+    line-height: initial; }
+    .fullw-banner.col1_BRD .poster-wrapper .BRD-image {
+      width: 100%; }
+  .fullw-banner.col1_BRD .addon-cr-title {
+    width: 100%;
+    line-height: 50px;
+    height: 50px; }
+
+/* cr-poster */
+.poster-wrapper {
+  border: 2px solid #939598; }
+
+.BRD-box1 {
+  color: #000;
+  font-size: 14px;
+  text-align: center;
+  line-height: 40px; }
+
+.BRD-box1.openPopOut .BRD-image {
+  cursor: pointer; }
+
+.ticket_select, .ticket_select label {
+  margin-bottom: 0;
+  line-height: 50px;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  background-position-x: 80% !important; }
+
+.ticket_select {
+  margin-top: 2px;
+  text-align: center; }
+  .ticket_select:hover {
+    background-color: #aaacad; }
+
+.skip-href {
+  color: #000; }
+  .skip-href:hover {
+    color: #27aae1 !important; }
+
+.widget-footer:hover {
+  background-color: #aaacad;
+  cursor: pointer; }
+
+/* etc product */
+.addon-etc {
+  width: 100%;
+  height: 200px;
+  max-height: 200px;
+  line-height: 200px;
+  /* insurance area */
+  /* insurance area */ }
+  .addon-etc.hg-md {
+    height: 120px;
+    max-height: 120px;
+    line-height: 120px; }
+  .addon-etc.ins {
+    height: 200px;
+    max-height: 200px;
+    line-height: 200px; }
+    .addon-etc.ins .insuranceList {
+      list-style: none;
+      margin: unset; }
+      .addon-etc.ins .insuranceList li.tick:before {
+        content: '✓';
+        margin-right: 5px; }
+    .addon-etc.ins .insurance-cover {
+      line-height: 19px;
+      margin-bottom: 5px;
+      margin-top: 15px;
+      font-weight: normal; }
+    .addon-etc.ins .insuranceTNC {
+      padding-top: 3px;
+      padding-left: 35px;
+      font-size: 13px;
+      font-style: italic; }
+  .addon-etc .content-left {
+    display: inline-block;
+    vertical-align: top;
+    width: 33.33%;
+    min-width: 90px;
+    /*float: left;*/
+    max-width: 392px;
+    height: inherit;
+    line-height: inherit;
+    overflow: hidden; }
+    .addon-etc .content-left img {
+      cursor: pointer; }
+  .addon-etc .content-right {
+    display: inline-block;
+    vertical-align: top;
+    width: 63%;
+    height: inherit;
+    line-height: inherit;
+    /*float: left;*/
+    border-bottom: 1px solid #bbb0b0;
+    margin: 0 1em; }
+  .addon-etc .etc-detail {
+    height: inherit;
+    line-height: inherit;
+    width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative; }
+  .addon-etc .block-lf {
+    width: 63%;
+    display: inline-block;
+    line-height: 1;
+    /* ie not support initial */ }
+    .addon-etc .block-lf .title {
+      width: 100%; }
+    .addon-etc .block-lf .t-ico {
+      display: inline-block;
+      vertical-align: top;
+      cursor: pointer; }
+      .addon-etc .block-lf .t-ico .addon-cr-inf {
+        max-height: 30px; }
+    .addon-etc .block-lf .add-cr-subtitle {
+      margin-left: 1em;
+      width: 84%;
+      display: inline-block;
+      font-weight: 600; }
+      .addon-etc .block-lf .add-cr-subtitle .etc-desc, .addon-etc .block-lf .add-cr-subtitle a {
+        color: #666666;
+        font-weight: initial;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer; }
+      .addon-etc .block-lf .add-cr-subtitle .tc-link {
+        font-size: 12px;
+        font-style: italic;
+        font-weight: initial;
+        padding-top: 2em; }
+        .addon-etc .block-lf .add-cr-subtitle .tc-link a {
+          color: #337ab7;
+          text-decoration: none; }
+  .addon-etc .block-rg {
+    display: inline-block;
+    width: 33.33%;
+    line-height: 1;
+    /* ie not support initial */
+    text-align: right;
+    padding-top: 1em; }
+    .addon-etc .block-rg .desc-price {
+      display: inline-block; }
+      .addon-etc .block-rg .desc-price .cur {
+        display: inline-block; }
+      .addon-etc .block-rg .desc-price .rate {
+        font-size: 24px;
+        font-weight: 900;
+        display: inline-block; }
+      .addon-etc .block-rg .desc-price span.p-subdesc {
+        color: #1C75BC;
+        font-size: 11px;
+        margin-right: 0.5em; }
+    .addon-etc .block-rg .etc-selection {
+      display: inline-block;
+      vertical-align: top;
+      line-height: 44px;
+      margin-left: 1em; }
+      .addon-etc .block-rg .etc-selection select.etc-select-opt {
+        padding: 0.5em;
+        color: #666666;
+        border: 1px solid #1A1A1A; }
+      .addon-etc .block-rg .etc-selection .p-subdesc-s {
+        line-height: 1;
+        text-align: center;
+        font-size: 11px; }
+
+.mapSize {
+  width: 100%;
+  height: 450px; }
+
+table tr td {
+  width: 75%; }
+
+.div8_tab_container2 table {
+  margin-bottom: 12px; }
+
+.th_nobold {
+  font-weight: normal; }
+
+/*Insurance START*/
+.insurance-price span.price {
+  font-size: 40px;
+  color: #ec1c24;
+  font-weight: bold;
+  line-height: 43px; }
+
+.insurance-price span.currency {
+  color: #ec1c24;
+  font-size: 24px; }
+
+.mobInsurance {
+  width: 100%;
+  border-top: 1px solid;
+  padding-top: 10px;
+  padding-left: 20px; }
+
+.mobInsurance_box1 {
+  float: left;
+  width: 50%; }
+
+.mobInsurance_box2 {
+  float: left;
+  width: 50%; }
+
+.container_insurance_left {
+  width: 30%;
+  display: inline-block; }
+
+.container_insurance_right {
+  width: 69%;
+  display: inline-block;
+  vertical-align: middle; }
+
+.select_right {
+  max-width: 130px;
+  float: right; }
+
+.select_left, .select_right {
+  font-size: 15px;
+  width: 47%;
+  margin-left: 20px;
+  display: inline-block; }
+
+.insurance-box1 {
+  float: left;
+  width: 100%;
+  font-size: 23px; }
+
+.insurance-box3 {
+  float: left;
+  width: 100%; }
+
+input#requireInsurance {
+  width: 18px;
+  height: 18px; }
+
+.full-width {
+  width: 100%; }
+
+/*Insurance END*/
+/*Concert Ticket BRD START*/
+.ev-cat-title {
+  padding-left: 1.5em; }
+
+.dtWrapper {
+  background-color: #fc950d !important;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  background-image: url(../../images/tab_arrowdown_w.png);
+  background-position: 80% center;
+  background-repeat: no-repeat; }
+
+.dtWrapper.pcenter {
+  margin: 0 auto;
+  margin-right: 33.7%; }
+
+.dtWrapper.pright {
+  margin: 0 auto;
+  margin-right: 0.4%; }
+
+.desk_dtWrapper {
+  max-width: 33%; }
+
+#tk_date {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  display: inline-block;
+  padding: 0 37%;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer; }
+
+#tk_date:hover {
+  background-color: rgba(239, 176, 94, 0.72) !important; }
+
+#tk_date option {
+  color: #000; }
+
+.mob_col4_BRD_left {
+  width: 100%; }
+
+.col4_BRD_left {
+  width: 70%;
+  display: inline-block;
+  border-right: 1px solid #BCBEC0;
+  padding-right: 1%;
+  vertical-align: middle; }
+
+.col4_BRD_right {
+  width: 29%;
+  display: inline-block; }
+
+.container_BRD_mobile {
+  display: none; }
+
+.BRD_list_col1, .BRD_list_col2, .BRD_list_col3 {
+  display: inline-block;
+  vertical-align: top; }
+
+.BRD_list_col1 {
+  width: 50%; }
+
+.BRD_list_col2 {
+  width: 25%; }
+
+.BRD_list_col3 {
+  width: 20%; }
+
+.ticket_list {
+  /*margin-top: 1%;*/
+  border-bottom: 1px solid #BCBEC0; }
+
+.col2-BRD-box1, .col2-BRD-box2, .col2-BRD-box3 {
+  width: 33.333%;
+  float: left;
+  background: #f1f2f2;
+  text-align: center;
+  line-height: 40px;
+  border: 1px solid #BCBEC0; }
+
+.col2-BRD-box1 label, .col2-BRD-box2 label, .col2-BRD-box3 label {
+  cursor: pointer; }
+
+.col4_BRD_list {
+  padding-top: 1%;
+  padding-bottom: 1%;
+  border-bottom: 1px solid #BCBEC0; }
+
+.ticket_select {
+  background-color: #bcbec0;
+  line-height: 40px;
+  background-image: url(../../images/tab_arrowdown_w.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-position-x: 70%;
+  color: #fff; }
+
+.select_active {
+  background-image: url(../../images/tab_arrowup_w.png);
+  background-color: #fc950d !important; }
+
+select.tk_type_selector {
+  padding: 2px 4px; }
+
+.col1_BRD {
+  display: inline-block;
+  width: 33%; }
+
+.container_BRD_mobile .col1_BRD {
+  width: 100%; }
+
+.container_BRD {
+  display: block; }
+
+.col3_BRD {
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  line-height: 40px; }
+
+.col4_BRD {
+  color: #000;
+  font-size: 14px;
+  padding: 1em;
+  background-color: #fff !important;
+  width: 100%;
+  text-align: left; }
+
+.ev-price {
+  font-size: 19px;
+  margin-top: -5px;
+  margin-bottom: -5px; }
+
+/*Concert Ticket BRD END*/
+.concert-label label {
+  cursor: pointer; }
+
+.vmicr_right .vmicr_allicons_cont_result {
+  height: 50px; }
+
+.vmicr_allicons_cont_result {
+  width: 40%; }
+
+h4.text-center.add-cursor-pointer {
+  cursor: default !important; }
+
+.vmic_right_room {
+  padding-bottom: 30px;
+  overflow: visible; }
+
+#ReserveButton1 {
+  text-decoration: none;
+  color: white; }
+
+#ReserveButton {
+  text-decoration: none;
+  color: white; }
+
+.footer {
+  margin-top: -1px;
+  padding-top: 90px; }
+
+.main-heading {
+  margin-bottom: 30px; }
+
+.text-center {
+  margin-top: 40px;
+  margin-bottom: 0px; }
+
+.section-hotel .addhotel-widget .hotel_name {
+  font-size: 23px; }
+
+.section-tabs .tab-content {
+  padding: 0px; }
+
+.ta_center {
+  margin-top: -9%;
+  margin-bottom: 10px; }
+
+.col-md-12 p {
+  display: inline-block; }
+
+.widget-footer2 {
+  background-color: #fc950d !important; }
+
+.widget-footer a, .widget-footer a:focus, .widget-footer a:hover {
+  color: #fff;
+  text-decoration: none; }
+
+.fix-img-container, .section-hotel .addhotel-widget .hotel_name, .pull-right, .section-hotel .addhotel-widget .hotel_name {
+  cursor: pointer; }
+
+.blackLine {
+  border-top: 2px solid #0d0d0d;
+  margin-top: 4px; }
+
+.boldText {
+  font-family: UbuntuBold; }
+
+.btmPadding {
+  padding-bottom: 31px;
+  margin-top: -2px; }
+
+.s3_1_fdb_i3_da_lable .dep, .s3_1_fdb_i3_da_lable .ret, .s3_1_fdb_i3_da_timing .tim_box {
+  font-size: 16px; }
+
+.s3_1_fdb_i3_da_timing .tim_box, .s3_1_fdb_inner_b2, .s3_1_fdb_inner_b4, .s3_1_fdb_i3_da_lable, .s3_1_fdb_child_det, .center {
+  color: #000; }
+
+.white-bg-ars {
+  background-color: #fbf7eb !important; }
+
+.widget-footer {
+  box-shadow: initial; }
+
+#roomlist {
+  /*border: 1px solid #8c8b87;*/
+  padding-left: 2%;
+  padding-right: 1%;
+  background-color: #fbf7eb !important; }
+
+.form-container2 {
+  margin: 0 2px;
+  padding: 0 1em; }
+
+#modal-container .fix-img-container, .col-md-4 .fix-img-container {
+  height: 200px;
+  background-color: #fff;
+  overflow: hidden; }
+
+#modal-container .offer_tag {
+  display: none; }
+
+#modal-container .fix-img-container {
+  height: 250px;
+  background-color: #000; }
+
+#modal-container .fix-img-container img, .col-md-4 .fix-img-container img {
+  height: 100%;
+  margin: 0 auto; }
+
+.col-md-12.hotel_name_container {
+  min-height: 110px; }
+
+.h2_mhd3_rlr_b3_right select {
+  background-color: #fff;
+  padding-left: 10%; }
+
+.room-label {
+  font-size: 12px;
+  text-align: center; }
+
+.h2_mhd3_rl_row_b_heading img {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 5px;
+  max-width: 15px; }
+
+.ht-subtitle {
+  display: inline-block;
+  width: 94%; }
+
+.room-result-list {
+  padding: 0 2%;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border: 1px solid #d1d1d1;
+  border-top: none;
+  background: inherit; }
+
+.roomdropd_desk {
+  float: right;
+  width: 30%;
+  text-align: center; }
+
+hr.room-seperator {
+  border-top: 1px solid #8c8b87; }
+
+.hide-room + .spacer {
+  margin-bottom: 5em; }
+
+select::-ms-expand {
+  display: none; }
+
+.show_toltip1 .s3-1_form_toll_tip_b {
+  font-size: 12px;
+  text-align: justify; }
+
+/* mobile layout start */
+@media screen and (max-width: 991px) {
+  .xs-font {
+    font-size: 10px; }
+  .container-fluid {
+    margin: 0;
+    padding: 0;
+    background-color: #fff !important; }
+  .container {
+    width: 100%; }
+    .container .pg-title {
+      margin: 0; }
+  .box-heading {
+    margin: 0.5em;
+    margin-bottom: 5px;
+    font-size: 22px; }
+    .box-heading span.addon-ico img {
+      max-height: 40px; }
+  .ht-subtitle {
+    width: 80%; }
+    .ht-subtitle .policy-info {
+      margin-left: initial !important; }
+  .ticket_select, .ticket_select label {
+    margin-top: 0;
+    height: 40px;
+    line-height: 40px;
+    font-size: 12px; }
+  .section-BRD {
+    border-radius: 0;
+    padding: 0; }
+  .btn-container {
+    width: 100%;
+    text-align: center;
+    margin: 2em auto; }
+    .btn-container .btn-select {
+      width: 50%;
+      min-width: 215px;
+      line-height: 25px;
+      border-radius: 25px; }
+  .hide-mob {
+    display: none !important; }
+  /* CT */
+  .col1_BRD {
+    width: 100% !important; }
+    .col1_BRD .BRD-box1 {
+      text-align: initial; }
+      .col1_BRD .BRD-box1 .col4_BRD {
+        padding: 0; }
+        .col1_BRD .BRD-box1 .col4_BRD .col4_BRD_left, .col1_BRD .BRD-box1 .col4_BRD .col4_BRD_right {
+          width: 100%;
+          line-height: initial; }
+      .col1_BRD .BRD-box1 .desk_dtWrapper {
+        max-width: 100%; }
+      .col1_BRD .BRD-box1 .poster-wrapper {
+        border: 1px solid #939598; }
+    .col1_BRD .BRD-image {
+      width: 33.33%;
+      min-width: 90px;
+      vertical-align: top;
+      display: inline-block;
+      overflow: hidden; }
+    .col1_BRD .addon-cr-title {
+      line-height: 80px;
+      height: 80px;
+      background: #f1f2f2;
+      overflow: hidden;
+      width: 63%;
+      display: inline-block; }
+  /* CT */
+  .addon-container {
+    background-color: #F1F2F2; }
+    .addon-container.only-last:last-child {
+      -webkit-box-shadow: 0 5px 10px 0 #919294;
+      -moz-box-shadow: 0 5px 10px 0 #919294;
+      box-shadow: 0 5px 10px 0 #919294; }
+  .only-last .addon-etc {
+    box-shadow: none; }
+  .item-container {
+    margin-bottom: 2em; }
+  .ct-itemwrapper {
+    border: 1px solid #bbb0b0;
+    -webkit-box-shadow: 0px 5px 10px 0px #919294;
+    -moz-box-shadow: 0px 5px 10px 0px #919294;
+    box-shadow: 0px 5px 10px 0px #919294;
+    margin-bottom: 1.5em; }
+  .addon-etc {
+    overflow: hidden;
+    border: 1px solid #bbb0b0;
+    -webkit-box-shadow: 0px 5px 10px 0px #919294;
+    -moz-box-shadow: 0px 5px 10px 0px #919294;
+    box-shadow: 0px 5px 10px 0px #919294; }
+    .addon-etc.ins {
+      height: 240px;
+      line-height: 240px;
+      max-height: 240px;
+      background-color: #F2F2F2; }
+      .addon-etc.ins .etc-detail {
+        padding-bottom: 4em; }
+    .addon-etc .content-left {
+      background-color: #fff; }
+      .addon-etc .content-left img {
+        display: inline-block; }
+    .addon-etc .content-right {
+      margin: 0; }
+      .addon-etc .content-right .block-lf {
+        width: 95%;
+        display: block;
+        margin: 1em auto; }
+        .addon-etc .content-right .block-lf .title {
+          width: 93%; }
+        .addon-etc .content-right .block-lf .add-cr-subtitle {
+          margin-left: 0; }
+      .addon-etc .content-right .block-rg {
+        width: 95%;
+        position: absolute;
+        bottom: 0.5em;
+        right: 0.4em; }
+        .addon-etc .content-right .block-rg .cur {
+          font-size: 12px; }
+        .addon-etc .content-right .block-rg .rate {
+          font-size: 20px; }
+        .addon-etc .content-right .block-rg .etc-selection {
+          line-height: 34px; }
+          .addon-etc .content-right .block-rg .etc-selection .etc-select-opt {
+            padding: 0.3em; }
+  .ta_center {
+    margin-top: 13%; }
+  #roomlist {
+    border-bottom: none;
+    display: none; }
+  .mobileBtn {
+    display: none !important; }
+  .section-hotel {
+    border: none; }
+  .section-hotel .addhotel-widget {
+    border: 1px solid #C2C3C5 !important;
+    background-color: #fff !important;
+    -webkit-box-shadow: 0 5px 10px 0 #919294;
+    -moz-box-shadow: 0 5px 10px 0 #919294;
+    box-shadow: 0 5px 10px 0 #919294; }
+  .s3_1_fdb_flight_name {
+    display: block; }
+  .s3_1_fdb4_inner_lf_lable, .s3_1_fdb4_inner_ri_ans, .s3_1_fdb_child_det3 {
+    margin-top: 0px; }
+  .s3_1_fdb4_inner_ri_ans {
+    display: inline-flex; }
+  .show_toltip2 img {
+    margin-bottom: 10px; }
+  .btmPadding {
+    margin-top: -12px; }
+  .widget-footer {
+    margin-bottom: 0px; }
+  .btmPadding2 {
+    margin-bottom: 5%; }
+  .col-sm-offset-1 {
+    margin-left: 0px; }
+  .col-sm-10 {
+    width: 102%; }
+  /*Concert Ticket*/
+  .insurance-box1 {
+    font-size: 16px; }
+  .insurance-price {
+    font-size: 16px; }
+  .BRD-box1 {
+    width: 100%; }
+  .BRD-image {
+    width: 100%;
+    overflow: hidden;
+    /*height: 219px;*/
+    /*line-height: 219px;*/ }
+  .concert-label {
+    width: 49%;
+    display: inline-block; }
+  /*.container_BRD_desktop {
+        display: none !important;
+    }*/
+  .container_BRD_mobile {
+    display: block; }
+  .ticket_select_1, .ticket_select_2, .ticket_select_3 {
+    background-position-x: 60%; } }
+
+/* Desktop Layout */
+@media screen and (min-width: 991px) {
+  .container-fluid {
+    background-color: #F2F2F2; }
+  .hide-desk {
+    display: none; }
+  .section-hotel .col-md-4 {
+    padding: 0 4.5px; }
+  .btn-container {
+    width: initial;
+    text-align: center;
+    margin: 2em auto; }
+    .btn-container .btn-select {
+      display: inline-block;
+      line-height: 35px;
+      min-width: 215px;
+      margin-left: 2em;
+      margin-right: 2em; }
+  .BRD-box1.openPopOut .BRD-image {
+    /*height: 416px;
+            line-height: 413px;*/
+    max-height: 416px;
+    background-color: white;
+    overflow: hidden;
+    /*img {
+                height: 100%;
+            }*/ }
+  .block-lf .tc-link {
+    padding-top: 10em !important;
+    width: 110%; } }
+
+@media screen and (max-width: 640px) {
+  .nav-pills.nav-wizard > li a {
+    padding: 0 8px !important; }
+  .h2_mhd3_rl_row_b_heading {
+    line-height: initial; }
+  .addon-etc.ins {
+    height: initial;
+    line-height: initial;
+    max-height: initial; }
+    .addon-etc.ins .content-left {
+      display: none; }
+    .addon-etc.ins .content-right {
+      width: 100%; }
+      .addon-etc.ins .content-right .block-rg {
+        padding-top: 0; }
+      .addon-etc.ins .content-right .etc-detail {
+        padding-bottom: 4em; }
+  .show_toltip1 img {
+    max-width: 22px; }
+  .section-tabs {
+    margin: 0px; }
+  .btn-xtraLarge {
+    font-size: 17px; }
+  #cssmenu #menu-button:after {
+    height: 8px; }
+  .h2_mhd3_r1bh_left {
+    width: 71%;
+    display: inline-block;
+    font-size: 13px; }
+  .h2_mhd3_rl_row_b_heading img {
+    float: left; }
+  .ticket_select_1, .ticket_select_2, .ticket_select_3 {
+    background-position-x: 65% !important; }
+  .nav-pills.nav-wizard > li a {
+    padding: 0 13px; } }
+
+@media screen and (max-width: 425px) {
+  .h2_mhd3_rl_row_b_heading {
+    line-height: initial; }
+  .h2_mhd3_rl_row_b2_mobile {
+    padding-left: 19px;
+    margin-top: 7px; }
+  .h2_mhd3_r1bh_left {
+    line-height: 12px;
+    width: 80% !important; }
+  .h2_mhd3_rlr_b3_left .h2_mhd3_rlr_b3l_regulartext {
+    font-size: 13px; }
+    .h2_mhd3_rlr_b3_left .h2_mhd3_rlr_b3l_regulartext span {
+      font-size: 19px; }
+  .h2_mhd3_rlr_b3_left .h2_mhd3_blue_sm_text {
+    font-size: 9px; } }
+
+@media screen and (min-width: 901px) and (max-width: 991px) {
+  .container {
+    padding: 0px; } }
+
+@media screen and (min-width: 900px) {
+  .s3_1_flight_details_box.s3_1_flight_details_box2 {
+    min-height: 147px; }
+  .container_insurance_left > img {
+    height: 112px;
+    width: 100%; }
+  .container_insurance {
+    height: 112px; }
+  #modal-container .fix-img-container, .col-md-4 .fix-img-container {
+    height: 218px; }
+  .col-md-12.hotel_name_container {
+    height: 130px; }
+  .widget-footer {
+    height: 50px;
+    line-height: 50px; }
+  .ticket_select {
+    height: 50px; } }
+
+@media screen and (max-width: 900px) {
+  .s3_1_fdb_class_det2 {
+    margin-left: 0px;
+    width: auto; }
+  .vmicr_allicons_cont_lable {
+    padding-left: 20%; } }
+
+@media screen and (max-width: 767px) {
+  .centerStepBar {
+    float: none;
+    margin: 0 auto;
+    max-width: 550px; }
+  .section-tabs .nav-wizard {
+    max-width: 320px;
+    margin: 25px auto; } }
+
+@media screen and (max-width: 768px) {
+  .room-label {
+    font-size: 10px; } }
+
+@media screen and (max-width: 500px) {
+  .room-label {
+    font-size: 8px; }
+  .position {
+    margin-left: 10px !important; }
+  .vmicr_allicons_cont_lable {
+    padding-left: 35%; } }
+
+@media screen and (max-width: 768px) and (min-width: 768px) {
+  .section-tabs .nav-wizard {
+    float: none;
+    margin: 25px auto;
+    max-width: 703px; } }
+
+@media screen and (max-width: 400px) {
+  .vmicr_allicons_cont_result {
+    width: 36%; } }
+

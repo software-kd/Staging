@@ -1,0 +1,1181 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CrossSellModels
+@{
+    ViewBag.Title = "Add On";
+    ViewBag.HeaderRed = true;
+    ViewBag.CheckSession = true;
+    ViewBag.HideSummaryHotelItinerarySection = true;
+    string tripid = ViewBag.tripid;
+    string affiliationId = Request.QueryString["affiliationId"];
+    string sessionFlightBooking = Alphareds.Module.Common.Enumeration.SessionName.FlightBooking + tripid;
+
+    ViewBag.ReturnAction = Url.Action("Search", "Flight", new { @ref = "add-on", tripid, affiliationId }, Request.Url.Scheme);
+    Alphareds.Module.Model.FlightBookingModel flightModel = (Alphareds.Module.Model.FlightBookingModel)Session[sessionFlightBooking];
+}
+
+@section style{
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2responsive.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/bootstrap.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/style.css")" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+    <!--font- awesome-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/owl.carousel.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/owl.theme.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/tripadvisorsprite.css")">
+    <link rel="stylesheet" href="@Url.Content("~/CSS/hotel/bootstrap-carousel.css")">
+    @Html.Partial("~/Views/Flight/Shared/_SharedCSSStyling.cshtml")
+
+    <style>
+        /*Concert Ticket BRD START*/
+        .ticket_list {
+            margin-top: 1%;
+        }
+
+        .col2-BRD-box1 {
+            width: 33.333%;
+            float: left;
+            background: #f1f2f2;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #BCBEC0;
+        }
+
+        .col2-BRD-box2 {
+            width: 33.333%;
+            float: left;
+            background: #f1f2f2;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #BCBEC0;
+        }
+
+        .col2-BRD-box3 {
+            width: 33.333%;
+            float: left;
+            background: #f1f2f2;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #BCBEC0;
+        }
+
+        .col4_BRD_list {
+            padding-top: 1%;
+            padding-bottom: 1%;
+        }
+
+        .ticket_select {
+            background-color: #fc950d !important;
+            line-height: 40px;
+        }
+
+        .box-heading.red-bg {
+            font-weight: 200;
+            line-height: 58px;
+            margin: 0;
+            text-align: center;
+            margin-bottom: 1%;
+        }
+
+        .BRD-box1 {
+            width: 33.333%;
+            float: left;
+            border: 1px solid #BCBEC0;
+            background: #f1f2f2;
+            color: #000;
+            font-size: 14px;
+            text-align: center;
+            line-height: 40px;
+        }
+
+        .BRD-box2 {
+            width: 33.333%;
+            float: left;
+            border: 1px solid #BCBEC0;
+            background: #f1f2f2;
+            color: #000;
+            font-size: 14px;
+            text-align: center;
+            line-height: 40px;
+        }
+
+        .BRD-box3 {
+            width: 33.333%;
+            float: left;
+            border: 1px solid #BCBEC0;
+            background: #f1f2f2;
+            color: #000;
+            font-size: 14px;
+            text-align: center;
+            line-height: 40px;
+        }
+
+        .col1_BRD {
+            width: 100%;
+        }
+
+        .container_BRD {
+            display: block;
+        }
+
+        .col3_BRD {
+            width: 100%;
+            text-align: center;
+            border: 1px solid #BCBEC0;
+            background: #f1f2f2;
+            color: #000;
+            font-size: 14px;
+            line-height: 40px;
+        }
+
+        .col4_BRD {
+            border: 1px solid #BCBEC0;
+            background: #f1f2f2;
+            color: #000;
+            font-size: 14px;
+            padding-left: 1%;
+            padding-right: 1%;
+            background-color: #fbf7eb !important;
+        }
+
+        .section-BRD {
+            background-color: #f2f2f2;
+            border: 1px solid #C2C3C5;
+            margin-top: 25px;
+            background: #fff;
+        }
+        /*Concert Ticket BRD END*/
+        .vmicr_right .vmicr_allicons_cont_result {
+            height: 50px;
+        }
+
+        .vmicr_allicons_cont_result {
+            width: 40%;
+        }
+
+        h4.text-center.add-cursor-pointer {
+            cursor: default !important;
+        }
+
+        .vmic_right_room {
+            padding-bottom: 30px;
+            overflow: visible;
+        }
+        /* Lee Zein Khai 5-6-2017 Start*/
+        #ReserveButton1 {
+            text-decoration: none;
+            color: white;
+        }
+
+        #ReserveButton {
+            text-decoration: none;
+            color: white;
+        }
+        /* Lee Zein Khai 5-6-2017 End*/
+        .footer {
+            margin-top: -1px;
+            padding-top: 90px;
+        }
+
+        .main-heading {
+            margin-bottom: 30px;
+        }
+
+        .container-fluid, .section-hotel {
+            background-color: #f2f2f2;
+        }
+
+        .text-center {
+            margin-top: 40px;
+            margin-bottom: 0px;
+        }
+
+        .section-hotel .addhotel-widget .hotel_name {
+            font-size: 23px;
+        }
+
+        .section-tabs .tab-content {
+            padding: 0px;
+        }
+
+        .ta_center {
+            margin-top: -9%;
+            margin-bottom: 10px;
+        }
+
+        .col-md-12 p {
+            display: inline-block;
+        }
+
+        .widget-footer2 {
+            background-color: #fc950d !important;
+        }
+
+        .widget-footer a, .widget-footer a:focus, .widget-footer a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .fix-img-container, .section-hotel .addhotel-widget .hotel_name, .pull-right, .section-hotel .addhotel-widgetm .hotel_name {
+            cursor: pointer;
+        }
+
+        .blackLine {
+            border-top: 2px solid #0d0d0d;
+            margin-top: 4px;
+        }
+
+        .boldText {
+            font-family: UbuntuBold;
+        }
+
+        .btmPadding {
+            padding-bottom: 31px;
+            margin-top: -2px;
+        }
+
+        .s3_1_fdb_i3_da_lable .dep, .s3_1_fdb_i3_da_lable .ret, .s3_1_fdb_i3_da_timing .tim_box {
+            font-size: 16px;
+        }
+
+        .s3_1_fdb_i3_da_timing .tim_box, .s3_1_fdb_inner_b2, .s3_1_fdb_inner_b4, .s3_1_fdb_i3_da_lable, .s3_1_fdb_child_det, .center {
+            color: #000;
+        }
+
+        .white-bg-ars {
+            background-color: #fbf7eb !important;
+        }
+
+        .widget-footer {
+            box-shadow: initial;
+        }
+
+        #roomlist {
+            border: 1px solid #8c8b87;
+            padding-left: 1%;
+            padding-right: 1%;
+            background-color: #fbf7eb !important;
+        }
+
+        .form-container2 {
+            padding: 6%;
+            padding-bottom: 2%;
+        }
+
+        #modal-container .fix-img-container, .col-md-4 .fix-img-container {
+            height: 200px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        #modal-container .offer_tag {
+            display: none;
+        }
+
+        #modal-container .fix-img-container {
+            height: 250px;
+            background-color: #000;
+        }
+
+            #modal-container .fix-img-container img, .col-md-4 .fix-img-container img {
+                height: 100%;
+                margin: 0 auto;
+            }
+
+        .col-md-12.hotel_name_container {
+            min-height: 110px;
+        }
+
+        .h2_mhd3_rlr_b3_right select {
+            background-color: #fff;
+            padding-left: 10%;
+        }
+
+        .room-label {
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .h2_mhd3_rl_row_b_heading img {
+            float: left;
+            margin-right: 5px;
+            margin-top: 4px;
+            max-width: 15px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        .show_toltip1 .s3-1_form_toll_tip_b {
+            font-size: 12px;
+            text-align: justify;
+        }
+
+        @@media (min-width: 1200px) {
+            .col-md-offset-1 {
+                margin-left: 20.333333%;
+            }
+        }
+
+        @@media screen and (max-width: 991px) {
+            .ta_center {
+                margin-top: 13%;
+            }
+
+            #roomlist {
+                border-bottom: none;
+                display: none;
+            }
+
+            .mobileBtn {
+                display: none !important;
+            }
+
+            .section-hotel {
+                border: none;
+            }
+
+                .section-hotel .addhotel-widgetm {
+                    border: 1px solid #C2C3C5 !important;
+                }
+
+            .s3_1_fdb_flight_name {
+                display: block;
+            }
+
+            .s3_1_fdb4_inner_lf_lable, .s3_1_fdb4_inner_ri_ans, .s3_1_fdb_child_det3 {
+                margin-top: 0px;
+            }
+
+            .s3_1_fdb4_inner_ri_ans {
+                display: inline-flex;
+            }
+
+            .show_toltip2 img {
+                margin-bottom: 10px;
+            }
+
+            .btmPadding {
+                margin-top: -12px;
+            }
+
+            .widget-footer {
+                margin-bottom: 0px;
+            }
+
+            .btmPadding2 {
+                margin-bottom: 5%;
+            }
+
+            .col-sm-offset-1 {
+                margin-left: 0px;
+            }
+
+            .col-sm-10 {
+                width: 102%;
+            }
+        }
+
+        @@media screen and (max-width: 900px) {
+            .s3_1_fdb_class_det2 {
+                margin-left: 0px;
+                width: auto;
+            }
+
+            .vmicr_allicons_cont_lable {
+                padding-left: 20%;
+            }
+        }
+
+        @@media screen and (max-width: 640px) {
+            .section-tabs {
+                margin: 0px;
+            }
+
+            .btn-xtraLarge {
+                font-size: 17px;
+            }
+
+            #cssmenu #menu-button:after {
+                height: 8px;
+            }
+
+            .h2_mhd3_rl_row {
+                margin-bottom: 0px;
+            }
+
+            .h2_mhd3_r1bh_left {
+                width: 71%;
+                display: inline-block;
+            }
+
+            .h2_mhd3_rl_row_b_heading img {
+                float: left;
+                padding-right: 2%;
+                padding-top: 2%;
+            }
+        }
+
+        @@media screen and (max-width: 767px) {
+            .centerStepBar {
+                float: none;
+                margin: 0 auto;
+                max-width: 550px;
+            }
+
+            .section-tabs .nav-wizard {
+                max-width: 320px;
+                margin: 25px auto;
+            }
+        }
+
+        @@media screen and (max-width: 768px) {
+            .room-label {
+                font-size: 10px;
+            }
+        }
+
+        @@media screen and (max-width: 500px) {
+            .room-label {
+                font-size: 8px;
+            }
+
+            .position {
+                margin-left: 10px !important;
+            }
+
+            .vmicr_allicons_cont_lable {
+                padding-left: 35%;
+            }
+        }
+
+        @@media screen and (max-width: 768px) and (min-width: 768px) {
+            .section-tabs .nav-wizard {
+                float: none;
+                margin: 25px auto;
+                max-width: 703px;
+            }
+        }
+
+        @@media screen and (max-width: 640px) {
+            .nav-pills.nav-wizard > li a {
+                padding: 0 13px;
+            }
+        }
+
+        @@media screen and (max-width: 400px) {
+            .vmicr_allicons_cont_result {
+                width: 36%;
+            }
+        }
+
+        @@media screen and (max-width: 350px) {
+            .vmicr_right .vmicr_allicons_cont_result {
+                height: 60px;
+            }
+        }
+
+        @@media screen and (max-device-width : 900px) {
+            .position {
+                margin-left: -160px;
+            }
+        }
+
+        @@media screen and (device-width : 360px) and (orientation: portrait) {
+            .position {
+                margin-left: -50px !important;
+            }
+
+            .s3-1_form_toll_tip_b2 {
+                margin-left: 20% !important;
+            }
+        }
+    </style>
+
+}
+
+@Html.Partial("~/Views/Flight/Shared/_BookingSummary.cshtml", flightModel)
+
+@if (true)
+{
+    <!--Nav wizards-->
+    <section class="row clearfix addons">
+        <div class="container">
+            <div class="row clearfix section-tabs">
+                <div class="col-md-10 col-lg-8 col-lg-offset-2 col-md-offset-1 col-xs-12 col-sm-10 col-sm-offset-1 centerStepBar">
+                    <ul class="nav nav-pills nav-wizard nav-size-addon">
+                        <li>
+                            <a>
+                                <span class="visible-lg visible-md visible-sm navZoom">Select Flight</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/search.png" height="20" width="20" alt=""></span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Add On</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/add-on.png" height="20" width="20" alt="" title="Contact Details"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Contact Details</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/contactdetails.png" height="20" width="20" alt="" title="Contact Details"></span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Payment</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/payment.png" height="20" width="20" alt="" title="Payment"></span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a aria-controls="confirm">
+                                <span class="visible-lg visible-md visible-sm">Confirmation</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/confirmation.png" height="20" width="20" alt="" title="Confirmation"></span>
+
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-12 col-lg-12">
+                    <div class="tab-content">
+                        <!-- Select Flight -->
+                        <div role="tabpanel" class="tab-pane active fade in" id="selectflight">
+                            <h1 class="main-heading">Add Ons</h1>
+                        </div>
+                        <!--//-->
+                        <!-- Addons -->
+                        <div role="tabpanel" class="tab-pane fade" id="addons">
+                            <h1 class="main-heading">Add-ons</h1>
+                        </div>
+                        <!--//-->
+                        <!--Contacts-->
+                        @*<div role="tabpanel" class="tab-pane fade" id="details">
+                                <h1 class="main-heading">Contact Detials</h1>
+                            </div>
+                            <!--//-->
+                            <!-- Payments -->
+                            <div role="tabpanel" class="tab-pane fade" id="payments">
+                                <h1 class="main-heading">Payments</h1>
+                            </div>
+                            <!--//-->
+                            <!-- Confirmation -->
+                            <div role="tabpanel" class="tab-pane fade" id="confirm">
+                                <h1 class="main-heading">Confirmation</h1>
+                            </div>*@
+                        <div class="clearfix row"></div>
+                        <!--//-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--//-->
+}
+
+
+<div class="container-fluid">
+
+    @if (!Model.ForceCrossSell)
+    {
+        <div class="container2">
+            <h4 class="text-center add-cursor-pointer">
+                <a href="javascript:;" style="text-decoration: none; color: #000" data-url="@Url.Action("AddOn", "Flight", new { tripid })" onclick="submit_form(this)">Continue without add-ons <img src="@Url.Content("~/Images/right-arrow.png")" /></a>
+            </h4>
+            @*<div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+                    <a href="#" class="btn btn-red btn-xtraLarge">Continue to traveller's details</a>
+                </div>*@
+        </div>
+    }
+
+    <div class="container">
+
+        <div class="section-hotel" style="margin-bottom: 0px;">
+            <h3 class="box-heading red-bg">Hotel Deals</h3>
+            <div class="collapse in" id="collapseExample">
+
+                <!--For desktop view-->
+                <div class="row visible-lg visible-md">
+                    <div id="hotelresultlist" class="s2_main_container" style="margin: 0px; width: auto; max-width: none;">
+                        @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo in Model.HotelInformation)
+                        {
+                            var crossSellRulesUsed = Model.CrossSellRules.FirstOrDefault(x => x.HotelID == hotelInfo.hotelId ||
+                            (hotelInfo.hotelId.StartsWith(x.HotelID.Replace("?", "")) && hotelInfo.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan));
+                            string enc_SupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(hotelInfo.hotelSupplierCode ?? "");
+
+                            @* // For testing Expedia returned Image size by looping with Reflection Property method
+                                foreach (var item in typeof(Alphareds.Module.ExpediaHotelsWebService.ExpediaHotels.ImagesURL).GetProperties())
+                                {
+                                    var img = item.GetValue(hotelInfo.imagesURL).ToString();
+                                    if (img.Contains("http"))
+                                    {
+                                        <img src="@img" />
+                                    }
+                                }*@
+                        var rateInfo = hotelInfo.RoomRateDetailsList.First().RateInfos.First();
+                        hotelInfo.imagesURL = hotelInfo.imagesURL ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL();
+                        hotelInfo.imagesURL.y_500x500 = string.IsNullOrWhiteSpace(hotelInfo.imagesURL.y_500x500) ? null : (Core.IsUrlAvailable(hotelInfo.imagesURL.y_500x500) ? hotelInfo.imagesURL.y_500x500 : Url.Content("~/Images/no-img-01.jpg"));
+                        var hotelImg = hotelInfo.imagesURL.y_500x500 ?? Url.Content("~/Images/no-img-01.jpg");
+                        <div class="col-md-4">
+                            <div class="addhotel-widget" data-hotelid="@hotelInfo.hotelId">
+                                <div class="fix-img-container ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode">
+                                    <img src="@Url.Content(hotelImg)" class="img-responsive fix-height-img">
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(crossSellRulesUsed.MarketingMessage))
+                                {
+                                    <div class="offer_tag">
+                                        @(crossSellRulesUsed.MarketingMessage)@*<span class="offer_value">@* Big size font here </span>&nbsp;*@
+                                    </div>
+                                }
+                                <div class="col-md-12 hotel_name_container">
+                                    <h3 class="hotel_name ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-hotelname="@hotelInfo.name" data-sr="@enc_SupplierCode">
+                                        @hotelInfo.name
+                                        <a class="pull-right"><img src="@Url.Content("~/Images/info-icon.png")"></a>
+                                    </h3>
+
+                                    <div class="font-red">
+                                        @{
+                                            int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelInfo.hotelRating)));
+                                            for (int i = 0; i < NoOfStar; i++)
+                                            {
+                                                @:<i class="fa fa-star" aria-hidden="true"></i>&nbsp;
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                    @if (Core.IsForStaging)
+                                    {
+                                        <div style="background: #fff;">
+                                            <i>Original Lowest From: &nbsp;&nbsp;</i>
+                                            <i>
+                                                <b>@hotelInfo.rateCurrencyCode @hotelInfo.lowRate_Source.ToString("n2")</b>
+                                            </i><br />
+
+                                            <i>Discount Type: &nbsp;&nbsp;</i>
+                                            <i>
+                                                <b>@crossSellRulesUsed.PricingTypeCode @crossSellRulesUsed.Discount</b>
+                                            </i><br />
+                                        </div>
+                                    }
+                                    per night from<br>
+                                    <span class="currency">@hotelInfo.rateCurrencyCode</span> <span class="price">@hotelInfo.lowRate.ToString("#,##0.00")</span><br>
+                                    <i>tax exclusive</i>
+                                </div>
+
+                                <div class="col-md-12 h2_mhdb3_trip_ad" data-hotelid="@hotelInfo.hotelId" style="cursor:pointer; margin-bottom:10px">
+                                    @*<img src="@Url.Content("~/Images/tripadviser-logo-small.png")" class="pull-left mrgnR10">*@
+                                    <img src="@Url.Content("../images/ta_icon.png")" alt="" width="34" height="19" class="pull-left mrgnR10">
+                                    @{
+                                        string rating = hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "") : "0";
+                                        if (rating.Length == 1 && (rating != "0"))
+                                        {
+                                            if (!rating.Equals(5))
+                                            {
+                                                rating += "0";
+                                            }
+                                        }
+
+                                    }
+                                    <p>
+                                        TripAdvisor Traveller Rating<br>
+                                        <span class="font-red">Based on @(hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorReviewCount : 0) reviews ></span>
+                                    </p>
+                                    <div class="ta_center sm-circle-rating-@rating"></div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="row widget-footer">
+                                        <a id="more_@hotelInfo.hotelId" data-toggle="collapse" href="javascript:;" aria-expanded="true" aria-controls="collapse1" data-parent="#accordion123" class="accordion-toggle collapsed ShowMoreRoom" data-hotelid="@hotelInfo.hotelId">Show room option</a>
+                                    </div>
+                                </div>
+                                @*<a id="more_@hotelInfo.hotelId" href="javascript:;" class="ShowMoreRoom" data-hotelid="@hotelInfo.hotelId">Show room option</a>*@
+                            </div>
+                        </div>
+
+                                        }
+                    </div>
+                </div>
+                <!--//-->
+                <!--For mobile and tab-->
+                <div class="row visible-sm visible-xs">
+                    <!---->
+                    <div id="hotelresultlist_m" class="s2_main_container" style="margin: 0px; width: auto; max-width: none;">
+                        @foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo in Model.HotelInformation)
+                        {
+                            string enc_SupplierCode = Mayflower.General.CustomizeBaseEncoding.CodeBase64(hotelInfo.hotelSupplierCode ?? "");
+                            var crossSellRulesUsed = Model.CrossSellRules.FirstOrDefault(x => x.HotelID == hotelInfo.hotelId ||
+                            (hotelInfo.hotelId.StartsWith(x.HotelID.Replace("?", "")) && hotelInfo.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan));
+
+                            var rateInfo = hotelInfo.RoomRateDetailsList.First().RateInfos.First();
+                            hotelInfo.imagesURL = hotelInfo.imagesURL ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL();
+                            hotelInfo.imagesURL.y_500x500 = string.IsNullOrWhiteSpace(hotelInfo.imagesURL.y_500x500) ? null : hotelInfo.imagesURL.y_500x500;
+                            var hotelImg = hotelInfo.imagesURL.y_500x500 ?? Url.Content("~/Images/no-img-01.jpg");
+                            <div class="col-sm-12 col-xs-12 btmPadding2">
+                                <div class="addhotel-widgetm">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-5 padR0">
+                                            <div class="fix-img-container ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode">
+                                                <img src="@Url.Content(hotelImg)" class="img-responsive fix-height-img">
+                                            </div>
+                                            @if (!string.IsNullOrWhiteSpace(crossSellRulesUsed.MarketingMessage))
+                                            {
+                                                <div class="offer_tag">
+                                                    @(crossSellRulesUsed.MarketingMessage)<span class="offer_value">@* Big size font here *@</span>&nbsp;
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-sm-8 col-xs-7 padL0">
+                                            <div class="col-xs-12 col-sm-12 hotel_name_container">
+                                                <h3 class="hotel_name ShowHotelInfo hotelName" data-hotelid="@hotelInfo.hotelId" data-hotelname="@hotelInfo.name" data-sr="@enc_SupplierCode">
+                                                    @hotelInfo.name
+                                                </h3>
+                                                <a class="pull-right ShowHotelInfo" data-hotelid="@hotelInfo.hotelId" data-sr="@enc_SupplierCode"><img src="~/Images/info-icon.png"></a><br> @*Kuala Lumpur*@
+                                                <div class="font-red">
+                                                    @{
+                                                        int NoOfStar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(hotelInfo.hotelRating)));
+                                                        for (int i = 0; i < NoOfStar; i++)
+                                                        {
+                                                            @:<i class="fa fa-star" aria-hidden="true"></i>&nbsp;
+                                            }
+                                                    }
+                                                </div>
+
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-xs-12a">
+                                                <div class="pull-left h2_mhdb3_trip_ad" data-hotelid="@hotelInfo.hotelId" style="cursor:pointer">
+                                                    <p class="mrgn0">&nbsp;</p>
+                                                    @*<a href="#"><img src="~/Images/tripadviser-logo-small.png"></a>*@
+                                                    <img src="@Url.Content("../images/ta_icon.png")" alt="" width="34" height="19">
+                                                    @{
+                                                        string rating = hotelInfo.tripAdvisor != null ? hotelInfo.tripAdvisor.tripAdvisorRating.ToString().Replace(".", "") : "0";
+                                                        if (rating.Length == 1 && (rating != "0"))
+                                                        {
+                                                            if (!rating.Equals(5))
+                                                            {
+                                                                rating += "0";
+                                                            }
+                                                        }
+
+                                                    }
+                                                    <div class="ta_center sm-circle-rating-@rating"></div>
+                                                </div>
+
+                                                <div class="text-right pull-right">
+                                                    per night from<br>
+                                                    <span class="currency">@hotelInfo.rateCurrencyCode</span> <span class="price">@hotelInfo.lowRate.ToString("#,##0.00")</span><br>
+                                                    <i>tax exclusive</i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12">
+                                            <div class="widget-footer">
+                                                <a id="moreM_@hotelInfo.hotelId" data-toggle="collapse" href="javascript:;" aria-expanded="true" aria-controls="collapse1" data-parent="#accordion123" class="accordion-toggle collapsed ShowMoreRoom" data-hotelid="@hotelInfo.hotelId">Show room option</a>
+                                            </div>
+                                        </div>
+                                        <div class="form-container2">
+                                            @using (Html.BeginForm("AddOn", "Flight", new { tripid, affiliationId }, FormMethod.Post, new { @id = "more_" + hotelInfo.hotelId }))
+                                            {
+                                                string checkingf = "roomlist2_" + hotelInfo.hotelId;
+                                                @*<div class="div25">&nbsp;</div>*@
+                                                <div id="@checkingf" data-hotelid="@hotelInfo.hotelId"></div>
+                                                <div class="visible-sm visible-xs mobileBtn">
+                                                    <a class="btn btn-red btn-xtraLarge" id="ReserveButton" onclick="checkRoomInvent('@checkingf');">Continue to traveller's details</a>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                                        }
+                    </div>
+                    <!--//-->
+                </div>
+                <!--//-->
+            </div>
+        </div>
+
+        <div class="form-container">
+            @using (Html.BeginForm("AddOn", "Flight", new { tripid, affiliationId }, FormMethod.Post, new { @id = "crossSale" }))
+            {
+                @*<div class="div25">&nbsp;</div>*@
+                <div id="roomlist" data-hotelid=""></div>
+                @Html.Hidden("dataToken")
+                @Html.Partial("~/Views/Flight/_ConcertAddOn.cshtml")
+                <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3 visible-lg visible-md">
+                    <a class="btn btn-red btn-xtraLarge" id="ReserveButton1" onclick="checkRoomInvent();">Continue to traveller's details</a>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@Html.Partial("~/Views/Hotel/_PopupRoomInfo.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+<div id="fareRulesClass" style="display: none;">
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+</div>
+
+<!-- MAIN CONTENT PORTION START -->
+<input type="hidden" id="hidViewMore" />
+
+
+@Html.Partial("~/Views/Hotel/_HotelInformation.cshtml")
+@Html.Partial("~/Views/Hotel/_GoogleMap.cshtml")
+@Html.Partial("~/Views/Flight/_ConcertInformation.cshtml")
+
+@section scripts{
+    <script src="@Url.Content("~/Scripts/hotel/responsiveslides.min.js")"></script>
+    @Html.Partial("~/Views/Hotel/_PopoutHotelFunctionJSScripts.cshtml")
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+
+    <script>
+        $(".col2-BRD-box1").click(function () {
+            $(".fullcover_div_GoogleMap").css("display", "block");
+            $(".fullcover_div8").css("display", "block");
+        });
+
+        $(".col2-BRD-box2").click(function () {
+            $(".fullcover_div_GoogleMap").css("display", "block");
+            $(".fullcover_div8").css("display", "block");
+        });
+
+        $(".col2-BRD-box3").click(function () {
+            $(".fullcover_div_GoogleMap").css("display", "block");
+            $(".fullcover_div8").css("display", "block");
+        });
+
+        var tripid = '&tripid=' + '@tripid' + '&cs=true' @(string.IsNullOrWhiteSpace(affiliationId) ? "" : " + '&affiliationId=" + affiliationId + "'"  );
+        var cancelBtn = function (text) {
+            return "<a href='javascript:;' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>" + text + "</div></a>";
+        }
+        $(document).on('click', '.loginclose img', function () {
+            $(".fullcover_div").fadeOut();
+            $(".fullcover_div1").fadeOut();
+            $(".fullcover_div6").fadeOut();
+            $(".fullcover_div7").fadeOut();
+            $(".fullcover_div8").fadeOut();
+            $(".fullcover_div_GoogleMap").fadeOut();
+            reloadScrollBars();
+        });
+        $('#hotelresultlist, #hotelresultlist_m').on('click', '.HideRoomDetail', function () {
+            var obj = $(this).data("hotelid");
+            var idname = "#roomlist2_" + obj;
+            var formSelector = '#roomlist,' + idname;
+            var roomSelector = '#more_' + obj;
+            var roomSelectorM = '#moreM_' + obj;
+            $('#roomlist').empty();
+            $(idname).empty();
+            $('.mobileBtn').addClass('mobileBtn');
+            $('.widget-footer2').removeClass('widget-footer2');
+            $('.white-bg-ars').removeClass('white-bg-ars');
+            $('.HideRoomDetail').each(function (index, element) {
+                $(element).removeClass('HideRoomDetail');
+                //$(element).removeClass('collapsed');
+                $(element).addClass('ShowMoreRoom collapsed');
+            });
+            $(formSelector).next('.mobileBtn').addClass();
+            $(formSelector).parent().parent('.form-container2').hide();
+            $(roomSelector).removeClass('HideRoomDetail');
+            $(roomSelector).addClass('ShowMoreRoom collapsed');
+            $(roomSelectorM).removeClass('HideRoomDetail');
+            $(roomSelectorM).addClass('ShowMoreRoom collapsed');
+
+        });
+
+        $('#hotelresultlist, #hotelresultlist_m').on('click', '.ShowMoreRoom', function () {
+            var obj = $(this).data("hotelid");
+            var element = $(this);
+            var idname = typeof obj === "undefined" ? '' : "#roomlist2_" + obj;
+            var classname = "HideRoomDetail";
+            $('#roomlist', +idname).data('hotelid', obj);
+            $.ajax({
+                type: "GET",
+                url: '/Hotel/GetRoomInfo?data=' + obj + '|room' + tripid,
+                cache: false,
+                async: true,
+                dataType: "html",
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).done(function (result) {
+                var formSelector = '#roomlist,' + idname;
+                var roomSelector = '#more_' + obj;
+                var roomSelectorM = '#moreM_' + obj;
+                $(formSelector).html(result).prepend('<div class="div25">&nbsp;</div>');
+                $('#loading-modal').hide();
+                $('.widget-footer2').removeClass('widget-footer2');
+                $('.white-bg-ars').removeClass('white-bg-ars');
+                $('.form-container2').hide();
+                $('.HideRoomDetail').each(function (i, e) {
+                    $(e).removeClass('HideRoomDetail');
+                    //$(e).removeClass('collapsed');
+                    $(e).addClass('ShowMoreRoom collapsed');
+                });
+                $(roomSelector).addClass('HideRoomDetail').parents('.addhotel-widget').toggleClass('white-bg-ars');
+                $(roomSelector).addClass('HideRoomDetail').parents('.widget-footer').toggleClass('widget-footer2');
+                $(roomSelectorM).addClass('HideRoomDetail').parents('.addhotel-widget').toggleClass('white-bg-ars');
+                $(roomSelectorM).addClass('HideRoomDetail').parents('.widget-footer').toggleClass('widget-footer2');
+                $(formSelector).parent().parent().parent().parent('.addhotel-widgetm').addClass('white-bg-ars');
+                $(formSelector).next('.mobileBtn').removeClass();
+                $(formSelector).parent().parent('.form-container2').show();
+                $(roomSelector).removeClass('ShowMoreRoom collapsed');
+                $(roomSelectorM).removeClass('ShowMoreRoom collapsed');
+            });
+        });
+
+        /*START: pop up cancellation policy*/
+        var ShowPolicy = function (data) {
+            var obj = "#" + data;
+            $('#modal-container').css('text-align', 'justify');
+            $('#modal-container').css('font-family', '"UbuntuRegular"');
+            $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">Booking Cancellation Policy</div>');
+            $('#modal-container').append($(obj).html());
+            $("#popup-modal").show();
+            unloadScrollBars();
+            /*END: pop up cancellation policy*/
+        }
+
+        function ShowRoomInfo(objVal, objVal2) {
+            var val = objVal + "|" + objVal2;
+            $.ajax({
+                type: "GET",
+                url: '/Hotel/GetRoomInfo?data=' + val + tripid,
+                cache: false,
+                async: true,
+                dataType: "html",
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).done(function (result) {
+                $('.fullcover_div7').html(result);
+                $("#slider").responsiveSlides({
+                    auto: true,
+                    nav: true,
+                    speed: 500,
+                    namespace: "callbacks",
+                    pager: true,
+                });
+                $(".fullcover_div7").fadeIn();
+                unloadScrollBars();
+                $('#loading-modal').hide();
+                if ($(window).height() < 580) {
+                    var h = $(window).height() - 20;
+                    $(".viewmorehotel_white1nn").css('height', h);
+                }
+            });
+        }
+        /*END: Show room info */
+    </script>
+
+    <!--START: checking before Reserve -->
+    <script>
+        var checkRoomInvent = function (checkingForm, fromPrompt) {
+            var r = [];
+            try {
+                var isMobile = typeof checkingForm !== 'undefined';
+                var idname = isMobile ? '#' + checkingForm : '';
+                var formSelector = isMobile ? idname : '#roomlist';
+                var hotelId = $(formSelector).data('hotelid');
+                var NameList = '';
+                var hotelSelected = [];
+                $(formSelector).each(function (index, element) {
+                    $(element).find('.h2_mhd3_rlr_b3_right select').each(function (i, e) {
+                        var selectedValue = $(e).val();
+                        if (selectedValue != 0) {
+                            var roomType = $(e).data('roomname');
+                            hotelSelected.push({
+                                HotelName: $('.hotel_name[data-hotelid="' + hotelId + '"]').data('hotelname'),
+                                HotelImgHTML: $('.fix-img-container[data-hotelid="' + hotelId + '"]').parents().html(),//$('.addhotel-widget>[data-hotelid="' + hotelId + '"]').html(),
+                                RoomType: roomType,
+                                Unit: selectedValue,
+                                Type: 'Hotel',
+                            });
+                            var rd = {
+                                hotel: hotelId,
+                                typeCode: $(e).attr("data-roomtypecode"),
+                                rateCode: $(e).attr("data-ratecode"),
+                                qty: selectedValue,
+                                name: roomType,
+                                propertyId: $(e).data("propertyid"),
+                            };
+                            r.push(rd);
+                            NameList += '|' + hotelId + '=' + $(e).attr('data-roomtypecode') + '=' + $(e).attr('data-ratecode') + '=' + selectedValue + '=' + roomType;
+
+                        }
+                    });
+                });
+            } catch (e) {
+            }
+            if (typeof fromPrompt === 'undefined') {
+                if (hotelSelected.length === 0) {
+                    popupMsg('Please select one(1) room type.');
+                    return false;
+                }
+                else if (hotelSelected.length === 1) {
+                    prompHotelInfo(hotelSelected, checkingForm);
+                    return false;
+                }
+                else {
+                    popupMsg('Only 1 room type availaible for Hotel Add-On.');
+                    return false;
+                }
+
+            }
+
+            var obj = '';
+            var data;
+            var request = $.Deferred();
+            if (NameList.length > 0) {
+                request = $.ajax({
+                    type: 'POST',
+                    url: '/Hotel/CheckInventory?' @*+ encodeURIComponent(NameList)*@ + tripid,
+                    data: JSON.stringify(r),
+                    cache: false,
+                    async: true, //dont change to true, otherwise result will be retrieved later.
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    beforeSend: function () {
+                        $('#loading-modal').show();
+                    }
+                }).promise();
+            }
+            else {
+                data = "NOROOM";
+            }
+
+            request.done(function (result) {
+                $('#loading-modal').hide();
+                data = typeof result === "undefined" ? data : result;
+
+                switch (data) {
+                    case "NOTENOUGH": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                    case "NOROOM": obj = $('#PopupErr_SelectFirst').html(); break;
+                    case "TIMEOUT": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                    case "EXCEED": obj = $('#PopupErr_Exceed').html(); break;
+                    default:
+                        if (data.length > 10) {
+                            obj = data;
+                        }
+                        break;
+                }
+
+                if (data === "NOROOM" || typeof result === "undefined") {
+
+                }
+                else if (data != "ENOUGH") {
+                    $('#modal-container .hotel-title').hide();
+                    $('#modal-container .btn-section').css('text-align', 'justify');
+                    $('#modal-container .btn-section').html('<div style="color: #EC1C24;font-size: 18px;font-family: \'Ubuntu-Light\';line-height: initial;">' + obj + '</div>');
+                    $('#modal-container .btn-section').append('<div class="btn-section" style="text-align: center">' + cancelBtn('OK') + '</div>');
+                    $("#popup-modal").show();
+                    return;
+                }
+
+                $('#dataToken').val(JSON.stringify(r));
+                $('#crossSale').submit();
+                return;
+            });
+
+            if (!(NameList.length > 0)) {
+                request.resolve();
+            }
+        }
+
+        // Prompt hotel selected information
+        var prompHotelInfo = function (hotelSelected, checkingForm) {
+            var popupContainer = $('#popup-modal .modal-container');
+            var htmlMarkup = '';
+            $(hotelSelected).each(function (index, list) {
+                htmlMarkup += '<h4 class="hotel-title">' + list.Type + ' Confirm?' + '</h4>';
+                htmlMarkup += '<p>' + list.HotelName + '<br>';
+                htmlMarkup += '' + list.RoomType + ' x ' + list.Unit + '</p>';
+                htmlMarkup += '<div class="section-hotel" style="margin-top: 0">';
+                htmlMarkup += '<div class="addhotel-widget" style="width: 100%">';
+                htmlMarkup += list.HotelImgHTML;
+                htmlMarkup += '</div>';
+                htmlMarkup += '</div>';
+            })
+            var callback = typeof checkingForm === 'string' ? '"' + checkingForm + '"' : checkingForm;
+            var confirmFunction = 'onclick=\'checkRoomInvent(' + callback + ', true)\'';
+            htmlMarkup += "<div class='btn-section'>";
+            htmlMarkup += "<a href='javascript:;' class='continue-submit'><div " + confirmFunction + "class='redbacktohome_button modal-confirm-btn''>Continue</div></a>";
+            htmlMarkup += cancelBtn('Cancel');
+            htmlMarkup += "</div>";
+            popupContainer.html(htmlMarkup);
+            $('#popup-modal').show();
+        }
+
+        var popupMsg = function (htmlMarkup) {
+            var popupContainer = $('#popup-modal .modal-container');
+            @if (!Model.ForceCrossSell) {
+                <text>
+            htmlMarkup += '<p style="margin-top: 2em;margin-bottom: -2em;">OR</p>';
+            htmlMarkup += '<div style="margin-top: 4em;margin-bottom: -2em;font-size:12px">';
+            htmlMarkup += '<i><a href="javascript:;" data-url="@Url.Action("AddOn", "Flight", new { tripid })" onclick="submit_form(this)" class="add-cursor-pointer">Continue without Add-on</a></i></div>';
+            </text>
+            }
+            popupContainer.html(htmlMarkup);
+            $('#popup-modal > .fcd_white3_op').append('<div class="ars-spacer"></div>');
+            $('#popup-modal').show();
+        }
+
+        //Start TripAdvisor modal pop up//
+        $('#hotelresultlist, #hotelresultlist_m').on('click', '.h2_mhdb3_trip_ad', function () {
+            var hotelid = $(this).data("hotelid");
+            var method = $(this).data("method");
+            $.ajax({
+                type: "GET",
+                url: '/Hotel/GetHotelInfo?data=' + hotelid + '&tripid=@tripid',
+                cache: false,
+                async: true,
+                dataType: "text",
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).done(function (result) {
+                var containSection = $(result).find('.viewmorehotel_container.hotel-info').parent().html();
+                $(".fullcover_div_GoogleMap").html(containSection == "" ? result : containSection);
+                initSlider($(".rslides"));
+                $("#myCarousel").carousel({ pause: "false" });
+                $(".fullcover_div_GoogleMap").fadeIn();
+                unloadScrollBars();
+                $('#loading-modal').hide();
+                if ($(window).height() < 580) {
+                    var h = $(window).height() - 70;
+                    $(".viewmorehotel_white1nn").css('height', h);
+                }
+                if ($(window).width() > 900) {
+                    if ($('div.d8c1_br_blocks_three').length > 18) {
+                        $(".showmoreamenities").css("display", "block");
+                        $('div.d8c1_br_blocks_three:nth-child(18)').nextUntil(".clear").addClass("loadAmenities");
+                    }
+                } else {
+                    if ($('div.d8c1_br_blocks_three').length > 6) {
+                        $(".showmoreamenities").css("display", "block");
+                        $('div.d8c1_br_blocks_three:nth-child(6)').nextUntil(".clear").addClass("loadAmenities");
+                    }
+                }
+                if ($('div.knowb4go ul li').length > 4) {
+                    $(".showmoreknow").css("display", "block");
+                    $('div.knowb4go ul li:nth-child(4)').nextUntil(".clear").addClass("loadAmenities");
+                }
+                if ($("div.hotelpopuppolicy:not(.hotelpopuppolicy:empty)").length > 4) {
+                    $(".showmorepolicy").css("display", "block");
+                    $("div.hotelpopuppolicy:not(.hotelpopuppolicy:empty):nth-of-type(4)").nextUntil(".clear").addClass("loadAmenities");
+                }
+                ShowTab("tab3");
+            });
+        });
+        //End TripAdvisor modal pop up//
+    </script>
+    <!--END: checking before Reserve -->
+}

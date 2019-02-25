@@ -1,0 +1,22 @@
+﻿@{
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+
+<div id="bookingExpiryMessage" class="fullcover_div4" style="display: none">
+    <div class="fcd_white3_op">
+        <div class="fcd_op_inner">
+            @if (!isEnableCMS)
+            {
+            <div class="fcd_op_text1" id="oops-msg">Your booking was expired. Please make a new booking again.</div>
+            <div class="redbacktohome_button"><a href="@Url.Action("Index", "Home")">Back to Homepage</a></div>
+            }
+            else
+            {
+                <div class="fcd_op_text1" id="oops-msg">Your booking was expired. Please make a new booking again.</div>
+                <a href='@System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"] '>
+                    <input type="button" class="redbacktohome_button" value="Back to Homepage" />
+                </a>
+            }
+        </div>
+    </div>
+</div>

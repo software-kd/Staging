@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Insurances>
+  <Destination>
+    <Country code="AUS">Australia</Country>
+    <Country code="BGD">Bangladesh</Country>
+    <Country code="CHN">China</Country>
+    <Country code="IDN">Indonesia</Country>
+    <Country code="IND">India</Country>
+    <Country code="HKG">Hong Kong</Country>
+    <Country code="KHM">Cambodia</Country>
+    <Country code="LKA">Sri Lanka</Country>
+    <Country code="MAC">Macau</Country>
+    <Country code="PHL">Philippines</Country>
+    <Country code="THA">Thailand</Country>
+    <Country code="TWN">Taiwan</Country>
+    <Country code="VNM">Vietnam</Country>
+    <Country code="SGP">Singapore</Country>
+  </Destination>
+</Insurances>

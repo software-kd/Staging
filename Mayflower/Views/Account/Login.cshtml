@@ -1,0 +1,118 @@
+﻿@{
+    @*//Alvinloo 7/12/2016 start*@
+    ViewBag.Title = "Login to Mayflower | Cheap Holidays, Hotels & Flights | Travel Agent Malaysia ";
+    ViewBag.MetaDescription = "Login to Mayflower to view your booking or book your holiday easily using your saved details.";
+    ViewBag.RenderRedLine = true;
+    @*//Alvinloo 7/12/2016 end*@
+}
+
+@if (!Request.IsAuthenticated)
+{
+    @section style{
+        <link href="@Url.Content("~/CSS/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+        <style>
+            .s3-1_submit_button {
+                width: 100%;
+                background-color: #eb1c24;
+                height: 60px;
+                font-size: 14px;
+                color: #fff;
+                -webkit-border-radius: 30px;
+                -moz-border-radius: 30px;
+                border-radius: 30px;
+                border: 0px;
+            }
+
+            .notice-msg {
+                text-align: center;
+                margin-bottom: 10px;
+                font-family: "Conv_Ubuntu-Light";
+                font-size: 13px;
+            }
+
+            #cssmenu > ul > li > a {
+                color: #ea0512 !important;
+                text-decoration: none;
+                font-family: 'UbuntuMedium';
+            }
+
+            h5.option-break {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid #07d4c1;
+                line-height: 0.1em;
+                margin: 20px 0 20px;
+            }
+
+            .option-break span {
+                font-size: 16px;
+                background: #f1f1f3;
+                padding: 0 10px;
+            }
+
+            .btn-fb-ars:hover {
+                background-color: #4774cc;
+            }
+
+            .btn-fb-ars {
+                background-color: #4267b2;
+                width: 100%;
+                padding: 0.5em 1em;
+                line-height: 40px;
+                vertical-align: middle;
+                border: none;
+                cursor: pointer;
+            }
+
+                .btn-fb-ars i {
+                    color: white;
+                    font-size: 40px;
+                    vertical-align: middle;
+                }
+
+                .btn-fb-ars span {
+                    font-size: 14px;
+                    margin-left: 0.6em;
+                    color: #fff;
+                    vertical-align: middle;
+                }
+
+            @@media screen and (max-width : 900px) {
+                .footer {
+                    margin-top: 0px;
+                }
+
+                .member_login_container {
+                    margin-top: 0px;
+                    width: 100%;
+                    max-width: none;
+                }
+
+                .footer_inner {
+                    margin-top: 0px;
+                }
+            }
+        </style>
+    }
+
+    <!-- MAIN CONTENT PORTION START -->
+    <div class="member_login_container">
+        <div class="mem_login_inner">
+            <h2>Member Login</h2>
+            <div class="member_fp_text mem_text_center">Please key in your email address and password to log into our site.</div>
+            @Html.Partial("~/Views/Account/_LoginPartial.cshtml", new Mayflower.Models.LoginModel())
+            
+            @Html.Partial("~/Views/Account/_ExternalLogin/_ExternalLoginsListPartial.cshtml", new Alphareds.Module.Model.ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+        </div>
+    </div>
+    <!-- MAIN CONTENT PORTION END -->
+
+
+    @section scripts{
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+}
+else
+{
+    Response.Redirect("~/" + ViewBag.ReturnUrl);
+}

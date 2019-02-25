@@ -1,0 +1,1280 @@
+﻿@{
+    string tripid = Request.QueryString["tripid"];
+}
+
+<!-- slider start -->
+<script src="@Url.Content("~/Scripts/hotel/responsiveslides.min.js")"></script>
+<script>
+    $(function () {
+        $("#slider").responsiveSlides({
+            auto: true,
+            nav: true,
+            speed: 500,
+            namespace: "callbacks",
+            pager: true,
+        });
+    });
+</script>
+<!-- slider end -->
+<!--START: main functions-->
+<script>
+    var toggleLoadArea = function (option) {
+        option = option == undefined ? 'slow' : option;
+        $('.s2_main_container .loading, #result-content, #form').fadeToggle(option);
+    }
+
+    var lazyPreLoad = function () {
+        $('#hotelresultlist .h2_mainhoteldetail_box1.ShowHotelInfo img').each(function (i, e) {
+            var img = new Image();
+            var elem = $(e);
+            try {
+                //e.src = '/Images/mayflower_loading.gif';
+                img.onload = function (e2) {
+                    var e2;
+                    e.src = img.src;
+                    elem.next().remove();
+                }
+
+                img.onerror = function (e3) {
+                    e.src = '../Images_hotel/no-img-01.png';
+                    elem.next().remove();
+                }
+                img.src = elem.data('src');
+            } catch (ex) {
+                e.src = '../Images_hotel/no-img-01.png';
+                elem.next().remove();
+            };
+        });
+    };
+
+    $(window).resize(function () {
+        var resizeReal = ($(window).width() != width);
+        if (resizeReal && width <= 900) {
+            if ($(window).width() <= 900) {
+                width = $(window).width();
+            }
+            else if ($(window).width() > 900) {
+                $(".s2_mcb_ml_left_container").show();
+                $(".s2_mcb_ml_right_container").show();
+                $(".map_bestdeal_container").show();
+                $(".tlla_right").show();
+                $(".s2_fil_in_left").show();
+                $(".dekstop_menu").show();
+                $(".showmoredata").hide();
+                $(".s3-1_inactive_cd").addClass("s3-1_activli");
+                $(".s3-1_inactive_guest").removeClass("s3-1_activli");
+                width = $(window).width();
+            }
+        }
+        else if (resizeReal && width > 900) {
+            if ($(window).width() > 900) {
+                width = $(window).width();
+            }
+            else if ($(window).width() <= 900) {
+                $(".showmoredata").show();
+                $(".s2_fil_in_left").hide();
+                $(".s2_fil_inl_filboxes").removeClass("red_background_filter");
+                $(".s2_fil_inl_filboxes").removeClass("filter-airlines");
+                $(".s2_fil_inl_filboxes").removeClass("times-filter");
+                $(".s2_fil_inl_filboxes").removeClass("stop_filter");
+                $(".s2_fil_inl_filboxes").removeClass("price-filter");
+                $(".s2_filter_content_container").hide();
+                width = $(window).width();
+            }
+        }
+    }
+    );
+    /*END: Window resize */
+
+    /*START: Show room info */
+    var position = 0;
+    //2nd method
+    function ShowRoomInfo(objVal, objVal2) {
+        var val = objVal + "|" + objVal2;
+        hsInfo.data = val;
+        $.ajax({
+            type: "GET",
+            url: '/Hotel/GetRoomInfo?' + 'tripid=@tripid',
+            cache: false,
+            data: hsInfo,
+            async: true,
+            dataType: "html",
+            beforeSend: function () {
+                $('#loading-modal').show();
+            }
+        }).done(function (result) {
+            $('.fullcover_div7').html(result);
+            carouselPreLoad();
+            $("#slider").responsiveSlides({
+                auto: true,
+                nav: true,
+                speed: 500,
+                namespace: "callbacks",
+                pager: true,
+            });
+            $(".fullcover_div7").fadeIn();
+            unloadScrollBars();
+            $('#loading-modal').hide();
+            if ($(window).height() < 580) {
+                var h = $(window).height() - 20;
+                $(".viewmorehotel_white1nn").css('height', h);
+            }
+        });
+    }
+    /*END: Show room info */
+    var checkroomcollapsed = "";
+    /*START: put value to show more rooms */
+    $('#hotelresultlist').on('click', '.ShowMoreRoom', function () {
+        var obj = $(this).data("pid");
+        var obj2 = "[id='more_" + obj + "']";
+        var roomBar = $(this).hasClass('h2_mhd3_selectroom_bar') ? $(this).find('span') :
+            $(this).prev().find('.h2_mhd3_selectroom_bar span');
+        var roomList = "[id='reserveRoom_" + obj + "']";
+
+        var navBtn = $(obj2);
+        var roomBoxEle = $("[id='showmoreroom_" + obj + "']");
+        var roomBoxInEle = $(roomList + ' .h2_mhd3_rooms_inner');
+
+        if (navBtn.text() == "Show room option") {
+
+            navBtn.text("Hide room option");
+            roomBar.removeClass('ars-arrowdown-white');
+            roomBar.addClass('ars-arrowup-white');
+
+            hsInfo.HID = $(this).data("hotelid");
+            hsInfo.HSR = $(this).data('supp');
+
+            $.ajax({
+                type: "GET",
+                url: '/Hotel/GetRoomInfo?data=' + $.trim(obj).replace(/\-/g, ' ') + '|room' + '&tripid=@tripid',
+                data: hsInfo,
+                cache: false,
+                async: true,
+                dataType: "html",
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).done(function (result) {
+                roomBoxEle.html(result);
+                roomBoxEle.show();
+                $('#loading-modal').hide();
+                //navBtn.removeClass("show_more_hotel_icon1");
+                navBtn.addClass("show_more_hotel_icon2");
+                navBtn.addClass('hide-room').removeClass('show-room');
+                roomBoxInEle.show();
+                navBtn.show();
+                if (Globalchecktotalp == "yes" || checkroomcollapsed == "yes") {
+                    var selectedval = JSON.parse(localStorage.getItem("selectValues"));
+                    if (selectedval != null) {
+                        selectedval.forEach(function (element) {
+                            $("[name='" + element.split(" ")[0] + "']").val(element.split(" ")[1]);
+                        });
+                    }
+                }
+            });
+        } else {
+            roomBar.addClass('ars-arrowdown-white');
+            roomBar.removeClass('ars-arrowup-white');
+            navBtn.removeClass('hide-room').addClass('show-room');
+            navBtn.hide();
+            roomBoxInEle.hide();
+            navBtn.text("Show room option");
+            roomBoxEle.html('');
+            roomBoxEle.slideToggle();
+            navBtn.removeClass("show_more_hotel_icon2");
+            $('html,body').animate({
+                scrollTop: navBtn.parent().parent().offset().top + 10
+            });
+            checkroomcollapsed = "yes";
+        }
+        if ($('#frooms_' + obj).length) {
+            $('#frooms_' + obj)[0].selectedIndex = 0;
+        }
+    });
+    /*END: put value to show more rooms */
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    window.onload = function () {
+        var affiliationId = getParameterByName('affiliationId');
+        var autoexpand = getParameterByName('autoexpand');
+        if (affiliationId && autoexpand && $(".ShowMoreRoom.s2mdb_orange_bg").length == 1) {
+            $(".ShowMoreRoom.s2mdb_orange_bg").click();
+        }
+    }
+
+    /*START: show full hotel info*/
+    function ShowTab(objVal) {
+        if (objVal == "tab1") {
+            $(".div8_tab_container1").fadeIn();
+            $(".div8_tab_container2").hide();
+            $(".div8_tab_container3").hide();
+            $(".d8tab1").addClass("d8activelink");
+            $(".d8tab2").removeClass("d8activelink");
+            $(".d8tab3").removeClass("d8activelink");
+        }
+        else if (objVal == "tab2") {
+            $(".div8_tab_container2").fadeIn();
+            $(".div8_tab_container1").hide();
+            $(".div8_tab_container3").hide();
+            $(".d8tab2").addClass("d8activelink");
+            $(".d8tab1").removeClass("d8activelink");
+            $(".d8tab3").removeClass("d8activelink");
+        }
+        else if (objVal == "tab3") {
+            $(".div8_tab_container3").fadeIn();
+            $(".div8_tab_container1").hide();
+            $(".div8_tab_container2").hide();
+            $(".d8tab3").addClass("d8activelink");
+            $(".d8tab2").removeClass("d8activelink");
+            $(".d8tab1").removeClass("d8activelink");
+        }
+    }
+    /*END: show full hotel info*/
+
+    /*START: get location on google map*/
+    $('#hotelresultlist').on('click', '.ShowMap', function () {
+        $.ajax({
+            type: "GET",
+            url: '/Hotel/GetLocationOnMap?name=' + $(this).data("name") + '&city=' + $(this).data("city") + '&tripid=@tripid',
+            cache: false,
+            async: true,
+            dataType: "text",
+            beforeSend: function () {
+                $('#loading-modal').show();
+            }
+        }).done(function (result) {
+            var containSection = $(result).find('.viewmorehotel_container').parent().html();
+
+            if (typeof (containSection) === 'undefined') {
+                $('#modal-container').append(result);
+                $("#popup-modal").show();
+                $('#loading-modal').hide();
+                unloadScrollBars();
+                return false;
+            } else {
+                $(".fullcover_div_GoogleMap").html(result);
+                $(".fullcover_div_GoogleMap").fadeIn();
+                unloadScrollBars();
+                $('#loading-modal').hide();
+            }
+        });
+    });
+    /*END: get location on google map*/
+
+    $(function () {
+        $(document).on("click", function () {
+            $(".yellow_toll_tip1").hide();
+        });
+        $(".tooltip2").click(function (event) {
+            event.stopPropagation();
+            $(".yellow_toll_tip1").delay(5000).fadeToggle();
+        })
+        $(".yellow_toll_tip1").click(function (event) {
+            event.stopPropagation();
+        });
+        //$(".sorttag_price").click(function () {
+        $("#filter").on('click', '.sorttag_price', function () {
+            $(".map_bestdeal_container").slideToggle();
+            priceoption = null;
+        })
+        $(".outbound_click").click(function () {
+            $(this).parent().parent().find(".s2_mcb_ml_left_container").slideToggle();
+        })
+        $(".inbound_click").click(function () {
+            $(this).parent().find(".s2_mcb_ml_right_container").slideToggle();
+        })
+        //$(".fillter_tags").click(function () {
+        $('#filter').on('click', '.fillter_tags', function () {
+            $(this).hide();
+        })
+        $('#infobox, #hotelresultlist').on('click', '.s3_1_fdb_modify_icon, #btnHotelOnly', function () {
+            if ($(this).data('bundle') == 'True') {
+                $(".fullcover_div6.bundle").fadeIn();
+            }
+            else {
+                $('.slidercss').prop('disabled', true);
+                unloadScrollBars();
+                $(".fullcover_div6.hotel").fadeIn();
+            }
+            iosScrollFix();
+        });
+
+        $('#filter').on('click', '.sorttag1', function () {
+            //$(".sorttag1").click(function () {
+            $(".s2_fil_in_right_sm").slideToggle();
+            if ($(this).find('.fft_right').hasClass('fft_right_collapsed')) {
+                $(this).find('.fft_right').removeClass('fft_right_collapsed');
+                sortingoption = null;
+            } else {
+                $(this).find('.fft_right').addClass('fft_right_collapsed');
+            }
+        });
+        $(".payment_gray_tabs").click(function () {
+            $(this).next().slideToggle();
+            $(this).toggleClass("payment_tab_active");
+            $(this).find(".pgt_right").toggleClass("pgt_right_active");
+        });
+
+        $(".show_more_flight_icon_p").click(function () {
+            $(".spcldiv").toggleClass("paydisp_none");
+            if ($(".show_more_flight_icon_p").text() == "Show more flights details") {
+                $(".show_more_flight_icon_p").text("Hide flight details");
+            } else {
+                $(".show_more_flight_icon_p").text("Show more flights details");
+            }
+        });
+
+        $(".s3-1_form_button").click(function () {
+            $(".fullcover_div").fadeIn();
+        });
+
+        $(document).on('click', '.loginclose img', function () {
+            $(".fullcover_div").fadeOut();
+            $(".fullcover_div1").fadeOut();
+            $(".fullcover_div6").fadeOut();
+            $(".fullcover_div7").fadeOut();
+            $(".fullcover_div8").fadeOut();
+            $(".fullcover_div_GoogleMap").fadeOut();
+
+            position = position * -1;
+            if (!$(this).hasClass('map')) {
+                $('body').css({ position: 'static' });
+                //$('body').scrollTop(position); // 2017/06/10 - Heng remarks, caused click "Map" auto scroll to top
+            }
+            reloadScrollBars();
+        });
+
+        $(".s3-1_flyer_left_dupinput").click(function () {
+            $(".ffn_inputbox ul").toggle();
+        });
+
+        /*flight page more detail start*/
+        $(".s2_mcbmlid_dc_right").click(function () {
+            $(this).parent().prev().slideToggle("slow");
+            $(this).find(".showdetails").toggleClass("hidedetail");
+            if ($(this).find(".showdetails").text() == "Show Details") {
+                $(this).find(".showdetails").text("Hide Details");
+            } else {
+                $(this).find(".showdetails").text("Show Details");
+            }
+        })
+        /*flight page more detail end*/
+
+        $('#filter').on('click', '.tabsformobile1', function () {
+            $(".newcontainer2").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer1").slideToggle();
+            $(this).toggleClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile3").removeClass("newclassfortab3a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+            $(".tabsformobile5").removeClass("newclassfortab5a");
+        })
+        $('#filter').on('click', '.tabsformobile2', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer2").slideToggle();
+            $(this).toggleClass("newclassfortab2a");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile3").removeClass("newclassfortab3a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+            $(".tabsformobile5").removeClass("newclassfortab5a");
+        })
+        $('#filter').on('click', '.tabsformobile3', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer3").slideToggle();
+            $(this).toggleClass("newclassfortab3a");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+            $(".tabsformobile5").removeClass("newclassfortab5a");
+        })
+        $('#filter').on('click', '.tabsformobile4', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer4").slideToggle();
+            $(this).toggleClass("newclassfortab4a");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile3").removeClass("newclassfortab3a");
+            $(".tabsformobile5").removeClass("newclassfortab5a");
+        })
+        $('#filter').on('click', '.tabsformobile5', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideToggle();
+            $(this).toggleClass("newclassfortab5a");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile3").removeClass("newclassfortab3a");
+            $(".tabsformobile4").removeClass("newclassfortab5a");
+        })
+        $('#filter').on('click', '.tabfil1', function () {
+            $(".newcontainer2").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer1").slideDown();
+            $(".tabfil2").removeClass("newclassfortab2");
+            $(".tabfil3").removeClass("newclassfortab3");
+            $(".tabfil4").removeClass("newclassfortab4");
+            $(".tabfil5").removeClass("newclassfortab5");
+            $(this).addClass("newclassfortab1");
+            $(".hidden_icon_for_color").removeClass("Bottom_green_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_pink_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_yellow_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_violet_my");
+            $(".hidden_icon_for_color").addClass("Bottom_blue_my");
+            $(".tabsformobile1").addClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+        })
+        $('#filter').on('click', '.tabfil2', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer2").slideDown();
+            $(".tabfil1").removeClass("newclassfortab1");
+            $(".tabfil3").removeClass("newclassfortab3");
+            $(".tabfil4").removeClass("newclassfortab4");
+            $(".tabfil5").removeClass("newclassfortab5");
+            $(this).addClass("newclassfortab2");
+            $(".hidden_icon_for_color").removeClass("Bottom_blue_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_pink_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_yellow_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_violet_my");
+            $(".hidden_icon_for_color").addClass("Bottom_green_my");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").addClass("newclassfortab2a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+        })
+        $('#filter').on('click', '.tabfil3', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer3").slideDown();
+            $(".tabfil1").removeClass("newclassfortab1");
+            $(".tabfil2").removeClass("newclassfortab2");
+            $(".tabfil4").removeClass("newclassfortab4");
+            $(".tabfil5").removeClass("newclassfortab5");
+            $(this).addClass("newclassfortab3");
+            $(".hidden_icon_for_color").removeClass("Bottom_blue_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_green_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_yellow_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_violet_my");
+            $(".hidden_icon_for_color").addClass("Bottom_pink_my");
+        })
+        $('#filter').on('click', '.tabfil4', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".newcontainer4").slideDown();
+            $(".tabfil1").removeClass("newclassfortab1");
+            $(".tabfil2").removeClass("newclassfortab2");
+            $(".tabfil3").removeClass("newclassfortab3");
+            $(".tabfil5").removeClass("newclassfortab5");
+            $(this).addClass("newclassfortab4");
+            $(".hidden_icon_for_color").removeClass("Bottom_blue_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_green_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_pink_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_violet_my");
+            $(".hidden_icon_for_color").addClass("Bottom_yellow_my");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile4").addClass("newclassfortab4a");
+        })
+        $('#filter').on('click', '.tabfil5', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer5").slideDown();
+            $(".newcontainer4").slideUp();
+            $(".tabfil1").removeClass("newclassfortab1");
+            $(".tabfil2").removeClass("newclassfortab2");
+            $(".tabfil3").removeClass("newclassfortab3");
+            $(".tabfil4").removeClass("newclassfortab4");
+            $(this).addClass("newclassfortab5");
+            $(".hidden_icon_for_color").removeClass("Bottom_blue_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_green_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_pink_my");
+            $(".hidden_icon_for_color").removeClass("Bottom_yellow_my");
+            $(".hidden_icon_for_color").addClass("Bottom_violet_my");
+        })
+        /*filter start*/
+        $('#filter').on('click', '.s2_fil_inl_filboxes', function () {
+            $(".hidefilter_icon").fadeIn();
+        });
+        $('#filter').on('click', '.s2_fil_inl_filboxes_hotel', function () {
+            $(".hidefilter_icon").fadeIn();
+        });
+        $('#filter').on('click', '.hidefilter_icon', function () {
+            $(".newcontainer1").slideUp();
+            $(".newcontainer2").slideUp();
+            $(".newcontainer3").slideUp();
+            $(".newcontainer4").slideUp();
+            $(".newcontainer5").slideUp();
+            $(".tabfil1").removeClass("newclassfortab1");
+            $(".tabfil2").removeClass("newclassfortab2");
+            $(".tabfil3").removeClass("newclassfortab3");
+            $(".tabfil4").removeClass("newclassfortab4");
+            $(".tabfil5").removeClass("newclassfortab5");
+            $(".tabsformobile1").removeClass("newclassfortab1a");
+            $(".tabsformobile2").removeClass("newclassfortab2a");
+            $(".tabsformobile3").removeClass("newclassfortab3a");
+            $(".tabsformobile4").removeClass("newclassfortab4a");
+            $(this).hide();
+        })
+
+        /*filter end*/
+        $(".ffn_inputboxulli_container ul li").click(function () {
+            var tab_id = $(this).attr('inpvalue');
+            var imgpath = $(this).find(".ffn_ulli_left").html();
+            $(".s3-1_flyer_left_dupinput").html(imgpath);
+            $("#frquentflyer").val(tab_id);
+            $(".ffn_inputboxulli_container ul").hide();
+        });
+
+        $(".contact_detail_heading_small").click(function () {
+            var tab_id = $(this).attr('value');
+            $("#" + tab_id).slideToggle();
+
+            $(this).find(".chhc_bar").toggleClass("cdhc_redbar");
+        });
+
+        $(".s3-1_guestdetail_box ul li").click(function () {
+            $(".s3-1_guestdetail_box ul li").removeClass("s3-1_activli");
+            $(this).addClass("s3-1_activli");
+
+            var tab_id = $(this).attr('value');
+            $("#guest3form").hide();
+            $("#guest2form").hide();
+            $("#guest1form").hide();
+            $("#contactform").hide();
+            $("#" + tab_id).fadeIn();
+        });
+
+        $(".searchtab1").click(function () {
+            $("#search_hotel").fadeIn();
+            $("#search_flight").hide();
+            $("#search_package").hide();
+            $(this).addClass("active_tab");
+            $(".searchtab2").removeClass("active_tab");
+            $(".searchtab3").removeClass("active_tab");
+        });
+        $(".searchtab2").click(function () {
+            $("#search_hotel").hide();
+            $("#search_flight").fadeIn();
+            $("#search_package").hide();
+            $(this).addClass("active_tab");
+            $(".searchtab1").removeClass("active_tab");
+            $(".searchtab3").removeClass("active_tab");
+        });
+        $(".searchtab3").click(function () {
+            $("#search_hotel").hide();
+            $("#search_flight").fadeIn();
+            $("#search_package").hide();
+            $(this).addClass("active_tab");
+            $(".searchtab2").removeClass("active_tab");
+            $(".searchtab1").removeClass("active_tab");
+        });
+
+        $(".tcct1").click(function () {
+            $(this).addClass("return_icon_active");
+            $(".tcct2").removeClass("oneway_icon_active");
+            $(".tcct3").removeClass("multi_icon_active");
+        });
+        $(".tcct2").click(function () {
+            $(this).addClass("oneway_icon_active");
+            $(".tcct1").removeClass("return_icon_active");
+            $(".tcct3").removeClass("multi_icon_active");
+        });
+        $(".tcct3").click(function () {
+            $(this).addClass("multi_icon_active");
+            $(".tcct2").removeClass("oneway_icon_active");
+            $(".tcct1").removeClass("return_icon_active");
+        });
+
+        $(".mobile_menu_button").click(function () {
+            $(".dekstop_menu").slideToggle();
+        });
+
+        $(".tapto_search").click(function () {
+            $(this).slideUp();
+            $(".taptosearch_tick").slideUp();
+            $(".sir_tabresult").slideDown();
+        });
+
+        $(".ffc2_r2_b5 img").click(function () {
+            $(".yellow_toll_tip").fadeIn();
+            $(".yellow_toll_tip").delay(2000).fadeOut();
+        })
+        $(".s3-1_fi_row1-right").mouseover(function () {
+            $(this).find(".s3-1_form_toll_tip").show();
+        });
+        $(".s3-1_fi_row1-right").mouseout(function () {
+            $(this).find(".s3-1_form_toll_tip").hide();
+        });
+
+        $("#datep").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#datep1").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+
+    });
+    /*START: pop up cancellation policy*/
+    var ShowPolicy = function (data) {
+        var obj = "#" + data.replace(/[^a-zA-Z0-9_]/g, '');
+        console.log(obj);
+        $('#modal-container').css('text-align', 'justify');
+        $('#modal-container').css('font-family', '"UbuntuRegular"');
+        $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">Booking Cancellation Policy</div>');
+        $('#modal-container').append($(obj).html());
+        $("#popup-modal").show();
+        unloadScrollBars();
+    }
+    /*END: pop up cancellation policy*/
+</script>
+<!--END: main functions-->
+<!--START: for hotel info pop up-->
+<script type="text/javascript">
+    function ShowInfo(obj) {
+        var id = "#" + obj;
+        $(id).slideToggle();
+    }
+</script>
+<!--END: for hotel info pop up-->
+<!--START: Filter result hotel-->
+@*<script src="@Url.Content("../Scripts/hotel/slider_hotel.js")"></script>*@
+<script src="@Url.Content("../Scripts/hotel/jquery.timer.js")"></script>
+<script type="text/javascript">
+
+    $("#filter").on('click', '.StarImage', function () {
+        if ($('#hidRating').val() == "1,2,3,4,5" || $('#hidRating').val() == "10") {
+            $('#hidRating').val("");
+        }
+        var existingData = $('#hidRating').val();
+        var selectedData = $(this).data("rates");
+        var newData = "";
+        if (existingData.indexOf(selectedData) < 0) {
+            newData = newData + "," + existingData + "," + selectedData;
+            if (newData.indexOf(1) > -1 && newData.indexOf(2) > -1 && newData.indexOf(3) > -1 && newData.indexOf(4) > -1 && newData.indexOf(5) > -1) {
+                newData = "10";
+            }
+            if (!existingData.match(/\d+/g)) {
+                for (i = 1; i <= 5; i++) {
+                    if (i != selectedData) {
+                        $(".StarImage[data-rates='" + i + "']").attr("src", "/images_hotel/" + i + "-Star-Default.png");
+                    }
+                }
+            } else {
+                this.src = this.src.replace("-Star-Default.png", "-Star-Selected.png");
+            }
+        } else {
+            var arr = existingData.split(',');
+            for (var i = 0; i < arr.length; i++) {
+                if (selectedData != arr[i]) {
+                    newData = newData + "," + arr[i];
+                }
+            }
+            if (!newData.match(/\d+/g)) {
+                for (i = 1; i <= 5; i++) {
+                    $(".StarImage[data-rates='" + i + "']").attr("src", "/images_hotel/" + i + "-Star-Selected.png");
+                }
+                newData = "10";
+            } else {
+                this.src = this.src.replace("-Star-Selected.png", "-Star-Default.png");
+            }
+        }
+
+        $('#hidRating').val(newData);
+    });
+
+    $("#filter").on('click', '.update_star', function () {
+        filteroption = "star";
+        nofiltersort = "1";
+        filterNow();
+    });
+
+    $("#filter").on('click', '.flight_filter_tag.filtertag', function () {
+        filteroption = null;
+    });
+
+    var filteroption = null;
+    var nofiltersort = null;
+    var sortingoption = null;
+    var priceoption = null;
+    var toggleLoadAreaForFilter = function (option) {
+        option = option == undefined ? 'slow' : option;
+        $('#hotelresultlist').fadeToggle(50);
+        $('.s2_main_container .loading').fadeToggle(0);
+    }
+
+    $("#filter").on('click', '.tabsformobile1', function () {
+        nofiltersort = "0";
+    });
+
+    $("#filter").on('click', '.tabsformobile2', function () {
+        nofiltersort = "0";
+    });
+
+    $("#filter").on('click', '.tabsformobile4', function () {
+        nofiltersort = "0";
+    });
+
+    var slidedownpanel = function () {
+        if ($(window).width() > 960) {//desktop view
+            if (filteroption == "star") {
+                $(".tabfil1").addClass("newclassfortab1");
+                $(".newcontainer1").attr("style", "display:block");
+                $(".hidefilter_icon").attr("style", "display:block");
+                $(".hidden_icon_for_color").addClass("Bottom_blue_my");
+            }
+            else if (filteroption == "property") {
+                $(".tabfil2").addClass("newclassfortab2");
+                $(".newcontainer2").attr("style", "display:block");
+                $(".hidefilter_icon").attr("style", "display:block");
+                $(".hidden_icon_for_color").addClass("Bottom_green_my");
+            }
+            else if (filteroption == "price") {
+                $(".tabfil4").addClass("newclassfortab4");
+                $(".newcontainer4").attr("style", "display:block");
+                $(".hidefilter_icon").attr("style", "display:block");
+                $(".hidden_icon_for_color").addClass("Bottom_yellow_my");
+            }
+        }
+        else {//mobile view
+            if (filteroption == "star" || filteroption == "property" || filteroption == "price") {
+                $(".flight_filter_tag.filtertag").find('.fft_right').addClass('fft_right_collapsed');
+                $(".tabsformobile1").attr("style", "display:block");
+                $(".tabsformobile2").attr("style", "display:block");
+                $(".tabsformobile4").attr("style", "display:block");
+                if (filteroption == "star" && nofiltersort == "1") {
+                    $(".tabsformobile1").addClass("newclassfortab1a");
+                    $(".newcontainer1").slideDown();
+                }
+                else if (filteroption == "property" && nofiltersort == "1") {
+                    $(".tabsformobile2").addClass("newclassfortab2a");
+                    $(".newcontainer2").slideDown();
+                }
+                else if (filteroption == "price" && nofiltersort == "1") {
+                    $(".tabsformobile4").addClass("newclassfortab4a");
+                    $(".newcontainer4").slideDown();
+                }
+            }
+        }
+    }
+
+    var slidedownpanelforsorting = function () {
+        if ($(window).width() < 960) {
+            $(".flight_filter_tag.sorttag1").find('.fft_right').addClass('fft_right_collapsed');
+            $(".s2_fil_in_right_sm.s2_fil_in_right_sm_flight.TripAdvisor").attr("style", "display:block");
+            $(".s2_fil_in_right_sm.s2_fil_in_right_sm_flight.Best").attr("style", "display:block");
+            $(".s2_fil_in_right_sm.s2_fil_in_right_sm_flight.Property").attr("style", "display:block");
+        }
+    }
+
+    var slidedownpanelforprice = function () {
+        if ($(window).width() < 960) {
+            $(".flight_filter_tag.sorttag_price").find('.fft_right').addClass('fft_right_collapsed');
+            $(".map_bestdeal_container").attr("style", "display:block");
+        }
+    }
+
+    $.getFilterValue = function () {
+        return $.ajax({
+            type: "POST",
+            cache: false,
+            url: '/Hotel/GetHotelPanel' + '?&tripid=@tripid',
+            async: true,
+        }).then(function (res) {
+            $("#filterForm").html(res);
+            iniPropertyAuto();
+            $.getScript('@Url.Content("~/Scripts/hotel/slider_hotel.js")');
+            //loadhotelbubble();
+        }, function (res) {
+            $("#hotelresultlist").html(res);
+            toggleLoadAreaForFilter(400);
+            setTimeout(function (e) {
+                $('#oopsbox').fadeIn();
+            }, 500);
+        }).promise();
+    };
+
+    var focusHotelResult = function () {
+        $('html, body').animate({
+            scrollTop: $(".s2_main_container").offset().top
+        }, 300);
+    };
+
+    var filterNow = function () {
+        var formfilter = $('#formRate,#formSort,#formCheckBox').serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/Hotel/GetHotelList' + '?&tripid=@tripid',
+            cache: false,
+            async: true,
+            data: formfilter,
+            datatype: 'html',
+            beforeSend: function (data) {
+                toggleLoadAreaForFilter();
+            },
+            success: function (data) {
+                $.getFilterValue().done(function (data2) {
+                    slidedownpanel();
+                    if (sortingoption == "1") {
+                        slidedownpanelforsorting();
+                    }
+                    //if(priceoption=="1"){
+                    //    slidedownpanelforprice();
+                    //}
+                    focusHotelResult();
+                    $('#hotelresultlist').html(data);
+                    lazyPreLoad();
+                    toggleLoadAreaForFilter();
+                    timer.set({ time: 1000, autostart: true });
+                    $('.flight_filter_tag.sorttag_price > .fft_right').addClass('fft_right_collapsed');
+                    $(".map_bestdeal_container").show();
+                });
+            }
+        });
+    };
+
+    $("#filter").on('click', '.allstars', function () {
+        $('#hidRating').val("10");
+        filterNow();
+    });
+
+    @*$('#PropertyName').keyup(function () {
+        // temp disabled, caused some hotel name with dash replaced
+        var raw_text = $(this).val();
+        var return_text = raw_text.replace(/[^a-zA-Z0-9 _&]/g, '');
+        $(this).val(return_text);
+    });*@
+
+    $("#filter").on('click', '#SearchProperty', function () {
+        filteroption = "property";
+        nofiltersort = "1";
+        var t = $('#PropertyName').val();
+        if (t.indexOf('<script>') == -1 || t.indexOf('<scripts>') == -1) {
+            filterNow();
+        }
+    });
+
+    $('#filter').on('submit', '#formRate', function (e) {
+        e.preventDefault();
+    });
+
+    var fPropNam = function (element) {
+        var e = $(element);
+        if (e.val() != "") {
+            e.next().show();
+        } else {
+            e.next().hide();
+        }
+    };
+
+    var timer = $.timer(function () {
+        try {
+            var obj = $('#StartFilter').val();
+            if (obj.length > 1) {
+                timer.stop();
+                filteroption = "price";
+                nofiltersort = "1";
+                filterNow();
+                $('#StartFilter').val('');
+            }
+            else {
+            }
+        }
+        catch (e) { }
+    });
+    timer.set({ time: 1000, autostart: true });
+
+    $("#filter").on('click', '#tax', function () {
+        try {
+            if ($('#tax').is(':checked')) {
+                $('#hidTax').val('true');
+            }
+            else {
+                $('#hidTax').val('false');
+            }
+
+            filterNow();
+        } catch (e) {
+            alert(e.message);
+        }
+    });
+
+    $(".h2_mhd3_rooms_inner").on('change', '.h2_mhd3_rlr_b3_right select', function () {
+        var selectValues = new Array();
+        $(".h2_mhd3_rlr_b3_right select").each(function () {
+            if ($(this).val() != 0) {
+                var eachselect = $(this).attr("name") + " " + $(this).val();
+                selectValues.push(eachselect);
+            }
+        });
+        console.log(selectValues);
+        localStorage.setItem("selectValues", JSON.stringify(selectValues));
+    });
+    var Globalchecktotalp;
+    $(document).ready(function () {
+        $('span.clearTxt').each(function (i, e) {
+            if ($(e).prev().val() !== '') {
+                $(e).show();
+            }
+        })
+        if (localStorage.getItem("checkclicktotalp") == "1") {
+            Globalchecktotalp = "yes";
+            localStorage.removeItem("checkclicktotalp");
+        }
+    });
+    $("#filter").on('click', '#totalp', function () {
+        localStorage.setItem("checkclicktotalp", "1");
+        var selectedval = JSON.parse(localStorage.getItem("selectValues"));
+        try {
+            if ($('#totalp').is(':checked')) {
+                $('#hidAllNights').val('true');
+            }
+            else {
+                $('#hidAllNights').val('false');
+            }
+            filterNow();
+        } catch (e) {
+            alert(e.message);
+        }
+    });
+    
+    $("#filter").on('click', '.flight_filter_tag.sorttag_price', function (e) {
+        if ($(this).find('.fft_right').hasClass('fft_right_collapsed')) {
+            $(this).find('.fft_right').removeClass('fft_right_collapsed');
+            priceoption = null;
+        } else {
+            $(this).find('.fft_right').addClass('fft_right_collapsed');
+        }
+    })
+
+    $('.h2_mainhoteldetail_box1').hover(function () {
+        $(this).find('span').show();
+    }, function () {
+        $(this).find('span').hide();
+    });
+
+    $(function () {
+        $('.h2_mhd3_rooms_inner2').hide();
+    });
+
+    $(document).on('hover', '.show_toltip1', function (e) {
+        var tipsSelector = $(this).find('.s2-1_form_toll_tip_1');
+        tipsSelector.fadeIn();
+        tipsSelector.delay(5000).fadeOut();
+    });
+
+    var iosScrollFix = function () {
+        var ftop = $('body').scrollTop() * -1;
+        position = ftop;
+        $('body').css({ position: 'fixed', top: ftop + 'px', width: '100%' });
+    }
+</script>
+<!--END: Filter result hotel-->
+<!-- scroller script start -->
+<script src="@Url.Content("~/Scripts/hotel/jquery.mThumbnailScroller.js")"></script>
+<!-- scroller script end -->
+<!--START: Form submission without refresh-->
+<script>
+    $(document).ready(function () {
+        $('#reserveRoom').on('submit', function (e) {
+            $('.IsReserveButton').hide();
+        });
+    });
+</script>
+<!--END: Form submission without refresh-->
+@Html.Partial("~/Views/Hotel/_PopoutHotelFunctionJSScripts.cshtml")
+
+<!--START: Invoke GTM-->
+<script type="text/javascript">
+    $('#filter').on('click', '.s2_fil_in_right_sm.TripAdvisor', function (e) {
+        sortingoption = "1";
+        $('#ddlSorting').val("1");
+        $('#ddlSorting').trigger('change');
+    });
+    $('#filter').on('click', '.s2_fil_in_right_sm.Best', function (e) {
+        sortingoption = "1";
+        $('#ddlSorting').val("2");
+        $('#ddlSorting').trigger('change');
+    });
+    $('#filter').on('click', '.s2_fil_in_right_sm.Property', function (e) {
+        sortingoption = "1";
+        $('#ddlSorting').val("3");
+        $('#ddlSorting').trigger('change');
+    });
+</script>
+<!--END: Invoke GTM-->
+<!--START: checking before Reserve -->
+<script>
+    $('#hotelresultlist').on('click', '.room-select-btn', function (e) {
+        checkRoomInvent($(this).data('hid'), $(this).parents('.s2_main_container').data('pid'), this);
+    });
+
+    var pushRoomToCart = function (e) {
+        var rd = {
+            hotel: $(e).data('hid'),
+            typeCode: $(e).attr("data-roomtypecode"),
+            rateCode: $(e).attr("data-ratecode"),
+            qty: $(e).attr("data-qty"),
+            name: $(e).data('roomname'),
+            propertyId: $(e).data("propertyid"),
+            ratetype: $(e).attr("data-ratetype"),
+            encSupp: $(e).attr("data-encsupp"),
+        };
+        return rd;
+    }
+
+    var checkRoomInvent = function (hotelId, pid, element) {
+        var r = [];
+        var b = $("[id='reserveRoom_" + pid + "']")//.find(' button');
+        //var h = b.data('hotelid');
+        //$('.ReserveButton').hide();
+        try {
+            var NameList = "";
+            var GTM_trackAddToCart = [];
+            //$(".showmoreroom_" + hotelId).each(function (index, element) {
+            //    $(element).find(".roomdropd_desk select").each(function (i, e) {
+            //        var selectedValue = $(e).val();
+            //        if (selectedValue != 0) {
+            //            var roomType = $(e).data('roomname');
+            //            var rd = {
+            //                hotel: h,
+            //                typeCode: $(e).attr("data-roomtypecode"),
+            //                rateCode: $(e).attr("data-ratecode"),
+            //                qty: selectedValue,
+            //                name: roomType,
+            //                propertyId: $(e).data("propertyid"),
+            //                ratetype: $(e).attr("data-ratetype"),
+            //            };
+            //            r.push(rd);
+
+            //            var parseDetail = $.parseJSON(GTM_trackHotelDetail);
+            //            $(parseDetail).each(function (index, element) {
+            //                if (element.roomType == roomType) {
+            //                    element.quantity = selectedValue;
+            //                    GTM_trackAddToCart.push(element);
+            //                }
+            //            });
+            //        }
+            //    });
+            //});
+
+            r.push(pushRoomToCart(element));
+
+        } catch (e) { }
+
+        var obj = "";
+        var data;
+
+        var request = $.Deferred();
+        if (NameList.length > 0 || r.length > 0) {
+            request = $.ajax({
+                type: "POST",
+                url: '/Hotel/CheckInventory?' + '&tripid=@tripid',
+                data: JSON.stringify(r),
+                cache: false,
+                async: true,
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                }
+            }).promise();
+        }
+        else {
+            data = "NOROOM";
+        }
+
+        request.done(function (result) {
+            $('#loading-modal').hide();
+            if (Array.isArray(result)) {
+                result = "ENOUGH";
+            }
+            data = typeof result === "undefined" ? data : result;
+
+            switch (data) {
+                case "NOTENOUGH": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                case "NOROOM": obj = $('#PopupErr_SelectFirst').html(); break;
+                case "TIMEOUT": obj = $('#PopupErr_NotEnoughPax').html(); break;
+                case "EXCEED": obj = $('#PopupErr_Exceed').html(); break;
+                case "EXCEEDSEARCH": obj = $('#PopupErr_ExceedSearch').html(); break;
+                default:
+                    if (data.length > 10) {
+                        obj = data;
+                    }
+                    break;
+            }
+
+            if (data != "ENOUGH") {
+                $('#modal-container').css('text-align', 'justify');
+                $('#modal-container').css('font-family', '"UbuntuRegular"');
+                $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">' + obj + '</div>');
+                $("#popup-modal").show();
+                $('.ReserveButton').show();
+                return;
+            }
+            trackAddToCart(GTM_trackAddToCart);
+            sessionStorage.ecomselectedH = JSON.stringify(GTM_trackAddToCart);
+
+            var url = $(b).find('.submit').data('url');
+            $('<form action="' + url + '&key=' + encodeURIComponent(JSON.stringify(r)) + '" method="POST"/>')
+            .appendTo($(document.body))
+            .submit();
+
+            @*$('#reserveRoom_' + hotelId).submit();*@
+            return;
+        });
+
+        if (!(NameList.length > 0)) {
+            request.resolve();
+        }
+    }
+
+    var checkSaveHotel = function (hotelId) {
+        var r = [];
+        var h = $('#reserveRoom_' + hotelId + ' button').data('hotelid');
+        try {
+            var NameList = "";
+            $(".showmoreroom_" + hotelId).each(function (index, element) {
+                $(element).find(".roomdropd_desk select").each(function (i, e) {
+                    var selectedValue = $(e).val();
+                    if (selectedValue != 0) {
+                        var roomType = $(e).data('roomname');
+                        var rd = {
+                            hotel: h,
+                            typeCode: $(e).attr("data-roomtypecode"),
+                        rateCode: $(e).attr("data-ratecode"),
+                        qty: selectedValue,
+                        name: roomType,
+                        propertyId: $(e).data("propertyid"),
+                        ratetype: $(e).attr("data-ratetype"),
+                        };
+                    r.push(rd);
+                }
+                });
+        });
+    } catch (e) { }
+
+    var obj = "";
+    var data;
+
+    var request = $.Deferred();
+    if (NameList.length > 0 || r.length > 0) {
+        request = $.ajax({
+            type: "POST",
+            url: '/Hotel/SaveHotel?' + '&tripid=@tripid',
+            data: JSON.stringify(r),
+        cache: false,
+        async: true,
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function () {
+            $('#loading-modal').show();
+        }
+    }).promise();
+    }
+    else {
+        data = "NOROOM";
+    }
+
+    request.done(function (result) {
+        $('#loading-modal').hide();
+        data = typeof result === "undefined" ? data : result;
+
+        switch (data) {
+            case "NOROOM": obj = $('#PopupErr_SelectFirst').html(); break;
+            case "EXCEEDSEARCH": obj = $('#PopupErr_ExceedSearch').html(); break;
+            case "SAVESUCCESS": obj = $('#PopupErr_SaveSuccess').html(); break;
+            default:
+                if (data.length > 10) {
+                    obj = data;
+                }
+                break;
+        }
+
+        if (data != "SAVEFAIL") {
+            $('#modal-container').css('text-align', 'justify');
+            $('#modal-container').css('font-family', '"UbuntuRegular"');
+            $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">' + obj + '</div>');
+            $("#popup-modal").show();
+            $('.ReserveButton').show();
+            return;
+        } else {
+            $('#oopsbox').fadeIn();
+        }
+        return;
+    });
+
+    if (!(NameList.length > 0)) {
+        request.resolve();
+    }
+    }
+</script>
+<!--END: checking before Reserve -->
+<script>
+    $(document).ajaxComplete(function () {
+        loadhotelbubble();
+    });
+    function loadhotelbubble() {
+        if ($(".ui-slider-handle").length) {
+            if (parseInt($(".ui-slider-handle")[0].style.left, 10) != '0' && parseInt($(".ui-slider-handle")[1].style.left, 10) == '100') {
+                $(".fillter_tags.Bottom_yellow_bg").text("Price > MYR " + $("#amount").find("span:first-child").text() + " X");
+            } else if (parseInt($(".ui-slider-handle")[0].style.left, 10) == '0' && parseInt($(".ui-slider-handle")[1].style.left, 10) != '100') {
+                $(".fillter_tags.Bottom_yellow_bg").text("Price < MYR " + $("#amount").find("span:nth-child(2)").text() + " X");
+            } else if (parseInt($('.ui-slider-range')[0].style.width, 10) != '100' && $("#amount").find("span:first-child").text() != $("#amount").find("span:nth-child(2)").text()) {
+                $(".fillter_tags.Bottom_yellow_bg").text("Price " + $("#amount").text() + " X");
+            } else {
+                $(".fillter_tags.Bottom_yellow_bg").text("");
+            }
+        }
+    }
+    $('#filter').on('click', '.fillter_tags.Bottom_blue_bg', function (e) {
+        var starno = $(this).attr("class").match(/\d+/)[0];
+        var replacedata = $("#hidRating").val() == starno ? "10" : "";
+        var newdata = $("#hidRating").val().replace(starno, replacedata);
+        $("#hidRating").val(newdata);
+        $(".update_star").trigger('click');
+    });
+    $('#filter').on('click', '.fillter_tags.Bottom_yellow_bg', function (e) {
+        $('#SelectedMinPrice').val($('#MinPrice').val());
+        $('#SelectedMaxPrice').val($('#MaxPrice').val());
+        filterNow();
+    });
+    $('#filter').on('click', '.fillter_tags.Bottom_green_bg', function (e) {
+        $("#PropertyName").val("");
+        filterNow();
+    });
+
+    $(document).on('click', '.fft_right a', function (e) {
+        e.stopPropagation();
+    });
+</script>

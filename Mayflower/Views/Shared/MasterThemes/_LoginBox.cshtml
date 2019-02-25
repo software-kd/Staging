@@ -1,0 +1,116 @@
+﻿@model Alphareds.Module.Model.LoginModel
+@using Microsoft.Owin.Security
+
+@{
+    var tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+
+    UriBuilder builder = Request.Url == null ? null : new UriBuilder(Request.Url);
+    string returnUrl = builder == null ? Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString(), new { tripid })
+        : builder.ToString();
+
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+
+}
+<!-- LOGIN LITEBOX START -->
+<div class="fullcover_div">
+    <div class="fcd_white">
+        <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></div>
+        <div class="fcd_login_box" style="max-width: unset;width: 88%;margin: 0 30px;">
+            <h2>Login to Mayflower Account</h2>
+            @using (Html.BeginForm("Login", "Account", new { returnUrl }, FormMethod.Post, new { id = "loginForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="fcd_login_lable">E-mail</div>
+                <div class="fcd_login_txt">
+                    @Html.TextBoxFor(model => model.Email)
+                    @Html.ValidationMessageFor(model => model.Email, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+                <div class="fcd_login_lable">Password</div>
+                <div class="fcd_login_txt" style="margin-bottom: 0;">
+                    @Html.PasswordFor(model => model.Pwd)
+                    @Html.ValidationMessageFor(model => model.Pwd, null, new { @class = "textforerrormsg" })
+                    <div class="textforerrormsg">@TempData["loginerr"]</div>
+                </div>
+                <div class="clear"></div>
+                <div class="checkbox" style="margin-top: 0">
+                    <label style="font-family: 'Conv_Ubuntu-Light';font-size: 14px;line-height: 32px;cursor: pointer;padding-left: 0;">
+                        <input type="checkbox" name="rememberMe" id="rememberMe" value="true" style="height: 25px;width: 21px;margin-left: 0;margin-right: 10px;vertical-align: top;cursor: pointer;position: static;">Stay logged in
+                    </label>
+                </div>
+                <div class="clear"></div>
+                <div class="fcd_login_button">
+                    <button type="submit" value="Login" name="btnLogin" class="add-cursor-pointer" style="display:inline-block">Login Now</button>
+                    @*<input name="btnLogin" type="button" value="Login now" onclick="$('#loginForm').submit()">*@
+                </div>
+            }
+
+            @if (false)
+            {
+                using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = returnUrl }, FormMethod.Post, new { style="width: 50%;min-width: 185px;display:inline-block" /*target = "_blank"*/ }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div id="socialLoginList">
+                        @foreach (AuthenticationDescription p in loginProviders)
+                        {
+                            if (p.AuthenticationType == "Facebook")
+                            {
+                                <link href="@Url.Content("~/CSS/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+
+                                <style>
+                                    .btn-fb-ars:hover {
+                                        background-color: #4774cc;
+                                    }
+
+                                    .btn-fb-ars {
+                                        background-color: #4267b2!important;
+                                        width: 100%;
+                                        /*padding: 0.5em 1em;*/
+                                        line-height: 30px;
+                                        vertical-align: middle;
+                                        border: none;
+                                        cursor: pointer;
+                                    }
+
+                                        .btn-fb-ars i {
+                                            color: white;
+                                            font-size: 21px;
+                                            vertical-align: middle;
+                                        }
+
+                                        .btn-fb-ars span {
+                                            font-size: 14px;
+                                            margin-left: 0.6em;
+                                            color: #fff;
+                                            vertical-align: middle;
+                                        }
+                                </style>
+
+                                <button type="submit" class="btn btn-default btn-fb-ars" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your Facebook account">
+                                    <i class="fa fa-facebook-official" aria-hidden="true"></i>
+                                    <span>Login with Facebook</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                            }
+                        }
+                    </div>
+                }
+            }
+            @*<div class="fcd_login_account_text">Don't have an account? <a href="@Url.RouteUrl("Register")">Register now.</a></div>*@
+        </div>
+        <div class="fcd_login_nomember_container">
+            <div class="fcd_nc_left">Not a Member?</div>
+            <div class="fcd_nc_right">
+                @* Lee Zein Khai 5-6-2017 Start *@
+                <a id="guest-btn" href="javascript:;" style="text-decoration:none ; color: white "><div class="fcd_guest_button">Continue as guest</div></a>
+                @* Lee Zein Khai 5-6-2017 End *@
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<!-- LOGIN LITEBOX END
+ -->

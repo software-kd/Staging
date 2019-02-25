@@ -1,0 +1,138 @@
+﻿@model Alphareds.Module.Model.HotelCheckoutModel
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Model;
+
+@{
+    MayFlower db = new MayFlower();
+    TaxCodeType taxCodeType = db.TaxCodeTypes.FirstOrDefault(x => x.TaxCode == "SR");
+    decimal gstPercentage = taxCodeType == null ? 0 : Convert.ToDecimal(taxCodeType.TaxPercentage) / 100m;
+
+    string arrivalDate = Model.ReserveRoomModel.ArrivalDate.ToString("dd-MMM-yy, ddd");
+    string departureDate = Model.ReserveRoomModel.DepartureDate.ToString("dd-MMM-yy, ddd");
+    TimeSpan stayDay = Model.ReserveRoomModel.DepartureDate.Subtract(Model.ReserveRoomModel.ArrivalDate);
+
+    string currencyCode = Model.ReserveRoomModel.CurrencyCode;
+    decimal totalRoomAmt = Model.ReserveRoomModel.GuestRooms.Sum(x => x.TotalBaseRate);
+    decimal totalRoomAmt_BeforeDiscount = Model.ReserveRoomModel.GuestRooms.Sum(x => x.TotalBaseRate_BeforeDiscount);
+    decimal totalTaxAndServiceCharge = Model.ReserveRoomModel.GuestRooms.Sum(x => x.TotalTaxAndServices);
+    decimal gstAmt = ((totalRoomAmt + totalTaxAndServiceCharge) * gstPercentage);
+    decimal totalBookingAmt = (totalRoomAmt + totalTaxAndServiceCharge) + gstAmt;
+    decimal processingAmt = 0m;
+    decimal creditAmount = Model.HotelPaymentSummaryModel.CreditAmountModels.CreditUsed;
+
+    PaymentSummaryModels paymentSummary = Model.HotelPaymentSummaryModel;
+    var taxRate = new Alphareds.Module.Model.Database.MayFlower().TaxCodeTypes.FirstOrDefault(x => x.TaxCode == "SR").TaxPercentage;
+}
+
+<div class="payment_content_container">
+    <div class="s3_hotel_topline lineblack"></div>
+    <div class="s4_blt_heading payment">Payment Summary</div>
+    <div class="s4_blt_sub_heading">@arrivalDate to @departureDate | <span>@(stayDay.TotalDays + 1) Days @(stayDay.TotalDays) Nights</span></div>
+    <div class="s4_blt_py_container">
+        @*@foreach (var room in Model.ReserveRoomModel.GuestRooms.GroupBy(grp => grp.RoomTypeName))
+            {
+                <div class="s4_blt_py_con_left">@room.Key x @room.Count()</div>
+                <div class="s4_blt_py_con_right">@currencyCode<span>@room.Sum(x => (x.TotalBaseRate) * room.Count()).ToString("#,##0.00")</span></div>
+                <div class="clear"></div>
+                foreach (var chargeAmt in room)
+                {
+                    /*foreach (var chargeDetails in chargeAmt.DisplayChargeableRatePerNight)
+                    {
+                        <span>@chargeDetails.CheckInDate - @chargeDetails.BaseRate</span>
+                    }*/
+                }
+            }*@
+
+        @foreach (var room in paymentSummary.PaymentDetails)
+        {
+            <div class="s4_blt_py_con_left no-margin">@room.ItemDetail x @room.ItemCount</div>
+            <div class="s4_blt_py_con_right no-margin">
+                @currencyCode
+                <span>@room.Amount_BeforeDisc.ToString("#,##0.00")</span>
+            </div>
+            <div style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                @foreach (var nightly in room.DisplayChargeableRatePerNightModel.GroupBy(x => x.CheckInDate))
+                {
+                    <div class="night-charge"></div>
+                    <div class="night-charge1">@nightly.Key.ToString("ddd, dd MMM")</div>
+                    <div class="night-charge2"><span>@currencyCode </span>@Math.Round(Convert.ToDouble(nightly.Sum(x => x.BaseRate_BeforeDiscount)), 2).ToString("n2")</div>
+                    <div class="clear"></div>
+                }
+            </div>
+            <div class="clear"></div>
+        }
+
+        @if (Model.SearchHotelModel.BundleType() == BundleTypes.TPConcert)
+        {
+            var roomList = Model.RoomSelected.HotelRoomInformationList.SelectMany(x => x.roomAvailabilityDetailsList);
+
+            <div class="s4_blt_py_con_left">Bundled Items</div>
+            <div class="s4_blt_py_con_right"></div>
+            <div class="clear"></div>
+            <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                @foreach (var item in Model.ReserveRoomModel.GuestRooms.GroupBy(x => x.RateDesc))
+                {
+                    int ttl = 0;        
+                    foreach (var room in item)
+                    {
+                        var _grpRoom = roomList.FirstOrDefault(x => x.rateCode == room.RateCode && x.rateDescription == item.Key && x.roomTypeCode == room.RoomTypeCode);
+                        ttl += Convert.ToInt32(_grpRoom.quotedOccupancy);
+                    }
+
+                    <div style="margin-left: 5%;">@ttl x @item.Key.Remove(0, item.Key.IndexOf('+') + 1)</div>
+                            <div class="clear"></div>
+                }
+            </div>
+        }
+
+        <div class="s4_blt_py_con_left">Taxes &amp; Fees</div>
+        <div class="s4_blt_py_con_right">@currencyCode <span>@paymentSummary.TotalTaxesAndFeesAmount.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+
+        <div class="s4_blt_py_con_left">Processing Fee</div>
+        <div class="s4_blt_py_con_right">@currencyCode <span class="ProcessingFee">@paymentSummary.TotalProcessingFees.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+
+        <div class="s4_blt_py_con_left">GST (SR @(taxRate.ToString("n0"))%)</div>
+        <div class="s4_blt_py_con_right">@currencyCode <span class="Gst">@paymentSummary.TotalGST.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+
+        <div id="tc_detail">
+            <div id="p_left" class="s4_blt_py_con_left">
+                @if (Model.HotelPaymentSummaryModel.CreditAmountModels.UseCredit)
+                {
+                    @:Credit Used
+                }
+            </div>
+            <div id="p_right" class="s4_blt_py_con_right">
+                @if (Model.HotelPaymentSummaryModel.CreditAmountModels.UseCredit)
+                {
+                    @currencyCode <span class="promo-code-payment">-@(Model.HotelPaymentSummaryModel.CreditAmountModels.CreditUsed.ToString("n2"))</span>
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div id="pcode_detail">
+            <div id="p_left" class="s4_blt_py_con_left">
+                @if (Model.SearchHotelModel.IsPromoCodeUsed)
+                {
+                    @:Promo Code (@Model.SearchHotelModel.PromoCode)
+                    <span><a id="promo-remove" href="javascript:;">Remove</a></span>
+                }
+            </div>
+            <div id="p_right" class="s4_blt_py_con_right">
+                @if (Model.SearchHotelModel.IsPromoCodeUsed)
+                {
+                    @currencyCode <span class="promo-code-payment">@((totalRoomAmt - totalRoomAmt_BeforeDiscount).ToString("n2"))</span>
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="s4_total_price"></div>
+        <div class="s4_blt_py_con_left">Total Price</div>
+        <div class="s4_blt_py_con_right" id="Totalprice"><span class="Currency">@currencyCode</span> <span class="TotalPrice">@paymentSummary.GrandTotal.ToString("#,##0.00")</span></div>
+        <div class="clear"></div>
+    </div>
+</div>

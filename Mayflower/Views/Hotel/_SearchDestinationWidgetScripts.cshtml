@@ -1,0 +1,620 @@
+﻿@using Alphareds.Module.Common;
+@{ 
+    string tripid = Request.QueryString["tripid"];
+}
+<link href="~/CSS/bootstrap/bootstrap-datepicker.min.css" rel="stylesheet" />
+<link href="~/CSS/bootstrap/bootstrap-select.min.css" rel="stylesheet" />
+<link href="~/CSS/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.4/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.4/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-select.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.4/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<!--Datepicker-->
+<script type="text/javascript">
+    var date = ServerDateTime;
+    var dayadvance = @Core.GetSettingValue("dayadvance");
+    var checkInDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayadvance);
+    var endDay = new Date(date.getFullYear() + 1, date.getMonth(), date.getDate() + dayadvance);
+    var endDay2 = new Date(date.getFullYear() + 1, date.getMonth(), date.getDate());
+
+    $("#datep3").datepicker({
+        startDate: checkInDay,
+        endDate: endDay,
+        format: 'dd-M-yyyy',
+        autoclose: true,
+    }).on('changeDate', function (selected) {
+
+        var selectedBeginDate = $('#datep3').datepicker('getDate');
+        var selectedEndDate = $('#datep4').datepicker('getDate');
+        var default_start = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate() + 1);
+        var setStartDate = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate() + 1);
+        $('#datep4').datepicker("setStartDate", setStartDate);
+
+        if (selectedBeginDate > selectedEndDate - 1) {
+            $('#datep4').datepicker("setDate", default_start);
+        }
+
+        $('#datep4').datepicker('show');
+    });
+
+    var getArrivalDate = $('#datep3').datepicker('getDate')
+    var setForDepart = new Date(getArrivalDate.getFullYear(), getArrivalDate.getMonth(), getArrivalDate.getDate() + 1);
+
+    $("#datep4").datepicker({
+        startDate: setForDepart,
+        endDate: endDay2,
+        format: 'dd-M-yyyy',
+        autoclose: true,
+    });
+
+    $("#datep5").datetimepicker({
+        //startDate: '+1d',
+        //endDate: '+1y',
+        minDate: checkInDay,
+        //Default: false,
+        format: 'DD/MM/YYYY hh:mm',
+    });
+    $("#datep6").datetimepicker({
+        //startDate: '+1d',
+        //endDate: '+1y',
+        minDate: checkInDay,
+        //Default: false,
+        format: 'DD/MM/YYYY hh:mm',
+    });
+
+    $(function() {
+        $.validator.methods.date = function (value, element) {
+            var isValid = true;
+            var name = typeof element.name != 'undefined' ? element.name : '';
+
+            switch (name) {
+                case "PickupDateTime":
+                    isValid = value != '' ? moment(value, 'DD/MM/YYYY hh:mm', true).isValid() : true;
+                    break;
+                case "ReturnDateTime":
+                    isValid = value != '' ? moment(value, 'DD/MM/YYYY hh:mm', true).isValid() : true;
+                    break;
+                default:
+                    break;
+            }
+
+            return isValid;
+        }
+    });
+</script>
+
+@*<script type="text/javascript">
+    var returndate = "show";
+    var dayadvance = @Core.GetSettingValue("dayadvance");
+    var dateOnSelect = false;
+    var displayMonth = $(window).width() > 900 ? 2 : 1;
+
+    $("#datep3").datepicker({
+        numberOfMonths: displayMonth,
+        showButtonPanel: true,
+        defaultDate: dayadvance,
+        minDate: dayadvance,
+        maxDate: '+500D',
+        dateFormat: 'dd-M-yy',
+        dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+        beforeShow: function (input, inst) {
+            //$( "#destination" ).blur();
+        },
+        onClose: function (selectedDate) {
+            if (returndate == "show") {
+                if ($.trim($('#datep3').val()) != '') {
+                    $('#datep3').datepicker("option", "buttonText", selectedDate.substr(0,10));
+                }
+            }
+            if(dateOnSelect == true){
+                setTimeout( function(){$('#datep4').datepicker('show')}, 0 );
+                dateOnSelect = false;
+            }
+        },
+        onSelect: function (selectedDate) {
+            if ($.trim($('#datep3').val()) != '') {
+                var selectedBeginDate = $('#datep3').datepicker('getDate');
+                var selectedEndDate = $('#datep4').datepicker('getDate');
+                var default_end = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate() + 1); //this parses date to overcome new year date weirdness
+                
+                $('#datep4').datepicker("option", "minDate", selectedBeginDate);
+                //if (selectedBeginDate) {
+                //    selectedBeginDate.setDate(selectedBeginDate.getDate() + 1);
+                //}
+                dateOnSelect = true;
+
+                if(selectedBeginDate > selectedEndDate-1){
+                    $('#datep4').datepicker("setDate", default_end);
+                }
+            }
+        }
+    });
+
+    $("#datep4").datepicker({
+        numberOfMonths: displayMonth,
+        showButtonPanel: true,
+        defaultDate: dayadvance + 1,
+        minDate: $('#datep3').datepicker('getDate'),
+        maxDate: '+501D',
+        dateFormat: 'dd-M-yy',
+        dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+        beforeShow: function (input, inst) {
+            var date = $('#datep3').datepicker('getDate');
+            if (date) {
+                date.setDate(date.getDate() + 1);
+            }
+            $('#datep4').datepicker("option", "minDate", date);
+        },
+        onClose: function (selectedDate) {
+            if (returndate == "show") {
+                if ($.trim($('#datep4').val()) != '') {
+                    $('#datep4').datepicker("option", "buttonText", selectedDate.substr(0,10));
+                }
+            }
+        },
+        onSelect: function (selectedDate) {
+            if ($.trim($('#datep4').val()) != '') {
+                var selectedBegin = $('#datep3').datepicker('getDate');
+                var selectedEnd = $('#datep4').datepicker('getDate');
+                var Date_Begin = new Date(selectedBegin.getFullYear(), selectedBegin.getMonth(), selectedBegin.getDate() + 28); 
+                var Date_end = new Date(selectedEnd.getFullYear(), selectedEnd.getMonth(), selectedEnd.getDate()); 
+                if(Date_end > Date_Begin){
+                    $(".date_err").text("The trip is longer than 28 days");
+                }else{
+                    $(".date_err").text("");
+                }
+            }
+        }
+    });
+</script>*@
+
+<!--START: hotel auto-complete -->
+<script>
+    var des3valid = false;
+    $("#destination").autocomplete({
+        source: function (request, response) {
+            var txt = request.term.replace('<', '').replace('>', '');
+            $.ajax({
+                type: "POST",
+                url: '/Hotel/getDestination?data=' + txt,
+                cache: true,
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    if(data.length){
+                        response(data);
+
+                        //var term = $.ui.autocomplete.escapeRegex(request.term)
+                        //    , startsWithMatcher = new RegExp("^" + term, "i")
+                        //    , startsWith = $.grep(data, function (value) {
+                        //        return startsWithMatcher.test(value.label || value.value || value);
+                        //    })
+                        //    , endWithMatcher = new RegExp(term + "$", "i")
+                        //    , endWith = $.grep(data, function (value) {
+                        //        return endWithMatcher.test(value.label || value.value || value);
+                        //    })
+                        //    , containsMatcher = new RegExp(term, "i")
+                        //    , contains = $.grep(data, function (value) {
+                        //        return $.inArray(value, request.term.length == 3 ? endWith : startsWith) < 0 &&
+                        //            containsMatcher.test(value.label || value.value || value);
+                        //    });
+                        //            var mergeResult = startsWith.concat(contains);
+
+                        //            response(mergeResult);
+                    }
+                    else{
+                        var noRes = new Object();
+                        noRes.label = 'No matches found';
+                        noRes.type = '';
+                        response([noRes]);
+                    }
+                }
+            });
+        },
+        select: function (event, ui) {
+            event.preventDefault();
+            if (ui.item.value == 'No matches found') {
+                $(this).val('');
+            }
+            else
+            {
+                if (this.id == "destination") {
+                    $(this).val(ui.item.value);
+                    $('span.destinationClear').show();
+                    des3valid = true;
+                    $('#datep3').click();
+                    //$('#datep3').datepicker('show');
+                    setTimeout( function(){$('#datep3').datepicker('show')}, 0 );
+                    $(this).bind("propertychange paste", function (event) {
+                        $(this).val('');
+                        $(this).unbind("propertychange paste");
+                    });
+                }
+            }
+        },
+        delay: 150,
+        minLength: 0,
+        autoFocus: true,
+        focus: function( event, ui ) { },
+        open: function( event, ui ) { des3valid = false; },
+        close : function (event, ui) {
+            if (!des3valid) {
+                $(this).val('');
+            }
+    }
+    });
+
+    $("#destination_useless").autocomplete({
+        //source: HotelCompleteList,
+        source: function (request, response) {
+            if (request.term.length >= 4) {
+                var term = $.ui.autocomplete.escapeRegex(request.term)
+                    , startsWithMatcher = new RegExp("^" + term, "i")
+                    , startsWith = $.grep(completeHotel, function (value) {
+                        return startsWithMatcher.test(value.label || value.value || value);
+                    })
+                    , endWithMatcher = new RegExp(term + "$", "i")
+                    , endWith = $.grep(completeHotel, function (value) {
+                        return endWithMatcher.test(value.label || value.value || value);
+                    })
+                    , containsMatcher = new RegExp(term, "i")
+                    , contains = $.grep(completeHotel, function (value) {
+                        return $.inArray(value, request.term.length == 3 ? endWith : startsWith) < 0 &&
+                            containsMatcher.test(value.label || value.value || value);
+                    });
+                var mergeResult = startsWith.concat(contains);
+                // ready for country code purpose
+                @*var mergeResult = request.term.length == 2 ? endWith.concat(contains) : startsWith.concat(contains);*@
+                if (!mergeResult.length) { mergeResult = ['No matches found'] };
+                // slice out result to prevent browser lang overlimit result
+                response(request.term.length >= 3 ? mergeResult.slice(0, 80) : mergeResult);
+            }
+        },
+        select: function (event, ui) {
+            event.preventDefault();
+            if (ui.item.value == 'No matches found') {
+                $(this).val('');
+            }
+            else
+            {
+                if (this.id == "destination") {
+                    $(this).val(ui.item.value);
+                    $('#datep3').datepicker('show');
+                    setTimeout( function(){$('#datep3').datepicker('show')}, 0 );
+                    $(this).bind("propertychange paste", function (event) {
+                        $(this).val('');
+                        $(this).unbind("propertychange paste");
+                    });
+                }
+            }
+        },
+        delay: 0,
+        minLength: 0,
+        autoFocus: true,
+        focus: function( event, ui ) {
+        },
+        close : function (event, ui){
+            //Twin - 20170208 - Check whether value selected from list else empty it
+            //Temporary disable this
+            //if ($.inArray($(this).val(), completeHotel) == -1)
+            //{
+            //    $(this).val('');
+            //}
+        }
+    });
+    var iniDestinationAuto = function(){
+        var des3valid = false;
+        $("#DPdestination").autocomplete({
+            source: function (request, response) {
+                var txt = request.term.replace('<', '').replace('>', '');
+                $.ajax({
+                    type: "POST",
+                    url: '/Hotel/getDestination?data=' + txt,
+                    cache: true,
+                    async: true,
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.length){
+                            response(data);
+                        }
+                        else{
+                            var noRes = new Object();
+                            noRes.label = 'No matches found';
+                            noRes.type = '';
+                            response([noRes]);
+                        }
+                    }
+                });
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                if (ui.item.value == 'No matches found') {
+                    $(this).val('');
+                }
+                else
+                {
+                    if (this.id == "DPdestination") {
+                        $(this).val(ui.item.value);
+                        $('span.destinationClear').show();
+                        des3valid = true;
+                        $(this).bind("propertychange paste", function (event) {
+                            $(this).val('');
+                            $(this).unbind("propertychange paste");
+                        });
+                    }
+                }
+            },
+            delay: 150,
+            minLength: 0,
+            autoFocus: true,
+            focus: function( event, ui ) { },
+            open: function( event, ui ) { des3valid = false; },
+            close : function (event, ui) {
+                if (!des3valid) {
+                    $(this).val('');
+                }
+            }
+        });
+    }
+    var iniPropertyAuto = function() {
+        $("#PropertyName").autocomplete({
+            //source: HotelCompleteList,
+            source: function (request, response) {
+                var txt = request.term.replace('<', '').replace('>', '');
+                //if (txt.length >= 1) {
+                $.ajax({
+                    type: "GET",
+                    url: '/Hotel/getPropertyName?data=' + txt +'&tripid=@tripid',
+                    cache: false,
+                    async: true,
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.length){
+                            response(data);
+                        }else{
+                            var noRes = new Object();
+                            noRes.label = 'No matches found';
+                            noRes.type = '';
+                            response([noRes]);
+                        }
+                    },
+                    fail: function(){
+                        var noRes = new Object();
+                        noRes.label = 'No matches found';
+                        noRes.type = '';
+                        response([noRes]);
+                    },
+                    delay: 0,
+                    minLength: 0,
+                    autoFocus: false,
+                    focus: function( event, ui ) { },
+                    close : function (event, ui){ }
+                });
+                //}
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                if (ui.item.value == 'No matches found') {
+                    $(this).val('');
+                }
+                else
+                {
+                    if (this.id == "PropertyName") {
+                        $(this).val(ui.item.value);
+                        propertyvalid = true;
+                        $('span.propertyClear').show();
+                    }
+                }
+            },
+            delay: 150,
+            minLength: 0,
+            focus: function( event, ui ) { },
+            @*open: function( event, ui ) { propertyvalid = false; },
+            close : function (event, ui){
+                if (!propertyvalid) {
+                    $(this).val('');
+                }
+            }*@
+        });
+        var myElem = document.getElementById('PropertyName');
+        if (myElem !== null){
+            fPropNam(myElem);
+
+            $(myElem).click(function(){
+                if(this.value == ''){
+                    $(this).autocomplete("search", "");
+                }
+            });
+
+            $(myElem).on('keyup', function () {
+                var raw_text = $(this).val();
+                var return_text = raw_text.replace('<', '').replace('>', '');
+                $(this).val(return_text);
+                fPropNam(this);
+            });
+
+            $(myElem).on('keypress', function(e) {
+                if (e.keyCode == 13) {
+                    filterNow();
+                }
+            });
+        }
+    }
+</script>
+<!--END: hotel auto-complete -->
+
+<!-- Widget -->
+<script type="text/javascript">
+
+    var widgetHotelJS = function () {
+        var destination = document.getElementById('destination');
+        var fn1 = function () {
+            if(des3valid == false){
+                this.value = '';
+            }
+        }
+        var fn2 = function () {
+            if(this.value == ''){
+                $(this).autocomplete("search", "");
+            }
+            this.setSelectionRange(0, 9999);
+        }
+        destination.onblur = fn1;
+        destination.onclick = fn2;
+        destination.onfocus = fn2;
+    }
+
+    widgetHotelJS();
+
+</script>
+
+@if (Core.IsForStaging)
+{
+<!-- Advanced Search Start -->
+<script>
+    var advancedSearch = function () {
+        $('#hoteladvancedbtn').click(function () {
+            var area = $('#hoteladvancedarea');
+            if (!$(area).is(':visible')) {
+                $(this).text('Hide Advanced Search');
+                area.slideDown();
+            }
+            else {
+                $(this).text('Show Advanced Search');
+                area.slideUp();
+            }
+        });
+        var des3valid = false;
+        $('#hoteladvancedsearch').autocomplete({
+            source: function (request, response) {
+                var txt = request.term.replace('<', '').replace('>', '');
+                $.ajax({
+                    type: 'POST',
+                    url: '/Hotel/getDestination?data=' + $('#destination').val() + '&keywords=' + txt + '&advancedSearch=true',
+                    cache: true,
+                    async: true,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.length) {
+                            response(data);
+                        }
+                        else {
+                            var noRes = new Object();
+                            noRes.label = 'No matches found';
+                            noRes.type = '';
+                            response([noRes]);
+                        }
+                    }
+                });
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                if (ui.item.value == 'No matches found') {
+                    $(this).val('');
+                }
+                else
+                {
+                    $(this).val(ui.item.value);
+                    des3valid = true;
+                    $('#datep3').click();
+                    setTimeout(function () {
+                        $('#datep3').datepicker('show')
+                    }, 0);
+                    $(this).bind('propertychange paste', function (event) {
+                        $(this).val('');
+                        $(this).unbind('propertychange paste');
+                    });
+                }
+            },
+            delay: 150,
+            minLength: 0,
+            autoFocus: true,
+            focus: function (event, ui) {
+            },
+            open: function (event, ui) {
+                des3valid = false;
+            },
+            close: function (event, ui) {
+                if (!des3valid) {
+                    $(this).val('');
+                }
+            }
+        });
+        var advancedSearchInput = document.getElementById('hoteladvancedsearch');
+        var fn1 = function () {
+            if (des3valid == false) {
+                this.value = '';
+            }
+        }
+        var fn2 = function () {
+            if(this.value == ''){
+                $(this).autocomplete("search", "");
+            }
+            this.setSelectionRange(0, 9999);
+        }
+        advancedSearchInput.onblur = fn1;
+        advancedSearchInput.onclick = fn2;
+        advancedSearchInput.onfocus = fn2;
+    }
+
+    if (document.getElementById('hoteladvancedsearch') !== null){
+        advancedSearch();
+    }
+</script>
+<!-- Advanced Search End -->
+}
+
+@*
+<!--START: Script for star rating selectmenu-->
+<script>
+    $(function () {
+        $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+            _renderItem: function( ul, item ) {
+            var li = $( "<li>" ),
+                wrapper = $( "<div>", { text: item.label } );
+
+            if ( item.disabled ) {
+                li.addClass( "ui-state-disabled" );
+            }
+            var starno = item.value <=5 ? item.value : "5";
+            for (i = 1; i <= starno; i++) {
+                $("<span>", {
+                    style: item.element.attr("data-style") + "left:"+ (3.5+i) +"em",
+                    "class": "ui-icon " + item.element.attr("data-class")
+                })
+                .appendTo(wrapper);
+            }
+
+            return li.append( wrapper ).appendTo( ul );
+            }
+        });
+        $("#starrating").iconselectmenu({ change: function (event, ui) { $('#hidStar').val($('#starrating').val()); } })
+
+    });
+</script>
+<!--END: Script for star rating selectmenu-->
+*@
+
+<script type="text/javascript">
+    $(function () {
+        $("[name='promoCodeTxt']").on("input propertychange", function () {
+            var promocode = $("[name='promoCodeTxt']").val();
+            if (!promocode.replace(/\s/g, '').length && promocode!="") {
+                $(".promocode_err").text("Promo code cannot be space only");
+            } else if (promocode.length > 10) {
+                $(".promocode_err").text("Maximum character of promo code is 10");
+            } else {
+                $(".promocode_err").text("");
+            }
+        });
+        $("[name='hotelBtn'], [name='modifiySubBtn']").click(function () {
+            if ($(".promocode_err").text() != ""|| $(".date_err").text() !="") {
+                return false;
+            }
+        });
+
+    });
+</script>

@@ -1,0 +1,11 @@
+﻿@using Alphareds.Module.ServiceCall
+
+@{
+    string widgetPartnerID = Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("PartnerID");
+    string locationID = ViewBag.LocationID ?? ViewBag.HotelID ?? "";
+}
+
+<div style="background:url(../../Images/txt_load.gif) center center no-repeat;">
+    <iframe data-src="@ESBHotelServiceCall.GetTripAdvisorWidget(WidgetEnum.Summary, locationID, widgetPartnerID)" src=""
+            name="tripadvisor-rating" scrolling="auto" frameborder="no" align="left" width="200" height="410"></iframe>
+</div>

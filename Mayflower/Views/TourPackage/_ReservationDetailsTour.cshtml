@@ -1,0 +1,125 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@{
+    double totalNight = 0;
+    var SubmitBtnId = !string.IsNullOrEmpty(ViewBag.SubmitBtnId) ? ViewBag.SubmitBtnId : "";
+    var TourPackage = Model.TourPackage.TourPackageDetails;
+    var TourInfo = Model.TourPackage.TourPackagesInfo;
+    int NoOfPax = TourInfo != null ? TourInfo.NoOfPax : 0;
+    bool displayEnquiry = ViewBag.displayEnquiry ?? false;
+
+}
+
+<div class="col-lg-4">
+    <div class="booker-details-right">
+        <h3>Reservation Details</h3>
+        <div class="reservation-body">
+            <img src="@(string.IsNullOrEmpty(TourPackage.TourPackageImage) ? Url.Content("~/Images_hotel/no-img-01.png") : Url.Content(TourPackage.TourPackageImage))" alt="hotel-img-thumb">
+            <div class="reservation-table shadow">
+                <div class="reservation-table-top">
+                    <h2>@TourPackage.TourPackageName<span>@TourPackage.Country</span></h2>
+                </div>
+                <div class="reservation-table shadow">
+                    <div class="reservation-table-top">
+                        <ul>
+                            <li>
+                                <span>Check In</span>
+                                <span id="checkin">@(TourInfo != null ? TourInfo.TravelDateFrom.ToString("dd-MMM-yyyy") : "dd-MMM-yyyy")</span>
+                            </li>
+                            @*<li>
+                                <span>Check Out</span>
+                                <span id="checkout">@(TourInfo != null ? TourInfo.TravelDateTo.ToString("dd-MMM-yyyy") : "dd-MMM-yyyy")</span>
+                            </li>*@
+                        </ul>
+                    </div>
+                    @if (TourInfo != null)
+                    {
+                        <div class="reservation-table-mid">
+                            <ul>
+                                @if (Model.TourPackage.PricingDetail != null && TourPackage.PackageHotels.Count > 0)
+                                {
+                                    <li class="reservation-room">
+                                        <span>@TourPackage.PackageHotels.FirstOrDefault(x=>x.HotelID == TourInfo.HotelID).HotelName</span>
+                                    </li>
+                                    foreach (var item in Model.TourPackage.PricingDetail.Items.Skip(1))
+                                    {
+                                        <li class="reservation-room">
+                                            <span>@item.ItemDetail x @item.ItemQty</span>
+                                            <span> MYR @item.TTlBaseRate.ToString("n2")</span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    if (TourInfo.ExtensionNight > 0)
+                                    {
+                                        <li>
+                                            <span>Extension</span>
+                                            <span><span class="reservation-extension">@TourInfo.ExtensionNight</span> night(s)</span>
+                                        </li>
+                                    }
+                                }
+
+                                <li>
+                                    <span>Number of Travelers</span>
+                                    <span class="reservation-pax"> @TourInfo.NoOfPax</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="reservation-table-bottom">
+                            <ul>
+                                <li>
+                                    <span>Total</span>
+                                    <span class="reservation-total">MYR @(Model.CheckOutSummary != null ? Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary.ToString("n2") : "0.00")</span>
+                                </li>
+                            </ul>
+                        </div>
+                        @*<div class="reservation-table-per">
+                            <ul>
+                                <li>
+                                    <span>Per Traveler</span>
+                                    <span class="reservation-ttlperpax">MYR @(Model.CheckOutSummary != null ? (Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary / NoOfPax).ToString("n2") : "0.00")</span>
+                                </li>
+                            </ul>
+                        </div>*@
+                    }
+                    else
+                    {
+                        <ul>
+                            <li>
+                                <span>Extension</span>
+                                <span><span class="reservation-extension">0</span> night(s)</span>
+                            </li>
+                            <li>
+                                <span>Number of Travelers</span>
+                                <span class="reservation-pax">1</span>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @if (displayEnquiry)
+            {
+                <div class="col-5 pr-2">
+                    <button type="button" id="enquiry" class="btn btn-primary btn--red">Enquiry</button>
+                </div>
+            }
+           
+            @{ 
+                var enableconfirmbtn = ViewBag.HideConfirmBtn == true ? "disabled" : "";
+            }
+            <div class="@(displayEnquiry ? "col-7" :"col") pl-2">
+                <button type="button" id="@(!string.IsNullOrEmpty(SubmitBtnId) ? SubmitBtnId : "btnPageSubmit")" value="Complete form to continue" class="btn btn-primary btn--red" @enableconfirmbtn>Confirm &amp; continue</button>
+            </div>
+        </div>
+
+        @if (string.IsNullOrEmpty(SubmitBtnId) || SubmitBtnId == "btnPageSubmit")
+        {
+            <button type="submit" id="submitpayment" href="javascript:;" class="d-none" value="Pay"></button>
+        }
+    </div>
+</div>

@@ -1,0 +1,341 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    ViewBag.Title = "Hotel Search Result";
+    ViewBag.HeaderRed = true;
+    ViewBag.CheckSession = true;
+    bool isAjax = Request.IsAjaxRequest();
+    string tripid = Request.QueryString["tripid"];
+
+    string bundlesJSVPath = "~/scripts/hbundles_v4"; // add version to prevent browser cache old script. *Cannot put decimal*
+    BundleTable.Bundles.Add(new ScriptBundle(bundlesJSVPath)
+                            .Include("~/Scripts/v3.0/hotel-search/general.js")
+                            .Include("~/Scripts/v3.0/hotel-search/autocomplete.js")
+                            .Include("~/Scripts/v3.0/hotel-search/search-panel.js")
+                            .Include("~/Scripts/v3.0/hotel-search/page-search.js"));
+
+}
+
+@section style{
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css" />
+    <style>
+        .err-msg-area {
+            margin-top: -1em;
+        }
+    </style>
+}
+@if (Model.Hotel.SearchHotelInfo.IsFixedPrice)
+{
+    @Html.Partial("~/Views/Hotel/v2/_SearchPanel_Fixed.cshtml", Model.Flight.SearchFlightInfo)
+}
+else
+{
+    @Html.Partial("~/Views/Hotel/v2/_SearchPanel.cshtml", Model.Hotel.SearchHotelInfo)
+}
+
+<!-- Search Result -->
+<div class="search-result bg-white">
+    <div class="container">
+        @if (Model.IsFixedPrice)
+        {
+        <div class="row">
+            <div class="col-lg-12 mt-3 hotelfixedtitle"><span class="default-red"><img src="~/Images/Icons_Hotels.png" /><b>Pick Your Stay</b></span><span class="fixedtitlegrey"><img class="fixedtitlearrow" src="~/Images/arrow-32-xxl.png" /><img src="~/Images/Icons_Flights.png" />Select Your Flight</span></div>
+        </div>
+        }
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="left-filter">
+                    <a class="map-view"></a>
+                    @*<a href="#" class="map-view"> <img src="assets/images/Screenshot_30.png" alt=""></a>*@
+                    <h2 class="hotel-destination mt-4">@(Model.Hotel.SearchHotelInfo.Destination ?? "-")</h2>
+                    <div class="accordion" id="accordion">
+                        <div class="card">
+                            <div class="card-header" id="headingProperty">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseProperty" aria-expanded="true" aria-controls="collapseProperty">
+                                        Filter by property name
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseProperty" class="collapse show" aria-labelledby="headingProperty" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    <div class="typeahead__container ht-property-typehead">
+                                        <div class="input-group">
+                                            <label class="sr-only" for="inlineFormPropertySearch">Name</label>
+                                            <input type="text" id="inlineFormPropertySearch" class="form-control ht-filter-property"
+                                                   placeholder="Property Name" @(string.IsNullOrWhiteSpace(Model.Hotel.SearchHotelInfo.Destination) ? "disabled" : "")
+                                                   aria-label="Property Name" aria-describedby="basic-addon2"
+                                                   data-provide="typeahead" autocomplete="off" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-danger ht-filter-btn-property" type="button" @(string.IsNullOrWhiteSpace(Model.Hotel.SearchHotelInfo.Destination) ? "disabled" : "")>Search</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                        Location
+                                    </button>
+                                </h5>
+                            </div>
+
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <select name="" class="form-control ht-filter-location">
+                                            <option>-</option>
+                                            @foreach (var item in Model?.Hotel?.SearchHotelInfo?.Result?.HotelList?.Select(x => x.locationDescription)?
+                                                .Distinct().OrderBy(x => x) ?? new List<string>().OrderBy(x => x))
+                                            {
+                                                if (string.IsNullOrWhiteSpace(item))
+                                                {
+                                                    continue;
+                                                }
+                                                <option value="@item">@item</option>
+                                                @*<option value="">City enter</option>
+                                                    <option value="">City enter</option>*@
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Rating
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    @for (int i = 5; i >= 0; i--)
+                                    {
+                                        <div class="filter-star-container">
+                                            <div class="form-check form-check-inline">
+                                                <input @*checked="checked"*@ class="form-check-input filter-star-input" id="star-@i" type="checkbox" value="@i">
+                                                <label class="form-check-label filter-star" for="star-@i">
+                                                    @for (int a = 0; a < i; a++)
+                                                    {
+                                                        <i class="fa fa-star"></i>
+                                                    }
+                                                    @if (i == 0)
+                                                    {
+                                                        <small>No Rating</small>
+                                                    }
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingThree">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                        Price
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    <div class="price-filter">
+                                        <b>RM <span class="ht-filter-pricemin"></span></b>
+                                        <input id="price-slider" type="text" class="span2" value=""
+                                               data-provide="slider" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]" />
+                                        <b class="type-2">RM <span class="ht-filter-pricemax"></span></b>
+
+                                        <div class="ht-ft-price">
+                                            <input type="number" class="form-control input-pr prmin" name="htPriceMin">
+                                            <span class="input-spliter">-</span>
+                                            <input type="number" class="form-control input-pr prmax" name="htPriceMax">
+                                        </div>
+                                        @if (Model.IsFixedPrice)
+                                        {
+                                            @Html.Hidden("FixedPaxNo", (Model?.Hotel?.SearchHotelInfo?.NoOfInfant ?? 0) + (Model?.Hotel?.SearchHotelInfo?.NoOfAdult ?? 0))
+                                            @Html.Hidden("FltPriceFrom")
+                                        }
+                                    </div>
+                                    @if (!(Model?.Hotel?.SearchHotelInfo.IsFixedPrice ?? false))
+                                    {
+                                    <div class="price-display-setting">
+                                        @{
+                                            bool includedTax = (CustomPrincipal.IsAgent && Model?.Hotel?.SearchHotelInfo?.FilterHotel == null) ||
+                                                (Model?.Hotel?.SearchHotelInfo?.DisplayHotelSetting?.AsIncludedTax ?? false);
+                                            bool includedAllNight = Model?.Hotel?.SearchHotelInfo?.DisplayHotelSetting?.AsAllNight ?? false;
+                                        }
+                                        <div class="custom-checkbox">
+                                            <label>
+                                                <input type="checkbox" class="ht-display-setting ht-display-includeTax" value="true" @(includedTax ? "checked" : "") />
+                                                <span>Include Tax &amp; Surcharge</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-checkbox">
+                                            <label>
+                                                <input type="checkbox" class="ht-display-setting ht-display-allNight" value="true" @(includedAllNight ? "checked" : "") />
+                                                <span>All Night Price</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="mt-4">
+                    <div class="ht-sort-container">
+                        <div class="sort-lbl">
+                            Sort by
+                        </div>
+                        <div role="button" class="asc" data-ht-sort="1" data-ht-sortsq="0" data-ht-sorting="TripAdvisor Rating">
+                            TripAdvisor Rating
+                        </div>
+                        <div role="button" class="asc" data-ht-sort="2" data-ht-sortsq="0" data-ht-sorting="Best Deal">
+                            Best Deal
+                        </div>
+                        <div role="button" class="asc" data-ht-sort="3" data-ht-sortsq="0" data-ht-sorting="Property Ratings">
+                            Property Rating
+                        </div>
+                    </div>
+
+                    @* Put hotel list partial view over here. *@
+                    @if (Model?.Hotel?.SearchHotelInfo?.Result?.HotelList == null || (Model?.Hotel?.SearchHotelInfo?.Result?.HotelList.Length == 0 && Model?.Hotel?.SearchHotelInfo?.Result?.Errors == null))
+                    {
+                        string imgUrl = Url.Content("~/Images/txt_load.gif");
+                        var imgTag = Html.Raw($"<img src='{imgUrl}' style='max-height: 25px' />");
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            <div class="search-item bg-white ht-loading mb-4" style="@(string.IsNullOrWhiteSpace(Model?.Hotel?.SearchHotelInfo?.Destination) ? "display: none" : "")">
+                                <div class="search-item-top shadow">
+                                    <div class="slider-wrap">
+                                        <div id="carousel-9999" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active">
+                                                    <img class="d-block w-100" src="@imgUrl" alt="img_slide_9999">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mid-content">
+                                        <div class="mid-top">
+                                            <div class="mid-left">
+                                                <h2>@imgTag</h2>
+                                                <div class="rating-display">
+                                                    @for (int a = 0; a < 5; a++)
+                                                    {
+                                                        <i class="fa fa-star"></i>
+                                                    }
+                                                    @if (Core.IsForStaging)
+                                                    {
+                                                        <small class="text-muted font-italic">&nbsp;&nbsp;(-)</small>
+                                                    }
+                                                </div>
+                                                @*<span class="tag">Special 75% OFF</span>*@
+                                            </div>
+                                        </div>
+                                        <div class="mid-bottom">
+                                            <div>@imgTag </div>
+                                            <div>
+                                                @imgTag reviews
+                                            </div>
+                                            <div>
+                                                Location<br /> @imgTag
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="price-div">
+                                        <h3>from <span>MYR @imgTag</span>/night</h3>
+                                        <p>tax excluded</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <input type="hidden" class="submit hidden invisible" data-url="@Url.Action("ReserveRoom", "Hotel", new { tripid = tripid })">
+                    <div id="hlist-master" class="hlist-container">
+                        @Html.Partial("~/Views/Hotel/v2/_HotelList.cshtml", Model?.Hotel?.SearchHotelInfo ?? new SearchHotelModel())
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ./Search Result -->
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
+
+
+    <!-- Date Rangepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+    <!-- Lightbox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+
+    @*<script src="~/Scripts/v3.0/hotel-search/general.js"></script>*@
+
+    <script src="~/Scripts/v3.0/jquery.typeahead.min.js"></script>
+    <link href="~/CSS/v3.0/jquery.typeahead.min.css" rel="stylesheet" />
+    @*<script src="~/Scripts/v3.0/hotel-search/autocomplete.js"></script>*@
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script src="@Url.Content(bundlesJSVPath + $"?type=hsearch&q={DateTime.Today.ToString("yyyyMMddHH")}")"></script>
+    @*<script src="~/Scripts/v3.0/hotel-search/search-panel.js"></script>
+    <script src="~/Scripts/v3.0/hotel-search/page-search.js"></script>*@
+
+    <script id="init_spanel" type="text/javascript">
+        $(function () {
+            $.ajaxSetup({ data: JSON.stringify({ tripid: '@tripid' }) });
+
+            var minDate = (@(CustomPrincipal.IsHtlSameDayAllow.ToString().ToLower())) ? moment(ServerDateTime, 'MM/DD/YYYY') : moment(ServerDateTime, 'MM/DD/YYYY').add(@Core.GetSettingValue("dayadvance"), 'day');
+            var maxDate = moment(minDate).add(1, 'year');
+            var dfEndDate = moment(minDate).add(1, 'day');
+            datePicker('.daterange', minDate, maxDate, minDate.year(), maxDate, 365, minDate, dfEndDate);
+        });
+    </script>
+
+    <script>
+        $.getSInfo = function () {
+            return $.ajax({
+                method: 'POST',
+                url: '/hotel/setsearchinfo' + '?tripid=@tripid',
+                cache: false,
+                async: true,
+                contentType: "application/json",
+            }).promise();
+        };
+
+        var hsInfo = '';
+
+        $.getSInfo().then(function (res) {
+            // success
+            hsInfo = res;
+            //location.hash = $.param(hsInfo);
+        }, function (res) {
+            // failed
+            });
+    </script>
+}

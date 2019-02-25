@@ -1,0 +1,1092 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.FlightBookingModel
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    ViewBag.Title = "Guest Details";
+    ViewBag.HeaderRed = true;
+    ViewBag.CheckSession = true;
+    ViewBag.UsePopupLoginBox = true;
+
+    bool isCrossSellHotel = Session[Enumeration.SessionName.HotelList + tripid] != null;
+    string returnAction = tripid != null && Session[Enumeration.SessionName.HotelList + tripid] != null ? "AddOn" : "Search";
+    if (affiliationId == null)
+    {
+        ViewBag.ReturnAction = Url.Action(returnAction, "Flight", new { @ref = "guestdetails", tripid, affiliationId }, Request.Url.Scheme);
+    }
+    Alphareds.Module.CompareToolWebService.CTWS.serviceSource selectedSource = Model.FlightInformation.Supplier;
+}
+
+@{
+    var searchCriteria = Model.SearchFlightResultViewModel;
+    var selectedFlight = Model.FlightInformation.SupplierFlightInfo;
+    bool isDomestic = searchCriteria.isDomesticFlight;
+    bool isOneWay = searchCriteria.TripType == "OneWay";
+    bool isGATE = selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int ||
+                  selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Chn;
+    bool isAirAsia = selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia;
+    ViewBag.IsOneWay = isOneWay; // for SharedCSSStyling usage
+}
+
+@{
+    //Cross Sales Server Side Code
+    bool isCrossSaleHotel = (ViewBag.HideSummaryHotelItinerarySection == null || ViewBag.HideSummaryHotelItinerarySection == false) && tripid != null && Session[Enumeration.SessionName.HotelCheckOut + tripid] != null;
+    bool passCrossSalesHotel = (ViewBag.HideSummaryHotelItinerarySection == null || ViewBag.HideSummaryHotelItinerarySection == false) && tripid != null && Session[Enumeration.SessionName.HotelList + tripid] != null;
+    HotelCheckoutModel checkoutModel = null;
+    DateTime hotelArrivalDate = DateTime.MaxValue;
+    DateTime hotelDepartureDate = DateTime.MaxValue;
+    if (isCrossSaleHotel)
+    {
+        checkoutModel = (HotelCheckoutModel)Session[Enumeration.SessionName.HotelCheckOut + tripid];
+        hotelArrivalDate = checkoutModel.RoomSelected.HotelRoomInformationList.First().arrivalDate.ToDateTime();
+        hotelDepartureDate = checkoutModel.RoomSelected.HotelRoomInformationList.First().departureDate.ToDateTime();
+    }
+}
+
+@section style{
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2responsive.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/ars-style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/bootstrap.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/style.css")" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+    <link rel="stylesheet" href="@Url.Content("~/CSS/hotel/bootstrap-carousel.css")">
+    @Html.Partial("~/Views/Flight/Shared/_SharedCSSStyling.cshtml")
+    <style>
+        .reminder {
+            margin-right: 20px;
+            font-family: 'Conv_Ubuntu-Light';
+        }
+
+        .carousel-inner > .item > img,
+        .carousel-inner > .item > a > img {
+            width: 70%;
+            margin: auto;
+        }
+
+        .carousel-indicators > li > a > img,
+        .carousel-indicators > .active > a > img {
+            width: 10%;
+            height: 60px;
+            float: left;
+            cursor: pointer;
+        }
+
+        .carousel-indicators > li > a > img {
+            opacity: 0.5;
+        }
+
+        .carousel-indicators > .active > a > img {
+            opacity: 1;
+        }
+
+        .d8c1_gallery > .callbacks_container, .bslides > li {
+            max-width: 495px;
+            height: 330px;
+            margin: 0 auto;
+        }
+
+        .d8c1_gallery .bslides > li img {
+            width: initial;
+            height: 100%;
+            margin: 0 auto;
+            float: none;
+        }
+
+        .bslides {
+            position: relative;
+            list-style: none;
+            overflow: hidden;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+            .bslides img {
+                display: block;
+                height: auto;
+                width: 100%;
+                border: 0;
+            }
+
+        @@media screen and (max-width : 500px) {
+            .d8c1_gallery > .callbacks_container, .bslides > li {
+                max-width: 495px;
+                height: 230px;
+            }
+        }
+
+        @@media screen and (max-width : 320px) {
+            .bslides img {
+                display: block;
+                height: 225px;
+            }
+        }
+    </style>
+}
+
+<div id="fareRulesClass" style="display: none;">
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+</div>
+
+<div class="loadingArea">
+    <!-- GRAY BREADCRUMP START -->
+    @*<div class="s3_1_breadcrump">
+        <div class="s3_1_breadcrump_inner">
+        <div class="s3_1_numberbox">1</div>
+        <div class="s3_1_imgbox"><img src="@Url.Content("~/images/plane.png")" width="15" height="13" alt=""></div>
+        <div class="s3_1_numberbox">2</div>
+        <div class="s3_1_imgbox"><img src="@Url.Content("~/images/plane.png")" width="15" height="13" alt=""></div>
+        <div class="s3_1_currentbox">Details</div>
+        <div class="s3_1_imgbox"><img src="@Url.Content("~/images/plane.png")" width="15" height="13" alt=""></div>
+        <div class="s3_1_numberbox">4</div>
+        <div class="clear"></div>
+        </div>
+        </div>*@
+    <!-- GRAY BREADCRUMP END -->
+    <!-- GRAY FLIGHT DETAIL START -->
+    @Html.Partial("~/Views/Flight/Shared/_BookingSummary.cshtml", Model)
+
+    <!--Nav wizards-->
+    <section class="row clearfix addons">
+        <div class="container">
+
+            <div class="row clearfix section-tabs">
+                <div class="col-md-10 col-lg-8 col-lg-offset-2 col-md-offset-1 col-xs-12 col-sm-10 col-sm-offset-1 centerStepBar">
+                    <ul class="nav nav-pills nav-wizard@(passCrossSalesHotel ? " nav-size-addon" : " nav-size")">
+                        <li>
+                            <a>
+                                <span class="visible-lg visible-md visible-sm navZoom">Select Flight</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/search.png" height="20" width="20" alt=""></span>
+                            </a>
+                        </li>
+                        @if (passCrossSalesHotel)
+                        {
+                            <li>
+                                <a aria-controls="addons">
+                                    <span class="visible-lg visible-md visible-sm navZoom">Add On</span>
+                                    <span class="visible-xs"><img src="~/Images_hotel/add-on.png" height="20" width="20" alt="" title="Contact Details"></span>
+                                </a>
+                            </li>
+                        }
+                        <li class="active">
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Contact Details</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/contactdetails.png" height="20" width="20" alt="" title="Contact Details"></span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a aria-controls="addons">
+                                <span class="visible-lg visible-md visible-sm navZoom">Payment</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/payment.png" height="20" width="20" alt="" title="Payment"></span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a aria-controls="confirm">
+                                <span class="visible-lg visible-md visible-sm">Confirmation</span>
+                                <span class="visible-xs"><img src="~/Images_hotel/confirmation.png" height="20" width="20" alt="" title="Confirmation"></span>
+
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--//-->
+    @using (Html.BeginForm("GuestDetails", "Flight", new { tripid, affiliationId }, FormMethod.Post, new { @id = "FlightDetailForm" }))
+    {
+        @Html.Partial("~/Views/Flight/GuestDetails/_GuestDetails.cshtml")
+    }
+    <!-- GRAY FLIGHT DETAIL END -->
+
+</div>
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+<!-- MAIN CONTENT PORTION START -->
+<input type="hidden" id="hidViewMore" />
+@Html.Partial("~/Views/Hotel/_HotelInformation.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+@section scripts{
+    @if (isCrossSellHotel)
+    {
+        @Html.Partial("~/Views/Hotel/_SharedJSScripts.cshtml")
+    }
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <script type="text/javascript">
+            var isLogin = false;
+        </script>
+    }
+
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+
+    @Scripts.Render(Url.Action("DepartureDate", "Flight", new { tripid }))
+    <script type="text/javascript">
+        var isdomestic = '@isDomestic';
+        var isGATE = '@isGATE';
+        var isAirAsia = '@isAirAsia';
+        isdomestic = isdomestic == 'True';
+        isGATE = isGATE == 'True';
+        isAirAsia = isAirAsia == 'True';
+
+        $(function () {
+            $(document).ready(function (e) {
+                history.pushState('', '', window.location.href);
+
+                $("#registerCheckBox").prop('checked', true);
+
+                if($('#registerCheckBox').prop('checked')){
+                    $(".s3_optional_register").slideToggle();
+                    $("#MemberRegisterModels_AgreeTnC").rules("add", "agreetnc");
+                }
+                else{
+                    $("[name$=Password]").rules("remove", "required");
+                }
+
+                //Check populated email whether registered
+                toggleOptionalRegister($.checkRegister($('#@Html.IdFor(m => m.BookingContactPerson.Email)').val()));
+
+                var isPostBack = @IsPost.ToString().ToLower();
+                if(isPostBack){
+                    checkMarker(false);
+                }
+                else{
+                    checkMarker();
+                    checkNationality();
+                    $(".day").trigger("change");
+                }
+
+                loginBox();
+
+                $.validator.methods.date = function (value, element, params) {
+                    var isValid = value != '' ? moment(value, 'YYYY/M/D', true).isValid()  : true;
+                    var name = typeof element.name != 'undefined' ? element.name : '';
+                    var prefix = getModelPrefix(name);
+                    //var prefix = getModelPrefix(element.name);
+                    var modelName = getModelName(element.name);
+
+                    switch (modelName) {
+                        case "DOB":
+                            var selectDOB = $('select[name*="' + prefix + 'DOB"]').map(function (i, e) {
+                                return $(e).val();
+                            }).get();
+                            var isValidDOB = (selectDOB[0] != '' && selectDOB[1] != '' && selectDOB[2] != '') || (selectDOB[0] == '' && selectDOB[1] == '' && selectDOB[2] == '');
+                            isValid = isValid && isValidDOB;
+                            break;
+                        case "PassportExpiryDate":
+                            var selectPassport = $('select[name*="' + prefix + 'PassportExpiryDate"]').map(function (i, e) {
+                                return $(e).val();
+                            }).get();
+                            var isValidPassport = (selectPassport[0] != '' && selectPassport[1] != '' && selectPassport[2] != '') || (selectPassport[0] == '' && selectPassport[1] == '' && selectPassport[2] == '');
+                            isValid = isValid && isValidPassport;
+                            break;
+                        case "_DepartureDate":
+                            isValid = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    return isValid;
+                }
+
+                $('#BookingContactPerson_GivenName').rules('add', 'namecombinaation');
+                $('#PassengerDetailBooking_0__GivenName').rules('add', 'namecombinaation');
+
+                $.validator.addMethod("namecombinaation", function(value, element, params){
+                    var prefix = getModelPrefix(element.name);
+                    var givenname = $('input[name="' + prefix + 'GivenName"]').val().length;
+                    var surname = $('input[name="' + prefix + 'Surname"]').val().length;
+                    if(givenname + surname > 54){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }, function(value, element, params){
+                    return 'Total length of the First Name and Family Name cannot more than 54 characters.'
+                });
+
+                @if (Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia)
+               {
+                <text>
+                for(var x=1; x < $('.booking-form').length-1; x++){
+                    $('#PassengerDetailBooking_'+ x +'__Surname').rules('add', 'checkSameName');
+                }
+
+                $.validator.addMethod("checkSameName", function(value, element, params){
+                    var prefix = getModelPrefix(element.name);
+                    var name = $('input[name="' + prefix + 'GivenName"]').val() + $('input[name="' + prefix + 'Surname"]').val();
+                    name = name.toLowerCase();
+                    for(var i = 0; i < $('.booking-form').length-1; i++){
+                        var preName = $('#PassengerDetailBooking_'+ i +'__GivenName').val() + $('#PassengerDetailBooking_'+ i +'__Surname').val();
+                        var cur = getModelPrefix($('#PassengerDetailBooking_'+ i +'__GivenName').prop('name'));
+                        preName = preName.toLowerCase();
+                        if(cur !== prefix && name == preName){
+                            return false;
+                        }
+                        else{
+                        }
+                        //break;
+                    }
+                    return true;
+
+                }, function(value, element, params){
+                    return "Guest Name cannot be same."
+                });
+                </text>
+               }
+                $.validator.addMethod("agevalid", function(value, element, params){
+                    var age, passengerType;
+                    var isValid = false;
+                    var prefix = getModelPrefix(element.name);
+
+                    if (this.optional(element)) {
+                        return true;
+                    }
+
+                    if($('input[name="' + prefix + 'Age"]').length > 0){
+                        age = $('input[name="' + prefix + 'Age"]').val();
+                        passengerType = $('input:hidden[name="' + prefix + 'PassengerType"]').val();
+                        if (passengerType == "ADT") {
+                            isValid = age >= 12;
+                        }
+                        else if (passengerType == "CNN") {
+                            isValid = age >= 2 && age < 12;
+                        }
+                        else if (passengerType == "INF") {
+                            isValid = age >= 0 && age <= 23;
+                        }
+                    }
+                    else if(element.name == "BookingContactPerson.DOB"){
+                        isValid = calAge(value) >= 18;
+                    }
+
+                    return isValid && new Date(value) <= ServerDateTime;
+                }
+                , function(value, element, params){
+                    var age, passengerType;
+                    var prefix = getModelPrefix(element.name);
+                    age = $('input[name="' + prefix + 'Age"]').val();
+                    passengerType = $('input:hidden[name="' + prefix + 'PassengerType"]').val();
+
+                    if (passengerType == "ADT") {
+                        return $.validator.format("Age for Adult must be >11 Years Old.");
+                    }
+                    else if (passengerType == "CNN") {
+                        return $.validator.format("Age for Child must be 2-11 Years Old.")
+                    }
+                    else if (passengerType == "INF") {
+                        return $.validator.format("Age for Infant must be 0-23 Months Old (Under 2 Years Old).")
+                    }
+                    else if(element.name == "BookingContactPerson.DOB"){
+                        return $.validator.format("Contact Person age must be >17 Years Old.");
+                    }
+                    else{
+                        return $.validator.format("Invalid age.");
+                    }
+                }
+                );
+
+                $.validator.addMethod("passportdate", function(value, element, params){
+                    var passportDate,tripDate;
+                    if (this.optional(element)) {
+                        return true;
+                    }
+                    passportDate = value;
+                    tripDate = typeof $('#tripEndDate').val() == 'undefined' ? $('#tripBeginDate').val() : $('#tripEndDate').val();
+
+                    return moment(passportDate, 'YYYY/M/D', true) >= moment(tripDate, 'YYYY/M/D', true);
+                }
+                , function(value, element, params){
+                    var tripDate = typeof $('#tripEndDate').val() == 'undefined' ? $('#tripBeginDate').val() : $('#tripEndDate').val();
+                    var parseDate = moment(tripDate, 'YYYY/M/D', true).format("DD-MMM-YYYY, ddd");
+                    return $.validator.format("Passport Expiry Date must greater or equal to {0}.", parseDate)
+                }
+                );
+
+                $.validator.addMethod("passportDateEmpty", function(value, element, params){
+                    return value != '';
+                }
+                , function(value, element, params){
+                    return $.validator.format("Passport Expiry Date Is Required")
+                }
+                );
+
+                $.validator.addMethod("passportNumberEmpty", function(value, element, params){
+                    return value != '';
+                }
+                , function(value, element, params){
+                    return $.validator.format("Passport Number Is Required")
+                }
+                );
+
+                // Contact Person
+                $('input[name*=DOB]').rules('add', 'agevalid');
+
+                // PassengerDetailBooking
+                for (var i = 0; i < $('.booking-form').length - 1; i++) {
+                    var psType = $('input[name="PassengerDetailBooking[' + i + '].PassengerType"]').val();
+                    if(psType == "CNN" || psType == "INF"){
+                        $('input[name="PassengerDetailBooking[' + i + '].DOB"]').rules('add','required');
+                    }
+
+                    $('input[name="PassengerDetailBooking[' + i + '].DOB"]').rules('add','date');
+                    $('input[name="PassengerDetailBooking[' + i + '].DOB"]').rules('add','agevalid');
+                    $('input[name="PassengerDetailBooking[' + i + '].PassportExpiryDate"]').rules('add', 'passportdate');
+                    $('input[name="PassengerDetailBooking[' + i + '].DOB"]').trigger('change');
+
+                    @if (selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Chn || selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int)
+                    {
+                    <text>
+                    $('input[name="PassengerDetailBooking[' + i + '].PassportExpiryDate"]').rules('add', 'passportDateEmpty');
+                    $('input[name="PassengerDetailBooking[' + i + '].PassportNumber"]').rules('add', 'passportNumberEmpty');
+
+                    </text>
+                    }
+
+                    @if (selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia || selectedSource == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int)
+                    {
+                        <text>
+                    if (psType == "ADT")
+                    {
+                        $('input[name="PassengerDetailBooking[' + i + '].DOB"]').rules('add', 'required');
+                    }
+                    </text>
+                    }
+                }
+            });
+
+
+            // preparation for valid without submit
+            $('.s3-1_form_button[type="button"]').on('click', function(e){
+                var sectionId = $(this).parents('.booking-form').attr('id');
+                var validator = $('#FlightDetailForm').validate();
+                $('#'+ sectionId +' *input, #' + sectionId + ' *select').valid();
+                if(validator.errorList.length){
+                    validator.focusInvalid();
+
+                    //Focus on hidden field like DOB -> focus not working on hidden, so focus to parent element
+                    var errorElement = validator.errorList[0].element;
+                    focusToHiddenField(errorElement);
+                }
+                else{
+                    checkMarker(true);
+                    focusNextGuestForm();
+                }
+            });
+
+
+            var form = $('#FlightDetailForm');
+            var formValidator = form.validate();
+            formValidator.settings.ignore = ''; // validate hidden fields
+
+            //var focusError = function (element) {
+            //    $('html, body').animate({
+            //        scrollTop: $(element).offset().top
+            //    }, 300);
+            //};
+
+            var toggleSubmitBtn = function(){
+                form.valid();
+                var errList = formValidator.errorList;
+                var btn = $('#guest-submit-btn');
+                if(errList.length == 0){
+                    btn.attr('type', 'submit');
+                    btn.removeClass('incompleted');
+                }
+                else if(errList.length > 0){
+                    btn.attr('type', 'button');
+                    btn.addClass('incompleted');
+
+                }
+            };
+
+            var checkMarker = function (validNow) {
+                validNow = typeof validNow == "undefined" ? true : validNow;
+                if(validNow){
+                    toggleSubmitBtn();
+                }
+                var errList = formValidator.errorList;
+
+                var errForm = [];
+                for (var i = 0; i < errList.length; i++) {
+                    var errElement = errList[i].element;
+
+                    var formId = $('.booking-form').has(errElement).attr('id');
+                    if ($.inArray(formId, errForm) == -1) {
+                        errForm.push(formId);
+                    }
+                    var nowForm = $('.s3-1_guestdetail_box > ul li[value="' + formId + '"]');
+                    var nowBar = $('.contact_detail_heading_small[value="' + formId + '"]');
+
+                    nowForm.find('.completed').remove();
+                    nowBar.find('.completed').remove();
+                }
+
+                $('.booking-form').each(function (i, e) {
+                    var postbackError = $(this).has('.field-validation-error').length;
+                    if ($.inArray(this.id, errForm) == -1 && postbackError === 0) {
+                        var g = $('.s3-1_guestdetail_box > ul li[value="' + this.id + '"]');
+                        var c = $('.contact_detail_heading_small[value="' + this.id + '"]');
+                        if (g.has('.completed').length == 0) {
+                            g.append('<span class="completed"></span>');
+                        }
+                        if (c.has('.completed').length == 0) {
+                            c.find('.chhc_bar').prepend('<span class="completed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+                            //c.find('.chhc_bar').prepend('<span class="completed"></span>');
+                        }
+                    }
+                });
+            }
+
+            var checkOneFormAllValid = function(prefix, bookingFormId){
+                toggleSubmitBtn();
+                if(prefix.length){
+                    var isValid = $("input[name*='" + prefix + "']").valid();
+                    var g = $('.s3-1_guestdetail_box > ul li[value="' + bookingFormId + '"]');
+                    var c = $('.contact_detail_heading_small[value="' + bookingFormId + '"]');
+
+                    if(isValid){
+                        if (g.has('.completed').length == 0) {
+
+                            g.append('<span class="completed"></span>');
+                            g.find('.igbguest').hide();
+
+                            g.find('#igb3').remove();
+                        }
+                        if (c.has('.completed').length == 0) {
+                            //c.find('.chhc_bar').prepend('<span class="completed"></span>');
+                            c.find('.chhc_bar').prepend('<span class="completed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+                            c.find('#igb3').remove();
+                        }
+                    }
+                    else{
+                        g.find('.completed').remove();
+                        g.find('.igbguest').show();
+                        c.find('.completed').remove();
+
+                    }
+                }
+            }
+
+            var markAllValid = function () {
+                $('.s3-1_guestdetail_box > ul li').find('.completed').remove();
+                $(".contact_detail_heading_small").find('.completed').remove();
+                $('.s3-1_guestdetail_box > ul li').append('<span class="completed"></span>');
+                $(".contact_detail_heading_small").find('.chhc_bar').prepend('<span class="completed"></span>');
+            }
+
+            $('input').on('blur', function (e) {
+                var prefix = getModelPrefix($(this).attr('name'));
+                var bookingFormId = $('.booking-form').has(this).attr('id');
+                checkOneFormAllValid(prefix, bookingFormId);
+            });
+
+            $('#bookingDetailForm').on('change', 'input[type="hidden"]', function (e) {
+                var prefix = getModelPrefix($(this).attr('name'));
+                var bookingFormId = $('.booking-form').has(this).attr('id');
+                checkOneFormAllValid(prefix, bookingFormId);
+            });
+
+            var validateForm = function () {
+
+                var noerror = form.valid();
+
+                if (noerror) {
+                    checkMarker();
+                }
+
+                if (formValidator.errorList.length !== 0) {
+                    var dfd = $.Deferred();
+                    var errElement = formValidator.errorList[0].element;
+
+                    checkMarker();
+
+                    $('.booking-form').each(function (i, e) {
+                        var fi = $(e).find(errElement);
+                        var isElementExists = fi.length != 0;
+                        var formId = $(e).attr('id');
+
+                        var nowFocusForm = $('.s3-1_guestdetail_box > ul li[value="' + formId + '"]');
+                        var nowFocusBar = $(".contact_detail_heading_small[value='" + formId + "']");
+
+                        if (isElementExists) {
+                            // desktop view
+                            $('.s3-1_guestdetail_box > ul li[value!="' + formId + '"]').removeClass('s3-1_activli');
+                            $('.s3-1_guestdetail_box > ul li[value="' + formId + '"]').addClass('s3-1_activli');
+                            $('.booking-form[id!="' + formId + '"]').hide();
+                            $(e).show();
+
+                            // mobile tab
+                            $('.chhc_bar').removeClass('cdhc_redbar');
+                            $(nowFocusBar).find('.chhc_bar').addClass('cdhc_redbar');
+
+                            dfd.resolve();
+                            // return false to end each looping
+                            return false;
+                        }
+                    });
+                    dfd.done(function (e) {
+                        formValidator.focusInvalid();
+
+                        //Focus on hidden field like DOB -> focus not working on hidden, so focus to parent element
+                        var errorElement = formValidator.errorList[0].element;
+                        focusToHiddenField(errorElement);
+                    });
+                }
+                return noerror;
+            }
+
+            form.on('submit', function (e) {
+                if(validateForm()){
+                    var msg = passportValidation();
+                    if(msg.length && !$('#popup-modal').is(':visible')){
+                        $('#popup-modal').show();
+                        $('#modal-container').html("<div class='session_lb_text'>Notice</div><div class='session_lb_text1' style='text-align: justify;font-family: initial;'>Generally all travellers’ passports must have the min. validity of 6 months from the departure date. Therefore, please be reminded to renew your passport before your trip. You may check with your local immigration body for more details.</div>");
+                        $('#modal-container > .session_lb_text1').append('<br/>');
+                        $('#modal-container > .session_lb_text1').append('<br/>Guest require attention: ');
+                        $(msg).each(function(i, value){
+                            $('#modal-container > .session_lb_text1').append('<span style="text-transform:uppercase;color:#ff0000;"><br/>' + value + '</span>');
+                        });
+                        $('#modal-container > .session_lb_text1').append("<div class='btn-section'><a href='javascript:;' class='continue-submit'><div class='redbacktohome_button modal-confirm-btn''>Continue</div></a><a href='javascript:;' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>Cancel</div></a></div>");
+                        e.preventDefault();
+                    }
+                    else{
+                        ecomcheckout(2);
+                    }
+                }
+            });
+
+            var passportValidation = function(){
+                var msg = [];
+                $('input[name$=".PassportExpiryDate"][type="hidden"]').each(function(index, element){
+                    var passportDate = $(element).val();
+                    var prefix = getModelPrefix(element.name);
+                    if(passportDate.length){
+                        var tripDate = typeof $('#tripEndDate').val() == 'undefined' ? $('#tripBeginDate').val() : $('#tripEndDate').val();
+                        if(moment(passportDate, 'YYYY/M/D', true) <= moment(tripDate, 'YYYY/M/D', true).add(6, 'M')){
+                            var pName = $('input[name="' + prefix + 'GivenName"').val() + ' ' + $('input[name="' + prefix + 'Surname"').val();
+                            var parsePassDate = moment(passportDate, 'YYYY/M/D', true).format('DD MMM YYYY');
+                            msg.push(parsePassDate + ' - ' + pName);
+                        }
+                    }
+                });
+                return msg;
+            }
+
+            var nameValidation = function(){
+                var looplength = $('[name*=GivenName]').length;
+                var arrName = [];
+                for (var i = 0; i < looplength; i++) {
+                    arrName.push($('[name*=GivenName]').eq(i).val() + ' ' + $('[name*=SurName]').eq(i).val());
+                }
+
+                if(!arrName.isUnique()){
+                    $('#popup-modal').show();
+                    $('#modal-container').html("<div class='session_lb_text'>Important</div><div class='session_lb_text1'>There are duplicate name in your booking details form. <br>Please change the name and retry.</div><a href='javascript:;' class='modal-close' style='text-decoration:none'><div class='redbacktohome_button'>Close</div></a>");
+                    e.preventDefault();
+                }
+            }
+
+            var focusNextGuestForm = function () {
+                var next = $(".s3-1_guestdetail_box ul li.s3-1_activli").next();
+                var curr_tab = $(".s3-1_guestdetail_box ul li.s3-1_activli").attr('value');
+                var tab_id = next.attr('value');
+                if (curr_tab === 'contactform') {
+                    ecomcheckout(1);
+                }
+                if (tab_id !== 'contactform') {
+                    $(".s3-1_guestdetail_box ul li").removeClass("s3-1_activli");
+                    next.addClass("s3-1_activli");
+                    $('.booking-form[id!="' + tab_id + '"]').hide();
+                    $("#" + tab_id).fadeIn();
+
+                    // mobile tab
+                    var mob_tab = $('.contact_detail_heading_small[value="' + tab_id + '"]');
+                    $('.chhc_bar').removeClass('cdhc_redbar');
+                    mob_tab.find('.chhc_bar').addClass('cdhc_redbar');
+
+                    if ($(window).width() > 900) {
+                        smoothScroll($('.s3-1_guestdetail_box ul'));
+                    }
+                    else{
+                        smoothScroll(mob_tab);
+                    }
+                }
+            }
+
+            var hideGuestForm = function () {
+                for (var i = 1; i < 8; i++) {
+                    $("#guest" + i + "form").hide();
+                };
+            }
+
+            var allData = [$('#@Html.IdFor(m => m.BookingContactPerson.GivenName)'),$('#@Html.IdFor(m => m.BookingContactPerson.Surname)'),$('#@Html.IdFor(m => m.BookingContactPerson.Email)'),$('#@Html.IdFor(m => m.BookingContactPerson.Phone1)'),$('#@Html.IdFor(m => m.BookingContactPerson.Country)'),$('#@Html.IdFor(m => m.BookingContactPerson.Title)'),$('#@Html.IdFor(m => m.BookingContactPerson.DOBDays)'),$('#@Html.IdFor(m => m.BookingContactPerson.DOBMonths)'),$('#@Html.IdFor(m => m.BookingContactPerson.DOBYears)'),$('#@Html.IdFor(m => m.BookingContactPerson.Phone2)'),$('#@Html.IdFor(m => m.BookingContactPerson.Address1)'),$('#@Html.IdFor(m => m.BookingContactPerson.Address2)'),$('#@Html.IdFor(m => m.BookingContactPerson.City)'),$('#@Html.IdFor(m => m.BookingContactPerson.PostalCode)'),$('#@Html.IdFor(m => m.BookingContactPerson.State)'),$('#@Html.IdFor(m => m.BookingContactPerson.Country)')];
+            var dataIsFilled = true;
+            for(i=0; i<allData.length; i++){
+                if(allData[i].val()==''){
+                    dataIsFilled = false;
+                    break;
+                }
+                else{
+                    dataIsFilled = true;
+                }
+            }
+
+            var loginBox = function () {
+                var dfd = $.Deferred();
+                if (typeof isLogin != "undefined") {
+                    var isLoginBoxVisible = $(".fullcover_div").is(':visible');
+                    if (!isLoginBoxVisible) {
+                        $(".fullcover_div").fadeIn();
+                        $("body").addClass("modal-open");
+                        $(".tlla_left").removeClass("posabs");
+                        $(".tlla_left").addClass("posinherit");
+                        return false;
+                    }
+                }
+                else{
+                    if(dataIsFilled == true && ($('.s3-1_guestdetail_box > ul li[value="contactform"]').has('.completed').length == 0)){
+                        $('.s3-1_guestdetail_box > ul li[value="contactform"]').append('<span class="completed"></span>');
+                    }
+                }
+                return true;
+            }
+
+            function checkIdFieldIsNull(idArray) {
+                var isEmptyField = true;
+                for (i = 0; i < idArray.length; i++) {
+                    if ($(idArray[i]).val() != '') {
+                        isEmptyField = false;
+                    } else {
+                        isEmptyField = true;
+                        break;
+                    }
+                }
+
+                return isEmptyField;
+            }
+
+            var contactPersonIdList = ['#@Html.IdFor(m => m.BookingContactPerson.GivenName)', '#@Html.IdFor(m => m.BookingContactPerson.Surname)', '#@Html.IdFor(m => m.BookingContactPerson.Email)', '#@Html.IdFor(m => m.BookingContactPerson.Phone1)'];
+            var contactPersonId = '#@Html.IdFor(m => m.BookingContactPerson.GivenName),#@Html.IdFor(m => m.BookingContactPerson.Surname),#@Html.IdFor(m => m.BookingContactPerson.Email),#@Html.IdFor(m => m.BookingContactPerson.Phone1),#contact_dob_day,#contact_dob_month,#contact_dob_year,#@Html.IdFor(m => m.BookingContactPerson.Country),#@Html.IdFor(m => m.BookingContactPerson.Title),#@Html.IdFor(m => m.BookingContactPerson.DOBDays),#@Html.IdFor(m => m.BookingContactPerson.DOBMonths),#@Html.IdFor(m => m.BookingContactPerson.DOBYears)';
+
+            var checkContactPersonIdList = function () {
+                var isEmpty = checkIdFieldIsNull(contactPersonIdList);
+            }
+
+            $.checkRegister = function (e) {
+                var params = { Email: e };
+                var result = false;
+                $.ajax({
+                    url: '/Member/IsEmailAvailable' + '?' + $.param(params),
+                    method: 'GET',
+                    async: false,
+                    cache: false,
+                    contentType: "json",
+                }).then(function (res) {
+                    result = res;
+                });
+                return result;
+            };
+
+
+            @* Event based js *@
+            $('#@Html.IdFor(m => m.BookingContactPerson.Email)').on('blur', function (event) {
+                toggleOptionalRegister($.checkRegister(this.value));
+            });
+
+            $(document).ready(function (e){
+                bindContact();
+            });
+
+            $(contactPersonId).on("blur", function (event) {
+                bindContact();
+            });
+
+            var bindContact = function(){
+                checkContactPersonIdList(contactPersonIdList);
+
+                var imFlying = $("#checkbox2").is(':checked');
+                if (imFlying) {
+                    bindContactToGuest();
+                }
+            };
+
+            $("#checkbox2").on('change', function (event) {
+                var imFlying = $(this).is(':checked');
+                var dfd = $.Deferred();
+                if (imFlying) {
+                    bindContactToGuest();
+                    dfd.resolve();
+                } else {
+                    $('#popup-modal').show();
+                    $('#modal-container').html("<div class='session_lb_text'>Confirm</div><div class='session_lb_text1'>Information Guest Detail 1 will be removed.<br/>Continue proceed?</div><a href='javascript:;' class='clear-guest1'><div class='redbacktohome_button modal-confirm-btn''>Yes</div></a><a href='javascript:;' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>Cancel</div></a>");
+                    $(this).prop('checked', true);
+                }
+                dfd.done(function (e) {
+                    checkMarker();
+                });
+            })
+
+            $('#popup-modal').on('click', '.clear-guest1', function(e){
+                clearGuest1();
+                $("#checkbox2").prop('checked', false);
+                $('#popup-modal').hide();
+                checkMarker();
+            });
+
+            $('#popup-modal').on('click', '.continue-submit', function(e){
+                form.submit();
+            });
+
+            $('input[name="BookingContactPerson.Phone2"], select[name="BookingContactPerson.Phone2Prefix"]').on('change', function(e){
+                phoneValidation();
+                $('select[name="BookingContactPerson.Phone2Prefix"]').valid();
+                $('input[name="BookingContactPerson.Phone2"]').valid();
+            });
+
+            var phoneValidation = function(){
+                //if($(element).val().length == 0){
+                if($('input[name="BookingContactPerson.Phone2"]').val().length == 0 && $('select[name="BookingContactPerson.Phone2Prefix"]').val().length == 0){
+                    $('input[name="BookingContactPerson.Phone2"]').rules('remove', 'required');
+                    $('select[name="BookingContactPerson.Phone2Prefix"]').rules('remove', 'required');
+                    $('[data-valmsg-for="BookingContactPerson.Phone2Prefix"]').empty();
+                }
+                else{
+                    $('input[name="BookingContactPerson.Phone2"]').rules('add', 'required');
+                    $('select[name="BookingContactPerson.Phone2Prefix"]').rules('add', 'required');
+                }
+            }
+
+            var clearGuest1 = function(){
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].GivenName)').val('');
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Surname)').val('');
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Title)').val($("#@Html.IdFor(m => m.PassengerDetailBooking[0].Title) option:first").val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Nationality)').val('MYS');
+                $("#PassengerDetailBooking_0__DOBDays option").attr('selected', false);
+                $("#PassengerDetailBooking_0__DOBMonths option").attr('selected', false);
+                $("#PassengerDetailBooking_0__DOBYears option").attr('selected', false);
+                $('#PassengerDetailBooking_0__Age').val('');
+                $('.month').trigger('change');
+            }
+
+            var bindContactToGuest = function() {
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].GivenName)').val($('#@Html.IdFor(m => m.BookingContactPerson.GivenName)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Surname)').val($('#@Html.IdFor(m => m.BookingContactPerson.Surname)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Title)').val($('#@Html.IdFor(m => m.BookingContactPerson.Title)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Title)').prop('selectedIndex', $('#@Html.IdFor(m => m.BookingContactPerson.Title)').prop('selectedIndex'));
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].DOBDays)').val($('#@Html.IdFor(m => m.BookingContactPerson.DOBDays)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].DOBMonths)').val($('#@Html.IdFor(m => m.BookingContactPerson.DOBMonths)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].DOBYears)').val($('#@Html.IdFor(m => m.BookingContactPerson.DOBYears)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Nationality)').val($('#@Html.IdFor(m => m.BookingContactPerson.Country)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].Age)').val($('#@Html.IdFor(m => m.BookingContactPerson.DOB)').val());
+                $('#@Html.IdFor(m => m.PassengerDetailBooking[0].DOBMonths)').trigger('change');
+                $("[name*='PassengerDetailBooking'][name$='Nationality']").trigger('change');
+            }
+
+            window.onload = function(){
+                var NationalityInput = $("[name*='PassengerDetailBooking'][name$='Nationality']");
+                NationalityInput.each(function (i, e) {
+                    if(NationalityInput.eq(i).val() == "" && isdomestic && !isGATE){
+                        $("[name*='PassengerDetailBooking'][name$='PassportNumber']").eq(i).val("");
+                        $("[name*='PassengerDetailBooking'][name$='PassportExpiryDate']").eq(i).val("");
+                        $("[name*='PassengerDetailBooking'][name$='PassportIssueCountry']").eq(i).val("");
+                        $("#passpno_" + i).hide();
+                        $("#passpexp_" + i).hide();
+                        $("#passpcountry_" + i).hide();
+                        $("#icno_" + i).show();
+                        $("#icno_" + i).addClass("goup");
+
+                        var marginForNRIC = "-100px";
+                        if ($("[id*='PassengerDetailBooking'][id$='Nationality-error']").eq(i).length > 0 && isAirAsia){
+                            marginForNRIC = "-134px";
+                        }else{
+                            marginForNRIC = "-100px";
+                        }
+                        $("#icno_" + i).css("margin-top", marginForNRIC);
+                    }
+
+                    $("input[id*='PassengerDetailBooking'][name$='Nationality']").eq(i).val(NationalityInput.eq(i).val());
+                });
+            }
+
+            $("[name*='PassengerDetailBooking'][name$='Nationality'], [name='BookingContactPerson.Country']").on('change', function () {
+                var NationalityInput = $("select[name*='PassengerDetailBooking'][name$='Nationality']");
+                //var NationalityInput = $("select [id*='PassengerDetailBooking'][id$='Nationality']");
+                NationalityInput.each(function (i, e) {
+                    if ((NationalityInput.eq(i).val() == "MYS"||NationalityInput.eq(i).val() == "") && isdomestic && !isGATE) {
+                        $("[name*='PassengerDetailBooking'][name$='PassportNumber']").eq(i).val("");
+                        $("[name*='PassengerDetailBooking'][name$='PassportExpiryDate']").eq(i).val("");
+                        $("[name*='PassengerDetailBooking'][name$='PassportIssueCountry']").eq(i).val("");
+                        $("#passpno_" + i).hide();
+                        $("#passpexp_" + i).hide();
+                        $("#passpcountry_" + i).hide();
+                        $("#icno_" + i).show();
+                        $("#icno_" + i).addClass("goup");
+
+                        var marginForNRIC = "-100px";
+                        //Temporary fix this, need to think a better way to solve this
+                        if (isAirAsia && NationalityInput.eq(i).val() == ""){
+                            marginForNRIC = "-134px";
+                        }
+                        else{
+                            marginForNRIC = "-100px";
+                        }
+                        $("#icno_" + i).css("margin-top", marginForNRIC);
+                    }
+                    else {
+                        $("[name*='PassengerDetailBooking'][name$='IdentityNumber']").eq(i).val("");
+                        $("#icno_" + i).hide();
+                        $("#icno_" + i).removeClass("goup");
+                        $("#passpno_" + i).show();
+                        $("#passpexp_" + i).show();
+                        $("#passpcountry_" + i).show();
+                    }
+
+                    $("input[id*='PassengerDetailBooking'][name$='Nationality']").eq(i).val(NationalityInput.eq(i).val());
+                });
+            });
+
+            var checkNationality = function(){
+                var NationalityInput = $("[name*='PassengerDetailBooking'][name$='Nationality']");
+                NationalityInput.each(function (i, e) {
+                    if (isdomestic && !isGATE && NationalityInput.eq(i).val() == "MYS") {
+                        $("[name*='PassengerDetailBooking'][name$='PassportNumber']").eq(i).val("");
+                        $("#passpno_" + i).hide();
+                        $("[name*='PassengerDetailBooking'][name$='PassportExpiryDate']").eq(i).val("");
+                        $("#passpexp_" + i).hide();
+                        $("[name*='PassengerDetailBooking'][name$='PassportIssueCountry']").eq(i).val("");
+                        $("#passpcountry_" + i).hide();
+                        $("#icno_" + i).addClass("goup");
+
+                        var marginForNRIC = "-100px";
+                        if ($("[id*='PassengerDetailBooking'][id$='Nationality-error']").eq(i).length > 0 && isAirAsia){
+                            marginForNRIC = "-134px";
+                        }else
+                        {
+                            marginForNRIC = "-100px";
+                        }
+                        $("#icno_" + i).css("margin-top", marginForNRIC);
+                    }
+                });
+            }
+
+            var toggleOptionalRegister = function(display){
+                var chkBox = $('#registerCheckBox');
+                if(display){
+                    $(".check_create_acc").show();
+                }
+                else{
+                    $('#registerCheckBox').prop('checked', false);
+                    $(".s3_optional_register, .check_create_acc").hide();
+                    $("[name$=Password]").rules("remove", "required");
+                    $("#MemberRegisterModels_AgreeTnC").rules("remove", "agreetnc");
+                }
+            }
+
+            $.validator.addMethod("agreetnc", function(value, element, params){
+                return value;
+            }, function(value, element, params){
+                return $.validator.format("Please check the terms and condition to register.")
+            });
+
+            $('.s3_create_account').on('click change', function (e) {
+                var chkBox = $('#registerCheckBox');
+                $('#registerCheckBox').prop('checked', !chkBox.is(':checked'));
+                chkBox.trigger('change');
+                if (chkBox.is(':checked')) {
+                    $("[name$=Password]").rules("add", "required");
+                    $("#MemberRegisterModels_AgreeTnC").rules("add", "agreetnc");
+                }
+                else {
+                    $("[name$=Password]").rules("remove", "required");
+                    $("#MemberRegisterModels_AgreeTnC").rules("remove", "agreetnc");
+                }
+            });
+
+            $('.s3_create_account').on('keydown', function (e) {
+                if (e.keyCode == '32') {
+                    var chkBox = $('#registerCheckBox');
+                    $('#registerCheckBox').prop('checked', !chkBox.is(':checked'));
+                    chkBox.trigger('change');
+                    if (chkBox.is(':checked')) {
+                        $("[name$=Password]").rules("add", "required");
+                        $("#MemberRegisterModels_AgreeTnC").rules("add", "agreetnc");
+                    }
+                    else {
+                        $("[name$=Password]").rules("remove", "required");
+                        $("#MemberRegisterModels_AgreeTnC").rules("remove", "agreetnc");
+                    }
+                }
+            });
+
+            $('#registerCheckBox').on('change', function(e){
+                $(".s3_optional_register").slideToggle();
+                if ($('#registerCheckBox').is(':checked')){
+                    $('.s3-1_guestdetail_box > ul li[value="contactform"]').find('.completed').remove();
+                }
+                else{
+                    if ($('.s3-1_guestdetail_box > ul li[value="contactform"]').hasClass('completed')) {
+                        $('.s3-1_guestdetail_box > ul li[value="contactform"]').append('<span class="completed"></span>');
+                    }
+                }
+            });
+
+            $("#MemberRegisterModels_AgreeTnC").on('change', function (e) {
+                $(this).valid();
+            })
+
+            @* 2017/01/03 - Temp disabeld Frequent Traveller Section
+            $(".s3-1_flyer_left_dupinput").click(function () {
+                //$(".ffn_inputbox ul").toggle();
+                $(this).parent().find(".ffn_inputboxulli_container ul").toggle();
+            });
+            $(document).mouseup(function (e) {
+                var container = $(".s3-1_flyer_left_dupinput");
+
+                if (!container.is(e.target) // if the target of the click isn't the container...
+                    && container.has(e.target).length === 0) // ... nor a descendant of the container
+                {
+                    container.parent().find(".ffn_inputboxulli_container ul").hide();
+                }
+            });
+            *@
+
+            //Continue as guest -- START
+            $(document).on('click', '#guest-btn', function (e) {
+                e.preventDefault();
+                $(".fullcover_div").fadeOut();
+                $("body").removeClass("modal-open");
+            })
+            //Continue as guest -- END
+
+            $("input#registerCheckBox").on('focus', function (event) {
+                $("input[type=checkbox]:not(old) + input + label > span").addClass("focusborder");
+            });
+            $("input#registerCheckBox").on('focusout', function (event) {
+                $("input[type=checkbox]:not(old) + input + label > span").removeClass("focusborder");
+            });
+
+        });
+
+        $(".show_more_Room_Ammenity").click(function(){
+            if($(this).siblings(".loadAmenities").css("display")=="none"){
+                $(this).siblings(".loadAmenities").css("display","block");
+                $(this).text("Show less room amenities");
+            } else{
+                $(this).siblings(".loadAmenities").css("display","none");
+                $(this).text("Show more room amenities");
+            }
+        });
+
+        $("#BookingContactPerson_PostalCode").val($.trim($("#BookingContactPerson_PostalCode").val()));
+    </script>
+}

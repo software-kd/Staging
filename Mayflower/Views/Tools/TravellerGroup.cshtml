@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "My Traveller Group";
+    ViewBag.RenderRedLine = true;
+    string returnUrl = Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString());
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+    bool IsExistFlyer = User.Identity.Name != "" ? Alphareds.Module.Common.Core.IsExistFlyerList(User.Identity.Name) == null : false;
+}
+
+@section style{
+    <style>
+        .mcp_inner_b0 {
+            width: 10%;
+        }
+
+        .mcp_inner_b1 {
+            text-align: right;
+        }
+
+        .mcp_inner_b2 {
+            width: 30%;
+            text-align: left;
+        }
+
+        .mcp_inner_b3 {
+            width: 10%;
+        }
+
+        .mcp_inner_b4 {
+            width: 15%;
+            color: #eb2329;
+        }
+
+        .mcp_inner_edit {
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: left;
+            cursor: pointer;
+            display: inline-flex;
+            width: 25px;
+            height: 25px;
+        }
+
+        .mcp_inner_redfont {
+            color: #eb2329;
+            font-family: "Conv_Ubuntu-Light";
+        }
+
+        .mcp_inner_sort {
+            background-image: url(../images/sort_icon.jpg);
+            background-repeat: no-repeat;
+            background-position: right;
+            padding-left: 5%;
+        }
+
+        .mcp_inner_dustbin {
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: left;
+            cursor: pointer;
+        }
+
+
+        #modal-container .modal-cancel-btn {
+            border-radius: 0;
+            display: inline-block;
+            width: 120px;
+        }
+
+        #modal-container .modal-confirm-btn {
+            background-color: #17c134;
+            border-radius: 0;
+            display: inline-block;
+            margin-right: 1em;
+            width: 120px;
+        }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">Traveller Group</div>
+    <div class="mphc_t2">Below are your list of Traveller Groups</div>
+</div>
+@if (User.Identity.IsAuthenticated && !IsAgent)
+{
+    <div class="member_profile_container">
+    @if (IsExistFlyer)
+    {
+        <div class="textforerrormsg" style="text-align:center;font-size:17px;margin-top:10px;">Frequent traveller list is empty<br />Click <a href="@Url.Action("FrequentFlyer","Tools")">Here</a> to add frequent traveller</div>
+    }
+    else
+    {
+        @*<div style="text-align:right; padding: 20px;" class="mcp_inner_redfont">
+                    <a style="cursor:pointer; text-decoration:none; color: #eb2329;" href="/Tools/CreateTraveller" ><img class="mcp_inner_plus" />Add New Traveller Group</a>
+            </div>  *@
+
+        <div style="text-align:right; padding-top: 20px; padding-right:5%;">
+            <a class="mcp_inner_redfont " style="cursor:pointer; text-decoration:none;" href="/Tools/CreateTraveller"><img align="top" style="padding-right:10px" src="../Images/py_icon.png">Add New Traveler Group</a>
+        </div>
+
+        <div class="mpc_inner_container">
+            <div class="mpc_inner">
+                <!-- red tab start -->
+                <div class="mcp_inner_tabred">
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="mcp_inner_b2 mcp_whitefont">Traveller Group@*<img src="../images/sort_icon.jpg" align="middle" style="padding-left:10px;padding-bottom:10px;">*@</div>
+                    <div class="mcp_inner_b2 mcp_whitefont">Travellers@*<img src="../images/sort_icon.jpg" align="middle" style="padding-left:10px;padding-bottom:10px;">*@</div>
+                    <div class="mcp_inner_b0 mcp_whitefont">&nbsp</div>
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="clear"></div>
+                </div>
+                <!-- red tab end -->
+                @Html.Action("_TravellerGroup", "Tools")
+            </div>
+        </div>
+        }
+    </div>
+}
+else if(User.Identity.IsAuthenticated && IsAgent)
+{
+    Response.Redirect(Url.Action("Index", "Home"));
+}
+else
+{
+    Response.Redirect(string.Format("{0}{1}{2}", Url.Action("Login", "Account"), "?returnUrl=", returnUrl));
+}
+<!-- MAIN CONTENT PORTION END -->
+
+
+
+@section scripts{
+
+    <script>
+
+ $(function () {
+
+            $(".popout").on('click', function (event) {
+                var groupName = $(this).data('name');
+                var htmlstr = "<div class='session_lb_text'>Delete Traveller Group</div><div class='session_lb_text1'>Traveller group will be REMOVE<br/>Continue proceed?</div><a href='@Url.Action("DeleteTraveller","Tools")?name="+groupName+"' class='clear-guest1'><div class='redbacktohome_button modal-confirm-btn''>Yes</div></a><a href='javascript:;' class='modal-close'><div class='redbacktohome_button modal-cancel-btn'>Cancel</div></a>";
+                $('#popup-modal').show();
+                $('.modal-container').html(htmlstr);
+
+            })
+        });
+    </script>
+}

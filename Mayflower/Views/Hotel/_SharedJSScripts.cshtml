@@ -1,0 +1,95 @@
+﻿<script src="@Url.Content("~/Scripts/hotel/responsiveslides.min.js")"></script>
+@Html.Partial("~/Views/Hotel/_PopoutHotelFunctionJSScripts.cshtml")
+
+
+<script>
+    /*START: show full hotel info*/
+    //$('.ShowHotelInfo').click(function () {
+    //    $.ajax({
+    //        type: "GET",
+    //        url: '/Hotel/GetHotelInfo?data=' + $(this).data("hotelid"),
+    //        cache: false,
+    //        async: false,
+    //        dataType: "html",
+    //        beforeSend: function () {
+    //            $(".fullcover_div_GoogleMap").empty();
+    //        },
+    //    }).done(function (result) {
+    //        var containSection = $(result).find('.viewmorehotel_container.hotel-info').parent().html();
+    //        $(".fullcover_div_GoogleMap").html(containSection == '' ? result : containSection);
+    //        initSlider($(".rslides"));
+    //        $("#myCarousel").carousel({ pause: "false" });
+    //        $(".fullcover_div_GoogleMap").fadeIn();
+    //        unloadScrollBars();
+    //        if ($(window).height() < 580) {
+    //            var h = $(window).height() - 70;
+    //            $(".viewmorehotel_white1nn").css('height', h);
+    //        }
+    //    });
+    //});
+    /*END: show full hotel info*/
+
+    $('.ShowMap').click(function () {
+        $.ajax({
+            type: "GET",
+            url: '/Hotel/GetLocationOnMap?name=' + $(this).data("name") + '&city=' + $(this).data("city"),
+            cache: false,
+            async: false,
+            dataType: "text",
+        }).done(function (result) {
+            $(".fullcover_div_GoogleMap").html(result);
+            $(".fullcover_div_GoogleMap").fadeIn();
+        });
+    });
+
+    $(document).on('click', '.loginclose img', function () {
+        $(".fullcover_div_GoogleMap").fadeOut();
+        reloadScrollBars();
+    });
+
+    $(document).ready(function () {
+        $('.show_more_flight_icon, .close_tabn').unbind('click');
+
+        $(".close_tabn").click(function () {
+            $(".show_more_flight_icon").removeClass("smfi_imp");
+            $(".show_more_flight_icon").css('background-image', 'url("../images/more_info_icon_down.png")');
+            $(".mf_content_container").slideUp();
+            $(".show_more_flight_icon").text("Show more booking details");
+            $(".moreflight_box").removeClass("mfb_gray_bg");
+        })
+
+        $(".show_more_flight_icon").click(function () {
+            $(this).toggleClass("smfi_imp");
+            $(".moreflight_box").toggleClass("mfb_gray_bg");
+            $(".mf_content_container").slideToggle();
+            if ($(".show_more_flight_icon").text() == "Show more booking details") {
+                $(".show_more_flight_icon").text("Hide booking details");
+                $(".show_more_flight_icon").css('background-image', 'url("../images/more_info_icon.png")');
+            } else {
+                $(".show_more_flight_icon").text("Show more booking details");
+                $(".show_more_flight_icon").css('background-image', 'url("../images/more_info_icon_down.png")');
+            }
+        });
+
+        $('.s3_hinfo_freecancelation').click(function () {
+            $('#modal-container').css('text-align', 'justify');
+            $('#modal-container').css('font-family', '"UbuntuRegular"');
+            $('#modal-container').append('<div style="margin-bottom: 1em;color: #EC1C24;font-size: 20px;">Booking Cancellation Policy</div>');
+            $('#modal-container').append($('#cancelPolicyDtl').html());
+            $("#popup-modal").show();
+        });
+    });
+</script>
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    string GTM_trackAddToCart = "";
+    if (Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackAddToCart, tripid) != null)
+    {
+        GTM_trackAddToCart = Alphareds.Module.Common.Core.GetSession(Alphareds.Module.Common.Enumeration.SessionName.GTM_trackAddToCart, tripid).ToString();
+
+    <script>
+        var GTM_trackAddToCart = $.parseJSON('@Html.Raw(GTM_trackAddToCart)');
+    </script>
+    }
+}

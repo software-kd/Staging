@@ -1,0 +1,329 @@
+
+body, .f-400 {
+    font-weight: 400;
+}
+
+.wpap-form {
+        background: #e6e6e6;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #8e8e8e;
+        margin: 50px;
+    }
+
+    .wpap-form .btn {
+        width: 100%;
+        max-width: 200px;
+        border-radius: 10px;
+    }
+
+
+
+    .wrap .form-control {
+        text-align: center;
+        border: 1px solid #d8111c;
+        margin: 15px 0;
+    }
+
+    .wrap .form-check {
+        display: inline-block;
+    }
+
+    .wrap .custom-control-label::before {
+       
+        background-color: #ffffff;
+        box-shadow: none;
+        border: 1px solid #d8111c;
+    }
+    .box-wrap-info {
+        text-align: center; 
+        margin: 50px 50px 0 50px;    
+    }
+    .b-wrap-info {
+        padding: 15px;
+        border: 1px solid #d8111c; 
+        box-shadow: 0px 0px 3px rgba(0,0,0,0.29);
+    }
+
+    .box-wrap {
+        margin: 30px auto;
+        max-width: 500px;
+    }
+    .box-wrap .lead {
+        padding: 0px;
+        margin: 0px;
+        /* text-align: center; */
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+    .box-wrap button {
+        margin: 15px auto;
+        font-weight: 500;
+        width: 100%;
+        max-width: 200px;
+        border-radius: 10px;
+        display: block;
+    }
+
+  
+    .wrap {
+        padding: 25px 12% 25px 12%;
+    }
+.wrap.icons {
+    padding: 25px 0 25px 12%;
+}
+.gray {
+        background: #e6e6e6;
+        border: 1px solid #8e8e8e;
+     
+    }
+    .hr {
+        border-bottom: 1px solid #ccc;
+        margin: 4px 15px;
+    width: 100%;
+    }
+    .f-500 {
+        font-weight: 500;
+    }
+    .f-200 {
+        font-weight: 200;
+    }
+     .fa-o {
+        font-size: 22px;
+        border-radius: 50%;
+        background: #d8111c;
+        padding: 8px 0;
+        width: 38px;
+        height: 38px;
+        color: #fff;
+        margin: 0 8px 0 -40px;
+        text-align: center;
+    }
+
+
+
+    .link-more {
+        text-align: right;
+        margin: 0 0 -22px 0;
+        cursor: pointer;
+    }
+    .box-wrap.user-info {
+        border-bottom: 2px solid #d8111c;
+    }
+
+
+
+
+    .icons-bg {
+        text-align: center;
+        position: absolute;
+        bottom: 3%;
+        right: 0;
+        left: 0;
+    }
+    .icons-bg .fa {
+        width: 8%;
+        font-size: 30px;
+        color: #ffffff;
+    }
+
+
+    .size-12 {
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+
+ .breadcrumb > div {
+        display: inline-block;
+        list-style: none;
+        margin-right: -15px;
+    }
+
+    .breadcrumb .active.step::before { 
+        background-color: #d8111c; 
+        border-left-color: #fff;
+    }
+
+    .breadcrumb .active.step::after { 
+        border-left-color: #d8111c;
+    }
+.breadcrumb .active.step { 
+    background-color:#d8111c;
+    color: #fff;
+    }
+
+
+    
+
+
+
+    .breadcrumb .step::before {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 100%;
+        content: '';
+        background-color: #ccc;
+        border: 15px solid transparent;
+        border-left-width: 15px;
+        border-right-width: 0px;
+        border-left-color: #fff;
+    }
+
+    .breadcrumb .step::after {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        content: '';
+        border: 15px solid transparent;
+        border-left-width: 15px;
+        border-right-width: 0px;
+        z-index: 10;
+        border-left-color: #ccc;
+    }
+
+    .breadcrumb .step {
+        display: inline-block;
+        background-color:#ccc;
+        margin: 2px;
+        padding: 0 8px 0 8px;
+        margin-right: 15px;
+        margin-left: 15px;
+        color: #fff;
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        width: 150px;
+    }
+    .breadcrumb {
+        display: block;
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        list-style: none;
+        background-color: #fff;
+        border-radius: 2px;
+        text-align: center;
+    }
+    .breadcrumb.clear-initial-trail > div:first-child .step {
+        margin-left: 0;
+        padding-left: 10px;
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+    }
+
+
+    .b-login .wrap {
+        background: #fff;
+    border-radius: 20px;
+    border: 1px solid #949494;
+    margin: 25px auto;
+    max-width: 350px;
+    padding: 25px 8% 25px 10%;
+    }
+
+    .b-login .form-control {
+        border-radius: 10px;
+    }
+
+    .b-top {
+        background: #b3b1b1;
+        margin: 0px -15px;
+        padding: 2px 15px;
+        text-align: center;
+    }
+
+    .user-info.box-wrap .wrap {
+        padding: 0px 15px 25px 15px;
+    }
+
+
+    .card-text {
+        text-align: right;
+    }
+
+    .star i {
+        color: #FFC107;
+    }
+    .b-botom {
+        font-size: 8px;
+    }
+    .b-botom img {
+        width: 25px;
+        float: left;
+        margin: 1px 8px 0 0;
+    }
+    .prise {
+        line-height: 8px;
+        color: #d8111c;
+    }
+    .old-prise {
+        text-decoration: line-through;
+        font-size: 10px;
+    }
+
+    .card-body {
+      
+        padding: 8px;
+    }
+    .card-title {
+        margin-bottom: 1px;
+    }
+
+    .fa-css3 {
+        position: absolute;
+        right: 9px;
+        color: #d8111c;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .wrap-carusel { position: relative;}
+
+
+    .MultiCarousel {
+        /* float: left; */
+        overflow: hidden;
+        /* padding: 15px; */
+        /* width: 100%; */
+        
+    }
+    .MultiCarousel .MultiCarousel-inner { transition: 1s ease all; float: left; }
+    .MultiCarousel .MultiCarousel-inner .item {
+        float: left;
+        margin: 0 0;
+    }
+    .MultiCarousel .MultiCarousel-inner .item > div {
+        /* text-align: center; */
+        /* padding: 10px; */
+        margin: 14px;
+        /* background: #f1f1f1; */
+        color: #666;
+        font-size: 70%;
+    }
+        .MultiCarousel .leftLst, .MultiCarousel .rightLst {
+            position: absolute;
+            border-radius: 50%;
+            top: calc(50% - 20px);
+            width: 40px;
+        }
+    .MultiCarousel .leftLst { left: -46px; }
+    .MultiCarousel .rightLst {     right: -46px; }
+    
+        .MultiCarousel .leftLst.over, .MultiCarousel .rightLst.over { pointer-events: none; background:#ccc; }

@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Manage Profile";
+    ViewBag.RenderRedLine = true;
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+}
+
+@section style{
+    <link href="@Url.Content("~/CSS/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+    <style>
+        .btn-fb-ars:hover {
+            background-color: #4774cc;
+        }
+
+        .btn-fb-ars {
+            background-color: #4267b2;
+            width: 100%;
+            padding: 0.5em 1em;
+            line-height: 20px;
+            vertical-align: middle;
+            border: none;
+            cursor: pointer;
+        }
+
+            .btn-fb-ars i {
+                color: white;
+                font-size: 20px;
+                vertical-align: middle;
+            }
+
+            .btn-fb-ars span {
+                font-size: 14px;
+                margin-left: 0.6em;
+                color: #fff;
+                vertical-align: middle;
+            }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">Your Profile</div>
+    <div class="mphc_t2">Welcome to your profile page. Make sure your details are always updated with us.</div>
+</div>
+
+<div class="myprofile_maincontainer">
+    @Html.Action("CardView", "Member")
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            /*detail tabs start*/
+            $(".mpm_cc_icon1").click(function () {
+                $(".mpm_cc_icon1").addClass("mpm_cc_icon1_active");
+                $(".mpm_cc_icon2").removeClass("mpm_cc_icon2_active");
+                $(".mpm_cc_icon3").removeClass("mpm_cc_icon3_active");
+
+                $("#personaldetail").fadeIn();
+                $("#contactdetail").hide();
+                $("#companydetail").hide();
+            });
+            $(".mpm_cc_icon2").click(function () {
+                $(".mpm_cc_icon2").addClass("mpm_cc_icon2_active");
+                $(".mpm_cc_icon1").removeClass("mpm_cc_icon1_active");
+                $(".mpm_cc_icon3").removeClass("mpm_cc_icon3_active");
+
+                $("#personaldetail").hide();
+                $("#contactdetail").fadeIn();
+                $("#companydetail").hide();
+            });
+            $(".mpm_cc_icon3").click(function () {
+                $(".mpm_cc_icon3").addClass("mpm_cc_icon3_active");
+                $(".mpm_cc_icon1").removeClass("mpm_cc_icon1_active");
+                $(".mpm_cc_icon2").removeClass("mpm_cc_icon2_active");
+
+                $("#personaldetail").hide();
+                $("#contactdetail").hide();
+                $("#companydetail").fadeIn();
+            });
+            $(".mpj_personal_details").click(function () {
+                $("#personaldetail").slideToggle();
+                $(this).parent().toggleClass("mpg_mt_minus");
+            })
+            $(".mpj_contact_details").click(function () {
+                $("#contactdetail").slideToggle();
+                $(this).parent().toggleClass("mpg_mt_minus");
+            })
+            $(".mpj_company_details").click(function () {
+                $("#companydetail").slideToggle();
+                $(this).parent().toggleClass("mpg_mt_minus");
+            })
+            /*detail tabs end*/
+        });
+    </script>
+
+    @if (ViewBag.PromptMsg != null)
+    {
+        <script id="push-msg">
+        $(function () {
+            $('#socialLoginList').append('<div style="font-size:11px;color: #ec1c24;margin-top: 0.5em;">' + '@ViewBag.PromptMsg' + '</div>');
+            $('#push-msg').remove();
+            });
+    </script>
+    }
+
+    @if (!customPrincipal.IsAgent && !customPrincipal.IsProfileActive)
+    {
+        @*<script>
+            $(function () {
+                $('#memact').on('click', function (e) {
+                    $.ajax({
+                        method: "POST",
+                        url: "@Url.Action("resendverificationemail", "member")",
+                        data: { name: "John", location: "Boston" }
+                    }).done(function (msg) {
+                        alert("Data Saved: " + msg);
+                    });
+                });
+            });
+        </script>*@
+    }
+}

@@ -1,0 +1,65 @@
+﻿@using Alphareds.Module.Model.Database
+@using System.Linq.Expressions
+@model Alphareds.Module.Model.Database.SuperPNR
+
+@{
+    var paymentList = Model.SuperPNROrders.SelectMany(x => x.PaymentOrders)
+        .GetSuccessPaymentRecord()
+        .OrderByDescending(x => x.PaymentMethodCode != null && x.PaymentMethodCode.ToLower().StartsWith("ipa"))
+        .GroupBy(x => new { x.PaymentMethodCode, x.CurrencyCode });
+    
+    Model.LoadPaymentDetailList();
+    var paymentDtlList = Model.PaymentDetailsList;
+}
+
+@if (paymentDtlList.Any(x => x.TotalPendingAmount > 0))
+{
+    <div class="s4_blt_py_con_left">Pending Payment</div>
+    <div class="s4_blt_py_con_right">
+        @foreach (var item in paymentDtlList.Where(x => x.TotalPendingAmount > 0))
+        {
+            @item.CurrencyCode <span>@item.TotalPendingAmount.ToString("n2")</span>
+        }
+    </div>
+    <div class="clear"></div>
+}
+
+@foreach (var payment in paymentList)
+{
+    string displayPaymentStatus = null;
+    /*switch (payment.PaymentStatusCode)
+    {
+        case "RHI":
+            displayPaymentStatus = string.Format(" ({0})", "Pending Confirmation");
+            break;
+        case "AUTH":
+            displayPaymentStatus = string.Format(" ({0})", "Pending Confirmation");
+            break;
+        case "VOID":
+            displayPaymentStatus = string.Format(" ({0})", "Cancelled");
+            break;
+        case "CAPT":
+            displayPaymentStatus = string.Format(" ({0})", "Confirmed");
+            break;
+        default:
+            displayPaymentStatus = string.Format(" ({0})", payment.PaymentStatu.PaymentStatus);
+            break;
+    }*/
+
+    if (payment.Key.PaymentMethodCode == "AC")
+    {
+        <div class="s4_blt_py_con_left">Agent Credit @displayPaymentStatus</div>
+    }
+    else if (payment.Key.PaymentMethodCode == "BOOST")
+    {
+        <div class="s4_blt_py_con_left">Boost @displayPaymentStatus</div>
+    }
+    else
+    {
+        <div class="s4_blt_py_con_left">@(payment.Key.PaymentMethodCode == "SC" ? "Travel Credit" : (payment.Key.PaymentMethodCode == "TW" ? "Travel Wallet" : (payment.Key.PaymentMethodCode == "IPAFPX" ? "FPX" : "Credit Card"))) @displayPaymentStatus</div>
+    }
+
+    <div class="s4_blt_py_con_right">@payment.Key.CurrencyCode <span>@payment.Sum(x => x.PaymentAmount).ToString("#,##0.00")</span></div>
+    <div class="clear"></div>
+}
+

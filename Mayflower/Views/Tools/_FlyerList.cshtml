@@ -1,0 +1,97 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<Alphareds.Module.Model.FrequentFlyerViewModel>
+
+@{
+    ViewBag.Title = "Flyer List";
+    Layout = null;
+
+    var list = new SelectList(new[] {
+new { Name="Pending", Value = "PEND" },
+new { Name="Approved", Value = "APPR" },
+new { Name="Rejected", Value = "REJ" },
+new { Name="All", Value = "ALL" },
+},
+   "Value", "Name", ViewData.Model);
+}
+
+@{
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+}
+
+
+@using (Html.BeginScriptContext())
+{
+
+}
+
+<!-- row start -->
+<!--Content-->
+@{ int i = 1; }
+@foreach (var ff in Model)
+{
+    string isshared;
+    if (ff.IsShared == true)
+    {
+        isshared = "Y";
+    }
+
+    else
+    {
+        isshared = "N";
+    }
+
+    if (ff.IsActive == true)
+    {
+        <div class="clearfix @if (i % 2 == 0){<text>booking_history_gray_bg</text>} else {<text>booking_history_white_bg</text>}">
+            <div class="mcp_inner_b0 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">&nbsp</div>
+            <div class="mcp_inner_b2 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@ff.FullName</div>
+            @if (IsAgent)
+            {
+                <div class="mcp_inner_b2 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@isshared</div>
+            }
+            else
+            {
+                <div class="mcp_inner_b2 mcp_whitefont">&nbsp</div>
+            }
+            <div class=" mcp_inner_b4 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+                <a href="@Url.Action("EditFrequentFlyer", "Tools", new {  id =ff.TravellerID })" style="cursor:pointer;text-decoration:none"><img src="../Images/modify_icon.png" style="padding-right:10px" />Edit</a>
+                @*<img src="../Images/modify_icon.png" style="padding-right:10px" />@Url.Action("Edit", "EditFrequentFlyer", new { @style= "cursor:pointer;text-decoration:none", id =ff.TravellerID })*@
+            </div>
+            <div class=" mcp_inner_b4 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+                <a id="deleteList" class="popout" data-id="@ff.TravellerID" href="javascript:void(0);" style="cursor:pointer;text-decoration:none"><img src="../Images/dustbin_icon.png" style="padding-right:10px" />Delete</a>
+            </div>
+            <div class="mcp_inner_b0 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">&nbsp</div>
+        </div>
+        i++;
+
+
+    }
+}
+
+        <div id="popup-modal" class='fullcover_div5 popup' style="display: none; overflow:auto">
+
+            <div class="fcd_white3_op" style="height: initial">
+
+                <div class="fcd_op_inner modal-container" id="modal-container">
+
+                </div>
+                <div class="ars-spacer"></div>
+            </div>
+
+        </div>
+
+@{
+    string pagingUrl = ViewContext.ParentActionViewContext != null ? ViewContext.ParentActionViewContext.RouteData.Values["Action"].ToString()
+        : ViewContext.RouteData.Values["Action"].ToString();
+
+    if (Model.TotalItemCount >= 10)
+    {
+        <div style="margin: 20px">
+            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+            @Html.PagedListPager(Model, page => Url.Action(pagingUrl,
+                                                                  new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, BookingStatus = ViewBag.BookingStatus }))
+        </div>
+    }
+}

@@ -1,0 +1,30 @@
+﻿@using Alphareds.Module.Common;
+@model IQueryable<Alphareds.Module.Model.Airlines>
+
+@{
+    string logo;
+}
+<div id="listContainer">
+    <div class="viewmoreffn_white1nn" id="FFlist">
+        @if (Model.Count() == 0)
+        {
+            <div style="display:flex;margin-left:35px;margin-top:15px;">No Result</div>
+        }
+        else
+        {
+            foreach (var a in Model)
+            {
+                if (a.ImagePath != "")
+                {
+                    logo = Url.Content(a.ImagePath);
+                    <div class="frequentFlyerClick" style="display:flex;margin-left:10px;margin-top:4px;" data-id="@a.code" data-logourl="@logo">
+                        <img src='@logo' style="height:30px;width:30px;" />
+                        <div style="margin-top:4px;padding-left:10px">
+                            @a.airline
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>

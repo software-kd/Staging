@@ -1,0 +1,735 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@using System.Globalization;
+@model Alphareds.Module.Model.FlightBookingModel
+
+@{
+    string returnUrl = Url.Action("Index", "Home", new { @ref = Url.RequestContext.RouteData.Values["action"].ToString() }, Request.Url.Scheme);
+
+    if (!string.IsNullOrWhiteSpace(ViewBag.ReturnAction))
+    {
+        returnUrl = ViewBag.ReturnAction;
+    }
+
+    var searchCriteria = Model.SearchFlightResultViewModel;
+    var flightInfo = Model.FlightInformation.FlightDetailInfo;
+    bool isDomestic = searchCriteria.isDomesticFlight;
+    bool isOneWay = !searchCriteria.isReturn;
+    string cabinClass = UtilitiesService.GetCabinNameByCode(searchCriteria.CabinClass);
+    string tripid = ViewBag.tripid;
+}
+
+@{
+    //Cross Sales Server Side Code
+    bool isCrossSaleHotel = (ViewBag.HideSummaryHotelItinerarySection == null || ViewBag.HideSummaryHotelItinerarySection == false) && tripid != null && Session[Enumeration.SessionName.HotelCheckOut + tripid] != null;
+    HotelCheckoutModel checkoutModel = null;
+    DateTime hotelArrivalDate = DateTime.MaxValue;
+    DateTime hotelDepartureDate = DateTime.MaxValue;
+    if (isCrossSaleHotel)
+    {
+        checkoutModel = (HotelCheckoutModel)Session[Enumeration.SessionName.HotelCheckOut + tripid];
+        hotelArrivalDate = checkoutModel.RoomSelected.HotelRoomInformationList.First().arrivalDate.ToDateTime();
+        hotelDepartureDate = checkoutModel.RoomSelected.HotelRoomInformationList.First().departureDate.ToDateTime();
+    }
+}
+
+@{
+    // Payment Summary Server Side Code
+    decimal flightTotalPrice = Model.BookingSummaryViewModel.FareSummary.GrandTotal;
+    decimal hotelTotalPrice = !isCrossSaleHotel || Model.BookingSummaryViewModel.BookingSummaryHotelList == null ? 0m : Model.BookingSummaryViewModel.BookingSummaryHotelList.GrandTotal;
+
+    decimal totalBookingPrice = flightTotalPrice + hotelTotalPrice;
+}
+
+
+<div class="s3_1_flight_details_box s3_1_flight_details_box2 @(isCrossSaleHotel ? "expand" : "withoutcrossSale")">
+    <div class="s3_1_fdb_inner mobileonly2">
+        <div class="s3_1_fdb_inner_b1"><a href="javascript:;" class="back-sp" data-location="@returnUrl"><img src="@Url.Content("~/images/arrow_left.jpg")" width="40" height="29" alt=""></a></div>
+        <div class="s3_1_fdb_inner_b2">
+            <div class="flightpart">
+                <div class="planeIcone"></div>
+                <div class="flight_name">
+                    @for (int i = 0; i < flightInfo.FlightTrip.Count; i++)
+                    {
+                        var trip = flightInfo.FlightTrip[i];
+                                string airlineList = string.Empty;
+
+                        <div class="s3_1_fdb_flight_name">
+                            @for (int a = 0; a < trip.FlightRouteInfo.Count; a++)
+                            {
+                                var seg = trip.FlightRouteInfo[a];
+                                airlineList += string.Format("{0}{1}{2}", seg.AirlineCode
+                                                , seg.AirlineFlightNo
+                                                , (a + 1 == trip.FlightRouteInfo.Count ? "" : ", "));
+                                <span>@seg.DepartAirportCode</span>
+                                <span> > </span>
+
+                                if (a + 1 == trip.FlightRouteInfo.Count)
+                                {
+                                    <span>@seg.ArriveAirportCode</span>
+
+                                    <span class="s3_1_fdb4_inner_lf_lable4">
+                                        @airlineList
+                                    </span>
+
+                                    //var number2 = Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count;
+                                    @*for (int x = 0; x < Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count; x++)
+                                        {
+                                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                                @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[x].AirlineCode
+                                                @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[x].FlightNumber
+                                                @if (number2 > 1)
+                                                {<span>,</span>
+                                                    number2--;
+                                                }
+                                            </span>
+                                        };*@
+                                }
+                            }
+                        </div>
+                    }
+
+                    @*@for (int i = 0; i < flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).FlightRouteInfo.Count; i++)
+                            {
+                                <span>@Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].DepartureAirportLocationCode</span>
+
+                                if (i + 1 != Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count)
+                                {
+                                    <span> > </span>
+                                }
+                                else
+                                {
+                                    <span> > </span><span>@Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].ArrivalAirportLocationCode</span>
+                                    var number2 = Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count;
+                                    for (int x = 0; x < Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count; x++)
+                                    {
+                                        <span class="s3_1_fdb4_inner_lf_lable4">
+                                            @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[x].AirlineCode
+                                            @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[x].FlightNumber
+                                            @if (number2 > 1)
+                                            {<span>,</span>
+                                                number2--;
+                                            }
+                                        </span>
+                                    };
+                                }
+                            }
+                        </div>
+                        @if (!isOneWay)
+                        {
+                            <div class="s3_1_fdb_flight_name">
+                                @for (int i = 0; i < flightInfo.FlightTri.BookingSummaryFlightSegmentList.Count; i++)
+                                {
+                                    <span>@Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].DepartureAirportLocationCode</span>
+
+                                    if (i + 1 != Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList.Count)
+                                    {
+                                        <span> > </span>
+                                    }
+                                    else
+                                    {
+                                        <span> > </span><span>@Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].ArrivalAirportLocationCode</span>
+                                        var number = Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList.Count;
+                                        for (int x = 0; x < Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList.Count; x++)
+                                        {
+                                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                                @Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[x].AirlineCode
+                                                @Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[x].FlightNumber
+                                                @if (number > 1)
+                                                {<span>,</span>
+                                                    number--;
+                                                }
+
+                                            </span>
+                                        };
+                                    }
+                                }
+                            </div>
+                        }*@
+                    <div class="clear"></div>
+                    @{
+                        string adl = searchCriteria.Adults > 1 ? "Adults" : "Adult";
+                        string child = searchCriteria.Childrens > 1 ? "Children" : "Child";
+                        string inf = searchCriteria.Infants > 1 ? "Infants" : "Infant";
+                    }
+                    <div class="s3_1_fdb_class_det">@cabinClass </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+
+            @if (isCrossSaleHotel)
+            {
+                <div class="hotelpart">
+                    <div class="hotelIcone">
+                        @foreach (var hotel in checkoutModel.RoomSelected.HotelRoomInformationList)
+                        {
+                            <div class="s3_1_fdb_hotel_name">
+                                @hotel.hotelName
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div class="s3_1_fdb_inner_b3">
+
+            <div class="s3_1_fdb_i3_inner">
+                <!-- for small screen -->
+                <div class="s3_1_fdb4_inner_lf_lable forsscreen">From</div>
+                <div class="s3_1_fdb4_inner_ri_ans forsscreen">
+                    @Html.Hidden("tripBeginDate", searchCriteria.BeginDate.Value.ToString("yyyy/MM/dd"))
+                    @searchCriteria.BeginDate.Value.ToString("dd-MMM-yy, ddd")
+                    @if (!isOneWay)
+                    {
+                        <span>to</span>
+                    }
+                </div>
+                @if (!isOneWay)
+                {
+                    @Html.Hidden("tripEndDate", searchCriteria.EndDate.Value.ToString("yyyy/MM/dd"))
+                    <div class="s3_1_fdb4_inner_ri_ans forsscreen">@searchCriteria.EndDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                }
+                <div class="clear"></div>
+                <!-- for small screen -->
+
+                <div class="s3_1_fdb_i3_da_lable">
+                    <div class="dep">Depart</div>
+                </div>
+                <div class="s3_1_fdb_i3_da_timing">
+                    <div class="tim_box">
+                        @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                    </div>
+                    <div class="img_box">></div>
+                    <div class="tim_box">
+                        @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).ArriveDateTime.ToString("HHmm")
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="s3_1_fdb_i3_da_lable">
+                    <div class="ret">Return</div>
+                </div>
+                @if (!isOneWay)
+                {
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <div class="tim_box">
+                            @flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).DepartDateTime.ToString("dd-MMM-yy, ddd HHmm")
+                        </div>
+                        <div class="img_box">></div>
+                        <div class="tim_box">@flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).ArriveDateTime.ToString("HHmm")</div>
+                        <div class="clear"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <div class="tim_box">
+                            -
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                }
+                <div class="clear"></div>
+            </div>
+
+            @if (isCrossSaleHotel)
+            {
+                <div class="hotelpart timebox">
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="check_in">
+                            Check In
+                        </div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <div class="tim_box1">
+                            @hotelArrivalDate.ToString("dd-MMM-yy, ddd")
+                        </div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="check_out">
+                            Check Out
+                        </div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <div class="tim_box2">
+                            @hotelDepartureDate.ToString("dd-MMM-yy, ddd")
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div class="s3_1_fdb_inner_b4">
+            <div class="s3_1_fdb4_inner">
+                @if (searchCriteria.Infants > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@searchCriteria.Infants</span> @inf</div>
+                }
+                @if (searchCriteria.Childrens > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@searchCriteria.Childrens</span> @child</div>
+                }
+                @if (searchCriteria.Adults > 0)
+                {
+                    <div class="s3_1_fdb_child_det destoponly"><span>@searchCriteria.Adults</span> @adl</div>
+                }
+                <div class="clear"></div>
+
+                @if (isCrossSaleHotel)
+                {
+                    int totalRoom = checkoutModel.ReserveRoomModel.GuestRooms.Count;
+                    string room = totalRoom > 1 ? "Rooms" : "Room";
+                    TimeSpan totalDays = hotelDepartureDate.Subtract(hotelArrivalDate);
+                    string dayDisplay = (totalDays.TotalDays + 1) > 1 ? "Days" : "Day";
+                    string totalNight = (totalDays.TotalDays) > 1 ? "Nights" : "Night";
+                    string numOfDays = Math.Ceiling(totalDays.TotalDays + 1).ToString("n0");
+                    string numOfNights = Math.Ceiling(totalDays.TotalDays).ToString("n0");
+
+                    <div class="hotelpart">
+                        <div class="s3_1_fdb_room destoponly"><span>@totalRoom</span> @room <span>@numOfDays</span> @dayDisplay <span>@numOfNights</span> @totalNight</div>
+                    </div>
+                }
+
+                @{
+                    string style = isCrossSaleHotel ? "margin-top:15px; float:right" : "margin-top:10px; float: right;";
+                    var flight = Model.FlightInformation.SupplierFlightInfo;
+                    var adultPrice = flight.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "ADT");
+                    var childrenPrice = flight.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "CNN");
+                    var infrantPrice = flight.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "INF");
+                }
+                <div class="totalpricepart" style="@style">
+                    <div class="s3_1_fdb4_inner_lf_lable2">
+                        Include tax
+                        <div class="show_toltip2 add-cursor-pointer">
+                            <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="">
+                            <div class="s3_form_toll_tip">
+                                <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                <div class="s3-1_form_toll_tip_b">
+                                    @if (isCrossSaleHotel)
+                                    {
+                                        <div class="eachSection">
+                                            <div style="font-weight: bold;">Flight :</div>
+                                            <div class="s2-1_tt_left">@searchCriteria.Adults x Adult:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Adults * adultPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                            @if (childrenPrice != null)
+                                            {
+                                                <div class="s2-1_tt_left">@searchCriteria.Childrens x Child:</div>
+                                                <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Childrens * childrenPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                            }
+                                            @if (infrantPrice != null)
+                                            {
+                                                <div class="s2-1_tt_left">@searchCriteria.Infants x Infant:</div>
+                                                <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Infants * infrantPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                            }
+                                            <div class="clear"></div>
+                                        </div>
+
+                                        <div class="eachSection">
+                                            <div style="font-weight: bold;">Hotel :</div>
+                                            @foreach (var guestRoomGrp in checkoutModel.ReserveRoomModel.GuestRooms.GroupBy(x => x.RoomTypeName))
+                                            {
+                                                <div class="s2-1_tt_left">@guestRoomGrp.Count() x @guestRoomGrp.Key</div>
+                                                <div class="s2-1_tt_right">MYR<span>@guestRoomGrp.Sum(x => x.TotalBaseRate).ToString("#,##0.00")</span></div>
+                                            }
+                                            <div class="clear"></div>
+                                        </div>
+
+                                        <div class="eachSection">
+                                            <div style="font-weight: bold;">Prevailing Charges :</div>
+                                            <div class="s2-1_tt_left">Taxes and Fees</div>
+                                            <div class="s2-1_tt_right">MYR<span>@Model.BookingSummaryViewModel.Payment.TaxesAndFees.ToString("#,##0.00")</span></div>
+                                            <div class="clear"></div>
+
+                                            <div class="s2-1_tt_left">GST</div>
+                                            <div class="s2-1_tt_right">MYR<span>@Model.BookingSummaryViewModel.Payment.SourceGst.ToString("#,##0.00")</span></div>
+                                            <div class="clear"></div>
+                                        </div>
+
+                                        <div class="s2-1_tt_left blackLine boldText" style="line-height:30px;">Grand Total :</div>
+                                        <div class="s2-1_tt_right1 blackLine" style="line-height:35px;">MYR<span>@totalBookingPrice.ToString("#,##0.00 ")</span></div>
+
+                                        <div class="clear1"></div>
+                                    }
+                                    else
+                                    {
+                                        <div>Per Adult</div>
+                                        <div class="s2-1_tt_left">Nett:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@adultPrice.TotalBeforeTax.ToString("#,##0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@adultPrice.Tax.ToString("#,##0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Total:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@adultPrice.TotalAfterTax.ToString("#,##0.00")</span></div>
+                                        <div class="clear"></div>
+
+                                        if (childrenPrice != null)
+                                        {
+                                            <div class="s2-1_line"></div>
+                                            <div>Per Child</div>
+                                            <div class="s2-1_tt_left">Nett:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                            <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                            <div class="s2-1_tt_left">Total:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                        }
+                                        if (infrantPrice != null)
+                                        {
+                                            <div class="s2-1_line"></div>
+                                            <div>Per Infant</div>
+                                            <div class="s2-1_tt_left">Nett:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                            <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                            <div class="s2-1_tt_left">Total:</div>
+                                            <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                            <div class="clear"></div>
+                                            <div class="s2-1_line"></div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="s3_1_fdb4_inner_ri_ans">
+                        <div class="s3_1_ans_myr">MYR</div>
+                        @*<div class="s3_1_ans_fig TotalPrice">@Model.FlightSearchResultViewModel.FlightSelected.FlightAmount.ToString("#,##0.00")</div>*@
+                        <div class="s3_1_ans_fig TotalPrice">@totalBookingPrice.ToString("#,##0.00 ")</div>
+                    </div>
+                    <div class="s3_1_fdb4_inner_lf_lable">Total</div>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="s3_1_fdb_inner mobileonly">
+        <div class="s3_1_fdb_inner_b2 s3_1_fdb_inner_b33">
+            <div class="planeIcone" style="margin-top:-5px"></div>
+            <div class="s3_1_fdb_i3_da_lable s3_1_fdb_i3_da_lable3 withline" style="margin-top:-30px">
+                <div class="dep">Depart</div>
+                <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+                    @for (int a = 0; a < flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).FlightRouteInfo.Count; a++)
+                    {
+                        string airlineList = string.Empty;
+                        var seg = flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).FlightRouteInfo[a];
+                        <span>@seg.DepartAirportCode</span>
+                        <span> > </span>
+
+                        if (a + 1 == flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).FlightRouteInfo.Count)
+                        {
+                            <span>@seg.ArriveAirportCode</span>
+                            airlineList = string.Format("{0}{1}"
+                                            , seg.AirlineCode
+                                            , seg.AirlineFlightNo);
+                            <span class="s3_1_fdb4_inner_lf_lable4">
+                                @airlineList
+                            </span>
+                        }
+                    }
+                    @*@for (int i = 0; i < Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count; i++)
+                        {
+                            <span>@Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].DepartureAirportLocationCode</span>
+
+                            if (i + 1 != Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList.Count)
+                            {
+                                <span> > </span>
+                            }
+                            else
+                            {
+                                <span> > </span><span>@Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].ArrivalAirportLocationCode</span>
+                                    <p class="s3_1_fdb4_inner_lf_lable4">
+                                        @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].AirlineCode
+                                        @Model.BookingSummaryViewModel.BookingSummaryFlightList.FirstOrDefault().BookingSummaryFlightSegmentList[i].FlightNumber
+                                    </p>
+                            }
+                        }*@
+                </div>
+
+                <div class="date_L">@searchCriteria.BeginDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+                    <div class="tim_box" style="display:inline-block">@flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).DepartDateTime.ToString("HHmm")</div>
+                    <div class="img_box" style="display:inline-block">></div>
+                    <div class="tim_box" style="display:inline-block">@flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Outbound).ArriveDateTime.ToString("HHmm")</div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="s3_1_fdb_inner_b3 s3_1_fdb_inner_b33">
+            <div class="s3_1_fdb_i3_da_lable s3_1_fdb_i3_da_lable3">
+                <div class="ret">Return</div>
+                @if (!isOneWay)
+                {
+                    <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+                        @for (int a = 0; a < flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).FlightRouteInfo.Count; a++)
+                        {
+                            string airlineList = string.Empty;
+                            var seg = flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).FlightRouteInfo[a];
+                            <span>@seg.DepartAirportCode</span>
+                            <span> > </span>
+
+                            if (a + 1 == flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).FlightRouteInfo.Count)
+                            {
+                                <span>@seg.ArriveAirportCode</span>
+                                airlineList = string.Format("{0}{1}"
+                                                , seg.AirlineCode
+                                                , seg.AirlineFlightNo);
+                                <span class="s3_1_fdb4_inner_lf_lable4">
+                                    @airlineList
+                                </span>
+                            }
+                        }
+                        @*@for (int i = 0; i < Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList.Count; i++)
+                            {
+                                <span>@Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].DepartureAirportLocationCode</span>
+
+                                if (i + 1 != Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList.Count)
+                                {
+                                    <span> > </span>
+                                }
+                                else
+                                {
+                                    <span> > </span><span>@Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].ArrivalAirportLocationCode</span>
+                                    <p class="s3_1_fdb4_inner_lf_lable4">
+                                        @Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].AirlineCode
+                                        @Model.BookingSummaryViewModel.BookingSummaryFlightList[1].BookingSummaryFlightSegmentList[i].FlightNumber
+                                    </p>
+                                }
+                            }*@
+                    </div>
+                    <div class="date_L"> @searchCriteria.EndDate.Value.ToString("dd-MMM-yy, ddd")</div>
+                    <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+                        <div class="tim_box">@flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).DepartDateTime.ToString("HHmm")</div>
+                        <div class="img_box">></div>
+                        <div class="tim_box">@flightInfo.FlightTrip.FirstOrDefault(x => x.RouteType == RouteType.Inbound).ArriveDateTime.ToString("HHmm")</div>
+                        <div class="clear"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="s3_1_fdb_flight_name s3_1_fdb_flight_name2">
+                        <span class="s3_1_fdb_big">-</span>
+                        <p>-</p>
+                    </div>
+                    <div class="date_L">-</div>
+                    <div class="s3_1_fdb_i3_da_timing s3_1_fdb_i3_da_timing2">
+                        <div class="tim_box">-</div>
+                        <div class="date_L">-</div>
+                        <div class="clear"></div>
+
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        @{
+            string styleforpassenger = isCrossSaleHotel == true ? "margin-top: 3px; padding-top:4px!important" : "padding-top:0px";
+        }
+
+        <div class="mob_passengerdetails" style="@styleforpassenger">
+
+            <div class="s3_1_fdb_child_det s3_1_fdb_child_det3" style="margin-left: 2px;"><span>@searchCriteria.Adults</span> @adl</div>
+            @if (searchCriteria.Childrens > 0)
+            {
+                <div class="s3_1_fdb_child_det s3_1_fdb_child_det3"><span>@searchCriteria.Childrens</span> @child</div>
+            }
+            @if (searchCriteria.Infants > 0)
+            {
+                <div class="s3_1_fdb_child_det s3_1_fdb_child_det3" style="margin-left:0px;"><span>@searchCriteria.Infants</span> @inf</div>
+            }
+
+            <div class="s3_1_fdb_class_det s3_1_fdb_class_det2">| @cabinClass </div>
+        </div>
+
+        @{
+            if (isCrossSaleHotel)
+            {
+
+                <div class="hotelinfo">
+                    <div class="hotelpart">
+                        <div class="hotelIcone">
+                            @foreach (var hotel in checkoutModel.RoomSelected.HotelRoomInformationList)
+                            {
+                                <div class="s3_1_fdb_hotel_name">
+                                    @hotel.hotelName
+                                </div>
+                            }
+                            <div class="s3_1_fdb_inner_b4 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkin">
+                                <div class="check_in">
+                                    Check In
+                                </div>
+                                <div class="tim_box1">@hotelArrivalDate.ToString("dd-MMM-yy, ddd")</div>
+                            </div>
+                            <div class="s3_1_fdb_inner_b3 s3_1_fdb_inner_b33 s3_1_fdb_inner_checkout">
+                                <div class="check_out">
+                                    Check Out
+                                </div>
+                                <div class="tim_box2">@hotelDepartureDate.ToString("dd-MMM-yy, ddd")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="clear"></div>
+
+        @* rooms *@
+
+        @{
+            if (isCrossSaleHotel)
+            {
+                int totalRoom = checkoutModel.ReserveRoomModel.GuestRooms.Count;
+                string room = totalRoom > 1 ? "Rooms" : "Room";
+                TimeSpan totalDays = hotelDepartureDate.Subtract(hotelArrivalDate);
+                string dayDisplay = (totalDays.TotalDays + 1) > 1 ? "Days" : "Day";
+                string totalNight = (totalDays.TotalDays) > 1 ? "Nights" : "Night";
+                string numOfDays = Math.Ceiling(totalDays.TotalDays + 1).ToString("n0");
+                string numOfNights = Math.Ceiling(totalDays.TotalDays).ToString("n0");
+                <div class="s3_1_fdb_room"><span>@totalRoom</span> @room <span>@numOfDays</span> @dayDisplay <span>@numOfNights</span> @totalNight</div>
+            }
+        }
+
+        <div class="center">
+            <div class="s3_1_fdb4_inner_lf_lable">Total</div>
+            <div class="s3_1_fdb4_inner_ri_ans">
+                <div class="s3_1_ans_myr">MYR</div>
+                @*<div class="s3_1_ans_fig TotalPrice">@Model.FlightSearchResultViewModel.FlightSelected.FlightAmount.ToString("#,##0.00")</div>*@
+                <div class="s3_1_ans_fig TotalPrice">@totalBookingPrice.ToString("#,##0.00")</div>
+                <div class="s3_1_fdb4_inner_lf_lable2">Include tax</div>
+                <div class="show_toltip2 add-cursor-pointer">
+                    <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="">
+                    <div class="s3_form_toll_tip">
+                        <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                        <div class="s3-1_form_toll_tip_b btmPadding">
+                            @if (isCrossSaleHotel)
+                            {
+
+                                <div class="eachSection">
+                                    <div class="title-deco">Flight :</div>
+                                    <div class="s2-1_tt_left">@searchCriteria.Adults x Adult:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Adults * adultPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                    @if (childrenPrice != null)
+                                    {
+                                        <div class="s2-1_tt_left">@searchCriteria.Childrens x Child:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Childrens * childrenPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                    }
+                                    @if (infrantPrice != null)
+                                    {
+                                        <div class="s2-1_tt_left">@searchCriteria.Infants x Infant:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@((searchCriteria.Infants * infrantPrice.TotalBeforeTax).ToString("#,##0.00"))</span></div>
+                                    }
+                                    <div class="clear"></div>
+                                </div>
+
+                                <div class="eachSection">
+                                    <div class="title-deco">Hotel :</div>
+                                    @foreach (var guestRoomGrp in checkoutModel.ReserveRoomModel.GuestRooms.GroupBy(x => x.RoomTypeName))
+                                    {
+                                        <div class="s2-1_tt_left">@guestRoomGrp.Count() x @guestRoomGrp.Key</div>
+                                        <div class="s2-1_tt_right">MYR<span>@guestRoomGrp.Sum(x => x.TotalBaseRate).ToString("#,##0.00")</span></div>
+                                    }
+                                    <div class="clear"></div>
+                                </div>
+
+                                <div class="eachSection">
+                                    <div class="title-deco">Prevailing Charges :</div>
+                                    <div class="s2-1_tt_left">Taxes and Fees</div>
+                                    <div class="s2-1_tt_right">MYR<span>@Model.BookingSummaryViewModel.Payment.TaxesAndFees.ToString("#,##0.00")</span></div>
+                                    <div class="clear"></div>
+
+                                    <div class="s2-1_tt_left">GST</div>
+                                    <div class="s2-1_tt_right">MYR<span>@Model.BookingSummaryViewModel.Payment.Gst.ToString("#,##0.00")</span></div>
+                                    <div class="clear"></div>
+                                </div>
+
+
+
+                                <div class="s2-1_tt_left blackLine boldText">Grand Total :</div>
+                                <div class="s2-1_tt_right blackLine">MYR<span>@totalBookingPrice.ToString("#,##0.00 ")</span></div>
+                            }
+                            else
+                            {
+                                <div>Per Adult</div>
+                                <div class="s2-1_tt_left">Nett:</div>
+                                <div class="s2-1_tt_right">MYR<span>@adultPrice.TotalBeforeTax.ToString("#,##0.00")</span></div>
+                                <div class="clear"></div>
+                                <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                <div class="s2-1_tt_right">MYR<span>@adultPrice.Tax.ToString("#,##0.00")</span></div>
+                                <div class="clear"></div>
+                                <div class="s2-1_tt_left">Total:</div>
+                                <div class="s2-1_tt_right">MYR<span>@adultPrice.TotalAfterTax.ToString("#,##0.00")</span></div>
+                                <div class="clear"></div>
+                                if (childrenPrice != null)
+                                {
+                                    <div class="s2-1_line"></div>
+                                    <div>Per Child</div>
+                                    <div class="s2-1_tt_left">Nett:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Total:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                }
+                                if (infrantPrice != null)
+                                {
+                                    <div class="s2-1_line"></div>
+                                    <div>Per Infant</div>
+                                    <div class="s2-1_tt_left">Nett:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Total:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_line"></div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clear"></div>
+<div class="moreflight_container">
+    <div class="moreflight_box">
+        <div class="more_flight_innerbox">
+            <div class="mf_content_container">
+                @Html.Partial("~/Views/Flight/Shared/_FlightItineraryDetails.cshtml", Model.BookingSummaryViewModel, new ViewDataDictionary { { "ServiceSource", Model.FlightInformation.Supplier.ToString() } })
+
+                @if (isCrossSaleHotel)
+                {
+                    ViewBag.GuestRoom = checkoutModel.ReserveRoomModel.GuestRooms;
+                    @Html.Partial("~/Views/Booking/Hotel/_HotelItineraryDetails.cshtml", checkoutModel)
+                }
+
+                @if (ViewBag.RenderSummaryContactSection == true && Model.BookingContactPerson != null && !string.IsNullOrWhiteSpace(Model.BookingContactPerson.GivenName))
+                {
+                    <div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+                    @Html.Partial("~/Views/Booking/Flight/_ContactInformation.cshtml", Model)
+                }
+            </div>
+            <div class="show_more_flight_icon add-cursor-pointer button-margin">Show more booking details</div>
+        </div>
+    </div>
+</div>

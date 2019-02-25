@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRS" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRS" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="VerifyFlightRS">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBody">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IsAvailableFlight" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Success" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VerifyFlightRS" nillable="true" type="tns:VerifyFlightRS" />
+  <xs:complexType name="ResponseBody">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Errors" nillable="true" type="tns:Errors" />
+      <xs:element minOccurs="0" name="ResponseTime" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResponseBody" nillable="true" type="tns:ResponseBody" />
+  <xs:complexType name="Errors">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Error" nillable="true" type="tns:Error" />
+      <xs:element minOccurs="0" name="ErrorMessage" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Errors" nillable="true" type="tns:Errors" />
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ShortText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Text" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Error" nillable="true" type="tns:Error" />
+</xs:schema>

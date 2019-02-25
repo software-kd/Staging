@@ -1,0 +1,12 @@
+﻿
+
+@media screen and (max-width: 427px) {
+    .filter-tab {
+        width: 120px;
+    }
+}
+@media screen and (max-width: 385px) {
+    .filter-tab {
+        width: 95px;
+    }
+}

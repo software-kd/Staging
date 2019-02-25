@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Reset email send";
+    ViewBag.RenderRedLine = true;
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="registration_page_container">
+    <div class="rpc_inner">
+        <h2>Reset email sent!</h2>
+        <div class="member_fp_text mem_text_center">
+            Check your inbox for an email on how to reset your password. See you soon!
+        </div>
+
+        <div class="mem_text_center">
+            @if (!isEnableCMS)
+            {
+            <button type="button" class="s5_pl_button mt20 add-cursor-pointer" style="width:50%"
+                    onclick="window.location = '@Url.Action("Index", "Home")'">
+                Back to Homepage
+            </button>
+            }
+            else
+            {
+                <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })'>
+                    <input type="button" class="s5_pl_button mt20 add-cursor-pointer" style="width:50%" value="Back to Homepage" />
+                </a>
+            }
+        </div>
+
+    </div>
+</div>
+<!-- MAIN CONTENT PORTION END -->

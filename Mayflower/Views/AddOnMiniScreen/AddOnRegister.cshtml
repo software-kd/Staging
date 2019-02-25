@@ -1,0 +1,132 @@
+﻿@model Alphareds.Module.Model.MemberRegisterModels
+@using Alphareds.Module.Common;
+
+@{
+    Layout = null;
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+    string refCode = Request.QueryString["ref"];
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+}
+
+
+@{
+    ViewBag.Title = "Register with Mayflower | Cheap Holidays, Hotels & Flights | Travel Agent Malaysia";
+    ViewBag.MetaDescription = "Register with Mayflower to make the booking process faster next time you book with us. Receive exclusive travel deals direct to your inbox, too.";
+    ViewBag.RenderRedLine = true;
+
+}
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+<link href="~/CSS/MiniScreenCSS/theme.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/custom.css" rel="stylesheet" />
+
+<style>
+    .navbar-brand a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .navbar-brand a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+</style>
+
+
+<nav class="navbar navbar-expand-md  navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="###">
+            <img src="~/Images/logo_w.png" class="img-responsive">
+        </a>
+        <div class="navbar-brand navbar-brand2">@Html.ActionLink("Back to main menu ", "Index", "AddOnMiniScreen")</div>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+<div class="section ">
+    <div class="container">
+        <div class="row">
+            <div class="main-content col-12">
+                @if (tripid != null)
+                {
+
+                    <div class="breadcrumb clear-initial-trail ">
+                        <div>
+                            <div class="step">Select Add-ons </div>
+                        </div>
+                        <div>
+                            <div class="step">Payment</div>
+                        </div>
+                        <div>
+                            <div class="step active">Confirmation</div>
+                        </div>
+                    </div>
+                    <div class="box-wrap f-500 text-center">
+                        <p class="lead text-center">Translations status</p>
+                        <div class="b-wrap-info">
+                            <p class="lead text-center text-primary">Payment Successtful</p>
+                            <p class="">
+                                @*All email information has been sent to your register email*@
+                                <br>Thank you for Mayflower we look forward to serving you soon!
+                            </p>
+                        </div>
+                    </div>
+                }
+                <div class="box-wrap f-500 text-center">
+                    <div class="wrap gray ">
+                        <p class="lead text-center">Free membership</p>
+                        <p class="">
+                            Register now and start receiving valuable member benefits
+                        </p>
+                        @using (Html.BeginForm("SimpleRegister", "Member", FormMethod.Post, new { @Id = "register-form", @role = "form", @class = "contact-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("codeToken")
+                            @*@Html.ValidationSummary()*@
+
+                            @Html.ValidationMessage("Error", new { @class = "textforerrormsg" })
+
+                            <div class="form-group">
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @placeholder = "Email Address", maxlength = "50" })
+                                @Html.ValidationMessageFor(model => model.Email, null, new { @class = "textforerrormsg" })
+
+                                @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = "Password", maxlength = "50" })
+                                @Html.ValidationMessageFor(model => model.Password, null, new { @class = "textforerrormsg" })
+
+                                @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm Password", maxlength = "50" })
+                                @Html.ValidationMessageFor(model => model.ConfirmPassword, null, new { @class = "textforerrormsg" })
+
+                                @Html.TextBox("ActivationCode", refCode, new { @class = "form-control", maxlength = "20", @placeholder = "Activation Code" })
+                                @Html.ValidationMessageFor(model => model.ActivationCode, null, new { @class = "textforerrormsg" })
+                            </div>
+                            <div class="form-check">
+
+                                <input id="checkbox_news" type="checkbox" class="custom-control-input" name="subscribeNews" value="true">
+                                <label for="checkbox_news" class=" custom-control-label size-12">
+                                    Yes, I expressly agree for you to process, disclose and share my personal data to/with your Group of Companies for the purposes of promoting your Group of Companies’ and/or your products and services. (<a href="@(Core.IsForStaging ? Url.Action("PDPA", "Public") : "https://www.mayflower.com.my/pdpa")" target="_blank">Personal Data Protection Act 2010</a>)
+                                </label>
+
+                            </div>
+                            <div class="form-check">
+
+                                <input id="checkbox_tnc" class="custom-control-input" type="checkbox" name="agreeTnC" value="true" required data-val="true" data-val-required="Terms & Conditions is required to check.">
+                                <label for="checkbox_tnc" class=" custom-control-label size-12">
+                                    I confirm that the above information provided by me is true and accurate. I have read and hereby agree to the <a href="@(Core.IsForStaging ? Url.Action("TermsConditions", "Public" ) : "https://www.mayflower.com.my/tnc")" target="_blank">Terms & Conditions</a> of Mayflower Holidays Sdn Bhd, which shall be binding on me.
+                                </label>
+                                @Html.ValidationMessage("agreeTnc")
+
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register now</button>
+                        }
+                        @if (ViewBag.StatusMessage != null)
+                        {
+                            <p class="size-12">@ViewBag.StatusMessage</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

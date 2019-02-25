@@ -1,0 +1,379 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@{
+    double totalNight = 0;
+    bool isEventBundle = Model.Flight == null && Model.Hotel == null && Model.TourPackage == null && Model.AddOnProduct != null;
+    var submitBtnId = !string.IsNullOrEmpty(ViewBag.SubmitBtnId) ? ViewBag.SubmitBtnId : "";
+    List<HotelRoomCharge> feesExcludedInTotal = new List<HotelRoomCharge>();
+}
+
+<link type="text/css" rel="stylesheet" href="/CSS/bootstrap_v4.1.1/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="/css/bootstrap_v4.1.1/bootstrap.min.css">
+<link href="/CSS/checkout/v2/styles.min.css?v=20190130" rel="stylesheet" />
+
+<div class="col-xs-12">
+    <div class="booker-details-right">
+        <h3>Package Details</h3>
+        <div class="reservation-body">
+
+            @if (Model.Hotel != null)
+            {
+                @Html.Hidden("TotalPriceFrom", Model.Hotel.SearchHotelInfo.FixedPriceFrom + Model.Hotel.PricingDetail.ProductTotalAmount)
+                foreach (var hotel in Model.Hotel.HotelSelected)
+                {
+                    if (hotel.imagesURL != null)
+                    {
+                        <img src="@(string.IsNullOrEmpty(hotel.imagesURL.Big_350x350) ? Url.Content("~/Images_hotel/no-img-01.png") : Url.Content(hotel.imagesURL.Big_350x350))" alt="hotel-img-thumb">
+                    }
+                    else
+                    {
+                        <img src="@Url.Content("~/Images_hotel/no-img-01.png")" alt="">
+                    }
+
+                    <h2>
+                        @Html.Raw(hotel.name)
+                        <span class="d-flex" style="align-content: center;align-items: center;justify-content: space-between;">
+                            <span>
+                                @Html.Raw(HttpUtility.HtmlDecode(hotel.locationDescription))
+                            </span>
+                            <a class="show-ht-info ht-view-dt" data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))" href="javascript:;">Hotel Info</a>
+                        </span>
+                    </h2>
+                }
+            }
+
+            <div class="reservation-table shadow">
+                <div class="reservation-table-top">
+                    @{ 
+                        var products = Model.IsFixedPrice ? Model.Products.OrderByDescending(x => x.ProductType == ProductTypes.Hotel).ThenByDescending(x => x.ProductType == ProductTypes.Flight) : Model.Products.OrderByDescending(x => x.ProductType == ProductTypes.Flight).ThenByDescending(x => x.ProductType == ProductTypes.Hotel);
+                    }
+                    @foreach (ICheckoutProduct product in products)
+                    {
+                        if (product.ProductType == ProductTypes.Hotel)
+                        {
+                            var hotelDtl = (ProductHotel)product;
+                            var hotelSearchReq = hotelDtl.SearchHotelInfo;
+                            int totalRoomCount = hotelDtl.RoomDetails.Count;
+                            TimeSpan timeDiff = hotelSearchReq.DepartureDate.Date - hotelSearchReq.ArrivalDate.Date;
+                            totalNight = (timeDiff.TotalDays);
+                            var AdultNo = hotelDtl.SearchHotelInfo.NoOfAdult;
+                            var ChildrenNo = hotelDtl.SearchHotelInfo.NoOfInfant;
+
+                            <ul>
+                                <li>Hotel</li>
+                                <li>@hotelDtl.RoomDetails.FirstOrDefault().RoomTypeName</li>
+                                <li>
+                                    <span>Check in</span>
+                                    <span>@hotelSearchReq.ArrivalDate.ToString("dd-MMM-yyyy, (ddd)")</span>
+                                </li>
+                                <li>
+                                    <span>Check out</span>
+                                    <span>@hotelSearchReq.DepartureDate.ToString("dd-MMM-yyyy, (ddd)")</span>
+                                </li>
+                            </ul>
+                            <div class="d-flex" style="justify-content: space-between;flex-direction: row-reverse; display:flex;">
+                                <div class="rm-btn">
+                                    @($"{totalNight} {(totalNight > 1 ? "nights" : "night")}"), @($"{totalRoomCount} {(totalRoomCount > 1 ? "rooms" : "room")}") <br />
+                                    @($"{AdultNo} {(AdultNo > 1 ? "Adults" : "Adult")}")
+                                    @if (ChildrenNo > 0)
+                                    {@($", {ChildrenNo} {(ChildrenNo > 1 ? "Children" : "Child")}")}
+                                </div>
+                                <div class="resbar-htlist-btn">
+                                    <a href="javascript:;" class="btn">Re-select</a>
+                                </div>
+                            </div>
+                            if (Model.Hotel.HasHotelBundleTicket)
+                            {
+                                <div>
+                                    @foreach(var item in Model.Hotel.RoomDetails)
+                                    {
+                                        <p>@item.HotelBundleTicketSelected</p>
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                    @if (!Model.IsFixedPrice)
+                    {
+                        <div class="@(Model.Products.Count > 1 ? " mt-4 " : " mt-2 reservation-table-mid ")">
+
+                            @foreach (var product in Model.Products
+                                .OrderByDescending(x => x.ProductType == ProductTypes.Flight)
+                                .ThenByDescending(x => x.ProductType == ProductTypes.Hotel))
+                            {
+                                if (product.ProductType == ProductTypes.Flight || product.ProductType == ProductTypes.Hotel)
+                                {
+                                    if (Model.Products.Count > 1)
+                                    {
+                                        <ul>
+                                            <li>
+                                                <span>@product.ProductType.ToString()</span>
+                                                <span> @product.PricingDetail.Currency @product.PricingDetail.ProductTotalAmount.ToString("n2")</span>
+                                            </li>
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <ul>
+                                            @if (product.ProductType == ProductTypes.Hotel)
+                                            {
+                                                var _ht = (ProductHotel)product;
+                                                var isEANRapid = _ht.HotelSelected.All(s => s.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.EANRapid);
+                                                @*
+                                                    var roomQuery = _ht.RoomDetails.Select(x => new { x.RoomTypeCode, x.RoomTypeName, x.RateDesc }).Distinct();
+
+                                                    foreach (var roomDtl in roomQuery)
+                                                    {
+                                                        <li>
+                                                            <span>@roomDtl.RoomTypeName</span>
+                                                            <span>
+                                                                <small><a href="javascript:;">Room Info</a></small>
+                                                            </span>
+                                                        </li>
+                                                    }*@
+
+                                                <li>
+                                                    <span class="ml-1">
+                                                        @*&#8226;*@ @($"{totalNight} {(totalNight > 1 ? "nights" : "night")}")
+                                                    </span>
+                                                    <span>
+                                                        @if (!isEANRapid)
+                                                        {
+                                                            @product.PricingDetail.Currency @product.PricingDetail.SubTtl.ToString("n2")
+                                                        }
+                                                    </span>
+                                                </li>
+
+                                                int __counter = 1;
+                                                if (isEANRapid)
+                                                {
+
+                                                    foreach (var roomDtl in _ht.RoomDetails)
+                                                    {
+                                                        feesExcludedInTotal.AddRange(roomDtl.FeesExcludedBreakDown);
+                                                        var chargeBreakDown = roomDtl.ChargeableRatePerNight.SelectMany(x => x.ChargeDetailsBreakDown);
+                                                        var groupChargeType = chargeBreakDown.GroupBy(x => new { x.Currency, x.Type });
+
+                                                        <li class="ml-2">
+                                                            <span>&#8226; &nbsp; Room @(__counter++) - @roomDtl.RoomTypeName</span>
+                                                            <span></span>
+
+                                                        </li>
+                                                        foreach (var nightBreakDown in roomDtl.ChargeableRatePerNight)
+                                                        {
+                                                            <li class="ml-3 mb-0">
+                                                                <span>@nightBreakDown.CheckInDate.ToString("dd-MMM-yyyy, (ddd)")</span>
+                                                                <span>@product.PricingDetail.Currency @nightBreakDown.BaseRate</span>
+                                                            </li>
+                                                        }
+
+                                                        int _grpChargeCount = 0;
+                                                        foreach (var chargeDtl in groupChargeType)
+                                                        {
+                                                            _grpChargeCount++;
+                                                            string isLastRecordCSS = _grpChargeCount == groupChargeType.Count() ? "" : "mb-0";
+                                                            <li class="ml-3 @isLastRecordCSS">                                                                
+                                                                    <span>@(chargeDtl.Key.Type == "tax_and_service_fee" ? "Tax Recovery Charges and Service Fees"
+                                                                                  : chargeDtl.Key.Type.Replace("_", " ").ToTitleCase())</span>
+                                                            <span>@chargeDtl.Key.Currency @chargeDtl.Sum(s => s.Value).ToString("n2")</span>
+                                                            </li>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (product.ProductType == ProductTypes.Flight)
+                                        {
+                                            foreach (var item in product.PricingDetail.Items)
+                                            {
+                                                var itemTypes = item.ItemDetail == "ADT" || item.ItemDetail == "CNN" || item.ItemDetail == "INF" ? Alphareds.Module.Common.UtilitiesService.GetPassengerTypeName(item.ItemDetail, item.ItemQty) : item.ItemDetail;
+                                                <li>
+                                                    <span>@itemTypes * @item.ItemQty</span>
+                                                    <span>@product.PricingDetail.Currency @((item.TTlBaseRate + item.TtlSurcharge + item.TtlGST).ToString("n2"))</span>
+                                                </li>
+                                            }
+                                        }
+                                        </ul>
+                                    }
+                                }
+                                else if (product.ProductType == ProductTypes.AddOnProducts)
+                                {
+                                    int _index = 0;
+                                    var _eventDtl = (ProductEventTicket)product;
+                                    string addOnProductDisplayText = "Addon experince";
+                                    if (Model.Hotel == null && Model.Flight == null && Model.AddOnProduct != null)
+                                    {
+                                        addOnProductDisplayText = "Concert Bundle";
+                                    }
+                                    <ul class="mt-3"><li><span>@addOnProductDisplayText</span></li></ul>
+                                    <div class="reservation-table-mid">
+                                        @foreach (var itemGrp in _eventDtl.PricingDetail.Items.GroupBy(x => new { x.ProductDate }))
+                                        {
+                                            if (itemGrp.Key.ProductDate != null)
+                                            {
+                                                @itemGrp.Key.ProductDate.Value.ToString("dd-MMM-yyyy, (ddd)")
+                                            }
+
+                                            foreach (var item in itemGrp)
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <span>@item.ItemDetail x @item.ItemQty</span>
+                                                        <span> @_eventDtl.PricingDetail.Currency @((item.TTlBaseRate + item.TtlSurcharge + item.TtlGST).ToString("n2"))</span>
+                                                    </li>
+                                                </ul>
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else if (product.ProductType == ProductTypes.Insurance)
+                                {
+                                    var insuranceDtl = (ProductInsurance)product;
+                                    int paxCountForInsurance = Model.Insurance.TotalQuotePax;
+
+                                    <ul>
+                                        <li>
+                                            <span>Insurance (@($"{paxCountForInsurance} {(paxCountForInsurance > 1 ? "paxes" : "pax")}")) </span>
+                                            <span> @insuranceDtl.PricingDetail.Currency @insuranceDtl.PricingDetail.ProductTotalAmount.ToString("n2")</span>
+                                        </li>
+                                    </ul>
+                                }
+                                else if (product.ProductType == ProductTypes.CR)
+                                {
+                                    foreach (var prd in product.PricingDetail.Items)
+                                    {
+                                        <ul>
+                                            <li>
+                                                <span>@prd.ItemDetail</span>
+                                                <span>@product.PricingDetail.Currency @prd.TTlBaseRate.ToString("n2")</span>
+                                            </li>
+                                        </ul>
+                                    }
+                                }
+                                else
+                                {
+                                    <ul>
+                                        <li>
+                                            <span>@product.ProductType.ToString()</span>
+                                            <span> @product.PricingDetail.Currency @product.PricingDetail.ProductTotalAmount.ToString("n2")</span>
+                                        </li>
+                                    </ul>
+                                }
+                            }
+
+                            <ul>
+                                <li>
+                                    <span>Processing Fee</span>
+                                    <span>@(Model?.CheckOutSummary?.CurrencyCode ?? "MYR") <span class="ProcessingFee">@(Model?.CheckOutSummary?.ProcessingFee?.TtlAmt.ToString("n2") ?? (0m).ToString("n2"))</span></span>
+                                </li>
+                            </ul>
+
+                            @GeneratePromoCodeList(Model?.CheckOutSummary?.DiscountDetails ?? new List<DiscountDetail>(), Model?.CheckOutSummary?.CurrencyCode ?? "MYR")
+                        </div>
+                    }
+                    @*else
+                    {
+                        <ul>
+                            <li>
+                                <span>Price From</span>
+                                <span>MYR @((Model.Hotel.SearchHotelInfo.FixedPriceFrom + Model.Hotel.PricingDetail.ProductTotalAmount).ToString("n2"))</span>
+                            </li>
+                            <li>
+                                <span>+ Flight</span>
+                                <span class="reservation-flight">MYR 0.00</span>
+                            </li>
+                        </ul>
+                    }*@
+                </div>
+
+                <div class="reservation-table-bottom">
+                    <ul>
+                        <li>
+                            <span>Total Price</span>
+                            <span>MYR <text class="reservation-total">@((Model.Hotel.SearchHotelInfo.FixedPriceFrom + Model.Hotel.PricingDetail.ProductTotalAmount).ToString("n2"))</text></span>
+                        </li>
+                        @*<li>
+                            <span>(For @(Model.Hotel.SearchHotelInfo.NoOfAdult + Model.Hotel.SearchHotelInfo.NoOfInfant) persons)</span>
+                        </li>*@
+                    </ul>
+
+                </div>
+                @if (feesExcludedInTotal.Count > 0)
+                {
+                    <div class="mt-3">
+                        <ul>
+                            <li>Not included in price</li>
+                            @foreach (var item in feesExcludedInTotal.GroupBy(grp => new { grp.Currency, grp.Type }))
+                            {
+                                <li>
+                                    <span>@(item.Key.Type?.Replace("_", " ").ToTitleCase() ?? "unknown")</span>
+                                    <span>@item.Key.Currency @(item.Sum(s => s.Value).ToString("n2"))</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper GeneratePromoCodeList(List<DiscountDetail> discountDetails, string currencyCode)
+{
+    bool gotCodeDisc = false;
+
+    <ul>
+        @foreach (var item in discountDetails)
+        {
+            gotCodeDisc = !gotCodeDisc ? item.DiscType == DiscountType.CODE || item.DiscType == DiscountType.PD : gotCodeDisc;
+
+            if (item.DiscType == DiscountType.CODE || item.DiscType == DiscountType.PD)
+            {
+                <li @Html.Raw(gotCodeDisc ? "class='pcode_detail'" : "")>
+                    <span @Html.Raw(gotCodeDisc ? "id='p_left'" : "")>
+                        @(item.DiscType == DiscountType.PD ? item.Disc_Desc : item.DiscType.ToDescription())
+                    </span>
+
+                    <span @Html.Raw(gotCodeDisc ? "id='p_right'" : "")>@currencyCode @item.Disc_Amt.ToString("n2")</span>
+
+                </li>
+            }
+        }
+        @if (!gotCodeDisc)
+        {
+            <li class="pcode_detail">
+                <span id="p_left"></span>
+                <span id="p_right"></span>
+            </li>
+        }
+    </ul>
+}
+
+<script>
+    $('.resbar-htlist-btn').on('click', 'a', function (e) {
+        window.location = '/hotel/search' + location.search;
+    });
+    $('.reservation-body').on('click', '.show-ht-info', function () {
+        var dt = {
+            sr: $(this).data('ht-sr'),
+            id: $(this).data('ht-id'),
+            isFlightPage: true,
+        };
+        $.ajax({
+            type: "GET",
+            url: '/hotel/gethotelinfo_v2' + location.search,
+            data: dt,
+            cache: false,
+            async: true,
+            dataType: "text",
+            beforeSend: function () {
+                dynamicModal('Hotel Information', loadImg(), false, true).modal();
+            }
+        }).done(function (result) {
+            dynamicModal('Hotel Information', result, false, true).modal();
+        }).fail(function () {
+            dynamicModal('Hotel Information', 'Unexpected error occur, please try again later.', false, true).modal();
+        });
+    });
+</script>  

@@ -1,0 +1,107 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Cryptography;
+@using System.Web.Script.Serialization;
+@model Alphareds.Module.Model.SearchHotelModel
+
+@{
+    int dayAdvance = Convert.ToInt32(Core.GetSettingValue("dayadvance"));
+    List<Alphareds.Module.Model.SearchHotelModel> recentSearchHotelModelList = new List<Alphareds.Module.Model.SearchHotelModel>();
+    List<Alphareds.Module.Model.UserSearchFHCookiesModel> UserCookiesList = new List<Alphareds.Module.Model.UserSearchFHCookiesModel>();
+    List<Alphareds.Module.Model.UserSearchFHCookiesModel> AllLatestHotelCookie = new List<Alphareds.Module.Model.UserSearchFHCookiesModel>();
+    string trackingUserSearchCookiesList;
+
+    bool afterDayAdvase = true;
+    int formCount = 1;
+
+    string encryptedCookies;
+    if (Request.Cookies["SaveUserCookies"] != null)
+    {
+        encryptedCookies = Request.Cookies["SaveUserCookies"].Value;
+        trackingUserSearchCookiesList = Cryptography.AES.Decrypt(encryptedCookies);
+
+        UserCookiesList = new JavaScriptSerializer().Deserialize<List<Alphareds.Module.Model.UserSearchFHCookiesModel>>(trackingUserSearchCookiesList).ToList();
+
+        AllLatestHotelCookie = UserCookiesList.Where(x => x.ProductType == "hotel").ToList();
+
+        if (AllLatestHotelCookie != null && AllLatestHotelCookie.Count > 0)
+        {
+            foreach (var item in AllLatestHotelCookie)
+            {
+                if (item.ArrivalDate.Value.ToLocalTime().AddDays(1) < DateTime.Now.AddDays(dayAdvance))
+                {
+                    afterDayAdvase = false;
+                }
+                if(afterDayAdvase == true)
+                {
+                    Alphareds.Module.Model.SearchHotelModel addSearchHotelModel = new Alphareds.Module.Model.SearchHotelModel()
+                    {
+                        Destination = item.Destination,
+                        ArrivalDate = item.ArrivalDate.Value.ToLocalTime(),
+                        DepartureDate = item.DepartureDate.Value.ToLocalTime(),
+                        NoOfAdult = item.AdultNo,
+                        NoOfInfant = item.ChildrenNo,
+                        NoOfRoom = item.RoomNo,
+                        Star = item.StarNo
+                    };
+                    recentSearchHotelModelList.Add(addSearchHotelModel);
+                }
+            }
+        }
+    }
+}
+@if (recentSearchHotelModelList != null && recentSearchHotelModelList.Count > 0)
+{
+    foreach (var recentSearchHotel in recentSearchHotelModelList)
+    {
+        Model.Destination = recentSearchHotel.Destination;
+        Model.ArrivalDate = recentSearchHotel.ArrivalDate.ToLocalTime();
+        Model.DepartureDate = recentSearchHotel.DepartureDate.ToLocalTime();
+        Model.NoOfAdult = recentSearchHotel.NoOfAdult;
+        Model.NoOfInfant = recentSearchHotel.NoOfInfant;
+        Model.NoOfRoom = recentSearchHotel.NoOfRoom;
+        Model.Star = recentSearchHotel.Star;
+
+        string formID = "searchHotelForm_" + formCount;
+        using (Html.BeginForm("GetHotelSearch", "Hotel", FormMethod.Post, new { @id = @formID }))
+        {
+            <div>
+                <h2 style="color:#be2e30">Hotel @formCount</h2>
+                <table style="margin:auto">
+                    <tbody style="text-align: left ; float:none">
+                        <tr>
+                            <th>Destination</th>
+                            <td> : @Model.Destination</td>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <td> : From @Model.ArrivalDate.Date.ToShortDateString() To @Model.DepartureDate.Date.ToShortDateString()</td>
+                        </tr>
+                        <tr>
+                            <th>Number Of Room</th>
+                            <td> : @Model.NoOfRoom</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="flight_form_container3">
+                                    <input name="hotelBtn" type="submit" value="Search Hotel">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                @Html.HiddenFor(model => model.Destination, new { @id = "hidDestination" })
+                @Html.HiddenFor(model => model.ArrivalDate, new { @id = "hidArrivalDate" })
+                @Html.HiddenFor(model => model.DepartureDate, new { @id = "hidDepartureDate" })
+                @Html.HiddenFor(model => model.NoOfAdult, new { @id = "hidNoOfAdult" })
+                @Html.HiddenFor(model => model.NoOfInfant, new { @id = "hidNoOfInfant" })
+                @Html.HiddenFor(model => model.NoOfRoom, new { @id = "hidRoom" })
+                @Html.HiddenFor(model => model.Star, new { @id = "hidStar" })
+            </div>
+        }
+        formCount++;
+    }
+
+}

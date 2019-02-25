@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TieringGroup>
+  <Group id="2" ProductTypeCode="HTL">
+    <Supplier>Expedia</Supplier>
+    <Supplier>HotelBeds</Supplier>
+    <Supplier>JacTravel</Supplier>
+    <Supplier>Tourplan</Supplier>
+  </Group>
+  <Group id="4" ProductTypeCode="HTL">
+    <Supplier>Tourplan</Supplier>
+  </Group>
+</TieringGroup>
+
+<!--
+Supplier Value Key
+*******************
+Expedia
+ExpediaTAAP
+HotelBeds
+JacTravel
+Tourplan
+-->

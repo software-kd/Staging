@@ -1,0 +1,79 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@model IGrouping<string, EventBooking>
+
+@if (Model != null && Model.Key != null)
+{
+    var carMasterRecord = Model.Select(x => x.EventProduct.EventDetail.EventMaster).Distinct();
+
+    <section class='flight-details clr fl'>
+        <h3 class='heading-blue font-blue'>Car Rental Details</h3>
+
+            <div class='row subdetails clr'>
+                <table cellpadding='0' cellspacing='0' border='0' class='details'>
+                    <tbody>
+                        <tr>
+                            <td width='251'>Vehicle Type</td>
+                            <td width='2'>:</td>
+                            <td>
+                                &nbsp;@(string.Join(", ", carMasterRecord.Select(x => x.EventName)))
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td>Date</td>
+                            <td>:</td>
+                            <td>
+                                &nbsp;@RenderRentalDate(Model)
+                            </td>
+                        </tr>*@
+                    </tbody>
+                </table>
+            </div>
+        
+
+        <div class='item-header blue-bg'>
+            <h3 class='item-heading' style='text-align:center'>Vehicle Pickup/Drop Off</h3>
+        </div>
+        <table cellpadding='0' cellspacing='0' border='0' style='border: 1px solid #dbdbdb; font-size:18px; margin: 10px auto;'>
+            <thead style='background: #00B0F0; height: 46px; padding-left:25px;'>
+                <tr>
+                    <td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Vehicle Type</td>
+                    <td width='265' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Venue</td>
+                    <td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Address</td>
+                    @*<td width='225' style='line-height:46px; color: #fff; padding: 0 15px; border-right: 1px solid #86D3EF; text-align:center; font-weight:bold;'>Date</td>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var _dtl in Model.GroupBy(grp => grp.EventProduct.EventDetail.EventMaster))
+                {
+                    <tr class='brdB-grey'>
+                        <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                            <span class='font-red room-name'>
+                                @_dtl.First().Qty x @_dtl.Key.EventName<br />
+                            </span>
+                        </td>
+                        <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                            @_dtl.Key.VenueName
+                        </td>
+                        <td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'> @_dtl.Key.VenueAddress </td>
+                        @*<td class='brdB-grey' style='padding:15px; font-size:18px; text-align:center;'>
+                    @RenderRentalDate(_dtl)
+                </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+}
+
+@helper RenderRentalDate(IGrouping<string, EventBooking> grouping)
+{
+    @(grouping.Min(x => x.EventDate).ToString("dd MMMM yyyy")) @:- @(grouping.Max(x => x.EventDate).ToString("dd MMMM yyyy"))
+}
+
+@helper RenderRentalDate(IGrouping<EventMaster, EventBooking> grouping)
+{
+    @(grouping.Min(x => x.EventDate).ToString("dd MMMM yyyy")) @:- @(grouping.Max(x => x.EventDate).ToString("dd MMMM yyyy"))
+}

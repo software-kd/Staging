@@ -1,0 +1,30 @@
+﻿
+@{
+    bool isPromoCodeUsed = ViewBag.IsPromoCodeUsed == null ? false : ViewBag.IsPromoCodeUsed;
+}
+
+<div class="s4_png_line pItem @(isPromoCodeUsed ? "hidden" : "")"></div>
+
+<div class="promo-container pItem @(isPromoCodeUsed ? "hidden" : "")">
+    
+    <div class="pCode-lblArea">
+        <span class="pCode-text">Have promo code? </span><a class="toggle-code" href="javascript:;">Apply here</a>
+    </div>
+
+    <div class="pCode-inputArea">
+        <div>
+            <input id="promo-code" type="text">
+            <button type="button" id="apply-code">Apply</button>
+
+            <div class="clearfix"></div>
+            <span class="textforerrormsg promo-sMsg"></span>
+            <span style="margin-top: 5px;display: block;font-family: 'UbuntuBold';font-size: 16px;">
+            <img class="code-checking" src="/Images/loading_40x40.gif" style="width: 20px;float: left;display: none">
+            <span class="code-msg"></span>
+        </span>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+</div>
+

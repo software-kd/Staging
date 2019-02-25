@@ -1,0 +1,176 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    ViewBag.Title = "Car Rental Search Result";
+    ViewBag.HeaderRed = true;
+    ViewBag.CheckSession = true;
+    bool isAjax = Request.IsAjaxRequest();
+    string tripid = Request.QueryString["tripid"];
+    var filter = Model.CarRental.FilterCarResult;
+    var typeList = filter != null ? from a in filter.FilResult.GroupBy(x=>x.VehAvails.VehAvailCore.Vehicle.VehicleGroup.GroupName)
+                                    select new SelectListItem
+                                    {
+                                        Text = a.Key,
+                                        Value = a.Key,
+                                        Selected = filter.FilterSettings.SortBy == a.Key,
+                                    } : new List<SelectListItem>();
+}
+
+@section style{
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link href="~/CSS/carRental/theme.css" rel="stylesheet" />
+    <link href="~/CSS/carRental/daterangepicker.css" rel="stylesheet" />
+    <link href="~/CSS/carRental/custom.css" rel="stylesheet" />
+    <link href="~/CSS/v3.0_responsive.css" rel="stylesheet" />
+    <link href="~/CSS/carRental/ion.rangeSlider.skin.css" rel="stylesheet" />
+    <link href="~/CSS/ion-rangeSlider.css" rel="stylesheet" />    
+    @*<link rel="stylesheet" href="http://bootstraptema.ru/plugins/2018/irs/ion.rangeSlider.css">*@
+    <style>        
+        .err-msg-area {
+            margin-top: -1em;
+        }
+    </style>
+}
+
+@Html.Partial("~/Views/CarRental/_SearchPanel.cshtml", Model.CarRental.SearchInfo)
+
+<!-- Search Result -->
+<div class="search-result bg-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mob-p-0">
+                <h2 class="mt-4"></h2>
+                <div class="left-filter">
+                    <a class="map-view"></a>
+                    <h2 class="mb-0"><a class="searchcar" href="###">Search</a></h2>
+                    <div class="accordion">
+                        <div class="card">
+                            <div class="card-header" id="headingProperty">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                        Sort by
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse1" class="collapse show" aria-labelledby="headingProperty" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    @Html.DropDownList("sortby", typeList, new { @id = "sortby", @class = "form-control b-select" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                        No of Pax
+                                    </button>
+                                </h5>
+                            </div>
+
+                            <div id="collapse2" class="collapse" aria-labelledby="headingOne" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    <input type="text" id="range_03">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                        Vehicle Model
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse3" class="collapse" aria-labelledby="headingTwo" @*data-parent="#accordion"*@>
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control w-search" id="carname" name="carname" placeholder="Enter name" value="@(filter != null ? filter.FilterSettings.CarModel : "")">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-block btn-primary searchcar" type="button">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 mob-p-0">
+                <div class="mt-4">
+                    <div class="loadingArea">
+                        @if (!string.IsNullOrWhiteSpace(Model.CarRental.SearchInfo.locationCode))
+                        {
+                            <div class="s2_main_container">
+                                <div class="s2_mc_border_conainer loading" style="display: none">
+                                    <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                                        <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                                            <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120">
+                                            <p id="msglbl" style="color:#808080;margin:1em">Hold on, your holiday is on the way...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- MAIN CONTENT PORTION START -->
+                        <div class="section car-results">
+                            @if (Model.CarRental.Result != null && Model.CarRental.Result.Success == "true")
+                            {
+                                @Html.Partial("~/Views/CarRental/_CarRentalList.cshtml", Model.CarRental)
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ./Search Result -->
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
+
+    <!-- Date Rangepicker -->
+    <script type="text/javascript" src="~/Scripts/rentalcar/custom.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <!-- Lightbox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    @*<script src="http://bootstraptema.ru/plugins/2018/irs/ion.rangeSlider.min.js"></script>*@
+    <script src="~/Scripts/ion-rangeSlider.min.js"></script>
+
+    <script>
+$(function() {
+    var startdate = new moment('@Model.CarRental.SearchInfo.PickupDateTime', 'DD-MMM-YYYY HH:mm:ss');
+    var enddate = new moment('@Model.CarRental.SearchInfo.ReturnDateTime', 'DD-MMM-YYYY HH:mm:ss');
+    $('input[name="RentalPeriod"]').daterangepicker({
+        //timePicker: true,
+        minDate: moment().startOf('day').add(2, 'day'),
+        startDate: startdate,
+        endDate: enddate,
+        timePickerIncrement: 60,
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function(start, end, label) {
+        $('input[name="PickupDateTime"]').val(start.format("DD-MMM-YYYY"));
+        $('input[name="ReturnDateTime"]').val(end.format("DD-MMM-YYYY"));
+    });
+
+});
+    </script>
+}

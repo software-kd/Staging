@@ -1,0 +1,61 @@
+﻿@model Alphareds.Module.Model.BankTransferPaymentModels
+
+<div class="margin-top">
+    <div class="ptsm_bfc_left bnk-form-section">
+        <label>Amount Bank in</label>
+        <div class="clear visible-sm visible-xs"></div>
+        <div class="ptsm_bfc_left bnk-txtbox-section">
+            @Html.TextBoxFor(model => model.BankInAmount, new { style = "width: 80%;", placeholder = "ex. 200.00", @class = "ptsm_txtboxes", @readonly = "readonly" })
+            <span style="margin-left: 5px">MYR</span>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="ptsm_bfc_left bnk-form-section">
+        <label>Date Bank-In</label>
+
+        <div class="ptsm_bfc_left bnk-txtbox-section">
+            @Html.TextBoxFor(model => Model.BankInDate, new { @class = "tib1_textbox_dob", @readonly = "readonly", style = "font-size: inherit" })
+            @Html.ValidationMessageFor(model => model.BankInDate, null, new { @class = "validation" })
+            @*@Html.TextBoxFor(model => model.BankInDate, new { @class = "ptsm_txtboxes datefield", @readonly = "readonly" })*@
+        </div>
+    </div>
+    <div class="ptsm_bfc_left bnk-form-section">
+        <label>Reference</label>
+
+        <div class="ptsm_bfc_left bnk-txtbox-section">
+            @Html.TextBoxFor(model => Model.RefNo, new { @class = "ptsm_txtboxes", style = "font-size: inherit" })
+        </div>
+    </div>
+    <div class="ptsm_bfc_left bnk-form-section">
+        <label>Bank-In Proof</label>
+
+        <div class="ptsm_bfc_left bnk-txtbox-section">
+            <div class="fileinput" data-provides="fileinput">
+                <input class="btn btn-default" type="file" name="paymentProof" accept=".jpeg, .png, .jpg, .zip" role="button" />
+                @if (TempData["InvalidFileType"] != null)
+                {
+                    <p class="validation">Error: The upload file type is required file type. (.jpeg, .png, .jpg, .zip)</p>
+                }
+
+                @if (TempData["FileSizeLarge"] != null)
+                {
+                    <p class="validation">Error: File size should not over 1MB.</p>
+                }
+
+                @if (TempData["FileNoFound"] != null)
+                {
+                    <p class="validation">Error: No upload file found.</p>
+                }
+                <div class="clear"></div>
+                <b><i><small>(Please upload image or zip file type below 1MB)</small></i></b>
+            </div>
+        </div>
+    </div>
+    <div class="ptsm_bfc_left bnk-form-section">
+        <label>Bank Availaible</label>
+
+        <div class="ptsm_bfc_left bnk-txtbox-section">
+            <button type="button" id="showBankInfo" class="btn-payment" style="margin: 0; width: 80px" onclick="$('#bank-listing').toggle('fast')">Show</button>
+        </div>
+    </div>
+</div>

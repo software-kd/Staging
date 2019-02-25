@@ -1,0 +1,717 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.FlightBookingModel
+
+@{
+    bool forStaging = Core.IsForStaging;
+
+    ViewBag.Title = "Home";
+}
+
+@section style{
+    <!-- Layout Style -->
+    <link rel="stylesheet" href="@Url.Content("~/CSS/ars-ui-autocomplete.css")" type="text/css" />
+    <link href="@Url.Content("~/CSS/ars-hotel-tab.css")" rel="stylesheet" />
+
+    <style>
+        .fixedprice, .dynamic_room{
+            display:none;
+        }
+        #starrating {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: none;
+            border-bottom: 1px solid #1d1b1a;
+            width: 100%;
+            background-color: transparent;
+            border-radius: 0;
+        }
+
+        .sai_inner_right {
+            z-index: 200;
+            position: relative;
+        }
+
+        .promo_image_clickable a, .promo_image_clickable_mobile a {
+            position: static;
+            opacity: 1;
+        }
+
+        .ffc2_r3_b3 {
+            width: 15%;
+        }
+
+        .ffc2_r3_b4 {
+            width: 38%;
+        }
+
+        /*.sir_tc_tabs {
+            width: 50%;
+        }*/
+
+        #ui-datepicker-div {
+            font-size: 12px;
+        }
+
+        .search_area img {
+            max-width: 1236px;
+        }
+
+        input:focus {
+            border-color: none !important;
+            outline: 0 !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+        }
+
+        img.header_iamge_big {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tcc_text1 {
+            margin-top: 0px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        @@media screen and (max-width: 400px) {
+            .ffc2_r2_b2 select, .ffc2_r2_b3 select, .ffc2_r2_b4 select {
+                width: 90%;
+            }
+        }
+
+        @@media screen and (max-width: 350px) {
+            .ffc2_r2_b1 {
+                width: 10%;
+            }
+
+            .ffc2_r2_b2 select, .ffc2_r2_b3 select {
+                width: 88%;
+                padding-left: 2px;
+            }
+
+            .ffc2_r2_b4 select {
+                width: 98%;
+                padding-left: 2px;
+            }
+
+            .ffc2_r2_b5 {
+                width: 5%;
+                position: absolute;
+                right: 15px;
+            }
+        }
+
+        @@media screen and (max-width: 900px) {
+            .search_area_inner {
+                display: inline-block;
+                position: relative;
+                top: inherit !important;
+                margin-top: 50px;
+            }
+
+            #myCarousel {
+                display: none;
+            }
+
+            .tapto_search {
+                border-top: 1px solid #ee3739;
+            }
+
+            img.header_iamge_big {
+                display: none !important;
+            }
+
+            .tcc_text1 {
+                margin-top: 0px;
+            }
+
+            .tabs_content_container2 {
+                padding-top: 60px;
+            }
+        }
+
+        .footer {
+            display: block;
+            max-width: 1236px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0 !important;
+        }
+
+        .search_area_inner {
+            top: 50px;
+        }
+
+        .sir_tab_container {
+            border-top-style: none;
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .sir_tc_tabs_inner {
+            /*border-style: solid;*/
+            border-width: 1px;
+            border-bottom-style: none;
+        }
+
+        .search_area {
+            margin-bottom: -4px;
+        }
+
+        #cssmenu > ul > li > a {
+            color: #ea0512 !important;
+            text-decoration: none;
+            font-family: 'UbuntuMedium';
+        }
+
+        @@media screen and (min-width: 1370px) {
+            .gray_toll_tip {
+                right: initial;
+                margin-left: -70px;
+            }
+        }
+
+        @@media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait) {
+            .fi_col1 {
+                text-align: center;
+            }
+
+            .fi_col3 {
+                text-align: center;
+            }
+        }
+
+        @@media screen and (max-width: 320px) {
+            .ffc2_r3_b2 {
+                width: 20%;
+            }
+
+            .ffc2_r3_b3 {
+                width: 10%;
+            }
+
+            .ffc2_r3_b4 {
+                width: 48%;
+            }
+        }
+    </style>
+
+
+
+
+
+
+
+    <!-- FOR SLIDER BANNER-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .carousel-inner > .item > img,
+        .carousel-inner > .item > a > img {
+            width: 91.5%;
+            margin: auto;
+        }
+    </style>
+    <style>
+        .carousel-inner > .item > .promo_image_clickable > a,
+        .carousel-inner > .item > .promo_image_clickable > a > img {
+            position: static;
+            z-index: 50;
+        }
+
+        .form-control {
+            -webkit-box-shadow: insert 0 0px 0px rgba(0,0,0,0);
+            box-shadow: 0 0px 0px rgba(0,0,0,0);
+        }
+    </style>
+
+
+    @* Only for display one search panel tab usage. *@
+    @if (false && forStaging == false)
+    {
+        <style>
+            .sir_tabresult {
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+            }
+        </style>
+    }
+}
+
+<!--Select List for Passenger-->
+@{
+    List<SelectListItem> numberOfRooms = new List<SelectListItem>();
+    numberOfRooms.Add(new SelectListItem { Text = "1 Room", Value = "1", Selected = true });
+    numberOfRooms.Add(new SelectListItem { Text = "2 Rooms", Value = "2" });
+    numberOfRooms.Add(new SelectListItem { Text = "3 Rooms", Value = "3" });
+    numberOfRooms.Add(new SelectListItem { Text = "4 Rooms", Value = "4" });
+    numberOfRooms.Add(new SelectListItem { Text = "5 Rooms", Value = "5", });
+    numberOfRooms.Add(new SelectListItem { Text = "6 Rooms", Value = "6" });
+    numberOfRooms.Add(new SelectListItem { Text = "7 Rooms", Value = "7" });
+    numberOfRooms.Add(new SelectListItem { Text = "8 Rooms", Value = "8", });
+
+    List<SelectListItem> numberOfAdults = new List<SelectListItem>();
+    numberOfAdults.Add(new SelectListItem { Text = "1 Adult", Value = "1", Selected = true });
+    numberOfAdults.Add(new SelectListItem { Text = "2 Adults", Value = "2" });
+    numberOfAdults.Add(new SelectListItem { Text = "3 Adults", Value = "3" });
+    numberOfAdults.Add(new SelectListItem { Text = "4 Adults", Value = "4" });
+    numberOfAdults.Add(new SelectListItem { Text = "5 Adults", Value = "5", });
+    numberOfAdults.Add(new SelectListItem { Text = "6 Adults", Value = "6" });
+    numberOfAdults.Add(new SelectListItem { Text = "7 Adults", Value = "7" });
+    //numberOfAdults.Add(new SelectListItem { Text = "8 Adults", Value = "8", });
+
+    List<SelectListItem> numberOfChildren = new List<SelectListItem>();
+    numberOfChildren.Add(new SelectListItem { Text = "0 Child", Value = "0", Selected = true });
+    numberOfChildren.Add(new SelectListItem { Text = "1 Child", Value = "1" });
+    numberOfChildren.Add(new SelectListItem { Text = "2 Children", Value = "2" });
+    numberOfChildren.Add(new SelectListItem { Text = "3 Children", Value = "3" });
+    numberOfChildren.Add(new SelectListItem { Text = "4 Children", Value = "4" });
+    numberOfChildren.Add(new SelectListItem { Text = "5 Children", Value = "5" });
+    numberOfChildren.Add(new SelectListItem { Text = "6 Children", Value = "6" });
+    //numberOfChildren.Add(new SelectListItem { Text = "7 Children", Value = "7" });
+    //numberOfChildren.Add(new SelectListItem { Text = "8 Children", Value = "8" });
+
+    List<SelectListItem> numberOfInfants = new List<SelectListItem>();
+    numberOfInfants.Add(new SelectListItem { Text = "0 Infant", Value = "0", Selected = true });
+    numberOfInfants.Add(new SelectListItem { Text = "1 Infant", Value = "1" });
+    numberOfInfants.Add(new SelectListItem { Text = "2 Infants", Value = "2" });
+    numberOfInfants.Add(new SelectListItem { Text = "3 Infants", Value = "3" });
+    //numberOfInfants.Add(new SelectListItem { Text = "4 Infants", Value = "4" });
+    //numberOfInfants.Add(new SelectListItem { Text = "5 Infants", Value = "5" });
+    //numberOfInfants.Add(new SelectListItem { Text = "6 Infants", Value = "6" });
+    //numberOfInfants.Add(new SelectListItem { Text = "7 Infants", Value = "7" });
+    //numberOfInfants.Add(new SelectListItem { Text = "8 Infants", Value = "8" });
+
+    var cabinXML = UtilitiesService.getCabin();
+    var cabin = new List<SelectListItem>();
+    for (int index = 0; index < cabinXML.Count; index++)
+    {
+        cabin.Add(new SelectListItem { Text = cabinXML[index].cabinName, Value = cabinXML[index].cabinCode });
+    }
+
+    #region for hotel only
+    List<SelectListItem> dlAdults = new List<SelectListItem>();
+    for (int i = 1; i <= 8; i++)
+    {
+        dlAdults.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Adult{1}", i, (i > 1 ? "s" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(2) ? true : false)
+        });
+    }
+
+    List<SelectListItem> dlInfants = new List<SelectListItem>();
+    for (int i = 0; i <= 5; i++)
+    {
+        dlInfants.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Infant{1}", i, (i > 1 ? "s" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(0) ? true : false)
+        });
+    }
+
+    List<SelectListItem> dlRooms = new List<SelectListItem>();
+    for (int i = 1; i <= 8; i++)
+    {
+        dlRooms.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Room{1}", i, (i > 1 ? "s" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(1) ? true : false)
+        });
+    }
+    #endregion
+
+    var hoteltabactiv = Request.QueryString.ToString().Contains("hotel") ? "active_tab" : "";
+    var flytabactiv = !Request.QueryString.ToString().Contains("hotel") ? "active_tab" : "";
+    var cartabactiv = Request.QueryString.ToString().Contains("car") ? "active_tab" : "";
+}
+
+<!-- SEARCH PORTION START -->
+<div class="search_area">
+    <div class="search_area_inner">
+        <div class="sai_inner">
+
+            <!-- LEFT TEXT PORTION START -->
+            <div class="sai_inner_left">
+                <div class="sai_ir_top_tikle">@*<img src="@Url.Content("~/images/logo_tickle.png")" width="34" height="47" alt="">*@</div>
+                <div class="sai_ir_top_text"> @*{place-holder}*@ @*<br />Absolutely Tokyo, Izu & Mt. Fuji*@</div>
+                <div class="sai_ir_top_text1">@*From RM4,900*@</div>
+            </div>
+            <!-- LEFT TEXT PORTION END -->
+            <!-- RIGHT SEARCH START -->
+            <div class="sai_inner_right">
+                @*
+                    2016/12/30 - Hide "Hotel" tab and "Package" in flight.mayflower.com.my landing page search panel
+                     http://redmine.alphareds.com/issues/2427
+                *@
+                @if (Request.QueryString.ToString().Contains("hotel"))
+                {                  
+                }            
+                @*@if (forStaging == true)
+                    {*@
+                <div class="sir_tab_container">
+                    <div class="sir_tc_tabs" style="padding-right:2px">
+                        <div class="sir_tc_tabs_inner sir_tc_ti_center searchtab2 @flytabactiv">Flight</div>
+                    </div>
+                    <div class="sir_tc_tabs">
+                        <div class="sir_tc_tabs_inner searchtab1 @hoteltabactiv">Hotel</div>
+                    </div>
+                    <div class="sir_tc_tabs">
+                            <div class="sir_tc_tabs_inner sir_tc_ti_center searchtab3" id="dynamic">Dynamic</div>
+                    </div>
+                    <div class="sir_tc_tabs">
+                        <div class="sir_tc_tabs_inner sir_tc_ti_center searchtab4" id="fixedprice">Fixed</div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="sir_tc_tabs">
+                        <div class="sir_tc_tabs_inner searchtab5 @cartabactiv">Car</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                @*}*@
+
+                <!-- mobile tap to search start -->
+                <div class="tapto_search">Tap here to search</div>
+                <div class="taptosearch_tick">
+                    <div class="tick_center_container"><img src="@Url.Content("~/images/arrow_down.png")" width="50" height="25" alt=""></div>
+                    @*<img src="@Url.Content("~/images/promotion/MASAIRPROMO_New-Website-mobile-version.jpg")" width="900" height="923" alt="">*@
+
+                    <div id="myCarousel_mobile" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators_mobile" style="display:none">
+                            <li data-target="#myCarousel_mobile" data-slide-to="0" class="active"></li>
+                            <li data-target="#myCarousel_mobile" data-slide-to="1"></li>
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            <div class="item active">
+                                <div class="promo_image_clickable_mobile">
+                                    <a href="#">
+                                        @*Clickable*@
+                                        <img src="@Url.Content("/images/promotion/BRITISHAIRLONDON-NEW-WEBSITE-MOBILE-VERSION.jpg")" width="900" height="923" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left and right controls -->
+                        @*<a class="left carousel-control" href="#myCarousel_mobile" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="right carousel-control" href="#myCarousel_mobile" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>*@
+                    </div>
+                    @*<div class="promo_image_clickable_mobile">
+                            <a href="#">Clickable</a>
+                        </div>
+                        <img src="@Url.Content("/images/promotion/BRITISHAIRLONDON-NEW-WEBSITE-MOBILE-VERSION.jpg")" width="900" height="923" alt="">*@
+                </div>
+                <!-- mobile tap to search end -->
+
+                <div class="sir_tabresult">
+                    <!-- hotel search start -->
+                    @Html.Partial("_SearchHotel", new Alphareds.Module.Model.SearchHotelModel())
+                    @Html.Partial("_SearchCarRental", new Alphareds.Module.Model.ProductCarRental.SearchCriteria())
+                    <!-- hotel search end -->
+                    <!-- flight search start -->
+                    <div id="search_flight">
+                        @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-inline inline", @id = "form" }))
+                        {
+                            <div class="tabs_content_container tabs_content_container2">
+                                @*<div class="tl_right searchclose"><a href='@Url.Action("Index", "Home")'><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></a></div>*@
+                                <div class="tl_right searchclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></div>
+                                <div class="tcc_text1">I'm looking for</div>
+                                <div class="tcc_triptypediv">
+
+                                    <div class="tcc_threetabs tcc_threetabs2 tcc_threetabs2a" style="margin-left: 20%">
+                                        <div class="tcc_threetabs_inner return_icon return_icon_active tcct1" onclick="$('#btm_radio_return').prop('checked', true)">Return</div>
+                                    </div>
+                                   
+                                    <div class="tcc_threetabs tcc_threetabs2 oneway">
+                                        <div class="tcc_threetabs_inner tcc_ti_center oneway_icon tcct2" onclick="$('#btm_radio_oneway').prop('checked', true)">One Way</div>
+                                    </div>
+                                    
+                                    <div class="hidden">
+                                        @Html.RadioButtonFor(model => model.SearchFlightResultViewModel.TripType, "Return", new { @id = "btm_radio_return" })
+                                        @Html.RadioButtonFor(model => model.SearchFlightResultViewModel.TripType, "OneWay", new { @id = "btm_radio_oneway" })
+                                    </div>
+                                    <div class="tcc_threetabs">
+
+                                        @*<div class="tcc_threetabs_inner tcc_ti_right multi_icon tcct3">Multi City</div>*@
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                                @Html.HiddenFor(x => x.SearchFlightResultViewModel.TripType)
+                                @Html.HiddenFor(model => model.SearchFlightResultViewModel.DepartureTime, new { @id = "DepartureTime" })
+                                @Html.HiddenFor(model => model.SearchFlightResultViewModel.ReturnTime, new { @id = "ReturnTime" })
+                                @Html.HiddenFor(model => model.SearchFlightResultViewModel.IsDynamic, new { @id = "IsDynamic" })
+                                <div class="clear"></div>
+
+                                <div class="flight_form_container1">
+                                    <div class="ffc1_left">From</div>
+                                    <div class="ffc1_right">
+                                        @Html.TextBoxFor(model => model.SearchFlightResultViewModel.DepartureStation,
+                                    new { @id = "from", @name = "from", @class = "form-control", @placeholder = "Enter city or airport" })
+                                        <ul class="list-group to_from_ul" id="from_locations"></ul>
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.DepartureStation, null, new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.DepartureStationCode, null, new { @class = "textforerrormsg" })
+                                    </div>
+                                    <div class="clear"></div>
+
+                                    <div class="ffc1_left">To</div>
+                                    <div class="ffc1_right">
+                                        @Html.TextBoxFor(model => model.SearchFlightResultViewModel.ArrivalStation,
+                                    new { @id = "to", @name = "to", @class = "form-control", @placeholder = "Enter city or airport" })
+                                        <ul class="list-group to_from_ul" id="to_locations"></ul>
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.ArrivalStation, null, new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.ArrivalStationCode, null, new { @class = "textforerrormsg" })
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+
+                                <div class="flight_form_container2">
+                                    <div class="flight_oneway">
+                                        <div class="ffc2_r1_b1 ffc2_r1_b1a">On</div>
+                                        <div class="ffc2_r1_b2">
+                                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.BeginDate, "{0:dd-MMM-yyyy}", new { @id = "datep", @name = "depart", @class = "", @placeholder = "Departing On", @readonly = "readonly" })
+                                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.BeginDate, null, new { @class = "textforerrormsg" })
+                                        </div>
+                                    </div>
+                                    <div class="flight_twoway">
+                                        <div class="ffc2_r1_b3 ffc2_r1_b3a">Till</div>
+                                        <div class="ffc2_r1_b4" style="width:30%">
+                                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.EndDate, "{0:dd-MMM-yyyy}", new { @id = "datep1", @name = "return", @class = "", @placeholder = "Return On", @readonly = "readonly" })
+                                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.EndDate, null, new { @class = "textforerrormsg" })
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flight_form_container1 flight_form_container1a">
+                                    <div class="ffc1_left">By</div>
+                                    <div class="ffc1_right">
+                                        @Html.TextBoxFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCode, new { @id = "airline", @name = "airline", @class = "form-control", @placeholder = "Enter preferred airline" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCode, null, new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.PrefferedAirlineCodeSub, null, new { @class = "textforerrormsg" })
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="flight_form_container2">
+                                    <div class="ffc2_r2_b1">For</div>
+                                    <div class="ffc2_r2_b2 dynamic_room">
+                                        @Html.DropDownListFor(model => model.SearchFlightResultViewModel.NoOfRoom, numberOfRooms, null, null)
+                                    </div>
+                                    <div class="ffc2_r2_b2">
+                                        @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Adults, numberOfAdults, null, null)
+                                    </div>
+                                    <div class="ffc2_r2_b3">
+                                        @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Childrens, numberOfChildren, null, null)
+                                    </div>
+                                    <div class="ffc2_r2_b4">
+                                        @Html.DropDownListFor(model => model.SearchFlightResultViewModel.Infants, numberOfInfants, null, null)
+                                    </div>
+                                    <div class="ffc2_r2_b5">
+                                        <img src="@Url.Content("~/images/i-icon.png")" style="width: 12px; height: 12px;filter: none;-webkit-filter: blur(0px);" alt="">
+                                        <div class="yellow_toll_tip">
+                                            <div class="ttt"><img src="@Url.Content("~/images/toll_tip_top.png")" width="215" height="13" alt=""></div>
+                                            <div class="ttt1">
+                                                <ul>
+                                                    <li>Adult 12 Years Old and above</li>
+                                                    <li>Child 2-11 Years Old</li>
+                                                    <li>
+                                                        Infant 0-23 Months Old<br>
+                                                        (Under 2 Years Old)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+
+
+                                    <div>
+                                        @Html.ValidationMessage("validateForm", new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Adults, null, new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Childrens, null, new { @class = "textforerrormsg" })
+                                        @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.Infants, null, new { @class = "textforerrormsg" })
+                                    </div>
+
+
+                                    <div class="clear"></div>
+                                    @*<!-- Promotion Code -->
+                                        <div class="ffc2_r3_b1">with</div>
+                                        <div class="ffc2_r3_b2">
+                                        <input name="" type="text">
+                                        </div>*@
+
+                                    <div class="ffc2_r3_b1"></div>
+                                    <div class="ffc2_r3_b2">
+                                    </div>
+
+                                    <div class="ffc2_r3_b3">Flying</div>
+                                    <div class="ffc2_r3_b4">
+                                        @Html.DropDownListFor(model => model.SearchFlightResultViewModel.CabinClass, cabin, null, null)
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+
+                                <div class="flight_form_container1 flight_form_container1a flight_form_container1c">
+                                    <div class="ffc1_left">With</div>
+                                    <div class="ffc1_right">
+                                        @Html.TextBoxFor(model => model.SearchFlightResultViewModel.PromoCode, new { @id = "promocode", @name = "promocode", @class = "form-control", @placeholder = "Enter promo code" })
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="flight_form_container2 fixedprice">
+                                    @Html.HiddenFor(model => model.SearchFlightResultViewModel.IsFixedPrice, new { @id = "IsFixedPrice" })
+                                    @*<div class="flight_oneway">
+                                        <div class="ffc2_r1_b1 ffc2_r1_b1a">Min</div>
+                                        <div class="ffc2_r1_b2">
+                                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.FixedPriceFrom, new { @id = "pricefrom", @name = "pricefrom", @class = "form-control", @placeholder = "Price Range From" })
+                                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.FixedPriceFrom, null, new { @class = "textforerrormsg" })
+                                        </div>
+                                    </div>
+                                    <div class="flight_twoway">
+                                        <div class="ffc2_r1_b3 ffc2_r1_b3a">Max</div>
+                                        <div class="ffc2_r1_b4" style="width:30%">
+                                            @Html.TextBoxFor(model => model.SearchFlightResultViewModel.FixedPriceTo, new { @id = "priceto", @name = "priceto", @class = "form-control", @placeholder = "Price Range To" })
+                                            @Html.ValidationMessageFor(model => model.SearchFlightResultViewModel.FixedPriceTo, null, new { @class = "textforerrormsg" })
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>*@
+                                </div>
+
+                                <div class="flight_form_container3">
+                                    @Html.StyledCheckBoxFor(model => model.SearchFlightResultViewModel.DirectFlight)<br>
+                                    @*<input name="" type="submit" value="OK, show me!" role="button">*@
+                                    <button type="submit">OK, show me!</button>
+                                    <div class="ffc3_content">
+                                        By clicking on this button, I agree to the Mayflower <br>
+                                        @*Alvinloo 8/12/2016 start*@
+                                        <a href="@Url.Action("TermsConditions", "Public")" target="_blank">terms & conditions</a> and <a href="@Url.Action("PDPA", "Public")" target="_blank">privacy policy</a>.
+                                        @*Alvinloo 8/12/2016 end*@
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <!-- flight search end -->
+                    <!-- package search start -->
+                    <div id="search_package">
+                        <div class="tabs_content_container">Package</div>
+                    </div>
+                    <!-- package search end -->
+                </div>
+            </div>
+            <!-- RIGHT SEARCH END -->
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            @*<li data-target="#myCarousel" data-slide-to="1"></li>*@
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <div class="promo_image_clickable">
+                    <a href="#" id="promo_clickable_desktop">
+                        @*Clickable*@
+                        <img src="@Url.Content("/images/promotion/BRITISHAIRLONDON-NEW-WEBSITE.jpg")" alt="" class="header_iamge_big" style="display:block;margin-left: auto;margin-right: auto;">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @*Left and right controls*@
+        @*<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>*@
+    </div>
+
+    @*<div class="promo_image_clickable">
+            <a href="#" id="promo_clickable_desktop">Clickable</a>
+        </div>
+        <img src="@Url.Content("/images/promotion/BRITISHAIRLONDON-NEW-WEBSITE.jpg")" alt="" class="header_iamge_big" style="display:block;margin-left: auto;margin-right: auto;">*@
+    @*<a href="/promotion">
+            <img src="@Url.Content("~/images/promotion/MASAIRPROMO_New-Website.jpg")" alt="" class="header_iamge_big" style="display:block;margin-left: auto;margin-right: auto;">
+        </a>*@
+    @*<map name="imgmap">
+            <area shape="rect" coords="320,435,582,800" alt="Qatar" href="www.google.com">
+        </map>*@
+</div>
+<!-- SEARCH PORTION END -->
+@section scripts{
+    <!--Start of Tawk.to Script-->
+    @{
+        var useCustomJQueryValidation = Core.GetSettingValue("usecustomjqueryvalidation");
+        var tripType = Model.SearchFlightResultViewModel.TripType;
+    }
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            //checkSize();
+            var hashes = window.location.href.slice(window.location.href.indexOf('?'));
+            if (hashes.indexOf("hotel") != '-1') {
+                $("#search_hotel").show();
+                $("#search_flight").hide();
+            }  
+
+            var date = ServerDateTime;
+
+            var Date7 = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 7);
+            //$('#datep').datepicker("setDate", Date7 );
+        });
+        $("#starrating").change(function () {
+            $("#hidStar").val($("#starrating").val());
+        })      
+        //$(window).resize(function () {
+        //    checkSize();
+        //});
+
+        //function checkSize() {
+        //    var width = $(window).width();
+        //    if (width < 900) {
+        //        $('#promo_clickable_desktop').hide();
+        //    }
+        //    else {
+        //        $('#promo_clickable_desktop').show();
+        //    }
+        //}
+    </script>
+
+
+
+    <!-- Initialize -->
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                $(".searchtab2").trigger('click');
+            });
+        </script>*@
+
+    @Html.Partial("~/Views/Flight/Shared/_SearchWidgetScripts.cshtml")
+    @Html.Partial("~/Views/Hotel/_SearchDestinationWidgetScripts.cshtml")
+}

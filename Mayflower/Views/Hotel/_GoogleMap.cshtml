@@ -1,0 +1,15 @@
+﻿@using Alphareds.Module.ServiceCall;
+
+<div class="fullcover_div_GoogleMap">
+    <div class="viewmorehotel_container">
+        <div class="viewmorehotel_white1nn">
+            <div class="tl_right loginclose"><img src="../images_hotel/close.jpg" class="map" width="31" height="29" alt=""></div>
+            <div class="vm_inner_content">
+                <iframe width=100%
+                        height="450"
+                        frameborder="0" style="border:0"
+                        src="@(ViewData["MAP"] != null ? ViewData["MAP"].ToString() : "")" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,129 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+
+@model dynamic
+
+@{
+    var paxList = (List<TravellerDetail>)Model.PaxList;
+    string tripid = ViewBag.tripid ?? (Model.tripid ?? Request.QueryString["tripid"]);
+    string affiliationId = Request.QueryString["affiliationId"];
+
+}
+
+<style>
+    .ins-title {
+        font-weight: bold
+    }
+
+    .select-box-area {
+    }
+
+    .area-country, .area-date {
+        display: inline-block;
+    }
+
+    .area-country {
+        width: 40%;
+        text-align: left;
+    }
+
+    .area-date {
+        width: 59%;
+    }
+
+    .area-date select {
+        width: 100%;
+    }
+
+    .d-area {
+        width: 25%;
+        display: inline-block;
+    }
+
+    .m-area {
+        width: 29.9%;
+        display: inline-block;
+    }
+
+    .y-area {
+        width: 29.9%;
+        display: inline-block;
+    }
+</style>
+
+<div>
+    <h4>Insurance selected, please update following traveller info: </h4>
+    @using (Ajax.BeginForm("CheckInsuranceUpdate", "Checkout", new { tripid }, new AjaxOptions { HttpMethod = "POST",
+        OnBegin = "$('.load-ico').show()", OnSuccess = "updateIdd(data)", OnComplete= "$('.load-ico').hide()"}, new { id = "updateForm", style="text-align: left;" }))
+    {
+        foreach (var pax in paxList)
+        {
+            int currentIndex = paxList.IndexOf(pax);
+            bool isStatusOk = pax.IsIdentityOk;
+
+            <div>
+                <span class="ins-title">Traveller @(currentIndex + 1) - @pax.FullName @*(@(isStatusOk ? "OK" : "X"))*@</span>
+
+                @if (!isStatusOk)
+                {
+                    <div style="margin-bottom: 0.5em">
+                        <select id="@(currentIndex)_itype" name="@(currentIndex)_itype">
+                            <option value="Passport">Passport</option>
+                            @*<option value="IC">IC</option>*@
+                        </select>
+                        @Html.TextBox(string.Format("{0}_identity", currentIndex), pax.PassportNumber, new { placeholder = "ex. A1234567",
+                       required = "required", style = "height: 20px;" })
+                    </div>
+
+                    <div class="select-box-area">
+                        <div class="area-country">
+                            <div>Country</div>
+                            @Html.DropDownList(string.Format("{0}_passportCountry", currentIndex), Mayflower.General.Utilities.CountryDropList(pax.PassportIssueCountry), "-", new { @class = "", style = "width: 100%" })
+                        </div>
+
+                        <div class="area-date">
+                            <div class="d-area">
+                                <div>Day</div>
+                                @Html.DropDownList(string.Format("{0}_passportExpiryDay", currentIndex),
+                               SetSelectedItem(Mayflower.General.Utilities.DaysDropList, (pax.PassportExpiryDateDays.HasValue ? pax.PassportExpiryDateDays.Value.ToString() : null))
+                               , "-", new { @class = "day" })
+                            </div>
+                            <div class="m-area">
+                                <div>Month</div>
+                                @Html.DropDownList(string.Format("{0}_passportExpiryMonth", currentIndex), 
+                               SetSelectedItem(Mayflower.General.Utilities.MonthsDropList2(1), (pax.PassportExpiryDateMonths.HasValue ? pax.PassportExpiryDateMonths.Value.ToString() : null))
+                               , "-", new { @class = "month" })
+                            </div>
+                            <div class="y-area">
+                                <div>Year</div>
+                                @Html.DropDownList(string.Format("{0}_passportExpiryYear", currentIndex), 
+                               SetSelectedItem(Mayflower.General.Utilities.ExpiredYearsDropList(6), (pax.PassportExpiryDateYears.HasValue ? pax.PassportExpiryDateYears.Value.ToString() : null))
+                               , "-", new { @class = "year" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <div style="margin-top: 1.5em">
+            <button type="submit" class="btn btn-xs btn-primary">Update and continue</button>
+            <span style="margin-top: 5px;display: inline-block;font-family: 'UbuntuBold';font-size: 16px;vertical-align: bottom;">
+                <img class="load-ico" src="/Images/loading_40x40.gif" style="width: 20px;float: left;display: none;">
+                <span class="err-msg"></span>
+            </span>
+        </div>
+    }
+</div>
+
+@functions{
+    private IEnumerable<SelectListItem> SetSelectedItem(IEnumerable<SelectListItem> list, string value)
+    {
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = a.Text,
+                   Value = a.Value,
+                   Selected = a.Value == value
+               };
+    }
+}

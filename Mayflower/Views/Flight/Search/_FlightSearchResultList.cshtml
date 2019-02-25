@@ -1,0 +1,732 @@
+﻿@model Alphareds.Module.Model.FlightBookingModel
+@using PagedList.Mvc;
+@using Alphareds.Module.Common;
+@{
+    string tripid = ViewBag.tripid;
+    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+}
+
+@if (Model.FlightSearchResultViewModel.IPagedGroupFullFlightSearchReseult == null || Model.FlightSearchResultViewModel.IPagedGroupFullFlightSearchReseult.Count == 0)
+{
+    <div class="s2_main_container">
+        <div class="s2_mc_border_conainer no-result" @*style="display:none;*@>
+            <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    <h2 style="color:#be2e30">Sorry, there aren't any flights that match your filters.</h2>
+                    <div class="member_fp_text" style="text-align:left;display:inline-block">
+                        <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                            <li>Undo your last action</li>
+                            <li>Try changing some of the other filters or reset fitlers and show all flights</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    int odoCounter = 0;
+    bool isRoundTrip = Model.SearchFlightResultViewModel.TripType != "OneWay";
+
+    string sortType = Session["sortType"] != null ? Session["sortType"].ToString() : null;
+    string optionColor = "";
+    string optionBgcolor = "";
+    string serviceSource = "";
+
+    Mayflower.Controllers.FlightController fc = new Mayflower.Controllers.FlightController();
+    var dbContext = new Alphareds.Module.Model.Database.MayFlower();
+    var promoRule = fc.GetPromoCodeDiscountRule(Model.SearchFlightResultViewModel, dbContext);
+    
+    bool isPromoForSpecificAirline = promoRule != null && promoRule.IsSpecificAirline;
+
+    List<Alphareds.Module.Model.Database.PromoCodeSpecificAirlineDetail> pCodeForSpecificAirline = isPromoForSpecificAirline ? fc.GetPromoCodeSpecificAirlineList(promoRule.PromoCode, Model.SearchFlightResultViewModel.TripType, dbContext) : new List<Alphareds.Module.Model.Database.PromoCodeSpecificAirlineDetail>();
+    bool thisAirlineIsWithSpecificPCode = false;
+
+    var departureCountryCode = UtilitiesService.GetDepartureCountry(Model.SearchFlightResultViewModel.DepartureStationCode);
+    var arrivalCountryCode = UtilitiesService.GetDepartureCountry(Model.SearchFlightResultViewModel.ArrivalStationCode);
+    var PromoFlightList = promoRule != null && promoRule.PromoFlightDestinations.Count > 0 ? promoRule.PromoFlightDestinations.FirstOrDefault(x => (x.ArrivalStation == Model.SearchFlightResultViewModel.ArrivalStationCode || x.ArrivalStation == "-" || (x.ArrivalStation == "XXX" && x.ArrivalCountryCode == arrivalCountryCode)) && (x.DepartureStation == Model.SearchFlightResultViewModel.DepartureStationCode || x.DepartureStation == "-" || (x.DepartureStation == "XXX" && x.DepartureCountryCode == departureCountryCode)) && x.Active)?.PromoFlightLists : null;
+
+    foreach (var group in Model.FlightSearchResultViewModel.IPagedGroupFullFlightSearchReseult)
+    {
+        optionColor = odoCounter % 2 == 0 ? "s2mdb_orange_bg" : "s2mdb_violet_bg";
+        optionBgcolor = odoCounter % 2 == 0 ? "s2mc_orgcolorbg" : "s2mc_graycolorbg";
+        string airlineCode = group.AirlineGroup.Split('-').Distinct().Count() > 1 ? null : group.AirlineGroup.Split('-').First();
+        string airlineName = airlineCode == null ? "Multiple Airline" : UtilitiesService.GetAirlineName(airlineCode);
+        string airlineImg = UtilitiesService.GetAirlineImagePath(airlineCode);
+        int optionRadioIndexCounter = 0;
+
+        //Compare Tool - Change to Compare Tool
+        //var priceList = Model.FlightSearchResultViewModel.FullFlightSearchResult.First(x => x.PricingInfo.TotalAfterTax == group.Price);
+        var priceListWithSamePrice = Model.FlightSearchResultViewModel.FullFlightSearchResult.First(x => x.pricedItineryModel.PricingInfo.TotalAfterTax == group.Price);
+        var priceList = priceListWithSamePrice.pricedItineryModel;
+        var adultPrice = priceList.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "ADT");
+        var childrenPrice = priceList.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "CNN");
+        var infrantPrice = priceList.PricingInfo.FareBreakDown.FirstOrDefault(x => x.PassengerTypeCode == "INF");
+
+        decimal totalWithoutTax = priceList.PricingInfo.TotalBeforeTax;
+        decimal totalTax = priceList.PricingInfo.Tax;
+        decimal? promoPrice = null;
+        decimal lowestPrice = Model.SearchFlightResultViewModel.FixedPriceFrom;
+
+        var DBSupplierCode = UtilitiesService.ServiceSourceToDBServiceSourceName(priceListWithSamePrice.ServiceSource);
+        bool isPromoFlightSupplier = PromoFlightList != null && PromoFlightList.Count > 0 && PromoFlightList.Any(d => (d.SupplierCode.Contains(DBSupplierCode) || d.SupplierCode == "ALL") && d.Active);
+
+
+        if (isPromoForSpecificAirline && pCodeForSpecificAirline.Count > 0)
+        {
+            thisAirlineIsWithSpecificPCode = pCodeForSpecificAirline.Any(x => x.AirlineCode == group.AirlineGroup);
+        }
+
+        //add , if is for specific airline then need check this airline is it on the list
+        if (promoRule != null && isPromoFlightSupplier && (!isPromoForSpecificAirline || (isPromoForSpecificAirline && thisAirlineIsWithSpecificPCode)))
+        {
+            promoPrice = Alphareds.Module.PaymentController.PaymentServiceController.CalcPromoDiscAmount(promoRule.PromoID, totalWithoutTax, dbContext);
+        }
+
+        <div id="@(group.GroupTag)" class="flight_group_container" data-stop="@group.GroupStop" data-gapo="@odoCounter">
+            <!-- FULL CONTAINER BOX START -->
+            @*<div class="s2_mc_offer">10% OFF till 30 October 2016</div>*@
+
+            <!-- main row start -->
+            <div class="s2_mc_border_conainer @optionBgcolor">
+                <div class="s2_mcbc_b1_left">
+                    <div class="s2_mcbc_b1l_left_flight">
+                        <div class="s2_mcbcl_icon"><img src="@Url.Content(airlineImg)" width="37" height="44" alt=""></div>
+                        <div class="s2_mcbcl_text">@airlineName</div>
+                        <div class="clear"></div>
+                        <div class="s2_mcbcl_text1 hidden">Operated by : <span class="operator">@airlineName</span></div>
+                    </div>
+                    <div class="s2_mcbc_b1l_right">
+                        @*<div class="s2mcbc_b1lr_text1">Price</div>*@
+                        <div class="s2mcbc_b1lr_text2">
+                            <text class="currency">@(Model.SearchFlightResultViewModel.IsFixedPrice ? "+ ":"")MYR</text>
+                            @if (promoPrice != null)
+                            {
+                                <span class="price">@((totalWithoutTax + totalTax + promoPrice.Value).ToString("n2"))</span>
+                            }
+                            else
+                            {
+                                <span class="price">@(Model.SearchFlightResultViewModel.IsFixedPrice ? (group.Price - lowestPrice).ToString("#,##0.00") : group.Price.ToString("#,##0.00"))</span>
+                            }
+                            @if (!Model.SearchFlightResultViewModel.IsFixedPrice)
+                            {
+                            <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="" class="show_toltip add-cursor-pointer">
+                            }
+                            <!-- toll tip box start -->
+                            <div class="s2-1_form_toll_tip">
+                                <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                <div class="s3-1_form_toll_tip_b">
+                                    <div>Per Adult</div>
+                                    <div class="s2-1_tt_left">Nett:</div>
+                                    <div class="s2-1_tt_right price_perppl">MYR<span>@adultPrice.TotalBeforeTax.ToString("#,##0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@adultPrice.Tax.ToString("#,##0.00")</span></div>
+                                    <div class="clear"></div>
+                                    <div class="s2-1_tt_left">Total:</div>
+                                    <div class="s2-1_tt_right">MYR<span>@adultPrice.TotalAfterTax.ToString("#,##0.00")</span></div>
+                                    <div class="clear"></div>
+                                    @if (childrenPrice != null)
+                                    {
+                                        <div class="s2-1_line"></div>
+                                        <div>Per Child</div>
+                                        <div class="s2-1_tt_left">Nett:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Total:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(childrenPrice != null ? childrenPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                    }
+                                    @if (infrantPrice != null)
+                                    {
+                                        <div class="s2-1_line"></div>
+                                        <div>Per Infant</div>
+                                        <div class="s2-1_tt_left">Nett:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalBeforeTax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Taxes & Fees:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.Tax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_tt_left">Total:</div>
+                                        <div class="s2-1_tt_right">MYR<span>@(infrantPrice != null ? infrantPrice.TotalAfterTax.ToString("#,##0.00") : "0.00")</span></div>
+                                        <div class="clear"></div>
+                                        <div class="s2-1_line"></div>
+                                    }
+                                    @if (promoPrice != null)
+                                    {
+                                        <div class="s2-1_line"></div>
+                                        <div class="s2-1_tt_left">Discount :</div>
+                                        <div class="s2-1_tt_right">MYR<span>@promoPrice.Value.ToString("#,##0.00")</span></div>
+                                        <div class="clear"></div>
+                                    }
+                                </div>
+                            </div>
+                            @if (promoPrice != null && promoRule.DiscountAmtOrPCT != 0 && isPromoFlightSupplier)
+                            {
+                                <div class="clear"></div>
+                                <span class="h2_mhd3_rlr_b3l_cuttingtext" style="font-size: 20px;margin: 0 auto;text-align: center;display: inline-block;width: 100%;">@group.Price.ToString("#,##0.00")</span>
+                            }
+                            <div style="font-size:12px; color:#767676">
+                                All-in@(Model.SearchFlightResultViewModel.IsFixedPrice ? " for total pax" : "")
+                                @if (!string.IsNullOrWhiteSpace(Model.SearchFlightResultViewModel.MarketingMessage))
+                                {
+                                    <div class="f2_mhdb3_promo">@Model.SearchFlightResultViewModel.MarketingMessage</div>
+                                }
+                                else if (Model.SearchFlightResultViewModel.IsPromoCodeUsed && promoRule != null && promoRule.DiscountAmtOrPCT != 0 && isPromoFlightSupplier && (!isPromoForSpecificAirline || (isPromoForSpecificAirline && thisAirlineIsWithSpecificPCode)))
+                                {
+                                    <div class="f2_mhdb3_promo">Promo Code Applied</div>
+                                }
+                                else if (group.IsDiscountFlight && group.DiscountedAmount < 0)
+                                {
+                                    <div class="f2_mhdb3_promo">Discount Applied</div>
+                                }
+                                else if (group.IsVolumeSell == "VOL")
+                                {
+                                    <div class="f2_mhdb3_promo">Discount Applied</div>
+                                }
+                            </div>
+                            <!-- toll tip box end -->
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="s2_mcbc_b1_right">
+                    @* Assign ODO Index here, to get Sabre returned result *@
+                    <div class="s2_mcbcb1r_button"><a class="select-flight-btn" href="#" data-index="@(group.GroupTag)">Select</a></div>
+                    @if (Core.IsForStaging && !Model.SearchFlightResultViewModel.IsDynamic)
+                    {
+                        <div class="save_button"><a class="save-flight-btn generateLink" href="#" data-index="@(group.GroupTag)">Link</a></div>
+                        <br /><br />
+                    }
+                    @if (!Model.SearchFlightResultViewModel.IsFixedPrice && true)
+                    {
+                        <div class="save_button"><a class="save-flight-btn" href="#" data-index="@(group.GroupTag)">Save</a></div>
+                    }
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!-- main row end -->
+            <!-- flight detail start-->
+            <div class="s2_mcb_inoutbound_cont outbound_click @optionColor">
+                <div class="s2_mcb_io_left s2_mcb_io_left2">Outbound – @Model.SearchFlightResultViewModel.BeginDate.Value.ToString("dd-MMM-yyyy, ddd")<span></span></div>
+                @if (isRoundTrip)
+                {
+                    <div class="s2_mcb_io_right">Inbound – @Model.SearchFlightResultViewModel.EndDate.Value.ToString("dd-MMM-yyyy, ddd")</div>
+                }
+                <div class="clear"></div>
+            </div>
+            <div class="s2_mc_border_conainer s2_mcb_midline @optionBgcolor">
+                <!-- left detail start -->
+                <div class="s2_mcb_ml_left_container">
+
+                    @{
+                        List<Alphareds.Module.Model.GrouppedFlightInfo> grouppedListOut = group.Outbound;
+                        switch (sortType)
+                        {
+                            case "departuretimeasc":
+                                grouppedListOut = group.Outbound.OrderBy(s => s.DepatureTime).ToList();
+                                break;
+                            case "durationasc":
+                                grouppedListOut = group.Outbound.OrderBy(o => o.TotalElapsedTime).ToList();
+                                break;
+                            default:
+                                //grouppedListOut = group.Outbound.OrderBy(o => o.TotalElapsedTime).ToList();
+
+                                // http://redmine.alphareds.com/issues/2409
+                                // default sorting from earliest to the latest flight
+                                grouppedListOut = group.Outbound.OrderBy(o => o.DepatureTime).ToList();
+                                break;
+                        }
+                    }
+
+                    @foreach (var outboundlist in grouppedListOut.Take(2))
+                    {
+                        serviceSource = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].ServiceSource.ToString();
+                        if (Core.IsForStaging)
+                        {<div>Source : @serviceSource</div>}
+                    var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions.First();
+                    var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].pricedItineryModel.PricingInfo;
+                    @ODOTimeOption(odo, group, outboundlist, "outbound" + odoCounter, optionRadioIndexCounter, outboundlist.ResultListIndex, 0, pricingInfo, 0, serviceSource);
+                    optionRadioIndexCounter++;
+                }
+
+                    <div class="showmoredata @(group.GroupTag)">
+                        @foreach (var outboundlist in grouppedListOut.Skip(2))
+                        {
+                            serviceSource = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].ServiceSource.ToString();
+                            if (Core.IsForStaging)
+                            {<div>Source : @Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].ServiceSource.ToString()</div>}
+                        var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions.First();
+                        var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[outboundlist.ResultListIndex].pricedItineryModel.PricingInfo;
+                        @ODOTimeOption(odo, group, outboundlist, "outbound" + odoCounter, optionRadioIndexCounter, outboundlist.ResultListIndex, 0, pricingInfo, 0, serviceSource);
+                        optionRadioIndexCounter++;
+                    }
+                    </div>
+                </div>
+                <!-- left detail end -->
+                @if (isRoundTrip)
+                {
+                    List<Alphareds.Module.Model.GrouppedFlightInfo> grouppedListIn = group.Inbound;
+                    switch (sortType)
+                    {
+                        case "departuretimeasc":
+                            grouppedListIn = group.Inbound.OrderBy(s => s.DepatureTime).ToList();
+                            break;
+                        case "durationasc":
+                            grouppedListIn = group.Inbound.OrderBy(o => o.TotalElapsedTime).ToList();
+                            break;
+                        default:
+                            //grouppedListIn = group.Inbound.OrderBy(o => o.TotalElapsedTime).ToList();
+
+                            // http://redmine.alphareds.com/issues/2409
+                            // default sorting from earliest to the latest flight
+                            grouppedListIn = group.Inbound.OrderBy(o => o.DepatureTime).ToList();
+                            break;
+                    }
+
+                    <div class="s2_mcb_io_left @optionColor mobileonly inbound_click s2_mcb_io_left2">Inbound – @Model.SearchFlightResultViewModel.EndDate.Value.ToString("dd-MMM-yyyy, ddd")<span></span></div>
+                    <!-- right detail start -->
+                    <div class="s2_mcb_ml_right_container">
+                        @{
+                            // reset counter to 0 for reindex purpose
+                            optionRadioIndexCounter = 0;
+                        }
+                        @foreach (var inboudlist in grouppedListIn.Take(2))
+                        {
+                            serviceSource = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].ServiceSource.ToString();
+                            if (Core.IsForStaging)
+                            {<div>Source : @serviceSource</div>}
+                        //Compare Tool - Change to Compare Tool
+                        //var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].OriginDestinationOptions.Last();
+                        //int outBoundFlightLen = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].OriginDestinationOptions[0].FlightSegments.Length;
+                        //var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].PricingInfo;
+                        var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions.Last();
+                        int outBoundFlightLen = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions[0].FlightSegments.Length;
+                        var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.PricingInfo;
+                        @ODOTimeOption(odo, group, inboudlist, "inbound" + odoCounter, optionRadioIndexCounter, inboudlist.ResultListIndex, 1, pricingInfo, outBoundFlightLen, serviceSource);
+                        optionRadioIndexCounter++;
+                    }
+
+                        <div class="showmoredata @(group.GroupTag)">
+                            @foreach (var inboudlist in grouppedListIn.Skip(2))
+                            {
+                                serviceSource = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].ServiceSource.ToString();
+                                if (Core.IsForStaging)
+                                {<div>Source : @serviceSource</div>}
+                            //Compare Tool - Change to Compare Tool
+                            //var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].OriginDestinationOptions.Last();
+                            //int outBoundFlightLen = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].OriginDestinationOptions[0].FlightSegments.Length;
+                            //var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].PricingInfo;
+                            var odo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions.Last();
+                            int outBoundFlightLen = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.OriginDestinationOptions[0].FlightSegments.Length;
+                            var pricingInfo = Model.FlightSearchResultViewModel.FullFlightSearchResult[inboudlist.ResultListIndex].pricedItineryModel.PricingInfo;
+                            @ODOTimeOption(odo, group, inboudlist, "inbound" + odoCounter, optionRadioIndexCounter, inboudlist.ResultListIndex, 1, pricingInfo, outBoundFlightLen, serviceSource);
+                            optionRadioIndexCounter++;
+                        }
+                        </div>
+                    </div>
+                    <!-- right detail end -->
+                }
+                <div class="clear"></div>
+            </div>
+            <!-- flight detail end -->
+            @if (group.Outbound.Count > 2 || (group.Inbound != null && group.Inbound.Count > 2))
+            {
+                <div id="@(group.GroupTag)" class="show_more_flight_icon1" style="position: relative">Show more flight option</div>
+            }
+            <!-- FULL CONTAINER BOX START -->
+        </div>
+        <div class="ars-spacer"></div>
+        odoCounter++;
+    }
+
+    <div class="float" id="myPager">
+
+        @Html.PagedListPager(Model.FlightSearchResultViewModel.IPagedGroupFullFlightSearchReseult, page => Url.Action("Search", new { page = page, tripid }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(PagedListRenderOptions.ClassicPlusFirstAndLast, new AjaxOptions()
+{
+HttpMethod = "GET",
+InsertionMode = InsertionMode.Replace,
+UpdateTargetId = "result-content",
+OnBegin = "toggleLoadSection()",
+OnSuccess = "toggleLoadSection(data);ecomimpressions();",
+//OnSuccess = "toggleLoadSection(data);pairList();ecomimpressions();",
+OnFailure = "toggleLoadSection()",
+}))
+    </div>
+    <div class="clear"></div>
+
+}
+
+@*Compare Tool - Change to Compare Tool*@
+@*@helper ODOTimeOption(Alphareds.Module.SabreWebService.SWS.OriginDestinationOption odo, Alphareds.Module.Model.GrouppedFlightResultList group, Alphareds.Module.Model.GrouppedFlightInfo loopInfo,
+    string radioBtnName, int odoCounter, int odoIndex, int odoOutboundInboundIndicator, Alphareds.Module.SabreWebService.SWS.AirItineraryPricingInfo pricingInfo, int mealBaggageIndex)*@
+@helper ODOTimeOption(Alphareds.Module.CompareToolWebService.CTWS.OriginDestinationOption odo, Alphareds.Module.Model.GrouppedFlightResultList group, Alphareds.Module.Model.GrouppedFlightInfo loopInfo,
+    string radioBtnName, int odoCounter, int odoIndex, int odoOutboundInboundIndicator, Alphareds.Module.CompareToolWebService.CTWS.AirItineraryPricingInfo pricingInfo, int mealBaggageIndex, string serviceSource)
+{
+    string direction = odoOutboundInboundIndicator == 0 ? "Outbound" : "Inbound";
+    string mealText = Model.SearchFlightResultViewModel.isDomesticFlight ? "Snack" : "Meal";
+    var firstDepartSegment = odo.FlightSegments.First();
+    DateTime dtDepart = odo.FlightSegments.First().DepartureDateTime;
+    DateTime dtArrival = odo.FlightSegments.Last().ArrivalDateTime;
+    double NextCountDay = dtDepart.TimeOfDay.Add(dtArrival.Subtract(dtDepart)).Days;
+    string nextCountDayText = NextCountDay != 0 ? NextCountDay.ToString() : "";
+    TimeSpan totalFlightElapsedTime = TimeSpan.FromMinutes(odo.TotalElapsedTime);
+    double totalFlightElapsedTimeHour = Math.Floor(totalFlightElapsedTime.TotalHours);
+    List<string> locationCodeTag = new List<string>();
+    string flightNumber = string.Join(", ", odo.FlightSegments.Select(x => x.AirlineCode + x.FlightNumber));
+    int stopQty = odo.FlightSegments.Length - 1;
+    List<string> odoCabinClass = serviceSource == "SACS" ? pricingInfo.FareBreakDown.SelectMany(x => x.FareInfos.Select(y => UtilitiesService.GetCabinNameByCode(y.CabinType, Model.SearchFlightResultViewModel.CabinClass))).Distinct().ToList() : new List<string>() { Model.SearchFlightResultViewModel.CabinClassName };
+    string defaultChecked = "";//odoCounter == 0 ? "checked" : "";
+    int flightSegmentLength = odo.FlightSegments.Length;
+
+    for (int i = 0; i < odo.FlightSegments.Length; i++)
+    {
+        if (i != odo.FlightSegments.Length)
+        {
+            locationCodeTag.Add(odo.FlightSegments[i].DepartureAirportLocationCode);
+        }
+
+        if (i == odo.FlightSegments.Length - 1)
+        {
+            locationCodeTag.Add(odo.FlightSegments[i].ArrivalAirportLocationCode);
+        }
+    }
+
+    <!-- full row start -->
+    <div class="s2_mcb_ml_left" style="position: relative">
+        @*<div class="not-pairable" style="display: none">
+                <span>NOT AVAILABLE</span>
+            </div>*@
+        <div class="s2_mcb_ml_lr_inner">
+            <div class="s2_mcbml_inner_left">
+                <div class="s2_mil_left">
+                    <label><input id="@radioBtnName" type="radio" name="@radioBtnName" value="@odoCounter" data-stop="@stopQty" data-direction="@direction" data-odo="@loopInfo.Tag" data-servicesource="@serviceSource" @defaultChecked><span><span></span></span></label>
+                </div>
+                <div class="s2_mil_right">
+                    <div class="s2_mil_l_ico"><img src="@Url.Content(UtilitiesService.GetAirlineImagePath(firstDepartSegment.AirlineCode))" width="37" height="44" alt=""></div>
+                    <div class="s2_mil_l_text">
+                        @Html.Raw(string.Join("<span class='stop-spliter'>></span>", locationCodeTag).Replace(locationCodeTag.First(), locationCodeTag.First() + "<span>").Replace(locationCodeTag.Last(), "</span>" + locationCodeTag.Last()))
+                        <br>
+                        <div>@flightNumber</div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s2_mcbml_inner_right">
+                <div class="s2_mcbml_ir_left">@dtDepart.ToString("HHmm")</div>
+                <div class="s2_mcbml_ir_mid">
+                    <div><img src="@Url.Content("~/images/gray_plane.png")" width="25" height="24" alt=""></div>
+                    <div class="s2_mt5 xs-hidden">
+                        <span class="s2_spredcolor">@(totalFlightElapsedTimeHour)h @(totalFlightElapsedTime.Minutes)m</span><br>
+                        @(stopQty == 0 ? "Direct Flight" : stopQty + " Stops")
+                    </div>
+                </div>
+                <div class="s2_mcbml_ir_right">
+                    <div style="display:inline;">@dtArrival.ToString("HHmm")</div>
+                    @if (!string.IsNullOrWhiteSpace(nextCountDayText))
+                    {<span class="s2_mcbml_ir_right_t1"> (+@nextCountDayText)</span>}
+                    <span class="s2_mcbml_ir_right_t2 s2_mt5">@dtArrival.ToString("dd-MMM-yyyy, ddd")</span>
+                </div>
+                <div class="clear"></div>
+                <div class="s2_mt5 optiondura">
+                    <span class="s2_spredcolor">@(totalFlightElapsedTime.Hours)h @(totalFlightElapsedTime.Minutes)m</span>
+                    @(stopQty == 0 ? "Direct Flight" : stopQty + " Stops")
+                </div>
+            </div>
+            <div class="clear"></div>
+
+            @* flight detail here *@
+            <!-- show more details start -->
+            <div class="s2_hidden_full">
+                @{
+                    bool showverifydata = false;
+                    bool.TryParse(Core.GetAppSettingValueEnhanced("showverifydata"), out showverifydata);
+                }
+                @if (showverifydata)
+                {
+                    string[] resBook = odo.FlightSegments.Select(x => x.ResBookDesigCode).Distinct().ToArray();
+                    string[] fareBasis = pricingInfo.FareBreakDown.SelectMany(x => x.FareBasisCodes).Select(x => x.Code).Distinct().ToArray();
+                    decimal totalGST = 0;
+                    <span>Source Price : @pricingInfo.SourceTotalAfterTax</span><br />
+                    foreach (var fareBreakDown in pricingInfo.FareBreakDown)
+                    {
+                        var gstList = fareBreakDown.TaxBreakDown.Where(x => x.Key == "D8" || x.Key == "GST");
+                        //var fbdGst = gstList.Sum(x => x.Value);
+                        var fbdGst = fareBreakDown.GoodsAndServicesTax;
+                        totalGST += fbdGst * fareBreakDown.PassengerTypeQuantity;
+
+                        <span>Mark up : @fareBreakDown.ServiceFee</span><br />
+                        <span>GST for (@UtilitiesService.GetPassengerTypeName(fareBreakDown.PassengerTypeCode)) : @fbdGst</span><br />
+                        <span>Total Taxes (@UtilitiesService.GetPassengerTypeName(fareBreakDown.PassengerTypeCode)) included gst : @(fareBreakDown.SourceTax * fareBreakDown.PassengerTypeQuantity)</span><br />
+                    }
+
+                    <span>Total GST : @totalGST </span><br />
+                    <span>ResBookDesignCode : @string.Join(",", resBook)</span><br />
+                    <span>FareBasisCode : @string.Join(",", fareBasis)</span><br />
+                }
+                <div class="s2_hidden_full_inner">
+                    <div class="mf_ib_bb_dep_heading">Departs on @dtDepart.ToString("dd-MMM-yyyy, ddd")</div>
+                    @{
+                        int counter = 1;
+                        double totalNextDay = 0;
+                    }
+                    @foreach (var item in odo.FlightSegments)
+                    {
+                        double nextSegmentCountDay = item.DepartureDateTime.TimeOfDay.Add(item.ArrivalDateTime.Subtract(item.DepartureDateTime)).Days;
+                        totalNextDay = totalNextDay + nextSegmentCountDay;
+                        string nextSegmentCountDayText = totalNextDay != 0 ? "(+" + totalNextDay + ")" : "";
+                        TimeSpan segmentElapsedTime = TimeSpan.FromMinutes(item.ElapsedTime);
+                        <!-- row start -->
+                        <div class="mf_ibbbin_left">@item.DepartureDateTime.ToString("HHmm")</div>
+                        <div class="mf_ibbbin_right">
+                            <div class="black_color_font">@UtilitiesService.GetAirportName(item.DepartureAirportLocationCode)</div>
+                            <div class="ub_regular">(@item.DepartureAirportLocationCode)</div>
+                        </div>
+                        <div class="clear"></div>
+
+                        <div class="mf_ibbbin_left mt20"><img src="@Url.Content("~/images/arrow_d.png")" alt="" width="25" height="15"></div>
+                        <div class="mf_ibbbin_right mt20">
+                            <div class="ub_regular relative_div">
+                                <div class="mf_right_timings">@(segmentElapsedTime.Hours)h @(segmentElapsedTime.Minutes)m </div>
+                                @(item.AirlineCode + item.FlightNumber)<br>
+                                @UtilitiesService.GetAirlineName(item.AirlineCode)<br>
+                                Operated by @UtilitiesService.GetAirlineName(item.OperatingAirlineCode)<br>
+                                @UtilitiesService.GetCabinNameByCode(pricingInfo.FareBreakDown.First().FareInfos[counter - 1].CabinType, Model.SearchFlightResultViewModel.CabinClass) @(string.IsNullOrWhiteSpace(item.ResBookDesigCode) ? "" : "(" + item.ResBookDesigCode + ")")<br>
+                                @item.AirEquipType<br />
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="mf_border_gfull"></div>
+
+                        <div class="mf_ibbbin_left">
+                            @item.ArrivalDateTime.ToString("HHmm")<br />
+                            <span style="font-size: 0.9em;color: gray;">@item.DepartureDateTime.ToString("ddd, dd MMM") @nextSegmentCountDayText</span>
+                        </div>
+                        <div class="mf_ibbbin_right">
+                            <div class="black_color_font">@UtilitiesService.GetAirportName(item.ArrivalAirportLocationCode)</div>
+                            <div class="ub_regular">(@item.ArrivalAirportLocationCode)</div>
+                        </div>
+                        <div class="clear"></div>
+
+                        if (odo.FlightSegments.Length > 1 && odo.FlightSegments.Length != counter)
+                        {
+                            DateTime nextFlightDateTime = odo.FlightSegments[counter].DepartureDateTime;
+                            TimeSpan transitTime = nextFlightDateTime.Subtract(item.ArrivalDateTime);
+                            counter += 1;
+
+                            <div class="mf_white_transit_time mt30 mb30">
+                                <div class="mf_wtt_left">Transit Time</div>
+                                <div class="mf_wtt_right">@(transitTime.Hours)h @(transitTime.Minutes)m </div>
+                                <div class="clear"></div>
+                            </div>
+                        }
+                        <!-- row end -->
+                    }
+
+                    <div class="mf_arrival_conainer mt40">
+                        Arrives on @dtArrival.ToString("dd-MMM-yyyy, ddd") @if (!string.IsNullOrWhiteSpace(nextCountDayText))
+                        {<span>(+@nextCountDayText)</span>}<br>
+                        <span>Total flight time <span>@(totalFlightElapsedTimeHour)h @(totalFlightElapsedTime.Minutes)m</span></span>
+                    </div>
+                    <a class="farerules" data-servicesource="@serviceSource" data-index="@odoIndex" data-indicator="@odoOutboundInboundIndicator"><span style="cursor:pointer;">View Fare Rules</span></a>
+                </div>
+            </div>
+            <!-- show more details start -->
+            @* meal & baggage detail here *@
+            <div class="s2_mcbml_inner_detail_container">
+                <div class="s2_mcbmlid_dc_left">
+                    <div class="leftico"><img src="@Url.Content("~/images/economy_icon.png")" width="13" height="20" alt=""></div>
+                    <div class="righttext">@(string.Join(" ,", odoCabinClass))</div>
+                </div>
+                <div class="s2_mcbmlid_dc_mid show_toltip1">
+                    <div class="add-cursor-pointer" style="display: inline-block;">
+                        @{
+                            bool isOutBound = odoOutboundInboundIndicator == 0;
+                            List<Alphareds.Module.Model.MealBaggageFlightSegment> mealBaggageList = new List<Alphareds.Module.Model.MealBaggageFlightSegment>();
+                            //bool baggageExist = false;
+                            //bool mealExist = false;
+                            int passengerTypeCount = 0;
+
+                            List<KeyValuePair<string, bool>> bagExistList = new List<KeyValuePair<string, bool>>();
+                            List<KeyValuePair<string, bool>> mealExistList = new List<KeyValuePair<string, bool>>();
+                            bool[] mealSameCode = new bool[] { true, true, true };
+
+                            foreach (var passengerType in pricingInfo.FareBreakDown)
+                            {
+                                if (passengerType.BaggageInfos != null && passengerType.BaggageInfos.Length > 0)
+                                {
+                                    Alphareds.Module.CompareToolWebService.CTWS.BaggageInformation baggageInfo = isOutBound ?
+                                                                                                                 passengerType.BaggageInfos.FirstOrDefault()
+                                                                                                                 : passengerType.BaggageInfos.LastOrDefault();
+                                    bagExistList.Add(new KeyValuePair<string, bool>(passengerType.PassengerTypeCode
+                                                     , baggageInfo.BaggageWeight > 0 || baggageInfo.BaggagePieces > 0));
+                                }
+
+                                if (passengerType.FareInfos != null && passengerType.FareInfos.Length > 0)
+                                {
+                                    List<string> mealCode = new List<string>();
+                                    int startIndex = isOutBound ? 0 : mealBaggageIndex;
+                                    int mealIndex = mealBaggageIndex;
+                                    for (int i = 0; i < flightSegmentLength; i++)
+                                    {
+                                        mealCode.Add(passengerType.FareInfos.Length > mealIndex ? passengerType.FareInfos[mealIndex++].MealCode : "");
+                                    }
+                                    mealExistList.Add(new KeyValuePair<string, bool>(passengerType.PassengerTypeCode
+                                                      , mealCode.Any(x => !string.IsNullOrWhiteSpace(x))));
+                                }
+                            }
+
+                            for (int i = 0; i < odo.FlightSegments.Length; i++)
+                            {
+                                var seg = odo.FlightSegments[i];
+                                Alphareds.Module.Model.MealBaggageFlightSegment mealBaggage = new Alphareds.Module.Model.MealBaggageFlightSegment();
+                                mealBaggage.FlightSegment = string.Format("{0} > {1}",
+                                                            seg.DepartureAirportLocationCode,
+                                                            seg.ArrivalAirportLocationCode);
+                                mealBaggage.MealBaggageInfoPerPaxType = new List<Alphareds.Module.Model.MealBaggageInfoPerPaxType>();
+
+                                foreach (var passengerType in pricingInfo.FareBreakDown)
+                                {
+                                    Func<KeyValuePair<string, bool>, bool> getPsgType = (x => x.Key.IsStringSame(passengerType.PassengerTypeCode));
+                                    var psgBag = bagExistList.FirstOrDefault(getPsgType);
+                                    var psgMeal = mealExistList.FirstOrDefault(getPsgType);
+                                    bool baggageExist = bagExistList.FirstOrDefault(getPsgType).Value;
+                                    bool mealExist = mealExistList.FirstOrDefault(getPsgType).Value;
+                                    var mealCodeList = passengerType.FareInfos.Select(x => x.MealCode);
+                                    //List<string> mealCodeList = new List<string>();
+                                    //foreach (var fareInfo in passengerType.FareInfos)
+                                    //{
+                                    //    mealCodeList.Add(fareInfo.MealCode);
+                                    //}
+
+                                    mealSameCode[passengerTypeCount] = mealCodeList.Distinct().Count() < 2;
+
+                                    Alphareds.Module.Model.MealBaggageInfoPerPaxType mealBaggageInfoPerPaxType = new Alphareds.Module.Model.MealBaggageInfoPerPaxType();
+
+                                    mealBaggageInfoPerPaxType.passengerType = UtilitiesService.GetPassengerTypeName(passengerType.PassengerTypeCode);
+                                    mealBaggageInfoPerPaxType.baggageInfo = baggageExist ? passengerType.BaggageInfos[odoOutboundInboundIndicator] : null;
+                                    mealBaggageInfoPerPaxType.MealIncluded = mealExist ? passengerType.FareInfos[mealBaggageIndex] != null && !string.IsNullOrEmpty(passengerType.FareInfos[mealBaggageIndex].MealCode) : false;
+
+                                    mealBaggage.MealBaggageInfoPerPaxType.Add(mealBaggageInfoPerPaxType);
+                                }
+
+                                mealBaggageIndex++;
+                                mealBaggageList.Add(mealBaggage);
+                                if (mealSameCode.All(x => x))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        @if (mealExistList.Any(x => x.Value))
+                        {
+                            <img src="@Url.Content("~/images/mid_ico1.png")" width="19" height="16" alt="">
+                        }
+                        @if (bagExistList.Any(x => x.Value) && mealExistList.Any(x => x.Value))
+                        {
+                            <img src="@Url.Content("~/images/plus_icon.png")" width="8" height="16" alt="">
+                        }
+                        @if (bagExistList.Any(x => x.Value))
+                        {
+                            <img src="@Url.Content("~/images/mid_ico2.png")" width="18" height="16" alt="">
+                        }
+
+                        @if (bagExistList.Any(x => x.Value) || mealExistList.Any(x => x.Value))
+                        {
+                            <!-- toll tip box start -->
+                            <div class="s2-1_form_toll_tip_1">
+                                <div class="tt_top_form_y_1"><img class="position" style="filter:initial" src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                                <div class="s3-1_form_toll_tip_b s3-1_form_toll_tip_b2">
+                                    @{
+                                        var lastItem = mealBaggageList.Last();
+                                    }
+                                    @foreach (var item in mealBaggageList)
+                                    {
+                                        if (mealBaggageList.Count != 1)
+                                        {
+                                            <div>@item.FlightSegment</div>
+                                        }
+
+                                        foreach (var item2 in item.MealBaggageInfoPerPaxType)
+                                        {
+                                            bool gotBaggage = (item2.baggageInfo != null && item2.baggageInfo.BaggageWeight > 0)
+                                                || (item2.baggageInfo != null && item2.baggageInfo.BaggagePieces > 0);
+
+                                            <div>@item2.passengerType</div>
+                                            <ul style="margin-left: 10px;">
+                                                @if (item2.MealIncluded)
+                                                {
+                                                    <li>Meal Included</li>
+                                                }
+                                                @*<li>@(item2.MealIncluded ? "Meal Included" : "Meal Not Included")</li>*@
+                                                @if (gotBaggage)
+                                                {
+                                                    if (item2.baggageInfo.BaggagePieces > 0 && item2.baggageInfo.BaggageWeight == 0)
+                                                    {
+                                                        <li>Free Baggage (@item2.baggageInfo.BaggagePieces x 15kg)</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li>Free Baggage (@item2.baggageInfo.BaggageWeight @item2.baggageInfo.BaggageWeightUnit)</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
+
+                                        if (!item.Equals(lastItem))
+                                        {
+                                            <div class="s2-1_line"></div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <!-- toll tip box end -->
+                        }
+                    </div>
+                </div>
+
+                <div class="s2_mcbmlid_dc_right" data-stop="@stopQty" data-direction="@direction">
+                    <div class="showdetails">Show Details</div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <!-- full row end -->
+}
+
+@{
+    stopwatch.Stop();
+    if (Core.IsForLocalHost)
+    {
+        // For check performance usage
+        <h1>
+            @string.Format("View Index – rendered: {0} ms", stopwatch.ElapsedMilliseconds)<br />
+            @string.Format("View Index – rendered: {0} s", stopwatch.Elapsed.TotalSeconds)
+        </h1>
+    }
+    if (IsPost)
+    {
+        <script id="postback-script">
+            var isValid = @Html.Raw(Json.Encode(ViewData.ModelState.IsValid));
+            var errorsMsg = @Html.Raw(Json.Encode(string.Join(Environment.NewLine,ViewData.ModelState.Where(x => x.Value.Errors.Count > 0).SelectMany(x => x.Value.Errors).Select(error => error.ErrorMessage))));
+
+            if (!isValid && errorsMsg == "Oops...the fare you chosen is no longer available.. Please try to search again.")
+            {
+                function getFList() {
+                    window.location.href = '@Url.Action("RedirectSearch", "Flight")' + location.search;
+                };
+                var confirmFunction = 'getFList();';
+                $(".btn.modal-confirm").attr("onclick", confirmFunction);
+
+                dynamicModal('INFO', errorsMsg, true).modal();
+            }
+        </script>
+    }
+}

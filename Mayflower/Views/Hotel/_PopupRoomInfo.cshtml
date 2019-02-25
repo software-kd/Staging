@@ -1,0 +1,256 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@using Alphareds.Module.ServiceCall;
+@{
+    string tripid = Request.QueryString["tripid"];
+    SearchRoomModel model = null;
+    if (Core.GetSession(Enumeration.SessionName.RoomAvail, tripid) != null)
+    {
+        model = (SearchRoomModel)Core.GetSession(Enumeration.SessionName.RoomAvail, tripid);
+    }
+}
+
+<style>
+    .vmicr_allicons_cont_result {
+        height: 30px;
+        width: 45%;
+        margin-right: 5%;
+    }
+
+    .vmicr_allicons_cont_lable {
+        width: 80%;
+    }
+
+    .vmicr_allicons_cont_img {
+        width: 10%;
+    }
+
+    .vmicr_right {
+        padding-bottom: 10%;
+    }
+
+    @@media screen and (max-width: 900px) {
+        .vmicr_allicons_cont_result {
+            width: 100%;
+            height: 30px;
+            margin-right: 0;
+            float: left;
+        }
+
+        .vmicr_allicons_cont_img {
+            width: 5%;
+        }
+    }
+
+    .roomBttn {
+        margin-left: 30%;
+        margin-top: 41%;
+    }
+
+    .vmicr_button_red_container {
+        float: left;
+        margin-top: 20px;
+        width: 50%;
+    }
+
+    .vmic_left_selecttext, .vmic_left_select {
+        margin-top: 20px;
+    }
+
+        .vmic_left_select select {
+            font-family: 'UbuntuMedium';
+            width: 65px;
+            height: 30px;
+            background-color: transparent;
+            border: 1px solid #eb1c24;
+            color: #eb1c24;
+            background-image: url(../images/sort_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            -webkit-appearance: none;
+            padding-left: 10px;
+        }
+        .hideamenities{
+            display:none;
+        }
+    .showmoreroomamenities {
+        width: 190px;
+        margin-bottom:10px;
+    }
+    @@media screen and (max-width : 600px) {
+        .roomBttn {
+            margin-left: 22%;
+            margin-top: 41%;
+        }
+    }
+</style>
+
+
+@*@using (Html.BeginForm("ReserveRoomFromPopup", "Hotel", FormMethod.Post, new { @id = "reservePopupRoom" }))
+{
+}*@
+    <div class="fullcover_div7">
+        <div class="viewmorehotel_container">
+            @*<div class="viewmorehotel_redtop">10% OFF till 30 October 2017</div>*@
+            <div class="tl_right loginclose specialclose"><img src="../images_hotel/close.jpg" width="31" height="29" alt=""></div>
+            <div class="viewmorehotel_white1nn">
+                <div class="vm_inner_content">
+                    @{
+                        if (ViewData["SELECTED"] != null)
+                        {
+                            List<SelectListItem> numberOfRooms = new List<SelectListItem>();
+                            for (int i = 1; i <= 8; i++)
+                            {
+                                numberOfRooms.Add(new SelectListItem
+                                {
+                                    Text = i.ToString(),
+                                    Value = i.ToString(),
+                                    Selected = (i.Equals(1) ? true : false)
+                                });
+                            }
+                            List<Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityDetails> room = (List<Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityDetails>)ViewData["SELECTED"];
+                            @Html.Hidden("hidSelected", ViewData["HOTELID"].ToString() + "_" + room[0].roomTypeCode + "_" + room[0].rateCode);
+
+                            <h3>@room[0].description</h3>
+                            <div>
+                                <div class="d8c1_gallery">
+                                    <div class="callbacks_container">
+                                        <ul class="rslides callbacks callbacks8" id="slider">
+                                            @{
+                                                if (room[0].TypesOfRoomImages != null && room[0].TypesOfRoomImages.Count() > 0)
+                                                {
+                                                    foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ImagesURL image in room[0].TypesOfRoomImages)
+                                                    {
+                                                        <li><img data-src="@(Url.Content(image.y_500x500)!=null ? Url.Content(image.y_500x500) : Url.Content("~/Images/no-img-01.png"))" alt=""></li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li><img data-src="@Url.Content("~/Images/no-img-01.png")" alt=""></li>
+                                                }
+                                            }
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                                <div class="clear"></div>
+                            </div>
+                            <div class="vmic_right_room">
+                                <div class="vmicr_left">
+                                    <h3>Includes</h3>
+                                    @{
+                                        if (room[0].ValueAdds != null)
+                                        {
+                                            foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ValueAdd item in room[0].ValueAdds)
+                                            {
+                                                string Desc = "", imagePath = "";
+                                                ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["VALUEADDS"].ToString(), SearchImageColumn.ID, item.id, ref Desc, ref imagePath);
+                                                <div class="vmicr_allicons_cont_result">
+                                                    <div class="vmicr_allicons_cont_img"><img data-valueaddid="@item.id" src="@Url.Content(imagePath)" width="20" height="20" alt=""></div>
+                                                    <div class="vmicr_allicons_cont_lable">@(Desc != "" ? Desc : item.description)</div>
+                                                    <div class="clear"></div>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                    <div class="clear"></div>
+
+                                    <h3 class="mt10">Features</h3>
+                                    @{
+                                        if (room[0].BetTypes != null)
+                                        {
+                                            foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.BedType item in room[0].BetTypes)
+                                            {
+                                                string Desc = "", imagePath = "";
+                                                ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["BETTYPES"].ToString(), SearchImageColumn.ID, item.id, ref Desc, ref imagePath);
+                                                <div class="vmicr_allicons_cont_result">
+                                                    <div class="vmicr_allicons_cont_img"><img data-bedid="@item.id" src="@Url.Content(imagePath)" width="20" height="20" alt=""></div>
+                                                    <div class="vmicr_allicons_cont_lable">@(Desc != "" ? Desc : item.description)</div>
+                                                    <div class="clear"></div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="vmicr_allicons_cont_result">
+                                                -<div class="clear"></div>
+                                            </div>
+                                        }
+                                    }
+                                    <div class="clear"></div>
+
+                                    <h3 class="mt10">Max Guest</h3>
+                                    <div class="vmicr_allicons_cont_result">
+                                        <div class="vmicr_allicons_cont_img">
+                                            @{
+                                                if (room[0].rateOccupancyPerRoom != "0")
+                                                {
+                                                    string maxPax = room[0].rateOccupancyPerRoom;
+                                                    string Desc = "", ImagePath = "";
+                                                    Alphareds.Module.ServiceCall.ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["PAXES"].ToString(), Alphareds.Module.ServiceCall.SearchImageColumn.ID, maxPax, ref Desc, ref ImagePath);
+                                                    if (room[0].rateOccupancyPerRoom != null)
+                                                    {
+                                                        <img width="22" height="20" alt="" src="@Url.Content(ImagePath)">
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        <div class="vmicr_allicons_cont_lable">@(room[0].rateOccupancyPerRoom != null ? room[0].rateOccupancyPerRoom + "Guests" : "-")</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="vmicr_right">
+                                    <h3 class="mt10">Room Amenities</h3>
+                                    @{     
+                                        if (room[0].roomAmenities != null)
+                                        {
+                                            int count = 0;
+                                            foreach (Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.Amenity item in room[0].roomAmenities)
+                                            {
+                                                count++;
+                                                string Desc = "", imagePath = "";
+                                                ExpediaHotelsServiceCall.GetImagesFromXML(ViewData["AMENITIES"].ToString(), SearchImageColumn.ID, item.amenityId, ref Desc, ref imagePath);
+                                                if (!string.IsNullOrEmpty(Desc))
+                                                {
+                                                    <div class="vmicr_allicons_cont_result">
+                                                        <div class="vmicr_allicons_cont_img"><img data-amenityid="@item.amenityId" src="@Url.Content(imagePath)" width="26" height="20" alt=""></div>
+                                                        <div class="vmicr_allicons_cont_lable">@Desc</div>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="vmicr_allicons_cont_result">
+                                                        <div class="vmicr_allicons_cont_img"><img data-amenityid="@item.amenityId" src="@Url.Content(imagePath)" width="26" height="20" alt=""></div>
+                                                        <div class="vmicr_allicons_cont_lable">@(Desc != "" ? Desc : item.amenity)</div>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                }
+
+                                                if (count > 10)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+
+                            <div class="clear"></div>
+                            @*<div class="vmicr_button_red_container" style="cursor: pointer;"><input name="" type="submit" class="vmicr_button_red" value="Select" style="cursor: pointer;"></div>*@
+                        }
+                        else
+                        {
+                            <div class="oops">Oops, some error occur when contacting to server. Please try again later.</div>
+                        }
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>

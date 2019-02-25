@@ -1,0 +1,581 @@
+﻿@model Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityResponse
+@using Alphareds.Module.Common
+
+@functions{
+    bool includeTax = false;
+    bool includeAllNights = false;
+    bool isFixedPrice = false;
+    bool isDynamic = false;
+    int noOfRooms = 1;
+}
+
+@{
+    // Process empty result here
+    var roomList = Model?.HotelRoomInformationList?.SelectMany(x => x.roomAvailabilityDetailsList)?.ToList()
+         ?? new List<Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomAvailabilityDetails>();
+    
+    var processedList = roomList.OrderBy(x => x.RateInfos[0].chargeableRateInfo.RatePerRoom?.AllInRate ?? x.RateInfos[0].chargeableRateInfo.averageRate.ToDecimal());
+    var processedListGrpDesc = processedList.GroupBy(x => new
+    {
+        x.description,
+        betTypes = x.BetTypes == null ? null : string.Join(" or ", x.BetTypes.Select(p => p.description?.ToTitleCase().Replace("Or", "or") ?? "n/a"))
+        ,
+        RoomOptionGroup = x.RoomOptionGroup,
+    });
+    int imgListCounter = 0;
+
+    string newGuidId = Guid.NewGuid().ToString().Split('-')[0];
+
+    var hotelHeaderInfo = Model?.HotelRoomInformationList?.FirstOrDefault() ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelRoomInformation();
+
+    if (hotelHeaderInfo.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.EANRapid)
+    {
+        //processedListGrpDesc = processedList.GroupBy(x => new { x.description, betTypes = "", RoomOptionGroup = x.RoomOptionGroup } );
+    }
+
+    string hotelId = hotelHeaderInfo.hotelId;
+    var supplierType = hotelHeaderInfo.hotelSupplier;
+    var supplierName = supplierType.ToString();
+
+    includeTax = ViewBag.AsIncludedTax ?? false;
+    includeAllNights = ViewBag.AsAllNight ?? false;
+    isFixedPrice = ViewBag.IsFixedPrice ?? false;
+    isDynamic = ViewBag.IsDynamic ?? false;
+    int NoOfPax = ViewBag.NoOfPax ?? 1;
+    decimal fixedPriceFrom = ViewBag.FixedPriceFrom ?? 0;
+    decimal lowRate = ViewBag.lowRate ?? 0;
+    int noOfRooms = hotelHeaderInfo.numberOfRoomsRequested.ToIntNullable() ??
+        Model.numberOfRoomsRequested.ToIntNullable() ?? 1;
+
+    bool isSoldOut = Model?.Errors?.ErrorMessage?.ToUpper().Contains("SOLD") ?? false;
+    bool isErrorWhenGetRoom = Model?.Errors?.ErrorMessage?.Length > 0 && Model?.HotelRoomInformationList?.Length == 0;
+
+    if (isSoldOut)
+    {
+        goto SoldOut;
+    }
+    else if (isErrorWhenGetRoom)
+    {
+        goto ErrorWhenGetRoom;
+    }
+}
+
+<div class="room-wrapper">
+    @foreach (var roomGrp in processedListGrpDesc)
+    {
+        var roomImgList = roomGrp.FirstOrDefault().TypesOfRoomImages?.Select(x => x.z_1000x1000).ToList() ?? new List<string>();
+        var roomIndicator = HttpUtility.JavaScriptStringEncode($"roomImg_{imgListCounter++}_{newGuidId}");
+        int roomOptionCount = 1;
+        int roomGrpTotalCount = roomGrp.Count();
+        if (roomImgList.Count == 0)
+        {
+            roomImgList.Add(Url.Content("~/Images_hotel/no-img-01.png"));
+        }
+
+        <div class="rooms shadow">
+
+            <div class="room-lightbox">
+                <div class="position-relative">
+                    @foreach (var roomImage in roomImgList)
+                    {
+                        <a data-fancybox="@roomIndicator" href="@roomImage"><img src="@roomImage"></a>
+                    }
+                    @if (roomImgList.Count > 1)
+                    {
+                        <span>
+                            <img src="~/images/assets/img-2%20(2).png" alt="">
+                        </span>
+                    }
+                </div>
+                @{
+                    bool isSmokingAllowed = false;
+                    List<string> amenToShow = new List<string>();
+                    string smokingDesc = null;
+                    string airCond = null;
+
+                    // For Supplier Other than Expedia
+                    var isAllValueAdd = roomGrp?.Select(x => x.ValueAdds ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ValueAdd[] { })
+                        .Select(r =>
+                        {
+                            int _c = r.Count(x =>
+                            {
+                                string _desc = x.description?.ToLower() ?? "";
+                                bool isTrueSmoking = _desc == "smoking rooms" || _desc.Contains("smoking")
+                                    || _desc.Contains("non-smoking") || _desc.Contains("non smoking") || _desc.Contains("non smorking");
+                                if (isTrueSmoking)
+                                {
+                                    smokingDesc = x.description.Replace("property", "").Trim();
+                                }
+
+                                bool isTrueAirCond = _desc.Contains("air conditioning");
+                                if (isTrueAirCond)
+                                {
+                                    airCond = x.description;
+                                }
+
+                                return isTrueSmoking || isTrueAirCond;
+                            });
+
+                            return _c;
+                        }).Distinct().Count() == 1;
+
+                    if (isAllValueAdd)
+                    {
+                        if (!string.IsNullOrWhiteSpace(airCond))
+                        {
+                            amenToShow.Add(airCond);
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(smokingDesc))
+                        {
+                            amenToShow.Add(smokingDesc);
+                        }
+                    }
+                    else
+                    {
+                        // reset for RoomAmenities
+                        smokingDesc = null;
+                    }
+
+
+                    var _ammenitiesList = roomGrp.FirstOrDefault()?.roomAmenities?
+                        .Select(x =>
+                        {
+                            string _desc = x.amenity?.ToLower() ?? "";
+
+                            if (string.IsNullOrWhiteSpace(smokingDesc) && _desc.Contains("smoking"))
+                            {
+                                isSmokingAllowed = _desc != "non-smoking" && _desc.Contains("smoking");
+                                smokingDesc = x.amenity.Replace("And", "and");
+                                amenToShow.Add(smokingDesc);
+                            }
+                            else if (string.IsNullOrWhiteSpace(airCond) && _desc.Contains("air conditioning"))
+                            {
+                                airCond = x.amenity;
+                                amenToShow.Add(airCond);
+                            }
+
+                            string _html = "<li>";
+                            _html += x.amenity;
+                            string[] _lowerAmenity = x.amenity.ToLower().Split(new char[] { ' ', ',', '(', ')', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                /*if (_lowerAmenity.Count(c => c == "private" || c == "bathroom") == _lowerAmenity.Length)
+                                {
+                                    _html += "&nbsp;&nbsp;<span class=\"fa fa-thumbs-o-up text-primary\"></span>";
+                                }*/
+
+                            _html += "</li>";
+                            return _html;
+                        })?.Distinct()?.ToList() ?? new List<string>();
+                    string ammenitiesHTML = _ammenitiesList.Count > 0 ? $"<ul class=\"container room-fac-info\">{string.Join("", _ammenitiesList)}</ul>" : "No Info";
+                }
+                <div class="room-img-container">
+                    <div class="room-img-title">@roomGrp.Key.description</div>
+                    <div class="room-bet-desc"><small>@roomGrp.Key.betTypes</small></div>
+                    @if (amenToShow.Count > 0)
+                    {
+                        <ul class="ht-amen-lidesc">
+                            @foreach (var item in amenToShow)
+                            {
+                                <li><small>@item</small></li>
+                            }
+                        </ul>
+                    }
+                    <div>
+                        <a class="room-show-info" onclick="dynamicModal('Facilities', '@ammenitiesHTML', false, true).modal();" href="javascript:;" role='button'>
+                            <img class="tooltip-ico-info" src="/images/i-icon.png">
+                            <small class="room-more-info">Facilities Info</small>
+                        </a>
+                    </div>
+                    @GetExtraCheckInInstruc(hotelHeaderInfo, imgListCounter, true)
+                    @if (Model._HotelBundleTicketDesc != null)
+                    {
+                        <p class="ht-rm-text-sm">@Model._HotelBundleTicketDesc</p>
+                    }
+                   
+                </div>
+            </div>
+
+            <div class="room-list-wrapper">
+                @{
+                    List<string> addedGrpList = new List<string>();
+                    int roomCount = 0;
+                }
+                @foreach (var room in roomGrp)
+                {
+                    roomCount++;
+                    var rateInfoFirst = room.RateInfos[0];
+                    room.ValueAdds = room.ValueAdds ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.ValueAdd[] { };
+                    var orderedValAdd = (room.ValueAdds)
+                        .OrderByDescending(x => x.description.ToLower().Contains("wifi"))
+                        .ThenByDescending(x => x.description.ToLower().Contains("wi-fi"))
+                        .ThenByDescending(x => x.description.ToLower().Contains("wireless"))
+                        .ThenByDescending(x => x.description.ToLower().Contains("internet"))
+                        .ThenByDescending(x => x.description.ToLower().Contains("parking"))
+                        .ThenBy(x => x.description);
+
+                    string grpKeyList = $"{rateInfoFirst.nonRefundable}_{string.Join("|", rateInfoFirst.Rooms.Select(x => x.rateKey))}_{string.Join("|", room.ValueAdds.Select(x => x.description))}"
+                        + (supplierType == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.EANRapid ? $"{string.Join("|", room.BetTypes.Select(x => x.id))}"
+                            : $"_{rateInfoFirst.chargeableRateInfo.total}");
+                    List<string> ammenitiesAdded = new List<string>();
+
+                    if (addedGrpList.Any(x => x == grpKeyList))
+                    {
+                        continue; // skip to next loop index
+                    }
+                    else
+                    {
+                        addedGrpList.Add(grpKeyList);
+                    }
+
+                    var processedValAddList = orderedValAdd.Select(x => "<li>" + x.description + "</li>").ToList();
+
+                    if (processedValAddList.Count == 0)
+                    {
+                        processedValAddList.Add("No Info.");
+                    }
+
+                    string valAddHTML = room.ValueAdds.Length > 0 ? $"<ul class=\"container room-fac-info\">{string.Join("", processedValAddList)}</ul>" : "No Info";
+
+                    <!-- Room Single -->
+                    <div class="rooms border">
+                        <div class="rooms-left">
+                            <div class="room-title">
+                                <h2>
+                                    <span class="room-title-desc">
+                                        @if (roomGrpTotalCount > 1)
+                                        {
+                                            @:Option @(roomOptionCount++)
+                                        }
+                                        else
+                                        {
+                                            @:Room
+                                        }
+                                        <a class="room-val-info" onclick="dynamicModal('Value Add', '@valAddHTML', false, true).modal();" href="javascript:;" role='button'>
+                                            <img class="tooltip-ico-info" src="/images/i-icon.png">
+                                        </a>
+                                    </span>
+                                    <span class="ht-room-icon">
+                                        @if (!string.IsNullOrWhiteSpace(room.jacTravelMealBasis) && !string.IsNullOrWhiteSpace(room.jacTravelMealBasisID) &&
+                                        room.jacTravelMealBasisID != "1" && room.jacTravelMealBasisID != "136")
+                                        {
+                                            // for jactravel breakfast
+                                            <span>
+                                                <img class="ht-ico-valadd" src="~/Images_Hotel/amenities/v2/breakfast.png" alt="breakfast">
+                                                <span class="text-success inline">Breakfast Included</span>
+                                            </span>
+                                            <br />
+                                        }
+
+                                        @foreach (var valueAdd in orderedValAdd)
+                                        {
+                                            string _desc = valueAdd.description.ToLower();
+                                            if ((_desc.Contains("breakfast") || _desc.Contains("buffet")) && !ammenitiesAdded.Any(x => x == "breakfast"))
+                                            {
+                                                ammenitiesAdded.Add("breakfast");
+
+                                                <span>
+                                                    <img class="ht-ico-valadd" src="~/Images_Hotel/amenities/v2/breakfast.png" alt="breakfast">
+                                                    @*<span class="text-success inline">Breakfast Included</span>*@
+                                                    <span class="text-success inline">@valueAdd.description</span>
+                                                </span>
+                                                <br />
+                                            }
+
+                                            if ((_desc.Contains("wifi") || _desc.Contains("wireless") || _desc == "wi-fi") && !ammenitiesAdded.Any(x => x == "wifi"))
+                                            {
+                                                ammenitiesAdded.Add("wifi");
+
+                                                <img class="ht-ico-valadd" src="~/Images_Hotel/amenities/v2/wifi.png" alt="wifi">
+                                                @*<span class="text-success inline">Wifi Connection</span>*@
+                                                <span class="text-success inline">@valueAdd.description</span>
+                                                <br />
+                                            }
+
+                                            if ((_desc.Contains("parking") || _desc.Contains("parking")) && !ammenitiesAdded.Any(x => x == "parking"))
+                                            {
+                                                ammenitiesAdded.Add(_desc);
+
+                                                <img class="ht-ico-valadd" src="~/Images_Hotel/amenities/v2/parking.png" alt="parking">
+                                                @*<span class="text-success inline">Wifi Connection</span>*@
+                                                <span class="text-success inline">@valueAdd.description</span>
+                                                <br />
+                                            }
+
+                                            if ((_desc != "non-smoking" && _desc.Contains("smoking")) && !ammenitiesAdded.Any(x => x == "smoking"))
+                                            {
+                                                ammenitiesAdded.Add("smoking");
+
+                                                <img class="ht-ico-valadd" src="~/Images_Hotel/amenities/v2/smoking.png" alt="smoking">
+                                                <span class="text-success inline">@valueAdd.description</span>
+                                            }
+                                        }
+                                    </span>
+                                </h2>
+                            </div>
+                            <div class="room-person">
+                                <span>
+                                    <span class="ht-ico-guest-rmk">*</span>
+                                    <img src="~/images/assets/icon_guests.png" alt=""> @room.rateOccupancyPerRoom
+                                </span>
+                            </div>
+
+                            @{
+                                decimal beforeDisc = CalculateDisplayPrice(rateInfoFirst.chargeableRateInfo.averageRate.ToDecimal(), room.RateInfos, false);
+                                decimal afterDisc = CalculateDisplayPrice(rateInfoFirst.chargeableRateInfo.averageRate.ToDecimal(), room.RateInfos, true);
+                                if (isFixedPrice && includeAllNights)
+                                {
+                                    beforeDisc = (beforeDisc * noOfRooms) + fixedPriceFrom;
+                                    afterDisc = (afterDisc * noOfRooms) + fixedPriceFrom;
+                                    beforeDisc = beforeDisc / NoOfPax;
+                                    afterDisc = afterDisc / NoOfPax;
+                                    beforeDisc = beforeDisc - lowRate;
+                                    afterDisc = afterDisc.RoundToDecimalPlace() - lowRate;
+                                }
+                            }
+
+                            <div class="room-price">
+                                <h3>
+                                    <span>
+                                        @(isFixedPrice ? "+ " : "") MYR
+                                        @if (beforeDisc.ToString("n2") != afterDisc.ToString("n2") && beforeDisc > afterDisc && (beforeDisc - afterDisc > 0.10m))
+                                        {
+                                            <div class="ht-price-off">@beforeDisc.ToString("n2")</div>
+                                        }
+                                        @afterDisc.ToString("n2")
+                                    </span>@(includeAllNights ? "" : "/night")
+
+                                    @*<span>
+                                            MYR
+                                            @if (beforeDisc != afterDisc)
+                                            {
+                                                <div class="ht-price-off">@beforeDisc</div>
+                                            }
+                                            @afterDisc
+                                        </span>@(includeAllNights ? "" : "/night")*@
+                                </h3>
+                                @{
+                                    var roomratetxtcss = isFixedPrice ? "roomratetxt" : "";
+                                }
+                                <p class="@roomratetxtcss">@displayTxtForRate()</p>
+                                <p>
+                                    @Html.Raw(rateInfoFirst.nonRefundable ?
+                                        "<a href='javascript:;' class='text-muted show-cancel-policy' role='button' data-container='body' data-toggle='popover' data-placement='bottom'" +
+                                         $"data-content='{rateInfoFirst.cancellationPolicy}'>Non-Refundable</a>"
+                                        : "<a href='javascript:;' class='text-success show-cancel-policy' role='button' data-container='body' data-toggle='popover' data-placement='bottom'" +
+                                         $"data-content='{rateInfoFirst.cancellationPolicy}'>Cancellation Policy</a>")
+                                </p>
+                                
+                                @if (room.IsPackageRate)
+                                {
+                                    <span class="ht-pkglbl btn btn-sm btn-success mb-3 disabled">Package Deals</span>
+                                }
+                            </div>
+                            @*<div class="room-unit-count">
+                                    <div class="custom-unit">
+                                        <div class="cuntom-unit-inner">
+                                            <a href="#" class="count-down"><i class="fa fa-angle-down"></i></a>
+                                            <span>1</span>
+                                            <a href="#" class="count-up"><i class="fa fa-angle-up"></i></a>
+                                        </div>
+                                        <input type="hidden">
+                                        <!-- Hidden input -->
+                                    </div>
+                                </div>*@
+                        </div>
+                        <div class="rooms-right">
+                            @{
+                                string rateType = room.RateInfos[0].rateType;
+                                string rateKey = string.Join("|", room.RateInfos.SelectMany(x => x.Rooms).Select(x => x.rateKey));
+                                string roomTypeCode = room.roomTypeCode != "" ? room.roomTypeCode : (room.jacTravelPropertyRoomTypeID != "0" ? room.jacTravelPropertyRoomTypeID : room.jacTravelBookingToken);
+                                string rateCode = room.rateCode != null ? room.rateCode : "0";
+                                //string rateToken = string.Join("|", (room.BetTypes ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.BedType[] { }).Select(x => x.id));
+                                string rateToken = room.BetTypes?.FirstOrDefault()?.id; // take first bed as default option.
+                                string propertyId = room.propertyId;
+                            }
+                            @*<a href="javascript:;" class="room-select btn btn-primary btn--red">Reserve</a>*@
+                            @if (Core.IsForStaging && !isDynamic)
+                            {
+                                <a href="javascript:;" class="room-link-btn btn btn-primary btn--red mb-2" data-roomtypecode="@roomTypeCode" data-ratecode="@rateCode" data-roomname="@Html.Raw(room.description)" data-propertyid="@propertyId"
+                                   data-ratetype="@rateType" data-ratekey="@rateKey" data-ratetoken="@rateToken"
+                                   data-hid="@hotelId" data-qty="@noOfRooms" data-encsupp="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(supplierName))">
+                                    Link
+                                </a>
+                            }
+
+                            <a href="javascript:;" class="room-select-btn btn btn-primary btn--red" data-roomtypecode="@roomTypeCode" data-ratecode="@rateCode" data-roomname="@Html.Raw(room.description)" data-propertyid="@propertyId"
+                               data-ratetype="@rateType" data-ratekey="@rateKey" data-ratetoken="@rateToken"
+                               data-hid="@hotelId" data-qty="@noOfRooms" data-encsupp="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(supplierName))">
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Room Single -->
+
+                }
+
+                @if (roomCount == roomGrpTotalCount)
+                {
+                    @GetExtraCheckInInstruc(hotelHeaderInfo, imgListCounter, false)
+                }
+                @if (Model._HotelBundleTicketDesc != null)
+                {
+                    <p class="ht-rm-text">@Model._HotelBundleTicketDesc</p>
+                }
+                
+            </div>
+        </div>
+
+
+    }
+</div>
+
+@{
+    SoldOut:;
+
+    if (isSoldOut)
+    {
+        <div class="room-wrapper">
+            <div class="rooms shadow">
+
+                <div class="room-lightbox">
+                    <div class="position-relative">
+                        <a><img src="~/Images/no-img-01.jpg"></a>
+                        <span>
+                        </span>
+                    </div>
+                    <div class="room-img-container">
+                    </div>
+                </div>
+
+                <div class="room-list-wrapper">
+                    <!-- Room Single -->
+                    <div class="rooms border">
+                        <div class="rooms-left">
+                            <div class="room-title">
+                                <h2>
+                                    <span class="room-title-desc">-</span>
+                                    <span class="ht-room-icon">
+                                    </span>
+                                </h2>
+                            </div>
+                            <div class="room-person">
+                                <span></span>
+                                @*<span><img src="~/images/assets/icon_guests.png" alt=""> -</span>*@
+                            </div>
+                            <div class="room-price">
+                                <h3>
+                                    <span> </span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="rooms-right">
+                            SOLD OUT
+                        </div>
+                    </div>
+                    <!-- Room Single -->
+                </div>
+            </div>
+        </div>
+    }
+
+    ErrorWhenGetRoom:;
+    if (isErrorWhenGetRoom)
+    {
+
+    }
+}
+
+@helper GetExtraCheckInInstruc(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelRoomInformation hotelRoom, int imgListCounter, bool isMobile)
+{
+    string cssForCheckInstru = isMobile ? "ht-rm-text-sm" : "ht-rm-text";
+    string indicatorTarget = $"ht_chkinsp_{imgListCounter}" + (isMobile ? "_sm" : "");
+    if (hotelRoom?.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.EANRapid)
+    {
+        var splitedObj = Model._CheckInInstruc?
+                            .Replace("<ul>", "")
+                            .Replace("</ul>", "")
+                            .Replace("</li>", "")
+                            .Split(new string[] { "<br />", "<li>" }, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+
+        <div class="@cssForCheckInstru">
+            @if ((Model?._CheckInInstruc?.Length ?? 0 + Model?._SpecialCheckInInstruc?.Length ?? 0) >= 69)
+            {
+                <div class="collapse @indicatorTarget">
+                    <ul>
+                        @foreach (var item in splitedObj)
+                        {
+                            if (!string.IsNullOrWhiteSpace(item))
+                            {
+                                <li>@Html.Raw(item.Trim())</li>
+                            }
+                        }
+                    </ul>
+
+                    @Html.Raw((Model._SpecialCheckInInstruc != null ? "<br /> * " : null) + Model._SpecialCheckInInstruc
+                                + (Model._SpecialCheckInInstruc != null ? "<br />" : null))
+                    
+                    <a href="javascript:;" data-toggle="collapse" onclick="$(this).parent().next().toggle();" data-target=".@indicatorTarget">Hide More</a>
+                </div>
+
+                <div>
+                    <ul>
+                        <li>@Html.Raw((string.Join("", splitedObj)).Substring(0, 69))</li>
+                    </ul>
+                    <a href="javascript:;" onclick="$(this).parent().toggle()" data-toggle="collapse" data-target=".@indicatorTarget">Show More</a>
+                </div>
+            }
+            else
+            {
+                @Html.Raw(Model._CheckInInstruc?.Replace("<br /> <br /> <br />", "") ?? "")
+            }
+
+        </div>
+    }
+    else
+    {
+        <p class="@cssForCheckInstru">* Extra-person charges may apply and vary depending on property policy.</p>
+    }
+}
+
+@functions{
+    decimal CalculateDisplayPrice(decimal lowRate, Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RateInfo[] rateInfoToCalc, bool displayRateAfterDisc)
+    {
+        decimal _returnPrice = lowRate;
+
+        if (rateInfoToCalc?.Length > 0)
+        {
+            _returnPrice = rateInfoToCalc.Min(x =>
+                includeAllNights && includeTax ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AllInRate : x.chargeableRateInfo.RatePerRoom.AllInBaseRate)
+                : includeAllNights ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AllNightRate : x.chargeableRateInfo.RatePerRoom.AllNightBaseRate)
+                : includeTax ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.IncludeTaxRate : x.chargeableRateInfo.RatePerRoom.IncludeTaxBaseRate)
+                : (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AvgRate : x.chargeableRateInfo.RatePerRoom.BaseAvgRate)
+                );
+        }
+
+        return _returnPrice;
+    }
+
+    string displayTxtForRate()
+    {
+        string _txt = "tax excluded";
+        if (isFixedPrice && includeAllNights)
+        {
+            _txt = "per person incl. taxes & fees";
+        }
+        else if (includeAllNights && includeTax)
+        {
+            _txt = "all in";
+        }
+        else if (includeAllNights)
+        {
+            _txt = "all nights";
+        }
+        else if (includeTax)
+        {
+            _txt = "tax included";
+        }
+
+        return _txt;
+    }
+}

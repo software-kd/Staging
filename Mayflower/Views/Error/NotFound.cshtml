@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Not Found";
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+
+
+<!-- MID CONTENT AREA START -->
+<div class="err_header">
+    <div class="err_header_absdiv">
+        @*//Alvinloo 7/12/2016 start*@
+        <div class="err_header_absdiv_inner" style="width:100%;margin-top:10%">
+            @*//Alvinloo 7/12/2016 end*@
+            <h2 style="font-size: 3vw">OOPS!</h2>
+            <div class="err_bottext" style="font-size: 2vw">
+                Looks like you've landed at the wrong destination.
+                Try finding your way back?
+            </div>
+            <div class="clear"></div>
+            @if (!isEnableCMS)
+            {
+                <div class="errsbutton_button"><a href="@Url.Action("Index", "Home")">Back to Homepage</a></div>
+            }
+            else
+            {
+                <div class="errsbutton_button">
+                    <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })'>
+                        @*<input type="button" value="Back to Homepage" />*@
+                        Back to Homepage
+                    </a>
+                </div>
+            }
+         </div>
+    </div>
+    <img src="@Url.Content("~/Images/err_header.jpg")" width="1283" height="722" alt="">
+</div>
+<!-- MID CONTENT AREA END -->

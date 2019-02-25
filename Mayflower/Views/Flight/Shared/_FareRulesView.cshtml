@@ -1,0 +1,36 @@
+﻿@model List<Alphareds.Module.Model.FlightSegmentFareRule>
+@using Alphareds.Module.Common
+
+@{
+    Layout = null;
+}
+
+<div class="fullcover_div1" style="display:block;">
+    <div class="fcd_white1">
+        <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt="" onclick="$('#fareRulesClass').fadeOut();"></div>
+        <div id="fareRules" class="filcont">
+            <div id="content-5" class="content1">
+                <ul>
+                    @{int ruleCounter = 0;}
+                    @foreach (var item in Model)
+                    {
+                        string className = ruleCounter == 0 ? "filter-airline-active" : "";
+                        string airlineImage = UtilitiesService.GetAirlineImagePath(item.airlineCode);
+                        <li>
+                            <div class="s2_filter_air_bg @className" data-ruleindex="@ruleCounter">
+                                <div class="s2_filter_ab_flilogo"><img src="@Url.Content(airlineImage)" alt=""></div>
+                                <br />
+                                <div class="s2_filter_ab_flifrom">@UtilitiesService.GetAirlineName(item.airlineCode) (@item.DestinationArrivalStation)</div>
+                            </div>
+                            <img src="@Url.Content("~/images/filter_img.png")" width="152" height="215" alt="">
+                        </li>
+                        ruleCounter++;
+                    }
+                </ul>
+            </div>
+        </div>
+        <div id="RulesDetail">
+            @Html.Partial("~/Views/Flight/Shared/_FareRulesPartialView.cshtml", Model.Count > 0 ? Model.First() : new Alphareds.Module.Model.FlightSegmentFareRule())
+        </div>
+    </div>
+</div>

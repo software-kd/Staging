@@ -1,0 +1,51 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CrossSellItemsAvailable.EventProductInformation
+@{ 
+    DateTime checkDate = new DateTime();
+    TimeSpan checkSTime = new TimeSpan();
+    TimeSpan checkETime = new TimeSpan();
+    DateTime useSTime = new DateTime();
+    string displaySTime = "";
+    DateTime useETime = new DateTime();
+    string displayETime = "";
+}
+
+<div class="fullcover_div_GoogleMap">
+    <div class="fullcover_div8">
+        <div class="viewmorehotel_container hotel-info">
+            <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Seating Layout</div>
+            <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">Concert Information</div>
+            <div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">How To Get There?</div>
+            <div class="clear"></div>
+            <div class="text-right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+
+            <div class="viewmorehotel_white1nn">
+                <div class="div8_tab_container1">
+                    <div class="pop-container">
+                        <img src="@(File.Exists(Server.MapPath(Model.HeaderInfo.First().SeatingLayoutImageWeb)) ? Url.Content(Model.HeaderInfo.First().SeatingLayoutImageWeb) : Url.Content("~/Images/no-img-01.jpg"))" />
+                    </div>
+                </div>
+                <div class="div8_tab_container2" style="max-height: 510px!important;display:none;">
+                    <div class="pop-container">
+                        <img src="@(File.Exists(Server.MapPath(Model.HeaderInfo.First().EventImageWeb)) ? Url.Content(Model.HeaderInfo.First().EventImageWeb) : Url.Content("~/Images/no-img-01.jpg"))" />
+                        <table class="table table-condensed" style="margin: 1em 0;">
+                            <tr><th>Title</th><td>@Model.HeaderInfo.First().EventName</td></tr>
+                            <tr><th>Description</th><td>@Model.HeaderInfo.First().EventDesc</td></tr>
+                            <tr><th>Venue</th><td>@Model.HeaderInfo.First().VenueName</td></tr>
+                            <tr><th>Date</th><td>@Html.Raw((string.Join("<br/>", Model.DetailsInfo.Select(x => x.EventDate.ToString("dd-MMM-yyyy")).Distinct() ?? new List<string>())))</td></tr>
+                            <tr><th>Time</th><td>@Html.Raw((string.Join("<br/>", Model.DetailsInfo.Select(x => x.EventStartTime.ToHoursMinutesTT()).Distinct() ?? new List<string>())))</td></tr>
+                            <tr><th>Ticket T&C</th><td style="display: table-row;"><span style="display:table-cell;">@Html.Raw(Model.HeaderInfo.First().TermsAndConditions.Replace("\r\n", "<br />"))</span></td></tr>
+                            <tr><th>Cancellation policy</th><td>@Model.HeaderInfo.First().CancellationRule</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="div8_tab_container3" style="display:none;">
+                    <div class="pop-container">
+                        <div class=""><iframe class="mapSize" frameborder="0" style="border:0" src="@(ViewData["CONCERTMAP"] != null ? ViewData["CONCERTMAP"].ToString() : "")" allowfullscreen></iframe></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

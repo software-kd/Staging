@@ -1,0 +1,1432 @@
+﻿@using Alphareds.Module.Common
+@using Alphareds.Module.Model;
+@using System.Linq.Expressions;
+
+@model Alphareds.Module.Model.BookedProductView
+@{
+    ViewBag.Title = "Order History";
+    ViewBag.HeaderRed = true;
+
+    int CurrentUserId = 0;
+    int.TryParse(User.Identity.Name, out CurrentUserId);
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+
+    List<string> statusShowConfirm = new List<string> { "CON", "TKI", "QPL" };
+    var flightDBContext = Model.Flight.ConfirmationOutputDb;
+    var flightBookingSummary = Model.Flight.BookingSummaryViewModel;
+    var flightPassengerType = Model.Flight.FlightSegmentPaxType;
+    var flightPassengerData = Model.Flight.PassengerData;
+    var flightBreakeDown = Model.Flight.FareBreakDown;
+    var superPNR = Model.Flight.ConfirmationOutputDb.SuperPNR;
+    var superPNROrder = superPNR.SuperPNROrders.FirstOrDefault(x => x.OrderID == flightDBContext.OrderID);
+    var superPNROrderList = superPNR.SuperPNROrders.Where(x => x.BookingStatusCode != "EXP");
+    List<Alphareds.Module.Model.Database.FlightSegment> flightSegments = Model.Flight.BookingFlightSegment;
+    List<Alphareds.Module.Model.Database.FlightSegment> outBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("O")).ToList();
+    List<Alphareds.Module.Model.Database.FlightSegment> inBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("I")).ToList();
+
+    string bkStatus = Model.Flight.ConfirmationOutputDb.BookingStatusCode.ToUpper();
+
+    var taxRate = new Alphareds.Module.Model.Database.MayFlower().TaxCodeTypes.FirstOrDefault(x => x.TaxCode == "SR").TaxPercentage;
+    var customizedfield = flightDBContext.User.Organization.CustomizedFields.FirstOrDefault() ?? new Alphareds.Module.Model.Database.CustomizedField();
+
+    ViewBag.FlightBookingNo = flightDBContext.BookingNo;
+    ViewBag.SuperPNRNo = flightDBContext.SuperPNRNo;
+    ViewBag.ServiceSource = flightDBContext.SupplierCode;
+    bool isConfirmed = flightDBContext.BookingStatusCode.Equals("CON");
+    int isReturnCount = flightDBContext.IsReturn ? 2 : 1;
+
+    string costCurrency = flightDBContext.CurrencyCode;
+    var firstDepartureDate = outBoundFlightSegments.FirstOrDefault().DepartureDateTime;
+
+    int taxid = 1;
+    int taxbreakdownid = 1;
+
+    //Change class name when is One Way flight
+    string className = "pp_mcp_boxes_full";
+    string midlineClassName = "";
+    string width = "100%";
+
+    if (flightDBContext.IsReturn)
+    {
+        className = "pp_mcp_boxes";
+        midlineClassName = "ppbgimg";
+        width = "95%";
+    }
+
+    bool isReturn = flightDBContext.IsReturn;
+    var flightSegmentPaxCharge = flightDBContext.FlightSegments.SelectMany(x => x.FlightSegmentPaxCharges);
+    var flightSegmentServiceType = flightDBContext.FlightSegments.SelectMany(x => x.FlightSegmentPaxServiceTypes);
+    //var flightSegmentPaxCharge = flightDBContext.FlightSegments.Where(x => x.SegmentOrder == "I1" || x.SegmentOrder == "O1").SelectMany(x => x.FlightSegmentPaxCharges);
+    //var flightSegmentServiceType = flightDBContext.FlightSegments.Where(x => x.SegmentOrder == "I1" || x.SegmentOrder == "O1").SelectMany(x => x.FlightSegmentPaxServiceTypes);
+    var ssrList = (from a in flightSegmentPaxCharge
+                   join b in flightSegmentServiceType
+                   on new { ssrType = a.ChargeCode, flightSegmentID = a.FlightSegmentID, PaxID = a.PaxID }
+                   equals new { ssrType = b.ServiceType, flightSegmentID = b.FlightSegmentID, PaxID = b.PaxID }
+                   where a.ChargeTypeCode == "SSR"
+                   select new
+                   {
+                       ssrType = b.ServiceType,
+                       value = b.ServiceValue,
+                       price = a.ChargeAmount,
+                   }).GroupBy(x => new { x.ssrType, x.value })
+                   .Select(a => new { ssrType = a.Key.ssrType, value = a.Key.value, price = a.Sum(b => b.price), count = a.Count() })
+                   .ToList();
+
+    BundleTable.Bundles.Add(new StyleBundle("~/css/bundle")
+                .Include("~/CSS/v2style.css")
+                .Include("~/CSS/v2responsive.css")
+                .Include("~/CSS/ars-style.css")
+                .Include("~/CSS/bootstrap/bootstrap.min.css")
+                .Include("~/CSS/bootstrap/bootstrap-carousel.css")
+                .Include("~/CSS/crosssell/style.css"));
+}
+
+@* Hotel Server Side Code *@
+@{
+    var hotelDBContext = Model.Hotel;
+    bool hasHotelBooking = hotelDBContext != null;
+    //bool isAnyRHI = superPNROrder.BookingStatusCode == "RHI" || flightDBContext.BookingStatusCode == "RHI" || (hasHotelBooking && hotelDBContext.BookingStatusCode == "RHI")
+    //    || superPNROrder.BookingStatusCode == "HTP";
+    bool isAnyRHIOnList = superPNROrderList.Any(x => x.BookingStatusCode == "RHI") || flightDBContext.BookingStatusCode == "RHI" || (hasHotelBooking && hotelDBContext.BookingStatusCode == "RHI")
+        || superPNROrderList.Any(x => x.BookingStatusCode == "HTP");
+    string classWithTick = string.Empty;
+
+    //if (isAnyRHI)
+    //{
+    //    classWithTick = "st4_payment_heading_container1_without_tick";
+    //}
+    //else
+    //{
+    //    classWithTick = "st4_payment_heading_container1";
+    //}
+    if (isAnyRHIOnList)
+    {
+        classWithTick = "st4_payment_heading_container1_without_tick";
+    }
+    else
+    {
+        classWithTick = "st4_payment_heading_container1";
+    }
+}
+
+@* Total Amount Section *@
+@{
+    var feeChargeOrder = superPNROrder.FeeChargeOrders.LastOrDefault();
+    var feeChargeOrderList = superPNROrderList.SelectMany(x => x.FeeChargeOrders);
+    //decimal totalTaxAndFees = flightBookingSummary.FareSummary.TotalTaxesAndFees;
+    decimal totalTaxAndFees = flightBookingSummary.FareSummary.TotalTaxesAndFeesAmount;
+
+    //decimal totalProcessingFees = flightDBContext.FeeCharges.FirstOrDefault() != null ? flightDBContext.FeeCharges.FirstOrDefault().FeeChargeAmount : 0m;
+    decimal totalProcessingFees = feeChargeOrder != null ? feeChargeOrder.FeeChargeAmount + feeChargeOrder.TaxAmount : 0m;
+    //decimal totalGST = flightBookingSummary.FareSummary.GST;
+    decimal totalGST = flightDBContext.GSTAmt + (feeChargeOrder != null ? feeChargeOrder.TaxAmount : 0m);
+
+    //decimal totalBookingAmt = flightDBContext.TotalBookingAmt;
+    var superPNROrders = flightDBContext.SuperPNR.SuperPNROrders.Where(x => x.BookingStatusCode != "EXP"); @*.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI")*@
+    decimal totalProcessingFeesOnList = superPNROrders.Sum(s => s.FeeChargeOrders.Sum(b => b.FeeChargeAmount + b.TaxAmount));
+    decimal totalBookingAmt = superPNROrders.Sum(s => s.TotalBookingAmt + s.FeeChargeOrders.Sum(a => a.FeeChargeAmount + a.TaxAmount));
+}
+
+@section priorityScript{
+    <script>
+        if (typeof sessionStorage.searchKeyF !== 'undefined' && sessionStorage.searchKeyF !== '' && sessionStorage.searchKeyF !== '{}') {
+            var searchCriteria = JSON.parse(sessionStorage.searchKeyF);
+            sessionStorage.removeItem('searchKeyF');
+        }
+    </script>
+}
+
+@section style{
+    <link href="@Url.Content("~/css/bundle?" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+    <link href="@Url.Content("~/CSS/checkout/style.min.css")" rel="stylesheet" />
+
+    <style>
+        .h2_mhdb2_heading2 {
+            background-image: url(../images/info-icon.png);
+            background-repeat: no-repeat;
+            font-size: 14px;
+            float: left;
+            margin-left: 10px;
+            margin-top: -6px;
+            color: #ec1c24;
+            min-width: 55px;
+            height: 35px;
+        }
+
+        a:-webkit-any-link {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .guestno {
+            font-family: 'Conv_Ubuntu-Light';
+            width: 100%;
+            float: left;
+            padding: 10px 0 10px 50px;
+            border-right: 1px solid #838383;
+            border-bottom: 1px solid #838383;
+            font-size: 22px;
+            background-color: #eb1c24 !important;
+            color: #fff;
+        }
+
+        a {
+            -webkit-transition: initial;
+            -moz-transition: initial;
+            -o-transition: initial;
+            transition: initial;
+        }
+
+        .payment_innerbox {
+            width: 92%;
+        }
+
+        .s4_blt_sub_heading {
+            font-family: 'UbuntuBold';
+        }
+
+        .ipay_paynow_button1, .s5_pl_button {
+            width: 210px;
+        }
+
+        #printForm {
+            display: inline-block;
+            float: right;
+        }
+
+        .printagent {  
+            margin-top: 150px;
+        }
+
+        .paydisp_none {
+            display: block !important;
+            visibility: initial !important;
+            visibility: visible;
+        }
+
+        /*.farerules {
+            display: none !important;
+        }*/
+
+        @@media screen and (min-width : 800px) {
+            .s3_hinfo_tc_inner_left {
+                width: 7%;
+            }
+
+            .s3_hinfo_tc_inner_right {
+                width: 93%;
+            }
+
+            .s3_hinfo_tc_left {
+                width: auto;
+            }
+        }
+
+        @@media screen and (max-width : 900px) {
+            .ipay_paynow_button1, .s5_pl_button {
+                top: 0;
+                margin-top: 0;
+                width: 190px;
+            }
+
+            .pdcont_nameright {
+                width: 78%;
+            }
+
+            .pdcont_nameleft2 {
+                float: left;
+                width: 20%;
+                display: inline-block;
+            }
+
+            .s3_hotel_contacts_box {
+                margin: 10px;
+            }
+        }
+
+        @@media screen and (max-width : 730px) and (min-width:601px) {
+            .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+                margin-left: -20px !important;
+            }
+        }
+
+        @@media screen and (max-width : 900px) and (min-width:601px) {
+            .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+                margin-top: 6px !important;
+                margin-left: -15px;
+            }
+
+            .word-form {
+                display: none;
+            }
+        }
+
+        @@media screen and (max-width : 600px) {
+            .s4_guest_tabs_name_container H4 span {
+                padding-left: 0px;
+            }
+
+            .pdcont_nameright {
+                width: 75%;
+                display: inline-block;
+            }
+
+            .pdcont_nameleft {
+                width: 64px;
+                display: inline-block;
+                float: left;
+            }
+
+            .h2_mhdb2_mapbox span {
+                display: inherit;
+                width: 73px;
+                margin-left: 0px;
+            }
+
+            .s3_hotel_name_portion3_customize {
+                margin-left: 0px !important;
+            }
+
+            .st4_payment_heading_container1 span {
+                font-size: 23px;
+            }
+
+            .s4_guest_tabs_name_container H3 {
+                padding-top: 0px;
+            }
+
+            .mpjm_pd_heading_left {
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+                display: inline-block;
+                float: left;
+            }
+
+            .pdcont_nameright {
+                display: inline-block;
+                width: 70%;
+            }
+
+            .ipay_paynow_button1, .s5_pl_button {
+                top: 0;
+                margin-top: 0;
+                width: 150px !important;
+            }
+
+            .pdcont_nameleft2 {
+                float: left;
+                width: 30%;
+                display: inline-block;
+            }
+
+            .s4_blt_py_con_left {
+                width: 60%;
+                float: left;
+            }
+
+            .s4_blt_py_con_right {
+                float: right;
+            }
+
+            .word-form {
+                display: none;
+            }
+        }
+
+        @@media screen and (max-width : 425px) {
+            .booking_refrence_text {
+                line-height: 20px;
+                padding-top: 10px;
+            }
+
+            .s3_1_breadcrump {
+                height: 80px;
+            }
+
+            .st4_payment_heading_container1 {
+                background-position: 19% 3px;
+                background-position-y: -1px;
+            }
+        }
+
+        @@media screen and (max-width : 375px) {
+            .st4_payment_heading_container1 {
+                background-position: 17% 3px;
+            }
+        }
+
+        @@media screen and (max-width : 370px) {
+            .st4_payment_heading_container1 {
+                background-position: 15% 3px;
+            }
+        }
+
+        @@media screen and (max-width : 418px) {
+            .secondrow {
+                float: left;
+                margin-top: 8px;
+            }
+        }
+
+        @@media screen and (max-width : 325px) {
+            .st4_payment_heading_container1 {
+                background-position: 11% 3px;
+            }
+        }
+
+        @@media screen and (max-width : 400px) {
+            .s4_blt_sub_heading {
+                font-size: 13px;
+                text-align: center;
+            }
+
+            .pgt_left {
+                font-size: 19px;
+            }
+
+            .pgt_right {
+                font-size: 14px;
+                padding-top: 5px;
+            }
+        }
+    </style>
+
+    @if (hasHotelBooking)
+    {
+        <style>
+            /* I'm Seperator START */
+            .fullcover_div_GoogleMap {
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 999999;
+                display: none;
+            }
+
+            .viewmorehotel_container.hotel-info {
+                margin: auto !important;
+            }
+
+            .viewmorehotel_container {
+                max-width: 883px;
+                width: 96%;
+                margin: 2em auto;
+                height: 500px;
+            }
+
+            .viewmorehotel_white1nn {
+                height: 510px;
+                overflow: auto;
+                text-align: center;
+            }
+
+            .vm_inner_content {
+                width: 95%;
+                margin: auto;
+                text-align: left;
+            }
+
+            .hotel_summary.mf_ib_border_box {
+                background: none;
+            }
+
+            .hotel_summary .mf_ib_bb_lrbox_inner {
+                max-width: 100% !important;
+            }
+
+            .hotel_summary .mf_ib_bb_lrbox {
+                width: 100%;
+            }
+
+            .s3_hotel_name_portion3_customize {
+                margin-left: 20px;
+                color: #00a298 !important;
+            }
+
+            .moreflight_container {
+                margin-bottom: 2em;
+            }
+        </style>
+    }
+
+    @if (Core.IsEnableAdyen)
+    {
+        <link href="@Url.Content("~/CSS/checkout/adyencc.min.css")?ver=@DateTime.Now.ToString("yyyyMMddhh")" rel="stylesheet" />
+    }
+}
+
+<!-- FARE RULES LITEBOX START -->
+<div id="fareRulesClass" style="display: none;">
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+</div>
+<!-- FARE RULES LITEBOX END -->
+@Html.Partial("~/Views/Booking/_SendEmailMessage.cshtml")
+@Html.Partial("~/Views/Booking/_FailedQueuePlaceMessage.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+@if (hasHotelBooking)
+{
+    @Html.Partial("~/Views/Hotel/_GoogleMap.cshtml")
+    @Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+}
+
+<!-- GRAY BREADCRUMP START -->
+<div class="s3_1_breadcrump">
+    <div class="booking_refrence_text">Booking reference number <span id="BookingNo">@flightDBContext.SuperPNRNo</span></div>
+</div>
+<!-- GRAY BREADCRUMP END -->
+<!-- PAYMENT HEADING START -->
+<div class="@classWithTick">
+
+    @*@if ((statusShowConfirm.Any(x => x == bkStatus)) && statusShowConfirm.Any(x => x == superPNROrder.BookingStatusCode))
+    {
+        <span>Successful Payment</span>
+        <text>A booking conﬁrmation email will be sent to your inbox. Thank you for choosing Mayﬂower, we look forward to seeing you soon.</text>
+    }
+    else if (bkStatus == "RHI" || superPNROrder.BookingStatusCode == "RHI")
+    {
+        <span>Pending Confirmation</span>
+        @:A booking conﬁrmation email will be sent to your inbox. Please contact us at +603-9232 1888 to confirm your booking. Thank you for choosing Mayﬂower.
+    }
+    else if (superPNROrder.BookingStatusCode == "HTP" && superPNROrder.PendingPaymentAmt > 0)
+    {
+        <span>Pending Payment</span>
+        @ViewBag.ServiceRemarkMsg
+    }
+    else if (bkStatus == "EXP" || superPNROrder.BookingStatusCode == "EXP")
+    {
+        <span>Expired</span>
+        @:Booking failed.
+    }*@
+
+    @if ((statusShowConfirm.Any(x => x == bkStatus)) && statusShowConfirm.Any(x => superPNROrderList.All(n => n.BookingStatusCode == x)))
+    {
+        <span>Successful Payment</span>
+        <text>A booking conﬁrmation email will be sent to your inbox. Thank you for choosing Mayﬂower, we look forward to seeing you soon.</text>
+    }
+    else if (bkStatus == "RHI" || superPNROrderList.Any(x => x.BookingStatusCode == "RHI"))
+    {
+        <span>Pending Confirmation</span>
+        @:A booking conﬁrmation email will be sent to your inbox. Please contact us at +603-9232 1888 to confirm your booking. Thank you for choosing Mayﬂower.
+    }
+    else if (superPNROrderList.Any(x => x.BookingStatusCode == "HTP") && superPNROrderList.Any(x => x.PendingPaymentAmt > 0))
+    {
+        <span>Pending Payment</span>
+        @ViewBag.ServiceRemarkMsg
+    }
+    else if (bkStatus == "EXP" || superPNROrder.BookingStatusCode == "EXP")
+    {
+        <span>Expired</span>
+        @:Booking failed.
+    }
+
+</div>
+<!-- PAYMENT HEADING END -->
+<!-- MAIN CONTENT PORTION START -->
+<div class="s3-1_form">
+    <div class="payment_innerbox">
+        <div class="payment_content_container">
+
+            @Html.Partial("~/Views/Flight/Confirmed/_FlightItineraryDetails.cshtml", flightBookingSummary)
+
+            @if (hasHotelBooking)
+            {
+                TimeSpan stayDay = hotelDBContext.CheckOutDateTime.Subtract(hotelDBContext.CheckInDateTime);
+                decimal hotelStar = decimal.TryParse(hotelDBContext.HotelRating, out hotelStar) ? Convert.ToInt16(Math.Ceiling(hotelStar)) : 0;
+
+                Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxChargeCode = (x => x.ChargeCode == "BRATE");
+                var roomPax = hotelDBContext.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value);
+                var roomPaxCharge = roomPax.SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxChargeCode);
+                var grpRoom = roomPax.GroupBy(x => new { x.RoomTypeDescription, x.ItineraryNumber });
+                var itineraryNoList = roomPax.GroupBy(x => new { x.ItineraryNumber }).Select(x => x.Key.ItineraryNumber).ToList();
+
+                <div class="s3_hotel_topline"></div>
+                <div class="hotel_summary s4_blt_heading hotel">Hotel Itinerary</div>
+
+                <div class="s4_blt_sub_heading">@hotelDBContext.CheckInDateTime.ToString("dd-MMM-yy, ddd") to @hotelDBContext.CheckOutDateTime.ToString("dd-MMM-yy, ddd") | <span>@(stayDay.TotalDays + 1) Days @(stayDay.TotalDays) Nights</span></div>
+                @*<div class="s4_blt_sub_heading">Itinerary No: @string.Join(", ", itineraryNoList)</div>*@
+
+                <div class="mf_ib_border_box hotel_summary">
+                    <!-- left detail start -->
+                    <div class="mf_ib_bb_lrbox">
+                        <div class="mf_ib_bb_lrbox_inner">
+                            <div class="s3_hotel_name_portion1">@hotelDBContext.HotelName &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                            <div class="secondrow">
+                                <div class="s3_hotel_name_portion2">
+                                    @for (int i = 0; i < hotelStar; i++)
+                                    {
+                                        <img src="@Url.Content("~/images/hotel_star_am.png")" width="10" height="10" alt="">
+                                    }
+                                </div>
+                                <div class="s3_hotel_name_portion3 ShowHotelInfo" data-hotelid="@hotelDBContext.HotelID|@hotelDBContext.SupplierCode"><a href="javascript:;" style="color: inherit"><div class="h2_mhdb2_heading2"></div></a></div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="s3_hinfo_lgra">@hotelDBContext.DisplayAddress()</div>
+                            <div class="h2_mhdb2_mapbox">@hotelDBContext.LocationDescription @(hotelDBContext.LocationDescription != null && hotelDBContext.HotelCity != null ? ", " : "") @hotelDBContext.HotelCity <span class="add-cursor-pointer ShowMap" data-name="@hotelDBContext.HotelName" data-city="@hotelDBContext.HotelCity"><a>View Map</a></span></div>
+
+                            <div class="s3_hinfo_twobox_cont">
+                                @foreach (var room in grpRoom)
+                                {
+                                    var roomInfo = room.First();
+
+                                    <div class="s3_hinfo_tc_left">
+                                        <div class="s3_hinfo_tc_inner" style="max-width: initial;">
+                                            <div class="s3_hinfo_tc_inner_left"><img src="@Url.Content("~/images/hotel_r_icon.png")" width="47" height="47" alt=""></div>
+                                            <div class="s3_hinfo_tc_inner_right">
+                                                <div class="s3_hinfo_tcir_heading"><span>@(room.Count())x</span> @room.Key.RoomTypeDescription</div>
+                                                <div class="cancellationsection">
+                                                    <div class="s3_hinfo_freecancelation add-cursor-pointer" style="background-image: none; color: #000; padding-left: 0; font-style: italic; text-decoration: underline; margin-bottom: 5px;">
+                                                        Cancellation Policy
+                                                    </div>
+                                                    <div id="cancelPolicyDtl" style="font-family: 'UbuntuRegular';text-align: justify;margin-bottom: 1em;">
+                                                        @roomInfo.CancellationPolicy
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- left detail end -->
+
+                    <div class="clear"></div>
+                </div>
+            }
+
+            <div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+
+            <div class="s4_payment_heading guest">Contact Details</div>
+            <div class="s3_hotel_contacts_box">
+                <!-- PERSONAL DETAIL START -->
+                <div class="pd_containerbox">
+                    <div class="pdcont_nameleft">
+                        @{
+                            string fLetters = "";
+                            var contactPerson = flightDBContext.Paxes.FirstOrDefault(x => x.IsContactPerson ?? true);
+                            foreach (var part in contactPerson.FullName.Split(' '))
+                            {
+                                if (part.Any(x => x != ' ' && fLetters.Length <= 2))
+                                {
+                                    fLetters += part.First();
+                                }
+                            }
+                            //string phoneDisplay = "";
+                            //string phoneDisplay2 = "";
+                            //if (!string.IsNullOrWhiteSpace(contactPerson.Phone1))
+                            //{
+                            //    phoneDisplay = UtilitiesService.GetPhoneCode(contactPerson.Phone1LocationCode) != "" ? "(" + UtilitiesService.GetPhoneCode(contactPerson.Phone1LocationCode) + ")" + contactPerson.Phone1 : "-";
+                            //}
+                            //if (!string.IsNullOrWhiteSpace(contactPerson.Phone2))
+                            //{
+                            //    phoneDisplay2 = UtilitiesService.GetPhoneCode(contactPerson.Phone2LocationCode) != "" ? "(" + UtilitiesService.GetPhoneCode(contactPerson.Phone2LocationCode) + ")" + contactPerson.Phone2 : "-";
+                            //}
+
+                            //var contactPerson = Model.RoomPaxHotels.FirstOrDefault(x => x.IsContactPerson.HasValue && x.IsContactPerson.Value);
+
+                            string phoneDisplay = Alphareds.Module.Common.UtilitiesService.GetPhoneCode(contactPerson.Phone1LocationCode) != "" ? "(" + Alphareds.Module.Common.UtilitiesService.GetPhoneCode(contactPerson.Phone1LocationCode) + ")" + contactPerson.Phone1 : "-";
+                            string phoneDisplay2 = Alphareds.Module.Common.UtilitiesService.GetPhoneCode(contactPerson.Phone2LocationCode) != "" ? "(" + Alphareds.Module.Common.UtilitiesService.GetPhoneCode(contactPerson.Phone2LocationCode) + ")" + contactPerson.Phone2 : "-";
+                        }
+                        <div class="mpjm_pd_heading_left mpjm_spclclass_mt conticon" style="margin-top: 6px;">@fLetters.ToUpper()</div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="pdcont_nameright">
+                        <div class="s4_guest_tabs_name_container">
+                            <h3>@contactPerson.TitleCode @contactPerson.FullName.ToUpper()</h3>
+                            <h4>Email Address: <span style="word-break: break-all;">@contactPerson.PassengerEmail</span></h4>
+                        </div>
+                        <div class="mpjm_halfdiv">
+                            <div class="mpjmhd_lable spcl_bigfont">Primary Phone Number</div>
+                            <div class="mpjmhd_ans spcl_bigfont1">@phoneDisplay</div>
+                        </div>
+                        <div class="mpjm_halfdiv">
+                            <div class="mpjmhd_lable spcl_bigfont">Secondary Phone Number</div>
+                            <div class="mpjmhd_ans spcl_bigfont1">@phoneDisplay2</div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <!-- PERSONAL DETAIL END -->
+            </div>
+            <div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+
+            <div class="s4_payment_heading guest">Guest Details</div>
+            <div class="payment_graytab_container mt20">
+                <div id="passengerDetail">
+                    @for (int a = 0; a < flightPassengerType.Count(); a++)
+                    {
+                        List<Alphareds.Module.Model.Database.Pax> paxes = flightPassengerData.Where(x => x.PassengerType == flightPassengerType[a].PassengerType).ToList();
+                        string taxdetail = "collapse" + taxid.ToString();
+                        taxid++;
+                        string taxbreakdowndetail = "collapsebreakdown" + taxbreakdownid.ToString();
+                        taxbreakdownid++;
+                        string paxType = UtilitiesService.GetPassengerTypeName(flightPassengerType[a].PassengerType);
+
+                        <div class="pasengerTypeInfo">
+                            <!-- row start -->
+                            <div class="payment_gray_tabs">
+                                <div class="pgt_left">
+                                    @for (int i = 0; i < paxes.Count; i++)
+                                    {
+                                        <div>@paxes[i].TitleCode @paxes[i].GivenName @paxes[i].Surname</div>
+                                        if (i == 0)
+                                        {
+                                            <i class="fa fa-chevron-down"></i>
+                                        }
+                                        <div class="clear"></div>
+                                    }
+                                </div>
+                                <div class="pgt_right">
+                                    @*MYR
+                                            <span>
+                                                @(Math.Round(((flightBreakeDown.FirstOrDefault(x => x.ChargeTypeCode.Equals("FARE")
+                                        && x.FlightSegmentPaxTypeID == flightPassenger[a].FlightSegmentPaxTypeID).ChargeAmount
+                                        + flightBreakeDown.Where(x => x.ChargeTypeCode.Equals("TAX") && x.FlightSegmentPaxTypeID == flightPassenger[a].FlightSegmentPaxTypeID).Sum(b => b.ChargeAmount)) * flightPassenger[a].NoOfPax), 2).ToString("#,##0.00"))
+                                            </span>*@ &nbsp;
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            @for (int i = 0; i < paxes.Count; i++)
+                            {
+                                var passenger = paxes[i];
+                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> flightSegmentPaxServiceTypeList = passenger.FlightSegmentPaxServiceTypes.ToList();
+                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> mealList = passenger.FlightSegmentPaxServiceTypes.Where(x => x.ServiceType == "MEAL").ToList();
+                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> baggageList = passenger.FlightSegmentPaxServiceTypes.Where(x => x.ServiceType.Trim() == "LUG").ToList();
+
+                                DateTime? _dob = passenger.DOB;
+                                double _age = 0;
+                                double? age = 0;
+                                if (passenger.PassengerType != "INF")
+                                {
+                                    _age = _dob == null ? 0 : firstDepartureDate.Subtract(_dob ?? DateTime.MinValue).TotalDays;
+                                    age = _dob != DateTime.MinValue ? Math.Floor(_age / 365.25) : (double?)null;
+                                }
+                                else
+                                {
+                                    _age = _dob == null ? 0 : Math.Floor(((firstDepartureDate - Convert.ToDateTime(_dob)).TotalDays) / (365.25 / 12));
+                                    age = _dob != DateTime.MinValue ? _age : (double?)null;
+                                }
+
+                                <div class="payment_fulldetail_container">
+                                    <div class="s4_blue_top_pati">Guest @(i + 1)</div>
+                                    <!-- PERSONAL DETAIL START -->
+                                    <div class="pd_containerbox">
+                                        <div class="pdcont_nameleft">
+                                            @{string[] splitGivenName = @passenger.GivenName.Split(' ');}
+                                            <div class="mpjm_pd_heading_left mpjm_spclclass_mt guesticon" style="margin-top: 6px;">@splitGivenName[0][0] @(splitGivenName.Length > 1 && !string.IsNullOrWhiteSpace(splitGivenName[1]) ? splitGivenName[1][0] : new char())</div>
+                                            <div class="clear"></div>
+                                        </div>
+
+                                        <div class="pdcont_nameright">
+                                            <div class="s4_guest_tabs_name_container">
+                                                <h3>@passenger.TitleCode @passenger.GivenName @passenger.Surname</h3>
+                                                <h4>Date of birth: <span>@(passenger.DOB == null ? "-" : passenger.DOB.Value.ToString("dd MMM yyyy"))</span></h4>
+                                            </div>
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Age @(passenger.PassengerType == "INF" ? "(In Months)" : "")</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">@(age == null || passenger.DOB == null ? "-" : age + (passenger.PassengerType == "INF" ? " Months" : " Years old"))</div>
+                                            </div>
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Nationality</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">
+                                                    @(!string.IsNullOrWhiteSpace(passenger.Nationality) &&
+passenger.Nationality != "NA" ? UtilitiesService.GetCountryName(passenger.Nationality) : "-")
+                                                </div>
+                                            </div>
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Passport Number</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">@(string.IsNullOrWhiteSpace(passenger.Passport) ? "-" : passenger.Passport)</div>
+                                            </div>
+                                            <div class="clear"></div>
+
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Passport Expiry Date</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">@((passenger.PassportExpiryDate != null ? passenger.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-"))</div>
+                                            </div>
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Passport Issuing Country</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrWhiteSpace(passenger.PassportIssueCountryCode) ? UtilitiesService.GetCountryName(passenger.PassportIssueCountryCode) : "-")</div>
+                                            </div>
+                                            <div class="mpjm_halfdiv">
+                                                <div class="mpjmhd_lable spcl_bigfont">Frequent Traveller Number</div>
+                                                <div class="mpjmhd_ans spcl_bigfont1">@(passenger.PaxFrequentFlyer != null ? passenger.PaxFrequentFlyer.AirlineCode + " - " + passenger.PaxFrequentFlyer.FrequentFlyer : "-")</div>
+                                            </div>
+                                            <div class="clear"></div>
+
+                                            @if (!string.IsNullOrEmpty(passenger.IdentificationNumber))
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">NRIC Number</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrEmpty(passenger.IdentificationNumber) ? passenger.IdentificationNumber : "-")</div>
+                                                </div>
+                                            }
+
+                                            @if (flightDBContext.SupplierCode == "SBRE")
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">Meal</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">
+                                                        @if (mealList.Count > 0)
+                                                        {
+                                                            for (int z = 0; z < flightSegments.Count; z++)
+                                                            {
+                                                                bool mealIncluded = flightSegments[z].FlightSegmentPaxServiceTypes.Any(x => x.FlightSegmentID == flightSegments[z].FlightSegmentID && x.PaxID == passenger.PaxID && x.ServiceType == "MEAL");
+                                                                <span>@flightSegments[z].DepartureAirportLocationCode > @flightSegments[z].ArrivalAirportLocationCode</span><br />
+                                                                if (!mealIncluded)
+                                                                {
+                                                                    <span>Meal not Included</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>Meal Included</span>
+                                                                }
+                                                                <br />
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">Baggage Allowed</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">
+                                                        @if (baggageList.Count > 0)
+                                                        {
+                                                            for (int z = 0; z < isReturnCount; z++)
+                                                            {
+                                                                List<Alphareds.Module.Model.Database.FlightSegment> outOrInSegments = z == 0 ? outBoundFlightSegments : inBoundFlightSegments;
+                                                                <span>
+                                                                    @getFlightSegmentRoute(outOrInSegments)
+                                                                </span>
+                                                                <br />
+                                                                if (!string.IsNullOrEmpty(baggageList[z].ServiceValue))
+                                                                {
+                                                                    string[] baggageValue = baggageList[z].ServiceValue.Split(' ');
+                                                                    if (baggageValue[1] == "piece")
+                                                                    {
+                                                                        <span>Free Baggage (@baggageValue[0] x 15kg)</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Free Baggage (@baggageValue[0] @baggageValue[1])</span>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>No Free Baggage</span>
+                                                                }
+                                                                <br />
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>No Free Baggage</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                if (passenger.PassengerType != "INF")
+                                                {
+                                                    <h3>Special Request</h3>
+                                                    for (int b = 0; b < (isReturn ? 2 : 1); b++)
+                                                    {
+                                                        bool isReturnFlight = b != 0;
+                                                        var baggage = isReturnFlight ? paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "I1") : paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "O1");
+
+                                                        <div class="mpjm_halfdiv">
+                                                            <div class="mpjmhd_lable spcl_bigfont">@(isReturnFlight ? "Return Baggage" : "Depart Baggage")</div>
+                                                            @if (baggage != null)
+                                                            {
+                                                                List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                                                string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == baggage.ServiceValue).Value;
+                                                                <div class="mpjmhd_ans spcl_bigfont1">@ssrLabel</div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="mpjmhd_ans spcl_bigfont1">No checked baggage</div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                            @if (customizedfield.CustomizedField1 != null)
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">@customizedfield.CustomizedField1</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.CustomizedField1 ?? "-")</div>
+                                                </div>
+                                            }
+                                            @if (customizedfield.CustomizedField2 != null)
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">@customizedfield.CustomizedField2</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.CustomizedField2 ?? "-")</div>
+                                                </div>
+                                            }                                            
+                                            @if (customizedfield.CustomizedField3 != null)
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">@customizedfield.CustomizedField3</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.CustomizedField3 ?? "-")</div>
+                                                </div>
+                                            }
+                                            @if (customizedfield.CustomizedField4 != null)
+                                            {
+                                                <div class="mpjm_halfdiv">
+                                                    <div class="mpjmhd_lable spcl_bigfont">@customizedfield.CustomizedField4</div>
+                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.CustomizedField4 ?? "-")</div>
+                                                </div>
+                                            }
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- FLIGHT DETAILS END -->
+            </div>
+            <div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+            <div class="s4_blt_heading payment">Booking Summary</div>
+            <div class="s4_blt_py_container paymentSummary">
+                @if (!hasHotelBooking)
+                {
+                    for (int a = 0; a < flightPassengerType.Count(); a++)
+                    {
+                        List<Alphareds.Module.Model.Database.Pax> paxes = flightPassengerData.Where(x => x.PassengerType == flightPassengerType[a].PassengerType).ToList();
+                        string taxdetail = "collapse" + taxid.ToString();
+                        taxid++;
+                        string taxbreakdowndetail = "collapsebreakdown" + taxbreakdownid.ToString();
+                        taxbreakdownid++;
+                        string paxType = UtilitiesService.GetPassengerTypeName(flightPassengerType[a].PassengerType);
+                        bool showverifydata = false;
+                        bool.TryParse(Core.GetAppSettingValueEnhanced("showverifydata"), out showverifydata);
+                        var eachPassengerTypeAllInPrice = flightBreakeDown.Where(x => ((x.ChargeTypeCode == "FARE" && x.ChargeCode == "FLFARE") || (x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "MARKUP")) && x.FlightSegmentPaxTypeID == flightPassengerType[a].FlightSegmentPaxTypeID).Sum(x => x.ChargeAmount) * flightPassengerType[a].NoOfPax;
+                        <div class="s4_blt_py_con_left">@paxType x @flightPassengerType[a].NoOfPax</div>
+                        <div class="s4_blt_py_con_right">
+                            MYR<span>
+                                @((eachPassengerTypeAllInPrice).ToString("#,##0.00"))
+                            </span>
+                            @if (showverifydata)
+                            {
+                                <div>
+                                    Cost Price:
+                                    <br />
+                                    @flightDBContext.FlightSegmentPaxTypes.Where(x => x.PassengerType == flightPassengerType[a].PassengerType).SelectMany(x => x.FlightSegmentCharges).Where(x => (x.ChargeCode == "FARE" && x.ChargeTypeCode == "FARE") || (x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "MARKUP")).Sum(x => x.ChargeAmount * flightPassengerType[a].NoOfPax).ToString("#,##0.00")
+                                </div>
+                            }
+                        </div>
+                        <div class="clear"></div>
+                    }
+                }
+                else
+                {
+                    Func<Alphareds.Module.Model.Database.FlightSegmentCharge, bool> flightChargeCode = (x => (x.ChargeTypeCode == "FARE" && x.ChargeCode == "FLFARE"));
+                    Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxChargeCode = (x => x.ChargeCode == "BRATE" && x.ChargeTypeCode == "RATE");
+                    Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxTaxChargeCode = (x => (x.ChargeTypeCode == "TAX" && x.ChargeCode == "TAX" && x.IsDisplay));
+                    Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxGSTChargeCode = (x => (x.ChargeTypeCode == "TAX" && x.ChargeCode == "GST" && x.IsDisplay));
+                    Func<Alphareds.Module.Model.Database.FlightSegmentCharge, bool> flightAllInChargeCode = (x => (x.ChargeTypeCode == "FARE" && x.ChargeCode == "FLFARE") || (x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "MARKUP"));
+                    Func<Alphareds.Module.Model.Database.RoomPaxCharge, bool> hotelRoomPaxAllInChargeCode = (x => (x.ChargeCode == "BRATE" && x.ChargeTypeCode == "RATE") || (x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "MARKUP"));
+                    decimal flightTotalAmtExTax = 0m;
+                    decimal flightTotalAmtIncTax = 0m;
+                    var paxGrp = flightPassengerData.Where(x => !x.IsContactPerson ?? false).GroupBy(x => x.PassengerType);
+                    foreach (var psType in paxGrp)
+                    {
+                        var typeCharge = flightBreakeDown.Where(flightChargeCode).Where(x => x.FlightSegmentPaxType.PassengerType == psType.Key);
+                        flightTotalAmtExTax += typeCharge.Sum(x => x.ChargeAmount * psType.Count());
+                        var typeAllInCharge = flightBreakeDown.Where(flightAllInChargeCode).Where(x => x.FlightSegmentPaxType.PassengerType == psType.Key);
+                        flightTotalAmtIncTax += typeAllInCharge.Sum(x => x.ChargeAmount * psType.Count());
+                    }
+
+                    var roomPax = hotelDBContext.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value);
+                    var roomPaxCharge = roomPax.SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxAllInChargeCode);
+                    var grpRoom = roomPax.GroupBy(x => new { x.RoomTypeDescription, x.ItineraryNumber });
+
+                    decimal hotelTotalTax = roomPax.SelectMany(x => x.RoomPaxCharges).Where(q => q.ChargeCode == "TAX" && q.IsDisplay).Sum(x => x.ChargeAmount);
+
+                    var feeChargeHotel = hotelDBContext.FeeChargeHotels != null && hotelDBContext.FeeChargeHotels.LastOrDefault() != null ? hotelDBContext.FeeChargeHotels.LastOrDefault() : null;
+                    decimal hotelTotalProcessingFees = feeChargeHotel != null ? feeChargeHotel.FeeChargeAmount + feeChargeHotel.TaxAmount : 0;
+                    decimal hotelTotalGST = hotelDBContext.GSTAmt + (feeChargeHotel != null ? feeChargeHotel.TaxAmount : 0);
+                    decimal hotelTotalAmtExTax = hotelDBContext.TotalBookingAmt;
+
+                    totalTaxAndFees += hotelTotalTax;
+                    totalProcessingFees += hotelTotalProcessingFees;
+                    totalGST += hotelTotalGST;
+                    //totalBookingAmt += hotelTotalAmtExTax;
+
+                    <div class="s4_blt_py_con_left">Flight</div>
+                    <div class="s4_blt_py_con_right">
+                        MYR&nbsp;
+                        <span>
+                            @(flightTotalAmtIncTax.ToString("#,##0.00"))
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                        @foreach (var item in flightPassengerType.GroupBy(x => x.PassengerType))
+                        {
+                            foreach (var passengerType in item)
+                            {
+                                var eachPassengerTypeCharge = flightBreakeDown.Where(flightAllInChargeCode).Where(x => x.FlightSegmentPaxTypeID == passengerType.FlightSegmentPaxTypeID);
+
+                                <div class="night-charge"></div>
+                                <div class="night-charge1">@UtilitiesService.GetPassengerTypeName(item.Key) x @passengerType.NoOfPax</div>
+                                <div class="night-charge2"><span>MYR </span>@((eachPassengerTypeCharge.Sum(x => x.ChargeAmount) * passengerType.NoOfPax).ToString("#,##0.00"))</div>
+                                <div class="clear"></div>
+                            }
+                        }
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="s4_blt_py_con_left">Hotel</div>
+                    <div class="s4_blt_py_con_right">
+                        @hotelDBContext.CurrencyCode&nbsp;
+                        <span>
+                            @(roomPaxCharge.Sum(x => x.ChargeAmount).ToString("#,##0.00"))
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                        @foreach (var room in grpRoom)
+                        {
+                            int roomDaysCounter = 0;
+                            <div class="night-charge"></div>
+                            <div class="night-charge1">@(room.Key.RoomTypeDescription) x @room.Count()</div>
+                            <div class="night-charge2"></div>
+                            <div class="clear"></div>
+                            var AllnightlyRate = roomPax.Where(x => x.RoomTypeDescription == room.Key.RoomTypeDescription).SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxChargeCode).GroupBy(x => x.ChargeNumber).Select(x => x.Sum(y => y.ChargeAmount)).ToArray();
+                            var AllnightlyTax = roomPax.Where(x => x.RoomTypeDescription == room.Key.RoomTypeDescription).SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxTaxChargeCode).GroupBy(x => x.ChargeNumber).Select(x => x.Sum(y => y.ChargeAmount)).ToArray();
+                            var AllnightlyGST = roomPax.Where(x => x.RoomTypeDescription == room.Key.RoomTypeDescription).SelectMany(x => x.RoomPaxCharges).Where(hotelRoomPaxGSTChargeCode).GroupBy(x => x.ChargeNumber).Select(x => x.Sum(y => y.ChargeAmount)).ToArray();
+                            for (int i = 0; i < AllnightlyRate.Count(); i++)
+                            {
+                                var eachNightTax = hotelTotalTax / AllnightlyRate.Count();
+                                <div class="night-charge"></div>
+                                <div class="night-charge1">@hotelDBContext.CheckInDateTime.AddDays(roomDaysCounter++).ToString("ddd, dd MMM")</div>
+                                <div class="night-charge2"><span>@hotelDBContext.CurrencyCode </span>@((AllnightlyRate[i] + (i < AllnightlyTax.Length ? AllnightlyTax[i] : 0) + (i < AllnightlyGST.Length ? AllnightlyGST[i] : 0)).ToString("#,##0.00"))</div>
+                                <div class="clear"></div>
+                            }
+                        }
+                    </div>
+                    <div class="clear"></div>
+                }
+
+                @if (ssrList != null && ssrList.Count > 0 && flightDBContext.SupplierCode == "AASA")
+                {
+                    List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                    foreach (var ssr in ssrList.OrderBy(x => x.value))
+                    {
+                        string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == ssr.value).Value;
+                        string ssrDesc = string.Empty;
+                        switch (ssr.ssrType)
+                        {
+                            case "LUG":
+                                ssrDesc = "Checked Baggage";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        <div class="s4_blt_py_con_left">@ssrDesc @ssrLabel x@(ssr.count)</div>
+                        <div class="s4_blt_py_con_right">MYR<span> @ssr.price.ToString("#,##0.00")</span></div>
+                        <div class="clear"></div>
+                    }
+                }
+
+                @try
+                {
+                    @Html.Partial("~/Views/Payment/SummaryPartials/_InsuranceDetails.cshtml", superPNR.BookingInsurances)
+                }
+                catch
+                {
+                }
+
+                @try
+                {
+                    @Html.Partial("~/Views/Payment/SummaryPartials/_EventDetails.cshtml", superPNR.EventBookings)
+                }
+                catch
+                {
+
+                }
+
+                @*<div class="s4_blt_py_con_left">Taxes &amp; Fees</div>
+                    <div class="s4_blt_py_con_right">MYR<span> @totalTaxAndFees.ToString("#,##0.00")</span></div>
+                    <div class="clear"></div>*@
+
+                <div class="s4_blt_py_con_left">Processing Fee</div>
+                <div class="s4_blt_py_con_right">MYR<span> @totalProcessingFeesOnList.ToString("#,##0.00")</span></div>
+                <div class="clear"></div>
+
+                @*<div class="s4_blt_py_con_left">GST (SR @(taxRate.ToString("n0"))%)</div>
+                    <div class="s4_blt_py_con_right">MYR<span> @totalGST.ToString("#,##0.00")</span></div>
+                    <div class="clear"></div>*@
+
+                <div class="s4_total_price"></div>
+                <div class="s4_blt_py_con_left">Total Price</div>
+                <div class="s4_blt_py_con_right">MYR<span> @totalBookingAmt.ToString("#,##0.00")</span></div>
+                <div class="clear"></div>
+            </div>
+
+            @*@if (superPNROrder.BookingStatusCode != "HTP" || true)*@
+            @if(superPNROrderList.All(x => x.BookingStatusCode != "HTP") || true)
+            {
+                <div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+                <div class="s4_blt_heading payment">Payment Method</div>
+                <div class="s4_blt_py_container">
+                    @Html.Partial("~/Views/Payment/SummaryPartials/_PaidInformation.cshtml", superPNR)
+
+                    @if (flightDBContext.PromoID != 0)
+                    {
+                        var promoCodeRule = flightDBContext.PromoCodeRule;
+                        bool isAutoApplied = promoCodeRule.PromoFunctions.Any(x=>x.FrontendFunction.FrontEndID == (int)FrontendFunction.Enum.FrontendFunction.PackageAutoApplied || x.FrontendFunction.FrontEndID == (int)FrontendFunction.Enum.FrontendFunction.FlightAutoApplied);
+                        string displaypromoname = string.IsNullOrWhiteSpace(promoCodeRule.DisplayPromoName) ? null : $" - {promoCodeRule.DisplayPromoName}";
+                        string displaypromocode = $"Promo Code {(!isAutoApplied ? $"({promoCodeRule.PromoCode}{displaypromoname})" : "")}";
+
+                        <div class="s4_blt_py_con_left">
+                           @displaypromocode
+                        </div>
+                        <div class="s4_blt_py_con_right">@flightDBContext.CurrencyCode<span>@(superPNROrder.DiscountAmt == 0 ? flightDBContext.DiscountAmt.ToString("#,##0.00") : superPNROrder.DiscountAmt.ToString("#,##0.00"))</span></div>
+                        <div class="clear"></div>
+                    }
+                    <div class="clear"></div>
+                </div>
+            }
+        </div>
+        <!-- ipay portion start -->
+        <div class="ipay_container">
+            <div class="s5_payin_left">
+                @*@if (!isAnyRHIOnList && superPNROrder.BookingStatusCode != "HTP")*@
+                @if (!isAnyRHIOnList && superPNROrderList.All(x => x.BookingStatusCode != "HTP")) 
+                {
+                    <div class="s5_pl_text">Forward this confirmation to:
+                        @if (IsAgent) 
+                        {
+                            <br />
+                            <label for="agentsendmailb2b">Agent Mail (B2B)</label><input type="radio" id="agentsendmailb2b" name="emailtype" value="agentb2b" checked><br />
+                            <label for="agentsendmailb2c">Agent Mail (B2C)</label><input type="radio" id="agentsendmailb2c" name="emailtype" value="agentb2c">
+                        }
+                    </div>
+                    <div><input name="emails" id="emails" type="text" class="s5_pl_textbox" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'"></div>
+                    <div class="s5_pl_text1">Separate using ";" to send to multiple email addresses</div>
+                    <button type="button" class="s5_pl_button add-cursor-pointer" value="Send" onclick=javascript:checkEmails();>Send</button>
+
+                    using (Html.BeginForm("printBookingItinerary", "Checkout", FormMethod.Post, new { @id = "printForm", @target = "_blank" }))
+                    {
+                        string printNow = (IsAgent) ? "Print Now (Agent View)" : "Print Now";
+                        @Html.Hidden("PrintBookingModel.bookingId", flightDBContext.BookingID)
+                        @Html.Hidden("SuperPNRNo", flightDBContext.SuperPNRNo)
+                        @*@Html.TextBoxFor(m => m.PrintBookingModel.flightDetailHtml, new { @style = "display: none;" })*@
+
+                        <div class="ipay_paynow_button1"><button id="print" class="s5_pl_button add-cursor-pointer">@printNow</button></div>
+                    }
+
+                    if (IsAgent)
+                    {
+                        using (Html.BeginForm("printBookingItinerary", "Checkout", FormMethod.Post, new { @id = "printFormAgent", @target = "_blank" }))
+                        {
+                            @Html.Hidden("PrintBookingModel.bookingId", flightDBContext.BookingID)
+                            @Html.Hidden("SuperPNRNo", flightDBContext.SuperPNRNo)
+                            @*@Html.TextBoxFor(m => m.PrintBookingModel.flightDetailHtml, new { @style = "display: none;" })*@
+                            <input type="hidden" id="agentb2cPrint" name="agentb2cPrint" value="true">
+
+                            <div class="ipay_paynow_button1 printagent"><button id="printagent" class="s5_pl_button add-cursor-pointer">Print Now (Customer View))</button></div>
+                        }
+                    }
+                }
+            </div>            
+            @if (superPNROrder.BookingStatusCode == "HTP" && superPNROrder.PendingPaymentAmt > 0)
+            {
+                <div class="s4_payment_nextbox">
+                    <div class="s4_pnb_red_heading">Pay Using</div>
+                    <div class="s4_pnb_inner">
+
+                        @using (Html.BeginForm("checkout", "payment", new
+                        {
+                            paymentid = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(flightDBContext.SuperPNRID.ToString()),
+                            refNo = flightDBContext.SuperPNRNo
+                        }, FormMethod.Post, new { @id = "checkoutForm", @target = "_blank" }))
+                        {
+                            ViewBag.PromoCodeRule = flightDBContext.PromoCodeRule;
+                            ViewBag.PromoID = flightDBContext.PromoCodeRule?.PromoID;
+
+                            CheckoutProduct checkoutProduct = new CheckoutProduct();
+                            checkoutProduct.PromoID = ViewBag.PromoID;
+
+                            ViewBag.AllowWithTC = checkoutProduct.PromoCodeFunctions.GetFrontendFunction.AllowWithTC;
+                            PaymentCheckout paymentDtls = ViewBag.PaymentDetails;
+
+                            @Html.Partial("~/Views/Checkout/PaymentPartials/_CreditPaymentPartial.cshtml", paymentDtls ?? new Alphareds.Module.Model.PaymentCheckout())
+
+                            @Html.Partial("~/Views/Checkout/PaymentPartials/_PaymentMethodPartial.cshtml", paymentDtls ?? new Alphareds.Module.Model.PaymentCheckout())
+
+                            <style>
+                                .show_toltip2 {
+                                    position: relative;
+                                }
+                                .s3_form_toll_tip {
+                                    left: 0;
+                                }
+                            </style>
+
+                            <div class="ipay_paynow_button1" style="position: static;float: right;">
+                                <button id="payment_btn" type="submit" class="s5_pl_button add-cursor-pointer">Payment Now</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            }
+            <div class="clear"></div>
+        </div>
+
+        <!-- ipay portion end -->
+    </div>
+</div>
+
+<!-- MAIN CONTENT PORTION START -->
+<input type="hidden" id="hidViewMore" />
+
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+@if (hasHotelBooking)
+{
+    @Html.Partial("~/Views/Hotel/_HotelInformation.cshtml")
+    @Html.Partial("~/Views/Hotel/_GoogleMap.cshtml")
+}
+
+<!-- MAIN CONTENT PORTION END -->
+@helper getFlightSegmentRoute(List<Alphareds.Module.Model.Database.FlightSegment> flightSegments)
+    {
+        string flightSegmentText = string.Empty;
+        for (int i = 0; i < flightSegments.Count; i++)
+        {
+            flightSegmentText += flightSegments[i].DepartureAirportLocationCode + " > ";
+
+            if (i == flightSegments.Count - 1)
+            {
+                flightSegmentText += flightSegments[i].ArrivalAirportLocationCode;
+            }
+        }
+        <text>@flightSegmentText</text>
+}
+
+@section scripts{
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+
+    <script language="javascript">
+
+        var failedQueue = false;
+
+        @if (Request.QueryString["placeQueueStatus"] == "fail")
+        {
+            <text>
+        failedQueue = true;
+        </text>
+        }
+
+        $(document).ready(function () {
+            if (failedQueue == true) {
+                $('#failedqueueplaced').show();
+            }
+
+            //Hide in first due to function not ready
+            //$('.farerules').hide();
+        });
+
+        function checkEmail(email) {
+            var regExp = /^(?=.{5,50}$)(?=^[a-zA-Z0-9])(?=.*[a-zA-Z0-9]$)([a-zA-Z0-9_\-\.]{1,44})[a-zA-Z0-9]@@(?=(?:[^.]*\.){1,2}[^.]*$)[a-zA-Z0-9]([a-zA-Z0-9-\.]{4,47})$/;
+            return regExp.test(email);
+        }
+
+        function checkEmails() {
+            var emails = document.getElementById("emails").value;
+            var invEmails = "";
+            if ($('#emails').val().search(';') < 0) {
+                var emailArray = emails;
+                if (checkEmail(emailArray)) {
+                    //...
+                } else {
+                    invEmails += emailArray + "\n";
+                }
+            } else {
+                var emailArray = emails.split(/[\s;]+/);
+                for (i = 0; i < (emailArray.length) ; i++) {
+                    if (checkEmail(emailArray[i])) {
+                        //...
+                    } else {
+                        invEmails += emailArray[i] + "\n";
+                    }
+                }
+            }
+
+            if (invEmails != "") {
+                alert("Invalid emails:\n" + invEmails);
+                //jQuery.noConflict();
+                //$('#bookId').html("invalid email entered:<br> " + invEmails);
+                //$('#myModal').modal('show');
+            } else {
+                sendEmails(emailArray, false);
+            }
+        }
+
+        //Send email - START
+        function sendEmails(emailArray, isBookingPerson) {
+            var SuperPNRID = '@flightDBContext.SuperPNRID';
+
+            ajaxSendMail(emailArray, SuperPNRID, isBookingPerson);
+        }
+
+        function ajaxSendMail(emailArray, SuperPNRID, isBookingPerson) {
+            var isAgentSendB2C = false;
+            var checkID = document.getElementById("agentsendmailb2c");
+            if (checkID != null) {
+                isAgentSendB2C = checkID.checked;
+            }
+            $.ajax({
+                type: "POST",
+                cache: false,
+                url: '/Checkout/SendBookingItineraryEmail',
+                async: true,
+                beforeSend: function () { $('#loading-modal').show(); },
+                data: { emailArray: emailArray, isBookingPerson: isBookingPerson, SuperPNRID: SuperPNRID, isAgentSendB2C: isAgentSendB2C }, ////////////
+            }).done(function (res) {
+                $('#loading-modal').hide();
+                if (res == 'True' && !isBookingPerson) {
+                    $('#sendEmailSuccess').show();
+                } else if (res == 'False' && !isBookingPerson) {
+                    $('#sendEmailFailed').show();
+                }
+            });
+        }
+        //Send email - END
+
+        //Print Booking Itinerary - START
+        $('#print').click(function (event) {
+            var bookingId = '@flightDBContext.BookingID';
+
+            $('#@Html.IdFor(m => m.Flight.PrintBookingModel.bookingId)').val(bookingId);
+
+            $('#printForm').submit();
+        });
+
+        $('#printagent').click(function (event) {
+            var bookingId = '@flightDBContext.BookingID';
+
+            $('#@Html.IdFor(m => m.Flight.PrintBookingModel.bookingId)').val(bookingId);
+
+            $('#printFormAgent').submit();
+        });
+        //Print Booking Itinerary - END
+
+
+    </script>
+
+    @if (hasHotelBooking)
+    {
+        @Html.Partial("~/Views/Hotel/_SharedJSScripts.cshtml")
+    }
+
+    @if (isConfirmed || flightDBContext.BookingStatusCode.Equals("QPL"))
+    {
+        <script>
+            $(document).ready(function () {
+                ecompurchase('@flightDBContext.SuperPNRNo', '@flightDBContext.TotalBookingAmt.ToString("0.00")', '@flightBookingSummary.FareSummary.TotalGST.ToString("0.00")');
+            });
+        </script>
+    }
+
+    @if ((bkStatus == "HTP" || superPNROrder.BookingStatusCode == "HTP") && Core.IsEnableAdyen)
+    {
+        
+        var _payjs = new ScriptBundle("~/js/payment")
+                                        .Include("~/scripts/checkout/adyencc.js");
+        
+        BundleTable.Bundles.Remove(_payjs);
+        BundleTable.Bundles.Add(_payjs);
+        ViewBag.AllowCC = false; // b2b repay not allow cc, prevent processing fee override issues
+
+        @*//--Credit Card--Start//*@
+        <script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+        <script type="text/javascript" src="@Url.Content("~/js/payment")"></script>
+
+        @*//--Credit Card--End//*@
+    }
+
+    @*//--SkyscannerTracking start--//*@
+    @if (Request.Cookies["trackingcookies_sat"] != null)
+    {
+    <script>
+            $(document).ready(function () {
+                fireSkyscannerTag();
+                document.cookie = "trackingcookies_sat=; expires=Thu, 01 Jan 1970 12:00:00 UTC;path=/;";
+            });
+            // This line imports the Skyscanner Tag code.
+            (function (s, k, y, t, a, g) { s['SkyscannerAnalyticsTag'] = t; s[t] = s[t] || function () { (s[t].buffer = s[t].buffer || []).push(arguments) }; s[t].u = y; var l = k.createElement("script"); l.src = y + "/tag.js"; l.async = 1; var h = k.getElementsByTagName("head")[0]; h.appendChild(l); })(window, document, 'https://analytics.skyscanner.net', 'sat');
+
+            // This function calls the Skyscanner tag code to register a conversion.
+            // You should make sure to only fire this function once the page has finished loading.
+            // (For example, setting onload="fireSkyscannerTag();" attribute on the <body> tag).
+            function fireSkyscannerTag() {
+                // Initialise SAT with your Tracking Source ID
+                sat('init', 'SAT-845308-1');
+                // Send a 'conversion' event
+                sat('send', 'conversion', {
+                    bookingReference: '@superPNR.SuperPNRNo' //document.getElementById('bookingref').innerText //superPNR
+                });
+            }
+    </script>
+    }
+    @*//--SkyscannerTracking end--//*@
+
+    @*//--Payment method disable/able--start//*@
+    <script>
+            $('.paymentMethod, #UseCredit').on('change', function () {
+                var scSel = $('#UseCredit');
+                var sc = scSel.is(':checked');
+
+                var mSel = $('[name="paymentMethod"]:checked');
+                var mSelLabel = $("[for=" + $(mSel).attr('id') + "]");
+                var mSV = mSel.val();
+                var mUnSel = $('[name="paymentMethod"]:not(:checked)');
+                var mUnSelLabel = $("[for=" + $(mUnSel).attr('id') + "]");
+
+                $(mSelLabel).css('background-position', '0 -37px');
+
+                if (sc) { 
+                    if (mSV == 'ADYENC') {
+                        $('.creditCard-container').slideUp();
+                    }
+
+                    $(mSelLabel).css('background-position', '0 0px');
+
+                    $('.paymentMethod').attr('disabled', 'disabled');
+                    $('.paymentMethodLabel').addClass('isInvalid');
+                }
+                else {
+
+                    if (mSV == 'ADYENC') {
+                        $('.creditCard-container').slideDown();
+                    }
+
+                    $('.paymentMethodLabel').css('background-position', '0 0px');
+                    $(mSelLabel).css('background-position', '0 -37px');
+
+                    $("input[name=paymentMethod][value='" + mSel + "']").prop('checked', true);
+                    $('.paymentMethod').removeAttr('disabled');
+                    $('.paymentMethodLabel').removeClass('isInvalid');
+                }
+            });
+    </script>
+    @*//--Payment method disable/able--End//*@
+}

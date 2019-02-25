@@ -1,0 +1,158 @@
+﻿
+@{
+    ViewBag.Title = "Frequent Flyer";
+    ViewBag.RenderSideBar = true;
+    ViewBag.RenderRedLine = true;
+    string returnUrl = Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString());
+}
+
+@if (Request.QueryString["themes"] == "v1" && !Request.IsAjaxRequest())
+{
+    //Layout = "~/Views/Shared/_SMCLayout.cshtml";
+}
+else
+{
+    ViewBag.TableContent = true;
+}
+
+@if (Request.IsAjaxRequest())
+{
+    Layout = null;
+}
+@{
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+}
+@section style{
+    <style>
+        .mcp_inner_b0 {
+            width: 10%;
+        }
+
+        .mcp_inner_b1 {
+            text-align: right;
+        }
+
+        .mcp_inner_b2 {
+            width: 30%;
+            text-align: left;
+        }
+
+        .mcp_inner_b3 {
+            width: 10%;
+        }
+
+        .mcp_inner_b4 {
+            width: 15%;
+            color: #eb2329;
+        }
+
+        .mcp_inner_edit {
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: left;
+            cursor: pointer;
+            display: inline-flex;
+            width: 25px;
+            height: 25px;
+        }
+
+        .mcp_inner_redfont {
+            color: #eb2329;
+            font-family: "Conv_Ubuntu-Light";
+        }
+
+        .mcp_inner_sort {
+            background-image: url(../images/sort_icon.jpg);
+            background-repeat: no-repeat;
+            background-position: right;
+            padding-left: 5%;
+        }
+
+        .mcp_inner_dustbin {
+            background-image: url(../Images/modify_icon.png);
+            background-repeat: no-repeat;
+            background-position: left;
+            cursor: pointer;
+        }
+
+        #modal-container .modal-cancel-btn {
+            border-radius: 0;
+            display: inline-block;
+            width: 120px;
+        }
+
+        #modal-container .modal-confirm-btn {
+            background-color: #17c134;
+            border-radius: 0;
+            display: inline-block;
+            margin-right: 1em;
+            width: 120px;
+        }
+    </style>
+}
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">Frequent Traveller</div>
+    <div class="mphc_t2">Below are your list of Frequent Traveller</div>
+    @Html.ValidationMessage("Error", new { style = "font-size: 22px;font-style: italic;" })
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="member_profile_container">
+        <div style="text-align:right; padding-top: 20px; padding-right:5%;">
+            <a class="mcp_inner_redfont " style="cursor:pointer; text-decoration:none;" href="/Tools/NewFrequentFlyer"><img align="top" style="padding-right:10px" src="../Images/py_icon.png">Add New Frequent Traveller</a>
+        </div>
+        <div class="mpc_inner_container">
+            <div class="mpc_inner">
+                <!-- red tab start -->
+                <div class="mcp_inner_tabred">
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="mcp_inner_b2 mcp_whitefont">Frequent Traveller@*<img src="../images/sort_icon.jpg" align="middle" style="padding-left:10px;padding-bottom:10px;">*@</div>
+                    @if (IsAgent)
+                    {
+                        <div class="mcp_inner_b2 mcp_whitefont">Shared Info@*<img src="../images/sort_icon.jpg" align="middle" style="padding-left:10px;padding-bottom:10px;">*@</div>
+                    }
+                    <div class="mcp_inner_b0 mcp_whitefont">&nbsp</div>
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="mcp_inner_b3">&nbsp</div>
+                    <div class="clear"></div>
+                </div>
+                <!-- red tab end -->
+                @Html.Action("_FlyerList", "Tools")
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    Response.Redirect(string.Format("{0}{1}{2}", Url.Action("Login", "Account"), "?returnUrl=", returnUrl));
+}
+<!-- MAIN CONTENT PORTION END -->
+
+@section scripts{
+
+    <script>
+        var TeamDetailPostBackURL = '/Tools/_DeleteFlyer';
+        $(function () {
+                $(".popout").click(function () {
+                    var $buttonClicked = $(this);
+                    var id = $buttonClicked.attr('data-id');
+                    $.ajax({
+                        type: "GET",
+                        url: TeamDetailPostBackURL,
+                        contentType: "application/json; charset=utf-8",
+                        data: { "Id": id },
+                        datatype: "json",
+                        success: function (data) {
+                            $('#modal-container').html(data);
+                            $('#popup-modal').modal('show');
+
+                        }
+                    });
+                });
+            });
+    </script>
+}
+

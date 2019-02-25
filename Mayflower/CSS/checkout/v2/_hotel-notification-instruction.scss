@@ -1,0 +1,29 @@
+﻿/* Notification */
+.custom-hotel-instruc, .custom-hotel-instruc p, .custom-hotel-instruc li {
+    font-family: 'SFPro Regular';
+    font-size: 14px;
+    color: #2B2B2B;
+    margin-bottom: 20px;
+}
+
+.custom-hotel-instruc p {
+    margin-bottom: 0 !important;
+    margin-top: 5px;
+}
+
+.custom-hotel-instruc ul {
+    list-style-type: disc;
+}
+
+.custom-hotel-instruc li {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-style: italic;
+    display: list-item !important;
+    margin-left: 1.7em !important;
+}
+
+.custom-hotel-instruc .custom-instruc-content {
+    margin-bottom: 20px;
+}

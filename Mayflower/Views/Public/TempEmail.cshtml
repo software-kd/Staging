@@ -1,0 +1,39 @@
+﻿@using Alphareds.Module.Model.Database
+@{
+    ViewBag.Title = "Temp Email";
+    ViewBag.RenderRedLine = true;
+
+    MayFlower db = new MayFlower();
+
+}
+
+@section style{
+    <style>
+        .container {
+            margin-top: 1em;
+            display: flex;
+        }
+
+        .mail-inner-container {
+            margin: 0 auto;
+        }
+        h2{
+            margin-bottom: 5px;
+        }
+    </style>
+}
+
+<div class="container">
+
+    <div class="mail-inner-container">
+        @foreach (var item in db.Emails)
+        {
+            <h2>@item.Subject (@item.CreatedDate.ToString("dd/MM/yyyy hh:mm tt, ddd"))</h2>
+            @Html.Raw(item.MessageContent)
+            <hr />
+        }
+    </div>
+
+</div>
+
+

@@ -1,0 +1,253 @@
+﻿@using Alphareds.Module.Common;
+@using System.Web.Script.Serialization;
+@using Alphareds.Module.Cryptography;
+
+@model Alphareds.Module.Model.SearchHotelModel
+
+@{
+    #region for hotel only
+    List<SelectListItem> dlAdults = new List<SelectListItem>();
+    for (int i = 1; i <= 32; i++)
+    {
+        dlAdults.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Adult{1}", i, (i > 1 ? "s" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(2) ? true : false)
+        });
+    }
+
+    List<SelectListItem> dlChilds = new List<SelectListItem>();
+    for (int i = 0; i <= 16; i++)
+    {
+        dlChilds.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Child{1}", i, (i > 1 ? "ren" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(0) ? true : false)
+        });
+    }
+
+    List<SelectListItem> dlRooms = new List<SelectListItem>();
+    for (int i = 1; i <= 8; i++)
+    {
+        dlRooms.Add(new SelectListItem
+        {
+            Text = string.Format("{0} Room{1}", i, (i > 1 ? "s" : "")),
+            Value = i.ToString(),
+            Selected = (i.Equals(1) ? true : false)
+        });
+    }
+    #endregion
+
+    Model.ArrivalDate = DateTime.Now.AddDays(2);
+    Model.DepartureDate = Model.ArrivalDate.AddDays(1);
+    Model.Star = 10;
+    //ViewData.Add("STAR", "All Stars");
+
+    #region recent search cookies
+    int dayAdvance = Convert.ToInt32(Core.GetSettingValue("dayadvance"));
+    List<Alphareds.Module.Model.UserSearchFHCookiesModel> _userCookies = new List<Alphareds.Module.Model.UserSearchFHCookiesModel>();
+    Alphareds.Module.Model.UserSearchFHCookiesModel LatestHotelCookie = new Alphareds.Module.Model.UserSearchFHCookiesModel();
+
+    string trackingUserSearchCookiesList;
+    string encryptedCookies;
+    if (Request.Cookies["SaveUserCookies"] != null)
+    {
+        encryptedCookies = Request.Cookies["SaveUserCookies"].Value;
+        trackingUserSearchCookiesList = Cryptography.AES.Decrypt(encryptedCookies);
+
+        _userCookies = new JavaScriptSerializer().Deserialize<List<Alphareds.Module.Model.UserSearchFHCookiesModel>>(trackingUserSearchCookiesList).ToList();
+        LatestHotelCookie = _userCookies.LastOrDefault(v => v.ProductType == "hotel");
+
+        if (LatestHotelCookie != null)
+        {
+            if (LatestHotelCookie.ArrivalDate.Value.ToLocalTime().AddDays(1) < DateTime.Now.AddDays(dayAdvance))
+            {
+                LatestHotelCookie = null;
+            }
+
+            if (LatestHotelCookie != null)
+            {
+                Model.Destination = LatestHotelCookie.Destination;
+                Model.ArrivalDate = LatestHotelCookie.ArrivalDate.Value.ToLocalTime();
+                Model.DepartureDate = LatestHotelCookie.DepartureDate.Value.ToLocalTime();
+                Model.NoOfAdult = LatestHotelCookie.AdultNo;
+                Model.NoOfInfant = LatestHotelCookie.ChildrenNo;
+                Model.NoOfRoom = LatestHotelCookie.RoomNo;
+                Model.Star = LatestHotelCookie.StarNo;
+
+                switch (Model.Star)
+                {
+                    case 10 :
+                        ViewData.Add("STAR", "All Stars");
+                        break;
+                    case 5:
+                        ViewData.Add("STAR", "5 Stars");
+                        break;
+                    case 4:
+                        ViewData.Add("STAR", "4 Stars");
+                        break;
+                    case 3:
+                        ViewData.Add("STAR", "3 Stars");
+                        break;
+                    case 2:
+                        ViewData.Add("STAR", "2 Stars");
+                        break;
+                    case 1:
+                        ViewData.Add("STAR", "1 Star");
+                        break;
+                }
+            }
+            else
+            {
+                ViewData.Add("STAR", "All Stars");
+            }
+        }
+        else
+        {
+            ViewData.Add("STAR", "All Stars");
+        }
+    }
+    else
+    {
+        ViewData.Add("STAR", "All Stars");
+    }
+    #endregion
+
+}
+
+<style>
+    .ffc2_r1_b1 {
+        width: 15%;
+    }
+        div.ui-selectmenu-open {
+        position: absolute;
+        z-index: 65535;
+    }
+    .date_err{
+        margin-left:15%;
+    }
+    .hoteldate{
+        margin-bottom:0px;
+    }
+    .forfield{
+        margin-top:12px;
+    }
+    @@media screen and (max-width : 900px) {
+        .flight_form_container3 {
+            padding-top: 10%;
+        }
+    }
+</style>
+
+@using (Html.BeginForm("GetHotelSearch", "Hotel", FormMethod.Post, new { @id = "searchHotelForm" }))
+{
+    <div id="search_hotel">
+        <div class="tabs_content_container">
+            <div class="tl_right searchclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></div>
+            <div class="tcc_text1">I'm looking for</div>
+
+            <div class="hotel_form_container1">
+                <div class="ffc1_left1"><b>Going to</b></div>
+                <div class="ffc1_right1">
+                    @Html.TextBoxFor(model => model.Destination, new { @id = "destination", @placeholder = "Enter Destination", autocomplete = "off" })
+                    <ul class="list-group to_from_ul" id="from_locations"></ul>
+                    <input type="hidden" id="project-id"><input type="hidden" id="hidDestination" />
+                    @Html.ValidationMessageFor(model => model.Destination, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+                @if (Core.IsForStaging)
+                {
+                    <span id="hoteladvancedbtn" class="collapsed" style="float: right;font-size: 12px;color: #03A9F4;cursor: pointer;">Staying At</span>
+                }
+            </div>
+                @if (Core.IsForStaging)
+                {
+                    <div class="hotel_form_container1" id="hoteladvancedarea" style="display:none">
+                        <div class="ffc1_left1"><b>Keywords</b></div>
+                        <div class="ffc1_right1">
+                            @Html.TextBoxFor(model => model.AdvancedSearchKeywords, new { @id = "hoteladvancedsearch", @placeholder = "Staying At", autocomplete = "off" })
+                            @Html.ValidationMessageFor(model => model.AdvancedSearchKeywords, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                }
+            <div class="flight_form_container2">
+                <div class="ffc2_r1_b1 hoteldate"><b>From</b></div>
+                <div class="ffc2_r1_b2 hoteldate">@Html.TextBoxFor(model => model.ArrivalDate, "{0:dd-MMM-yyyy}", new { @id = "datep3", @readonly = "readonly" })</div>
+                <div class="ffc2_r1_b3 hoteldate"><b>Till</b></div>
+                <div class="ffc2_r1_b4 hoteldate">@Html.TextBoxFor(model => model.DepartureDate, "{0:dd-MMM-yyyy}", new { @id = "datep4", @readonly = "readonly" })</div>
+                <div class="date_err textforerrormsg"></div>
+                <div class="clear"></div>
+                <div class="ffc2_r2_b1 forfield"><b>For</b></div>
+                <div class="ffc2_r2_b2 forfield">
+                    @Html.DropDownListFor(model => model.NoOfRoom, dlRooms, null, null)
+                </div>
+                <div class="ffc2_r2_b3 forfield">
+                    @Html.DropDownListFor(model => model.NoOfAdult, dlAdults, null, null)
+                </div>
+                <div class="ffc2_r2_b4 forfield">
+                    @Html.DropDownListFor(model => model.NoOfInfant, dlChilds, null, null)
+                </div>
+                <div class="ffc2_r2_b5 forfield">
+                    <img src="@Url.Content("~/images/i-icon.png")" width="13" height="12" alt="" class="tooltip1">
+                    <div class="yellow_toll_tip">
+                        <div class="ttt"><img src="@Url.Content("~/images/toll_tip_top.png")" width="215" height="13" alt=""></div>
+                        <div class="ttt1">
+                            <ul>
+                                <li>Adult 11+ Years Old</li>
+                                <li>Child 0-11 Years Old</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="ffc2_r3_b1_h"><b>Staying</b></div>
+                <div class="ffc2_r3_b2">
+                    <select name="starrating" id="starrating">
+                        <option value="10" data-class="avatar" data-style="background-position:-222px -111px;">All Stars</option>
+                        <option value="5" data-class="avatar" data-style="background-position: -222px -111px;">5 Stars</option>
+                        <option value="4" data-class="avatar" data-style="background-position: -222px -111px;">4 Stars</option>
+                        <option value="3" data-class="avatar" data-style="background-position: -222px -111px;">3 Stars</option>
+                        <option value="2" data-class="avatar" data-style="background-position: -222px -111px;">2 Stars</option>
+                        <option value="1" data-class="avatar" data-style="background-position: -222px -111px;">1 Star</option>
+                    </select>
+                    @Html.HiddenFor(model => model.Star, new { @id = "hidStar" })
+                </div>
+
+                <div class="ffc2_r3_b3_h"><b>With</b></div>
+                <div class="ffc2_r3_b4_h">
+                    @Html.TextBoxFor(model => model.PromoCode, new { placeholder = "Promo Code" })
+                    @Html.ValidationMessageFor(model => model.PromoCode, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="ffc2_r2_b5_1">
+                    <img src="@Url.Content("~/images/i-icon.png")" width="13" height="39" alt="" class="tooltip2">
+                    <div class="yellow_toll_tip1">
+                        <div class="ttt"><img src="@Url.Content("~/images/toll_tip_top.png")" width="215" height="13" alt=""></div>
+                        <div class="ttt1">
+                            Mayflower, from time to time, may be running special promotions with selected partners. Shall you deem to have received one of this Promo Code, enter your personalized Promo Code here to enjoy more savings (Terms & conditions apply)!<br><br>
+
+                            Subscribe our E-Newsletter today to stay tuned for more offers!
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            @if (Core.IsForStaging)
+            {
+                @Html.Partial("~/Views/Hotel/DevelopmentViews/_AdvancedSearch.cshtml", Model)
+            }
+
+            <div class="flight_form_container3">
+                <input name="hotelBtn" type="submit" value="OK,show me!">
+                <div class="ffc3_content">
+                    By clicking on this button, I agree to the Mayflower <br>
+                    terms & conditions and <a href="@Url.Action("PDPA", "Public")" target="_blank">privacy policy</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+}

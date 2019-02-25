@@ -1,0 +1,103 @@
+﻿@using Alphareds.Module.Model.Database;
+@model Alphareds.Module.Model.PaymentCheckout
+
+@if (User.Identity.IsAuthenticated)
+{
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+    var credit = Model.AvailableCredit;
+    bool isAgent = customPrincipal.IsAgent;
+    string label = isAgent ? "Agent Credit" : "Travel Credit";
+    object checkBoxHtmlCSS = credit <= 0 ? new { @class = "disddd", @disabled = "disabled" } : null;
+
+    object checkBoxHtmlCSSDisable = credit <= 0 ? new { @disabled = "disabled" } : null;
+
+    #region Credit Checking
+    //normal user
+    string CheckUserValidCredit = credit <= 0 ? "isInvalid" : null;
+
+    //agent user
+    bool checkCreditTermValid = true;
+    string checkAgentCreditValid = null;
+    if (isAgent)
+    {
+        checkCreditTermValid = customPrincipal.CreditTerm > 0;
+        checkAgentCreditValid = credit <= 0 ? "isInvalid" : checkCreditTermValid ? null : "isInvalid";
+    }
+    string CheckValidCredit = isAgent ? checkAgentCreditValid : CheckUserValidCredit;
+    string CheckValidCashCredit = Model.EWallet.BalanceAmt > 0 ? null : "isInvalid";
+    #endregion
+
+    string clientName = Html.NameFor(m => m.UseCredit).ToString();
+
+    PromoCodeRule promoCodeRule = ViewBag.PromoCodeRule;
+    bool AllowWithTC = ViewBag.AllowWithTC;
+    bool allowUseTC = (promoCodeRule != null && promoCodeRule.DiscountAmtOrPCT == 0) || ViewBag.PromoID == 0 || AllowWithTC;
+
+    <div id="travelCredit_div" class="s4_png_inner_row">
+
+        <div class="cc-main-container" style="@(allowUseTC ? "" : "display:none")">
+            <input id="@clientName" name="@clientName" type="checkbox" value="true" @(Model.UseCredit ? "checked" : "") @checkBoxHtmlCSSDisable>
+            <label for="@clientName" class="add-cursor-pointer @CheckValidCredit">Pay with your @label</label>
+            <div class="s4_png_boxright_credit">@(Model.CreditUsed > 0 ? $"{Model.PaymentCurrencyCode} {Model.CreditUsed.ToString("n2")}" : "")</div>
+            <div class="show_toltip2 add-cursor-pointer">
+                <img src="@Url.Content("~/images/toll_tip.png")" width="14" height="14" alt="">
+                <div class="s3_form_toll_tip s3_form_toll_tip2">
+                    <div class="tt_top_form_y_1"><img src="@Url.Content("~/images/tt_top.png")" width="34" height="19" alt=""></div>
+                    <div class="s3-1_form_toll_tip_b s3-1_form_toll_tip_b2">
+                        @if (isAgent)
+                        {
+                            <p>100 % of your total payable is allowed to be redeemed using Agent Credit.</p>
+                        }
+                        else
+                        {
+                            <p>Only a maximum of 20 % of your total payable is allowed to be redeemed using Travel Credit.</p>
+                        }
+
+                        <div class="clear1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (allowUseTC)
+        {
+        }
+        else
+        {
+        }
+        <div class="cc-disabled-container" style="@(!allowUseTC ? "" : "display:none")">
+            <label style="color: #ec1c24;padding-left: 4.6%;">Travel Credit not available for discounted booking</label>
+        </div>
+
+        @if (isAgent && !checkCreditTermValid) //is Agent and also Credit Term false
+        {
+            <small> We're sorry. Your Credit Term is 0. Please use other Payment Method for booking.</small>
+        }
+        else
+        {
+            <small>You have MYR @Model.AvailableCredit.ToString("#,##0.00") available in @label.ToLower()</small>
+        }
+
+
+    </div>
+    <div class="s4_png_line"></div>
+
+    if (!isAgent)
+    {
+        object walletchkboxHtmlCSSDisable = Model.EWallet.BalanceAmt <= 0 && Model.EWallet.UseAmt <= 0 ? "disabled" : null;
+        clientName = Html.NameFor(m => m.EWallet.UseWallet).ToString();
+        label = "Travel Wallet";
+
+        <div id="wallet_div" class="s4_png_inner_row">
+
+                <input id="@clientName" name="@clientName" type="checkbox" value="true" @(Model.EWallet.UseWallet ? "checked" : "") @walletchkboxHtmlCSSDisable>
+                <label for="@clientName" class="add-cursor-pointer @CheckValidCashCredit">Pay with your @label</label>
+                <div class="s4_png_boxright_cashcredit">@(Model.EWallet.UseAmt > 0 ? $"{Model.PaymentCurrencyCode} {Model.EWallet.UseAmt.ToString("n2")}" : "")</div>
+
+            <br />
+            
+            <small>You have MYR @Model.EWallet.BalanceAmt.ToString("#,##0.00") available in @label.ToLower()</small>
+
+        </div>
+        <div class="s4_png_line"></div>
+    }
+}

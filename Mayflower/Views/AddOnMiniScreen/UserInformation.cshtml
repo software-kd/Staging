@@ -1,0 +1,755 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.BookedProductView
+
+@{
+    Layout = null;
+    ViewBag.Title = "User Information";
+    var flightDBContext = Model.Flight.ConfirmationOutputDb;
+    var flightBookingSummary = Model.Flight.BookingSummaryViewModel;
+    var flightPassengerType = Model.Flight.FlightSegmentPaxType;
+    var flightPassengerData = Model.Flight.PassengerData;
+    var flightBreakeDown = Model.Flight.FareBreakDown;
+    List<Alphareds.Module.Model.Database.FlightSegment> flightSegments = Model.Flight.BookingFlightSegment;
+    List<Alphareds.Module.Model.Database.FlightSegment> outBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("O")).ToList();
+    List<Alphareds.Module.Model.Database.FlightSegment> inBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("I")).ToList();
+    var firstDepartureDate = outBoundFlightSegments.FirstOrDefault().DepartureDateTime;
+    int isReturnCount = flightDBContext.IsReturn ? 2 : 1;
+    bool isReturn = flightDBContext.IsReturn;
+}
+
+<link href="~/CSS/MiniScreenCSS/theme.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/custom.css" rel="stylesheet" />
+<link href="~/CSS/checkout/style.min.css" rel="stylesheet" />
+<link href="~/CSS/v2style.css" rel="stylesheet" />
+<link href="@Url.Content("~/css/bundle?" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+
+<style>   
+    .navbar-brand a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .navbar-brand a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .box-wrap2 {
+        margin: none;
+        max-width: none;
+    }
+
+    .main-content {
+        padding-top: 0px !important;
+    }
+
+    .btn-group-vertical > .btn-group:after, .btn-group-vertical > .btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+        content: none !important;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1.5rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand2 {
+        float: none;
+        height: unset;
+        padding: unset;
+        display: inline-block;
+        padding-top: 0.3125rem !important;
+        padding-bottom: 0.3125rem !important;
+        margin-right: 1.5rem !important;
+        font-size: 20px;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .breadcrumb {
+        display: block;
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        list-style: none;
+        background-color: #fff;
+        border-radius: 2px;
+        text-align: center;
+    }
+    .close_tabn {
+        display: none
+    }
+    .pdcont_nameright {
+        width: 100%;
+    }
+    .s4_guest_tabs_name_container H3 {
+        padding-top: 0px;
+    }
+    .box-wrapItinerary {
+        max-width: none;
+        margin: 30px auto 0px auto;
+    }
+    .payment_fulldetail_container {
+        display: block;
+    }
+
+    .navbar-brand a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .navbar-brand a:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .show_more_flight_icon1 {
+        width: auto;
+    }
+
+    .h2_mhdb2_heading2 {
+        background-image: url(../images/info-icon.png);
+        background-repeat: no-repeat;
+        font-size: 14px;
+        float: left;
+        margin-left: 10px;
+        margin-top: -6px;
+        color: #ec1c24;
+        min-width: 55px;
+        height: 35px;
+    }
+
+    .guestno {
+        font-family: 'Conv_Ubuntu-Light';
+        width: 100%;
+        float: left;
+        padding: 10px 0 10px 50px;
+        border-right: 1px solid #838383;
+        border-bottom: 1px solid #838383;
+        font-size: 22px;
+        background-color: #eb1c24 !important;
+        color: #fff;
+    }
+
+    a {
+        -webkit-transition: initial;
+        -moz-transition: initial;
+        -o-transition: initial;
+        transition: initial;
+    }
+
+    .payment_innerbox {
+        width: 92%;
+    }
+
+    .s4_blt_sub_heading {
+        font-family: 'UbuntuBold';
+    }
+
+    .ipay_paynow_button1, .s5_pl_button {
+        width: 210px;
+    }
+
+    #printForm {
+        display: inline-block;
+        float: right;
+    }
+
+    .paydisp_none {
+        display: block !important;
+        visibility: initial !important;
+        visibility: visible;
+    }
+
+    /*.farerules {
+            display: none !important;
+        }*/
+
+    @@media screen and (min-width : 800px) {
+        .s3_hinfo_tc_inner_left {
+            width: 7%;
+        }
+
+        .s3_hinfo_tc_inner_right {
+            width: 93%;
+        }
+
+        .s3_hinfo_tc_left {
+            width: auto;
+        }
+    }
+
+    @@media screen and (max-width : 900px) {
+        .ipay_paynow_button1, .s5_pl_button {
+            top: 0;
+            margin-top: 0;
+            width: 190px;
+        }
+
+        .pdcont_nameright {
+            width: 78%;
+        }
+
+        .pdcont_nameleft2 {
+            float: left;
+            width: 20%;
+            display: inline-block;
+        }
+
+        .s3_hotel_contacts_box {
+            margin: 10px;
+        }
+    }
+
+    @@media screen and (max-width : 730px) and (min-width:601px) {
+        .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+            margin-left: -20px !important;
+        }
+    }
+
+    @@media screen and (max-width : 900px) and (min-width:601px) {
+        .mpjm_pd_heading_left.mpjm_spclclass_mt.conticon, .mpjm_pd_heading_left.mpjm_spclclass_mt.guesticon {
+            margin-top: 6px !important;
+            margin-left: -15px;
+        }
+
+        .word-form {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width : 600px) {
+        .s4_guest_tabs_name_container H4 span {
+            padding-left: 0px;
+        }
+
+        .pdcont_nameright {
+            width: 75%;
+            display: inline-block;
+        }
+
+        .pdcont_nameleft {
+            width: 64px;
+            display: inline-block;
+            float: left;
+        }
+
+        .h2_mhdb2_mapbox span {
+            display: inherit;
+            width: 73px;
+            margin-left: 0px;
+        }
+
+        .s3_hotel_name_portion3_customize {
+            margin-left: 0px !important;
+        }
+
+        .st4_payment_heading_container1 span {
+            font-size: 23px;
+        }
+
+        .s4_guest_tabs_name_container H3 {
+            padding-top: 0px;
+        }
+
+        .mpjm_pd_heading_left {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            display: inline-block;
+            float: left;
+        }
+
+        .pdcont_nameright {
+            display: inline-block;
+            width: 70%;
+        }
+
+        .ipay_paynow_button1, .s5_pl_button {
+            top: 0;
+            margin-top: 0;
+            width: 150px !important;
+        }
+
+        .pdcont_nameleft2 {
+            float: left;
+            width: 30%;
+            display: inline-block;
+        }
+
+        .s4_blt_py_con_left {
+            width: 60%;
+            float: left;
+        }
+
+        .s4_blt_py_con_right {
+            float: right;
+        }
+
+        .word-form {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width : 425px) {
+        .booking_refrence_text {
+            line-height: 20px;
+            padding-top: 10px;
+        }
+
+        .s3_1_breadcrump {
+            height: 80px;
+        }
+
+        .st4_payment_heading_container1 {
+            background-position: 19% 3px;
+            background-position-y: -1px;
+        }
+    }
+
+    @@media screen and (max-width : 375px) {
+        .st4_payment_heading_container1 {
+            background-position: 17% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 370px) {
+        .st4_payment_heading_container1 {
+            background-position: 15% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 418px) {
+        .secondrow {
+            float: left;
+            margin-top: 8px;
+        }
+    }
+
+    @@media screen and (max-width : 325px) {
+        .st4_payment_heading_container1 {
+            background-position: 11% 3px;
+        }
+    }
+
+    @@media screen and (max-width : 400px) {
+        .s4_blt_sub_heading {
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .pgt_left {
+            font-size: 19px;
+        }
+
+        .pgt_right {
+            font-size: 14px;
+            padding-top: 5px;
+        }
+    }
+</style>
+
+
+
+<body>
+    <nav class="navbar navbar-expand-md  navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="###">
+                <img src="~/Images/logo_w.png" class="img-responsive">
+            </a>
+            <div class="navbar-brand navbar-brand2">@Html.ActionLink("Back to main menu ", "Index", "AddOnMiniScreen")</div>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <div class="section ">
+        <div class="container">
+            <div class="row">
+                <div class="main-content col-12">
+                    @using (Html.BeginForm("UserInformation", "AddOnMiniScreen", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                       @Html.HiddenFor(X => X.Flight.ConfirmationOutputDb.SuperPNRNo)
+                        <div class="box-wrap user-info box-wrapItinerary">
+                            <p class="lead text-center"><i class="fa fa-o fa-user" aria-hidden="true"></i>Passenger information</p>
+                            <div class=" wrap gray f-500 ">
+                                <div id="passengerDetail">
+                                    @for (int a = 0; a < flightPassengerType.Count(); a++)
+                                    {
+                                        List<Alphareds.Module.Model.Database.Pax> paxes = flightPassengerData.Where(x => x.PassengerType == flightPassengerType[a].PassengerType).ToList();
+                                        string paxType = UtilitiesService.GetPassengerTypeName(flightPassengerType[a].PassengerType);
+
+                                        <div class="pasengerTypeInfo">
+                                            <!-- row start -->
+                                            @for (int i = 0; i < paxes.Count; i++)
+                                            {
+                                                var passenger = paxes[i];
+                                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> flightSegmentPaxServiceTypeList = passenger.FlightSegmentPaxServiceTypes.ToList();
+                                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> mealList = passenger.FlightSegmentPaxServiceTypes.Where(x => x.ServiceType == "MEAL").ToList();
+                                                List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> baggageList = passenger.FlightSegmentPaxServiceTypes.Where(x => x.ServiceType.Trim() == "LUG").ToList();
+
+                                                DateTime? _dob = passenger.DOB;
+                                                double _age = 0;
+                                                double? age = 0;
+                                                if (passenger.PassengerType != "INF")
+                                                {
+                                                    _age = _dob == null ? 0 : firstDepartureDate.Subtract(_dob ?? DateTime.MinValue).TotalDays;
+                                                    age = _dob != DateTime.MinValue ? Math.Floor(_age / 365.25) : (double?)null;
+                                                }
+                                                else
+                                                {
+                                                    _age = _dob == null ? 0 : Math.Floor(((firstDepartureDate - Convert.ToDateTime(_dob)).TotalDays) / (365.25 / 12));
+                                                    age = _dob != DateTime.MinValue ? _age : (double?)null;
+                                                }
+                                                if (i == 0)
+                                                {
+                                                    <div class="payment_fulldetail_container">
+                                                        <div class="s4_blue_top_pati">Guest @(i + 1)</div>
+                                                        <!-- PERSONAL DETAIL START -->
+                                                        <div class="pd_containerbox">
+                                                            <div class="pdcont_nameright">
+                                                                <div class="s4_guest_tabs_name_container">
+                                                                    <h3>@passenger.TitleCode @passenger.GivenName @passenger.Surname</h3>
+                                                                    <h4>Date of birth: <span>@(passenger.DOB == null ? "-" : passenger.DOB.Value.ToString("dd MMM yyyy"))</span></h4>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Age @(passenger.PassengerType == "INF" ? "(In Months)" : "")</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(age == null || passenger.DOB == null ? "-" : age + (passenger.PassengerType == "INF" ? " Months" : " Years old"))</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Nationality</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">
+                                                                        @(!string.IsNullOrWhiteSpace(passenger.Nationality) && passenger.Nationality != "NA" ? UtilitiesService.GetCountryName(passenger.Nationality) : "-")
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Number</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(string.IsNullOrWhiteSpace(passenger.Passport) ? "-" : passenger.Passport)</div>
+                                                                </div>
+                                                                <div class="clear"></div>
+
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Expiry Date</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@((passenger.PassportExpiryDate != null ? passenger.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-"))</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Issuing Country</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrWhiteSpace(passenger.PassportIssueCountryCode) ? UtilitiesService.GetCountryName(passenger.PassportIssueCountryCode) : "-")</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Frequent Traveller Number</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.PaxFrequentFlyer != null ? passenger.PaxFrequentFlyer.AirlineCode + " - " + passenger.PaxFrequentFlyer.FrequentFlyer : "-")</div>
+                                                                </div>
+                                                                <div class="clear"></div>
+
+                                                                @if (!string.IsNullOrEmpty(passenger.IdentificationNumber))
+                                                                {
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">NRIC Number</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrEmpty(passenger.IdentificationNumber) ? passenger.IdentificationNumber : "-")</div>
+                                                                    </div>
+                                                                }
+
+                                                                @if (flightDBContext.SupplierCode == "SBRE")
+                                                                {
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">Meal</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                                                            @if (mealList.Count > 0)
+                                                                            {
+                                                                                for (int z = 0; z < flightSegments.Count; z++)
+                                                                                {
+                                                                                    bool mealIncluded = flightSegments[z].FlightSegmentPaxServiceTypes.Any(x => x.FlightSegmentID == flightSegments[z].FlightSegmentID && x.PaxID == passenger.PaxID && x.ServiceType == "MEAL");
+                                                                                    <span>@flightSegments[z].DepartureAirportLocationCode > @flightSegments[z].ArrivalAirportLocationCode</span><br />
+                                                                                    if (!mealIncluded)
+                                                                                    {
+                                                                                        <span>Meal not Included</span>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <span>Meal Included</span>
+                                                                                    }
+                                                                                    <br />
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span>-</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">Baggage Allowed</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                                                            @if (baggageList.Count > 0)
+                                                                            {
+                                                                                for (int z = 0; z < isReturnCount; z++)
+                                                                                {
+                                                                                    List<Alphareds.Module.Model.Database.FlightSegment> outOrInSegments = z == 0 ? outBoundFlightSegments : inBoundFlightSegments;
+                                                                                    <span>
+                                                                                        @getFlightSegmentRoute(outOrInSegments)
+                                                                                    </span>
+                                                                                    <br />
+                                                                                    if (!string.IsNullOrEmpty(baggageList[z].ServiceValue))
+                                                                                    {
+                                                                                        string[] baggageValue = baggageList[z].ServiceValue.Split(' ');
+                                                                                        if (baggageValue[1] == "piece")
+                                                                                        {
+                                                                                            <span>Free Baggage (@baggageValue[0] x 15kg)</span>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <span>Free Baggage (@baggageValue[0] @baggageValue[1])</span>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <span>No Free Baggage</span>
+                                                                                    }
+                                                                                    <br />
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span>No Free Baggage</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (passenger.PassengerType != "INF")
+                                                                    {
+                                                                        <h3>Special Request</h3>
+                                                                        for (int b = 0; b < (isReturn ? 2 : 1); b++)
+                                                                        {
+                                                                            bool isReturnFlight = b != 0;
+                                                                            var baggage = isReturnFlight ? paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "I1") : paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "O1");
+
+                                                                            <div class="mpjm_halfdiv">
+                                                                                <div class="mpjmhd_lable spcl_bigfont">@(isReturnFlight ? "Return Baggage" : "Depart Baggage")</div>
+                                                                                @if (baggage != null)
+                                                                                {
+                                                                                    List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                                                                    string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == baggage.ServiceValue).Value;
+                                                                                    <div class="mpjmhd_ans spcl_bigfont1">@ssrLabel</div>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <div class="mpjmhd_ans spcl_bigfont1">No checked baggage</div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    }
+                                                                }
+                                                                <div class="clear"></div>
+                                                            </div>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="payment_fulldetail_container payment_container2" style="display:none">
+                                                        <div class="s4_blue_top_pati">Guest @(i + 1)</div>
+                                                        <!-- PERSONAL DETAIL START -->
+                                                        <div class="pd_containerbox">
+                                                            <div class="pdcont_nameright">
+                                                                <div class="s4_guest_tabs_name_container">
+                                                                    <h3>@passenger.TitleCode @passenger.GivenName @passenger.Surname</h3>
+                                                                    <h4>Date of birth: <span>@(passenger.DOB == null ? "-" : passenger.DOB.Value.ToString("dd MMM yyyy"))</span></h4>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Age @(passenger.PassengerType == "INF" ? "(In Months)" : "")</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(age == null || passenger.DOB == null ? "-" : age + (passenger.PassengerType == "INF" ? " Months" : " Years old"))</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Nationality</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">
+                                                                        @(!string.IsNullOrWhiteSpace(passenger.Nationality) && passenger.Nationality != "NA" ? UtilitiesService.GetCountryName(passenger.Nationality) : "-")
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Number</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(string.IsNullOrWhiteSpace(passenger.Passport) ? "-" : passenger.Passport)</div>
+                                                                </div>
+                                                                <div class="clear"></div>
+
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Expiry Date</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@((passenger.PassportExpiryDate != null ? passenger.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-"))</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Passport Issuing Country</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrWhiteSpace(passenger.PassportIssueCountryCode) ? UtilitiesService.GetCountryName(passenger.PassportIssueCountryCode) : "-")</div>
+                                                                </div>
+                                                                <div class="mpjm_halfdiv">
+                                                                    <div class="mpjmhd_lable spcl_bigfont">Frequent Traveller Number</div>
+                                                                    <div class="mpjmhd_ans spcl_bigfont1">@(passenger.PaxFrequentFlyer != null ? passenger.PaxFrequentFlyer.AirlineCode + " - " + passenger.PaxFrequentFlyer.FrequentFlyer : "-")</div>
+                                                                </div>
+                                                                <div class="clear"></div>
+
+                                                                @if (!string.IsNullOrEmpty(passenger.IdentificationNumber))
+                                                                {
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">NRIC Number</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrEmpty(passenger.IdentificationNumber) ? passenger.IdentificationNumber : "-")</div>
+                                                                    </div>
+                                                                }
+
+                                                                @if (flightDBContext.SupplierCode == "SBRE")
+                                                                {
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">Meal</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                                                            @if (mealList.Count > 0)
+                                                                            {
+                                                                                for (int z = 0; z < flightSegments.Count; z++)
+                                                                                {
+                                                                                    bool mealIncluded = flightSegments[z].FlightSegmentPaxServiceTypes.Any(x => x.FlightSegmentID == flightSegments[z].FlightSegmentID && x.PaxID == passenger.PaxID && x.ServiceType == "MEAL");
+                                                                                    <span>@flightSegments[z].DepartureAirportLocationCode > @flightSegments[z].ArrivalAirportLocationCode</span><br />
+                                                                                    if (!mealIncluded)
+                                                                                    {
+                                                                                        <span>Meal not Included</span>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <span>Meal Included</span>
+                                                                                    }
+                                                                                    <br />
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span>-</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mpjm_halfdiv">
+                                                                        <div class="mpjmhd_lable spcl_bigfont">Baggage Allowed</div>
+                                                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                                                            @if (baggageList.Count > 0)
+                                                                            {
+                                                                                for (int z = 0; z < isReturnCount; z++)
+                                                                                {
+                                                                                    List<Alphareds.Module.Model.Database.FlightSegment> outOrInSegments = z == 0 ? outBoundFlightSegments : inBoundFlightSegments;
+                                                                                    <span>
+                                                                                        @getFlightSegmentRoute(outOrInSegments)
+                                                                                    </span>
+                                                                                    <br />
+                                                                                    if (!string.IsNullOrEmpty(baggageList[z].ServiceValue))
+                                                                                    {
+                                                                                        string[] baggageValue = baggageList[z].ServiceValue.Split(' ');
+                                                                                        if (baggageValue[1] == "piece")
+                                                                                        {
+                                                                                            <span>Free Baggage (@baggageValue[0] x 15kg)</span>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <span>Free Baggage (@baggageValue[0] @baggageValue[1])</span>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <span>No Free Baggage</span>
+                                                                                    }
+                                                                                    <br />
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span>No Free Baggage</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (passenger.PassengerType != "INF")
+                                                                    {
+                                                                        <h3>Special Request</h3>
+                                                                        for (int b = 0; b < (isReturn ? 2 : 1); b++)
+                                                                        {
+                                                                            bool isReturnFlight = b != 0;
+                                                                            var baggage = isReturnFlight ? paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "I1") : paxes[i].FlightSegmentPaxServiceTypes.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "O1");
+
+                                                                            <div class="mpjm_halfdiv">
+                                                                                <div class="mpjmhd_lable spcl_bigfont">@(isReturnFlight ? "Return Baggage" : "Depart Baggage")</div>
+                                                                                @if (baggage != null)
+                                                                                {
+                                                                                    List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                                                                    string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == baggage.ServiceValue).Value;
+                                                                                    <div class="mpjmhd_ans spcl_bigfont1">@ssrLabel</div>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <div class="mpjmhd_ans spcl_bigfont1">No checked baggage</div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    }
+                                                                }
+                                                                <div class="clear"></div>
+                                                            </div>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="show_more_flight_icon1" style="position: relative">Show more Guest Information</div>
+                        <div class="box-wrap box-wrapItinerary">
+                            @Html.Partial("~/Views/Flight/Confirmed/_FlightItineraryDetails.cshtml", flightBookingSummary)
+                            <button type="submit" class="btn btn-primary">Continue Add-ons </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- MAIN CONTENT PORTION END -->
+@helper getFlightSegmentRoute(List<Alphareds.Module.Model.Database.FlightSegment> flightSegments)
+{
+string flightSegmentText = string.Empty;
+for (int i = 0; i < flightSegments.Count; i++)
+{
+    flightSegmentText += flightSegments[i].DepartureAirportLocationCode + " > ";
+
+    if (i == flightSegments.Count - 1)
+    {
+        flightSegmentText += flightSegments[i].ArrivalAirportLocationCode;
+    }
+}
+    <text>@flightSegmentText</text>
+}
+
+<script>
+    $(function () {
+        $(document).on('click', '.show_more_flight_icon1', function (e) {
+            if ($('.show_more_flight_icon1').text() == "Show more Guest Information") {
+                $('.show_more_flight_icon1').text("Hide Guest Information");
+                $(this).css('background-image', 'url("../images/more_info_icon.png")');
+                $('.payment_container2').css('display', 'block');
+            } else {
+                $('.show_more_flight_icon1').text("Show more Guest Information");
+                $(this).css('background-image', 'url("../images/more_info_icon_down.png")');
+                $('.payment_container2').css('display', 'none');
+            }
+        });
+    });
+</script>

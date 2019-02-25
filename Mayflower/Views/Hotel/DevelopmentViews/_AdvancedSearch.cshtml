@@ -1,0 +1,74 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.SearchHotelModel
+@{
+    string tripid = Request.QueryString["tripid"];
+    bool enableSearchBundle = false;
+    bool enableSearchSupplier = true;
+    bool enableSearchRate = false;
+}
+
+@if (Core.IsForStaging)
+{
+    <style>
+        .supplier-chk { float: initial; text-align: center; }
+        .supplier-chk .checkbox { display: inline-block; margin-right: 1em; font-size: 12px; }
+        .radio_grp { display: inline-block; font-size: 12px; }
+    </style>
+
+    if (enableSearchBundle)
+    {
+        <div class="radio_grp">
+            <label><input type="radio" name="Bundle" value="1"> Test MayDay</label>
+        </div>
+
+        <div class="radio_grp">
+            <label><input type="radio" name="Bundle" value="2"> Test G-Dragon</label>
+        </div>
+        <button type="reset">Reset Change</button>
+        <div class="clear"></div>
+    }
+
+    if (enableSearchSupplier)
+    {
+        <div class="supplier-chk">
+
+            @{
+                var supplier = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.SearchSupplier).GetProperties();
+                foreach (var item in supplier)
+                {
+                    if (item.PropertyType.Name == "Boolean" && item.Name != "Expedia" && item.Name != "ExpediaTAAP")
+                    {
+                        bool isChecked = Model.SupplierIncluded == null ? true : (bool)item.GetValue(Model.SupplierIncluded);
+                        <div class="checkbox">
+                            <label>@Html.CheckBox(item.Name, isChecked, true) @item.Name</label>
+                        </div>
+                    }
+                }
+            }
+
+        </div>
+        <div class="clear"></div>
+    }
+
+    @* RateType Start *@
+    if (enableSearchRate)
+    {
+        <div class="supplier-chk">
+
+        @{
+            var rType = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RateType).GetEnumNames();
+            foreach (var item in rType)
+            {
+                bool isChecked = Model.RType.ToString() == item.ToString();
+                <div class="checkbox">
+                    <label>@Html.RadioButton("rType", item, isChecked) @item</label>
+                </div>
+            }
+        }
+
+        </div>
+        <div class="clear"></div>
+    }
+    @* RateType End *@
+}
+

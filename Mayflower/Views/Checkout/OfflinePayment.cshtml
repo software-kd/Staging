@@ -1,0 +1,156 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    ViewBag.HeaderRed = true;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    string tripid = Request.QueryString["tripid"];
+
+    ViewBag.Title = "Payment";
+    ViewBag.tripid = tripid;
+    ViewBag.HideHeader = true;
+    ViewBag.HideFooter = true;
+    Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+    string currencyCode = Model.PaymentDetails.PaymentCurrencyCode;
+
+    BundleTable.Bundles.Clear();
+    BundleTable.Bundles.Add(new ScriptBundle("~/scripts/bundle")
+                        .Include(@"~/Scripts/v3.0/page-payment.js"));
+}
+
+@section style{
+    @if (Core.IsEnableAdyen)
+    {
+        <link href="@Url.Content("~/CSS/checkout/adyencc.min.css")?ver=@DateTime.Now.ToString("yyyyMMddhh")" rel="stylesheet" />
+    }
+}
+
+
+@using (Html.BeginForm("OfflinePayment", "Checkout", new { tripid }, FormMethod.Post, new { id = "checkoutForm" }))
+{
+    <!-- Booker Details -->
+    <div class="booker-details m-u-20">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="booker-details-left">
+                        <div class="booker-header">
+                            <ul>
+                                <li>Payment Details</li>
+                            </ul>
+                        </div>
+                        <div class="booker-body shadow bg-white">
+                            <div class="payment-details">
+                                <div class="payment-sum">
+                                    <ul>
+                                        <li class="mb-0">
+                                            <span>Payment Ref</span>
+                                            <span>@Model.PaymentDetails.OfflinePaymentDetails.PaymentRef</span>
+                                        </li>
+                                        <li style="border:none;">
+                                            <span>Payment Description</span>
+                                            <span>@Model.PaymentDetails.OfflinePaymentDetails.PaymentDesc</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-tag type-2">Payment Method</div>
+                                </div>
+                                <div class="payment-methods offlinePay">
+                                    @{
+                                        @Html.Partial("~/Views/Checkout/PaymentPartials/v2/_PaymentMethodPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())
+
+                                    }
+                                </div>
+                                <div class="custom-hotel-instruc mt-4">
+                                    <div class="custom-instruc-content">
+                                        <div><u>Cancellation Policy</u></div>
+                                        <ul>
+                                            <li>In the event that you make any amendments to your booking (including, but not limited to, cancellations, refunds and amendments), paid amount will be refunded into your member's account in the form of 'Travel Wallet'. </li>
+                                            <li>Mayflower Holidays Sdn. Bhd. reserves the absolute right to charge you an administration fee of not more than RM100 per person to cover the administration costs incurred by Mayflower Holidays Sdn Bhd should you insist to refund in cash form. </li>
+                                            <li>More policies here - <a href="https://www.mayflower.com.my/cancel">Mayflower Cancellation Policy</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="payment-terms">
+                                    <div class="form-group custom-checkbox">
+                                        <label>
+                                            <input id="tnc" type="checkbox" name="tnc" value="true"><span style="display: block;">I agree to all the <a href="https://www.mayflower.com.my/tnc">Terms & Conditions</a> of Mayflower Holidays.</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group custom-checkbox">
+                                        <label>
+                                            <input id="policy" type="checkbox" name="policy" value="true"><span style="display: block;">By using and accessing any of the websites and / or services (whether by your mobile phone, PC or any other means), I am deemed to agree to the provisions of the <a href="https://www.mayflower.com.my/pdpa">Personal Data Protection Act 2010</a> as well as other applicable laws protecting privacy. I also read, understand and agree with the <a href="https://www.mayflower.com.my/cancel">Cancellation Policies</a>.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                    @Html.Partial("~/Views/Checkout/SharedPartials/v2/_ReservationDetailsOffline.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- ./ Booker Details -->
+}
+
+@section scripts{
+    <script src="~/scripts/bundle?v=@DateTime.Now.ToString("yyyyMMdd")"></script>
+    <script id="remove-after-execute">
+        $(function () {
+            paymentCalcUrl = '@Url.Action("UpdateOfflinePayment", "Checkout")';
+            $('#remove-after-execute').remove();
+        });
+    </script>
+    @if (Core.IsEnableAdyen)
+        {
+            BundleTable.Bundles.Add(new ScriptBundle("~/js/payment")
+                                            .Include("~/scripts/checkout/adyencc.js"));
+
+        @*//--Credit Card--Start//*@
+        <script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+        <script type="text/javascript" src="@Url.Content("~/js/payment?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))"></script>
+        @*//--Credit Card--End//*@
+    }
+    @if (IsPost)
+    {
+    <script id="postback-script">
+            var voidPayment = false;
+            var isValid = @Html.Raw(Json.Encode(ViewData.ModelState.IsValid));
+            var errorsMsg = @Html.Raw(Json.Encode(string.Join(Environment.NewLine,ViewData.ModelState.Where(x => x.Value.Errors.Count > 0).SelectMany(x => x.Value.Errors).Select(error => error.ErrorMessage))));
+
+            @if (Request.QueryString["status"] == "payment-void") {
+                @:voidPayment = true;
+            }
+
+            if (!isValid) {
+                dynamicModal('INFO', errorsMsg, false).modal();
+            }
+            if (voidPayment) {
+                dynamicModal('INFO', 'Your payment was cancelled succesfully. You will not be charged any amount.</br></br>If you have any enquiries, please contact us.', false).modal();
+            }
+            $('#postback-script').remove();
+        </script>
+    }
+    else if (Request.QueryString["status"] == "fail")
+    {
+        <script id="payment-ret-script">
+                dynamicModal('INFO', 'Failed transactions. Please try again later.', false).modal();
+                @*history.pushState({}, null, '@Request.Url.ToString().Replace("status=fail", "")');*@
+                $('#payment-ret-script').remove();
+        </script>
+    }
+    else if (Request.QueryString["status"] == "payment-void")
+    {
+        <script id="payment-ret-script">
+                dynamicModal('INFO', 'Your payment was cancelled succesfully. You will not be charged any amount.</br></br>If you have any enquiries, please contact us.', false).modal();
+                $('#payment-ret-script').remove();
+        </script>
+    }
+}

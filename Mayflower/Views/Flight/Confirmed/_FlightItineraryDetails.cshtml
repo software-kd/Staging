@@ -1,0 +1,172 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+
+@model BookingSummaryViewModel
+
+@{
+    var outbound = Model.BookingSummaryFlightList[0];
+    var inbound = Model.BookingSummaryFlightList.Count < 2 ? null : Model.BookingSummaryFlightList[1];
+    string outboundDepartDate = outbound.BookingSummaryFlightSegmentList[0].DepartureDateTime.ToString("dd-MMM-yy, ddd");
+    string inboundDepartDate = string.Empty;
+    string serviceSource = ViewBag.ServiceSource;
+
+    if (inbound != null)
+    {
+        inboundDepartDate = inbound.BookingSummaryFlightSegmentList[0].DepartureDateTime.ToString("dd-MMM-yy, ddd");
+    }
+
+    if (ViewBag.SuperPNRNo == null)
+    {
+        ViewBag.SuperPNRNo = "";
+    }
+}
+
+<!-- MORE FLIGHTS BOX START -->
+@if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "orderhistory")
+{
+    <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+}
+<div class="s3_blue_linetop"></div>
+<div class="s3_blt_heading flight">Flight Itinerary</div>
+@if (ViewBag.FlightBookingNo != null)
+{
+    <div class="s4_blt_sub_heading">Airline Reference: @ViewBag.FlightBookingNo</div>
+}
+<div class="mf_ib_border_box">
+    <!-- left detail start -->
+    <div class="mf_ib_bb_lrbox">
+        <div class="inboundoutbound_heading">Outbound – @outboundDepartDate</div>
+        <!-- left detail start -->
+        @FlightStopDetail(outbound, 0, serviceSource)
+        <!-- left detail end -->
+        <div class="clear"></div>
+    </div>
+    @if (inbound != null)
+    {
+        <div class="inboundoutbound_heading mobileonly" style="margin-top: 1em">Inbound – @inboundDepartDate</div>
+    }
+    <div class="mf_ib_bb_lrbox">
+        <div class="inboundoutbound_heading destoponly">
+            @if (inbound != null)
+            { <div>Inbound – @inboundDepartDate</div> }
+        </div>
+        @if (inbound != null)
+        { @FlightStopDetail(inbound, 1, serviceSource) }
+        <div class="clear"></div>
+    </div><div class="clear"></div>
+</div>
+<!-- FLIGHT DETAILS START -->
+<div class="clear"></div>
+@*<div class="moreflight_container">
+        <div class="show_more_flight_icon_p">Show more flights details</div>
+    </div>*@
+
+<!-- MORE FLIGHTS BOX END -->
+@helper FlightStopDetail(BookingSummaryFlight segmentList, int outInBIndicator, string serviceSource)
+{
+int counter = 1;
+double totalNextDay = 0;
+TimeSpan totalTripElapsedTime = TimeSpan.FromMinutes(segmentList.TotalElapsedTime);
+double totalFlightElapsedTimeHour = Math.Floor(totalTripElapsedTime.TotalHours);
+
+
+    <div class="mf_ib_bb_lrbox_inner">
+        <div class="mf_ib_bb_dep_heading">Departs on @segmentList.BookingSummaryFlightSegmentList.First().DepartureDateTime.ToString("dd-MMM-yy, ddd")</div>
+
+        @foreach (var item in segmentList.BookingSummaryFlightSegmentList)
+        {
+            double NextCountDay = item.DepartureDateTime.TimeOfDay.Add(item.ArrivalDateTime.Subtract(item.DepartureDateTime)).Days;
+            totalNextDay = totalNextDay + NextCountDay;
+            string nextCountDayText = totalNextDay != 0 ? "(+" + totalNextDay + ")" : "";
+            TimeSpan segmentElapsedTime = TimeSpan.FromMinutes(item.ElapsedTime);
+            if (counter == 1)
+            {
+                <!-- row start -->
+                <div class="mf_ibbbin_left ">@item.DepartureDateTime.ToString("HHmm")</div>
+                <div class="mf_ibbbin_right">
+                    <div class="black_color_font">@UtilitiesService.GetAirportName(item.DepartureAirportLocationCode)</div>
+                    <div class="ub_regular">(@item.DepartureAirportLocationCode)</div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="mf_ibbbin_left mt20 spcldiv"><img src="@Url.Content("~/images/arrow_d.jpg")" width="25" height="15" alt=""></div>
+                <div class="mf_ibbbin_right mt20 spcldiv">
+                    <div class="ub_regular relative_div">
+                        <div class="mf_right_timings">@(segmentElapsedTime.Hours)h @(segmentElapsedTime.Minutes)m </div>
+                        @(item.AirlineCode + item.FlightNumber)<br>
+                        @UtilitiesService.GetAirlineName(item.AirlineCode)<br>
+                        Operated by @UtilitiesService.GetAirlineName(item.OperatingAirlineCode)<br>
+                        @UtilitiesService.GetCabinNameByCode(item.CabinClass) @(string.IsNullOrWhiteSpace(item.ResBookDesigCode) ? "" : "(" + item.ResBookDesigCode + ")")<br>
+                        @*@item.AirEquipType<br />*@
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="mf_border_gfull"></div>
+
+                <div class="mf_ibbbin_left">
+                    @item.ArrivalDateTime.ToString("HHmm")<br />
+                    <span style="font-size: 0.9em;color: gray;">@item.DepartureDateTime.ToString("ddd, dd MMM") @nextCountDayText</span>
+                </div>
+                <div class="mf_ibbbin_right">
+                    <div class="black_color_font">@UtilitiesService.GetAirportName(item.ArrivalAirportLocationCode)</div>
+                    <div class="ub_regular">(@item.ArrivalAirportLocationCode)</div>
+                </div>
+                <div class="clear"></div>
+            }
+            else
+            {
+                <div class="paydisp_none spcldiv">
+                    <div class="mf_ibbbin_left ">@item.DepartureDateTime.ToString("HHmm")</div>
+                    <div class="mf_ibbbin_right">
+                        <div class="black_color_font">@UtilitiesService.GetAirportName(item.DepartureAirportLocationCode)</div>
+                        <div class="ub_regular">(@item.DepartureAirportLocationCode)</div>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="mf_ibbbin_left mt20"><img src="@Url.Content("~/images/arrow_d.jpg")" width="25" height="15" alt=""></div>
+                    <div class="mf_ibbbin_right mt20">
+                        <div class="ub_regular relative_div">
+                            <div class="mf_right_timings">@(segmentElapsedTime.Hours)h @(segmentElapsedTime.Minutes)m </div>
+                            @(item.AirlineCode + item.FlightNumber)<br>
+                            @UtilitiesService.GetAirlineName(item.AirlineCode)<br>
+                            Operated by @UtilitiesService.GetAirlineName(item.OperatingAirlineCode)<br>
+                            @UtilitiesService.GetCabinNameByCode(item.CabinClass)<br>
+                            @*@item.AirEquipType<br />*@
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="mf_border_gfull"></div>
+
+                    <div class="mf_ibbbin_left">@item.ArrivalDateTime.ToString("HHmm")</div>
+                    <div class="mf_ibbbin_right">
+                        <div class="black_color_font">@UtilitiesService.GetAirportName(item.ArrivalAirportLocationCode)</div>
+                        <div class="ub_regular">(@item.ArrivalAirportLocationCode)</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            }
+            if (segmentList.BookingSummaryFlightSegmentList.Count > 1 && segmentList.BookingSummaryFlightSegmentList.Count != counter)
+            {
+                DateTime nextFlightDateTime = segmentList.BookingSummaryFlightSegmentList[counter].DepartureDateTime;
+                TimeSpan transitTime = nextFlightDateTime.Subtract(item.ArrivalDateTime);
+                counter += 1;
+
+                <div class="mf_red_transit_time mt30 mb30 paydisp_none spcldiv">
+                    <div class="mf_rtt_left">Transit Time</div>
+                    <div class="mf_rtt_right">@(transitTime.Hours)h @(transitTime.Minutes)m </div>
+                    <div class="clear"></div>
+                </div>
+            }
+        <!-- row end -->
+        }
+
+        <div class="mf_arrival_conainer mt40">
+            Arrives on @segmentList.BookingSummaryFlightSegmentList.Last().ArrivalDateTime.ToString("dd-MMM-yy, ddd")<br>
+            Total flight time <span>@(totalFlightElapsedTimeHour)h @(totalTripElapsedTime.Minutes)m</span>
+        </div>
+
+        <a class="farerules" data-superpnr="@ViewBag.SuperPNRNo" data-servicesource="@serviceSource" data-indicator="@outInBIndicator">
+            <span style="cursor:pointer;">View Fare Rules</span>
+        </a>
+    </div>
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BritishAirways.Models" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BritishAirways.Models" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="EnumData.CabinType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="First" />
+      <xs:enumeration value="Business" />
+      <xs:enumeration value="PremiumEconomy" />
+      <xs:enumeration value="Economy" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EnumData.CabinType" nillable="true" type="tns:EnumData.CabinType" />
+  <xs:simpleType name="EnumData.TicketType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Flexible" />
+      <xs:enumeration value="Restricted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EnumData.TicketType" nillable="true" type="tns:EnumData.TicketType" />
+  <xs:simpleType name="EnumData.PTC">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ADT" />
+      <xs:enumeration value="CHD" />
+      <xs:enumeration value="INF" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EnumData.PTC" nillable="true" type="tns:EnumData.PTC" />
+  <xs:simpleType name="EnumData.TripType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OneWay" />
+      <xs:enumeration value="Return" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EnumData.TripType" nillable="true" type="tns:EnumData.TripType" />
+  <xs:simpleType name="EnumData.Gender">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Male" />
+      <xs:enumeration value="Female" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EnumData.Gender" nillable="true" type="tns:EnumData.Gender" />
+</xs:schema>

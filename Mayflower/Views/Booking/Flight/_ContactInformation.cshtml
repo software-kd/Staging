@@ -1,0 +1,276 @@
+﻿@using Alphareds.Module.Common
+@using Alphareds.Module.Model
+@model Alphareds.Module.Model.FlightBookingModel
+
+@{
+    Alphareds.Module.SabreWebService.SWS.OriginDestinationOption[] odoList = Model.FlightInformation.SupplierFlightInfo.OriginDestinationOptions;
+    Alphareds.Module.SabreWebService.SWS.AirItineraryPricingInfo pricingInfo = Model.FlightInformation.SupplierFlightInfo.PricingInfo;
+
+    string phoneNum = UtilitiesService.GetPhoneCode(Model.BookingContactPerson.Phone1LocationCode) != ""
+                      ? "(" + UtilitiesService.GetPhoneCode(Model.BookingContactPerson.Phone1LocationCode) + ")" : "-";
+    string phoneNum2 = UtilitiesService.GetPhoneCode(Model.BookingContactPerson.Phone2LocationCode) != ""
+                       ? "(" + UtilitiesService.GetPhoneCode(Model.BookingContactPerson.Phone2LocationCode) + ")" : "-";
+
+    bool isSabre = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.SACS;
+    bool isAirAsia = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia;
+    bool isGATEChn = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Chn;
+    bool isGATEInt = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int;
+    bool isTCG = Model.FlightInformation.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.TCG;
+
+    bool isReturn = Model.SearchFlightResultViewModel.TripType == "Return";
+}
+
+<div class="s4_payment_heading guest">Contact Details</div>
+<div class="s3_hotel_contacts_box">
+    <!-- PERSONAL DETAIL START -->
+    <div class="pd_containerbox">
+        <div class="pdcont_nameleft">
+            @{
+                string fLetters = string.Empty;
+                foreach (var part in Model.BookingContactPerson.GivenName.Split(' '))
+                {
+                    if (part.Any(x => x != ' ' && fLetters.Length != 2))
+                    {
+                        fLetters += part.First();
+                    }
+                }
+            }
+            <div class="mpjm_pd_heading_left mpjm_spclclass_mt" style="margin-top: 10px;">@fLetters.ToUpper()</div>
+            <div class="clear"></div>
+        </div>
+        <div class="pdcont_nameright">
+            <div class="s4_guest_tabs_name_container">
+                <h3>@Model.BookingContactPerson.Title @Model.BookingContactPerson.GivenName.ToUpper() @Model.BookingContactPerson.Surname.ToUpper()</h3>
+                <h4>Email Address: <span style="word-break: break-all;">@Model.BookingContactPerson.Email</span></h4>
+                @*<h4>Email Adress: <span>@(!string.IsNullOrWhiteSpace(Model.BookingContactPerson.DOB.ToString()) ? Model.BookingContactPerson.DOB.Value.ToString("dd MMM yyyy") : "-")</span></h4>*@
+            </div>
+            <div class="mpjm_halfdiv">
+                <div class="mpjmhd_lable spcl_bigfont">Primary Phone Number</div>
+                <div class="mpjmhd_ans spcl_bigfont1">@phoneNum @Model.BookingContactPerson.Phone1</div>
+            </div>
+            <div class="mpjm_halfdiv">
+                <div class="mpjmhd_lable spcl_bigfont">Secondary Phone Number</div>
+                <div class="mpjmhd_ans spcl_bigfont1">@phoneNum2 @Model.BookingContactPerson.Phone2</div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!-- PERSONAL DETAIL END -->
+</div>
+<div class="s3_hotel_topline lineblack" style="margin-top: 2em;"></div>
+
+
+<div class="s4_payment_heading guest">Guest Details</div>
+<div>
+    <div class="payment_graytab_container mt20">
+        @{
+            int pTypeCounter = 0;
+        }
+
+        @foreach (var item in Model.BookingSummaryViewModel.FareSummary.PaymentDetails.Where(x => x.ItemType == "Flight"))
+        {
+            <div class="pasengerTypeInfo">
+                <div class="payment_gray_tabs">
+                    @{
+                        List<Alphareds.Module.Model.PassengerDetailBooking> passengerList = Model.PassengerDetailBooking.Where(x => x.PassengerType == item.ItemDetail).ToList();
+                    }
+                    @for (int i = 0; i < passengerList.Count; i++)
+                    {
+                        <div class="pgt_left">@passengerList[i].Title @passengerList[i].GivenName.ToUpper() @passengerList[i].Surname.ToUpper()</div>
+                        if (i == 0)
+                        {
+                            <div class="pgt_right">&nbsp;</div>
+                        }
+                        <br />
+                        <div class="clear"></div>
+                    }
+                    @*<div class="pgt_right">MYR<span>@((item.TotalAfterTax * item.PassengerQuantity).ToString("#,##0.00"))</span></div>*@
+                    <div class="clear"></div>
+                </div>
+                <!-- row start -->
+                @for (int i = 0; i < Model.PassengerDetailBooking.Where(x => x.PassengerType == item.ItemDetail).ToList().Count; i++)
+                {
+                    var iPassengerInfo = Model.PassengerDetailBooking.Where(x => x.PassengerType == item.ItemDetail).ToList()[i];
+
+                    <div class="payment_fulldetail_container">
+                        <div class="s4_blue_top_pati">Guest @(i + 1)</div>
+                        <!-- PERSONAL DETAIL START -->
+                        <div class="pd_containerbox">
+                            <div class="pdcont_nameleft cust-detail" style="margin-top: 12px;">
+                                @{  string firstLetters = "";
+                                    foreach (var part in iPassengerInfo.GivenName.Split(' '))
+                                    {
+                                        if (part.Any(x => x != ' ' && firstLetters.Length != 2))
+                                        {
+                                            firstLetters += part.First();
+                                        }
+                                    }
+                                }
+                                @*@{string[] splitGivenName = @iPassengerInfo.GivenName.Split(' ');}*@
+                                @*<div class="mpjm_pd_heading_left mpjm_spclclass_mt">@splitGivenName[0][0] @(splitGivenName.Length > 1 && !string.IsNullOrWhiteSpace(splitGivenName[1]) ? splitGivenName[1][0] : new char())</div>*@
+                                <div class="mpjm_pd_heading_left mpjm_spclclass_mt">@firstLetters.ToUpper()</div>
+                                <div class="clear"></div>
+                            </div>
+
+
+
+                            <div class="pdcont_nameright">
+                                <div class="s4_guest_tabs_name_container">
+                                    <h3>@iPassengerInfo.Title @iPassengerInfo.GivenName.ToUpper() @iPassengerInfo.Surname.ToUpper()</h3>
+                                    @{
+                                        DateTime iPassengerDOB = DateTime.MinValue;
+                                        DateTime.TryParse(iPassengerInfo.DOB, out iPassengerDOB);
+                                    }
+                                    <h4>Date of birth: <span>@(iPassengerDOB != DateTime.MinValue ? iPassengerDOB.ToString("dd MMM yyyy") : " - ")</span></h4>
+                                </div>
+                                <div class="mpjm_halfdiv">
+                                    <div class="mpjmhd_lable spcl_bigfont">Age @(iPassengerInfo.PassengerType == "INF" ? "(In Months)" : "")</div>
+                                    <div class="mpjmhd_ans spcl_bigfont1">@(iPassengerInfo.Age != null ? (iPassengerInfo.Age + (iPassengerInfo.PassengerType == "INF" ? " Months" : " Years old")) : "-")</div>
+                                </div>
+                                <div class="mpjm_halfdiv">
+                                    <div class="mpjmhd_lable spcl_bigfont">Nationality</div>
+                                    <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrWhiteSpace(iPassengerInfo.Nationality) ? UtilitiesService.GetCountryName(iPassengerInfo.Nationality) : "-")</div>
+                                </div>
+                                @if (!Model.SearchFlightResultViewModel.isDomesticFlight || iPassengerInfo.Nationality != "MYS")
+                                {
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Passport Number</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(string.IsNullOrWhiteSpace(iPassengerInfo.PassportNumber) ? "-" : iPassengerInfo.PassportNumber)</div>
+                                    </div>
+                                    <div class="clear"></div>
+
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Passport Expiry Date</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@((iPassengerInfo.PassportExpiryDate != null ? iPassengerInfo.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-"))</div>
+                                    </div>
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Passport Issuing Country</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(!string.IsNullOrWhiteSpace(iPassengerInfo.PassportIssueCountry) ? UtilitiesService.GetCountryName(iPassengerInfo.PassportIssueCountry) : "-") </div>
+                                    </div>
+                                }
+
+                                @if (Model.SearchFlightResultViewModel.isDomesticFlight && iPassengerInfo.Nationality == "MYS")
+                                {
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">NRIC Number</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">@(iPassengerInfo.IdentityNumber ?? "-")</div>
+                                    </div>
+                                }
+
+
+                                <div class="clear"></div>
+                                @if (isSabre)
+                                {
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Meal</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                            @for (int a = 0; a < odoList.Length; a++)
+                                            {
+                                                int mealIndex = 0;
+                                                for (int b = 0; b < odoList[a].FlightSegments.Length; b++)
+                                                {
+                                                    string mealCode = pricingInfo.FareBreakDown[pTypeCounter].FareInfos[mealIndex].MealCode;
+                                                    <span>@odoList[a].FlightSegments[b].DepartureAirportLocationCode > @odoList[a].FlightSegments[b].ArrivalAirportLocationCode</span><br />
+                                                    if (string.IsNullOrWhiteSpace(mealCode))
+                                                    {
+                                                        <span>Meal not Included</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Meal Included</span>
+                                                    }
+                                                    <br />
+
+                                                    mealIndex++;
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="mpjm_halfdiv">
+                                        <div class="mpjmhd_lable spcl_bigfont">Baggage Allowed</div>
+                                        <div class="mpjmhd_ans spcl_bigfont1">
+                                            @for (int a = 0; a < odoList.Length; a++)
+                                            {
+                                                <span>
+                                                    @getFlightSegmentRoute(odoList[a].FlightSegments)
+                                                </span>
+                                                <br />
+                                                if (pricingInfo.FareBreakDown[pTypeCounter].BaggageInfos.Length > 0 &&
+                                                (pricingInfo.FareBreakDown[pTypeCounter].BaggageInfos[a].BaggageWeight > 0 ||
+                                                pricingInfo.FareBreakDown[pTypeCounter].BaggageInfos[a].BaggagePieces > 0))
+                                                {
+                                                    Alphareds.Module.SabreWebService.SWS.BaggageInformation baggage = pricingInfo.FareBreakDown[pTypeCounter].BaggageInfos[a];
+                                                    if (baggage.BaggagePieces > 0 && baggage.BaggageWeight == 0)
+                                                    {
+                                                        <span>Free Baggage (@baggage.BaggagePieces x 15kg)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Free Baggage (@baggage.BaggageWeight @baggage.BaggageWeightUnit)</span>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    <span>No Free Baggage</span>
+                                                }
+                                                <br />
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else if (isAirAsia && iPassengerInfo.PassengerType != "INF")
+                                {
+                                    <h3>Special Request</h3>
+                                    for (int a = 0; a < (isReturn ? 2 : 1); a++)
+                                    {
+                                        bool isReturnFlight = a != 0;
+
+                                        <div class="mpjm_halfdiv">
+                                            <div class="mpjmhd_lable spcl_bigfont">@(isReturnFlight ? "Return Baggage" : "Depart Baggage")</div>
+                                            @if ((isReturnFlight ? iPassengerInfo.InboundSSR.Any(x => !string.IsNullOrEmpty(x.Value)) : iPassengerInfo.OutboundSSR.Any(x => !string.IsNullOrEmpty(x.Value))))
+                                            {
+                                                foreach (var ssr in (isReturnFlight ? iPassengerInfo.InboundSSR : iPassengerInfo.OutboundSSR))
+                                                {
+                                                    AvailableBaggage baggage = Model.FlightInformation.AvaBaggage.FirstOrDefault(x => x.Code == ssr.Value);
+                                                    <div class="mpjmhd_ans spcl_bigfont1">Up to @(baggage != null ? baggage.AddtionalInfo.FirstOrDefault(x => x.Key == "weight").Value + " " + baggage.AddtionalInfo.FirstOrDefault(x => x.Key == "unit").Value : "")</div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="mpjmhd_ans spcl_bigfont1">No checked baggage</div>
+                                            }
+                                        </div>
+
+                                    }
+                                }
+
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <!-- PERSONAL DETAIL END -->
+                    </div>
+                                        }
+            </div>
+                                        pTypeCounter++;
+        <!-- row end -->
+                                        }
+    </div>
+
+</div>
+
+@helper getFlightSegmentRoute(Alphareds.Module.SabreWebService.SWS.FlightSegment[] flightSegments)
+{
+string flightSegmentText = string.Empty;
+for (int i = 0; i < flightSegments.Length; i++)
+{
+    flightSegmentText += flightSegments[i].DepartureAirportLocationCode + " > ";
+
+    if (i == flightSegments.Length - 1)
+    {
+        flightSegmentText += flightSegments[i].ArrivalAirportLocationCode;
+    }
+}
+    <text>@flightSegmentText</text>
+}

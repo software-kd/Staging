@@ -1,0 +1,116 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Cryptography;
+@using System.Web.Script.Serialization;
+@model Alphareds.Module.Model.FlightBookingModel
+
+@{ 
+    List<Alphareds.Module.Model.FlightBookingModel> recentSearchFlightModelList = new List<Alphareds.Module.Model.FlightBookingModel>();
+    int dayAdvance = Convert.ToInt32(Core.GetSettingValue("dayadvance"));
+
+    Model.SearchFlightResultViewModel = new Alphareds.Module.Model.SearchFlightResultViewModel();
+
+    List<Alphareds.Module.Model.UserSearchFHCookiesModel> UserCookiesList = new List<Alphareds.Module.Model.UserSearchFHCookiesModel>();
+    List<Alphareds.Module.Model.UserSearchFHCookiesModel> AllLatestFlightCookie = new List<Alphareds.Module.Model.UserSearchFHCookiesModel>();
+    string trackingUserSearchCookiesList;
+    string encryptedCookies;
+    bool afterDayAdvase = true;
+    int formCount = 1;
+
+    if (Request.Cookies["SaveUserCookies"] != null)
+    {
+        encryptedCookies = Request.Cookies["SaveUserCookies"].Value;
+        trackingUserSearchCookiesList = Cryptography.AES.Decrypt(encryptedCookies);
+
+        UserCookiesList = new JavaScriptSerializer().Deserialize<List<Alphareds.Module.Model.UserSearchFHCookiesModel>>(trackingUserSearchCookiesList).ToList();
+        AllLatestFlightCookie = UserCookiesList.Where(x => x.ProductType == "flight").ToList();
+        if (AllLatestFlightCookie != null && AllLatestFlightCookie.Count > 0)
+        {
+            foreach (var item in AllLatestFlightCookie)
+            {
+                if (item.ArrivalDate.Value.ToLocalTime().AddDays(1) < DateTime.Now.AddDays(dayAdvance))
+                {
+                    afterDayAdvase = false;
+                }
+                if (afterDayAdvase == true)
+                {
+                    Alphareds.Module.Model.FlightBookingModel addFlightBookingModel = new Alphareds.Module.Model.FlightBookingModel();
+                    addFlightBookingModel.SearchFlightResultViewModel = new Alphareds.Module.Model.SearchFlightResultViewModel()
+                    {
+                        DepartureStation = item.From,
+                        ArrivalStation = item.Destination,
+                        BeginDate = item.ArrivalDate.Value.ToLocalTime(),
+                        EndDate = item.DepartureDate.Value.ToLocalTime(),
+                        Adults = item.AdultNo,
+                        Childrens = item.ChildrenNo,
+                        Infants = item.InfantNo,
+                        NoOfRoom = item.RoomNo,
+                        CabinClass = item.CabinClass,
+                        TripType = item.TripType
+                    };
+                    recentSearchFlightModelList.Add(addFlightBookingModel);
+                }
+            }
+        }
+    }
+}
+@if (recentSearchFlightModelList != null && recentSearchFlightModelList.Count > 0)
+{
+    foreach (var item in recentSearchFlightModelList)
+    {
+        Model.SearchFlightResultViewModel.DepartureStation = item.SearchFlightResultViewModel.DepartureStation;
+        Model.SearchFlightResultViewModel.ArrivalStation = item.SearchFlightResultViewModel.ArrivalStation;
+        Model.SearchFlightResultViewModel.BeginDate = item.SearchFlightResultViewModel.BeginDate;
+        Model.SearchFlightResultViewModel.EndDate = item.SearchFlightResultViewModel.EndDate;
+        Model.SearchFlightResultViewModel.Adults = item.SearchFlightResultViewModel.Adults;
+        Model.SearchFlightResultViewModel.Childrens = item.SearchFlightResultViewModel.Childrens;
+        Model.SearchFlightResultViewModel.Infants = item.SearchFlightResultViewModel.Infants;
+        Model.SearchFlightResultViewModel.NoOfRoom = item.SearchFlightResultViewModel.NoOfRoom;
+        Model.SearchFlightResultViewModel.CabinClass = item.SearchFlightResultViewModel.CabinClass;
+        Model.SearchFlightResultViewModel.TripType = item.SearchFlightResultViewModel.TripType;
+
+        string formID = "searchFlightForm_" + formCount;
+        using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-inline", @id = @formID }))
+        {
+            <div>
+                <h2 style="color:#be2e30">Flight @formCount</h2>
+                <table style="margin:auto">
+                    <tbody style="text-align: left ; float:none">
+                        <tr>
+                            <th>Departure Station</th>
+                            <td> : @Model.SearchFlightResultViewModel.DepartureStation</td>
+                        </tr>
+                        <tr>
+                            <th>Arrival Station</th>
+                            <td> : @Model.SearchFlightResultViewModel.ArrivalStation</td>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <td> : From @Model.SearchFlightResultViewModel.BeginDate.Value.ToShortDateString() To @Model.SearchFlightResultViewModel.EndDate.Value.ToShortDateString()</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="flight_form_container3">
+                                    <input name="hotelBtn" type="submit" value="Search Flight">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.DepartureStation, new { @id = "hidDepartureStation" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.ArrivalStation, new { @id = "hidArrivalStation" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.BeginDate, new { @id = "hidBeginDate" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.EndDate, new { @id = "hidEndDate" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.Adults, new { @id = "hidNoOfAdults" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.Childrens, new { @id = "hidNoOfChildrens" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.Infants, new { @id = "hidNoOfInfants" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.NoOfRoom, new { @id = "hidNoOfRoom" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.CabinClass, new { @id = "hidCabinClass" })
+                @Html.HiddenFor(model => model.SearchFlightResultViewModel.TripType, new { @id = "hidTripType" })
+            </div>
+
+        }
+        formCount++;
+    }
+}

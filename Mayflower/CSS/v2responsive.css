@@ -1,0 +1,969 @@
+﻿@charset "utf-8";
+/* CSS Document */
+@media screen and (max-width : 1200px){
+	.tcc_text1{
+		padding-bottom:10px;
+	}
+	.ffc1_left, .ffc1_left1{
+		margin-bottom:10px;
+	}
+	.ffc1_right, .ffc1_right1{
+		margin-bottom:20px;
+	}
+	.flight_form_container2{
+		margin-top:0px;
+	}
+	.flight_form_container3 input[type="submit"]{
+		margin-top:0px;
+	}
+	.tabs_content_container{
+		padding-top:15px;
+		padding-bottom:15px;
+		width:95%;
+	}
+	.tcc_text1{
+		padding-bottom:0px;
+		margin-bottom:10px;
+	}
+	.ffc3_content{
+		margin-top:6px;
+	}
+	.ffc2_r1_b1, .ffc2_r1_b2, .ffc2_r1_b3, .ffc2_r1_b4, .ffc2_r2_b1, .ffc2_r2_b2, .ffc2_r2_b3, .ffc2_r2_b4, .ffc2_r2_b5, .ffc2_r3_b1,.ffc2_r3_b1_h, .ffc2_r3_b2, .ffc2_r3_b3,.ffc2_r3_b3_h, .ffc2_r3_b4{
+		margin-bottom:20px;
+	}
+	.search_area_inner{
+		top:25px;
+	}
+	.sai_inner_left{
+		width:55%;
+	}
+	.sai_inner_right{
+		width:45%;
+	}
+	.sai_ir_top_text{
+		font-size:30px;
+	}
+	
+}
+@media screen and (min-width : 900px) {
+    .s2_main_container.fixedresult-content{
+        width:77% !important;
+        float:left;
+        padding-left:12px;
+    }
+    #fixedpackage-content{
+        float:right;
+        width:23%;
+        margin:0;
+    }
+}
+@media screen and (max-width : 900px){
+	.s3_hinfo_tc_left{
+		width:100%;
+		float:none;
+	}
+	.mobalteration{
+		margin-top:0px;
+		margin-left:0px;
+	}
+	.mobalteration1{
+		margin-top:0px;
+	}
+	.s3_1_fdb4_inner_ri_ans{
+		margin-bottom:0px;
+	}
+	.newlinks_mid_container{
+		float:none;
+		width:100%;
+		max-width:none;
+		margin-left:0px;
+	}
+	.tlla_right{
+		display:none;
+	}
+	.d8c1_br_blocks_three{
+		width:100%;
+	}
+	.d8c1_blocks_left{
+		margin-bottom:15px;
+		width:100%;
+	}
+	.d8c1_blocks_right{
+		width:100%;
+	}
+	.vmicr_left{
+		width:100%;
+		float:none;
+		border-right:0px;
+	}
+	.vmicr_allicons_cont_lable{
+		width:auto;
+        float:none;
+	}
+	.vmicr_allicons_cont{
+		width:50%;
+		margin-right:0px;
+	}
+	.vmicr_right{
+		width:100%;
+		float:none;
+		padding-left:0px;
+	}
+	.vmicr_button_red_container{
+		width:100%;
+		margin-bottom:20px;
+		margin-top:20px;
+	}
+	.vmic_left_imgdiv{
+		max-width:none;
+	}
+	.vmic_left{
+		width:100%;
+		float:none;
+	}
+	.vmic_right{
+		width:100%;
+		float:none;
+		overflow:visible;
+	}
+	.mbdconr_left{
+		width:100%;
+	}
+	.mbdcon_left{
+		float:none;
+	}
+	.mbdcon_right{
+		margin-top:0px;
+		float:none;
+		width:100%;
+	}
+	.mbdconr_right{
+		display:none;
+	}
+	.map_bestdeal_container{
+		display:none;
+		margin-bottom:20px;
+	}
+	.h2_mhd3_rl_row_b3{
+		width:46%;
+	}
+	.h2_mhd3_rl_row_b2_mobile{
+		display:inherit;
+	}
+	.h2_mhd3_rl_row_b_nortext span{
+		display:block;
+		padding-left:0px;
+	}
+	.h2_mhd3_rl_row_b3{
+		float:right;
+	}
+	.h2_mhd3_rl_row_b2{
+		display:none;
+	}
+	.h2_mhd3_rooms_right{
+		float:none;
+		width:100%;
+	}
+	.h2_mhd3_rooms_left{
+		padding-right:0px;
+		border-right:0px;
+		float:none;
+		width:100%;
+	}
+	.h2_mainhoteldetail_box1{
+		width:40%;
+	}
+	.h2_mhdb3_trip_adv, .h2_mhdb3_heading{
+		margin-top:10px;
+	}
+	.h2_tempdoleft1{
+		float:left;
+	}
+	.h2_tempdoleft{
+		float:right;
+	}
+	.h2_mainhoteldetail_box3{
+		width:100%;
+	}
+	.h2_mainhoteldetail_box2{
+		width:60%;
+		float:right;
+	}
+	.h2_mainhoteldetail_box3_inner{
+		max-width:none;
+	}
+	.h2_mhdb2_iconbox{
+		margin-top:5px;
+	}
+	.h2_mhdb3_price_cutting{
+		display:none;
+	}
+	.h2_mhdb3_price_full{
+		font-size:18px;
+	}
+	.h2_mhdb3_price_full span{
+		font-size:26px;
+	}
+	.h2_mhdb2_heading{
+		font-size:18px;
+	}
+	.h2_mhdb2_mapbox{
+		font-size:12px;
+	}
+	.h2_mhdb3_heading{
+		font-size:12px;
+	}
+	.hs2_rfcatt_boxes input[type="checkbox"]:not(old) + label, .hs2_rfcamen_boxes input[type="checkbox"]:not(old) + label{
+		font-size:12px;
+	}
+	.hs2_rfcatt_boxes, .hs2_rfcamen_boxes{
+		width:50%;
+	}
+	.s4_pnb_red_heading{
+		height:50px;
+		line-height:50px;
+	}
+	.s4_blt_py_con_right{
+		font-size:12px;
+	}
+	.s4_blt_py_con_right span{
+		font-size:20px;
+	}
+	.s4_blt_py_con_left{
+		font-size:15px;
+	}
+	.s4_blt_py_container{
+		width:95%;
+	}
+	.s4_png_inner_row{
+		font-size:16px;
+	}
+	.mpjm_halfdiv{
+		width:50%;
+	}
+	.show_more_flight_icon1, .show_more_flight_icon2, .show_more_flight_icon3{
+		display:none;
+	}
+	.fillter_tags{
+		margin-top:10px;
+		margin-bottom:10px;
+	}
+	.s2_mcb_ml_left_container, .s2_mcb_ml_right_container{
+		display:none;
+	}
+	.filter_timer_half_left{
+		border-right:0px;
+	}
+	.s2_fil_inl_filboxes{
+		display:none;
+	}
+	.hidefilter_icon{
+		display:none !important;
+	}
+	.s2_filer_container{
+		border-bottom:0px;
+	}
+	.mpm_editprofile{
+		margin-top:20px;
+	}
+	#personaldetail, #contactdetail, #companydetail{
+		width:96%;
+		margin:auto;
+		margin-top:30px;
+	}
+	.myprofile_maincontainer{
+		width:100%;
+	}
+	.mpm_content_container{
+		max-width:none;
+		padding-left:0px;
+	}
+	.mpjm_ccr_inner{
+		max-width:none;
+		width:100%;
+	}
+	.myprofile_maincontainer{
+		padding:0px;
+	}
+	.mpjm_ccr_inner{
+		float:none;
+	}
+	.mpm_cc_right{
+		width:100%;
+		float:none;
+		border-left:0px;
+	}
+	.mpm_cc_left{
+		display:none;
+	}
+	.fthr_inner H3, .fthl_inner H3{
+		margin-bottom:20px;
+	}
+	.fthr_inner, .fthl_inner{
+		width:100%;
+		float:none;
+	}
+	.filter_timer_half_right{
+		margin-top:20px;
+		float:none;
+		width:100%;
+	}
+	.filter_timer_half_left{
+		float:none;
+		width:100%;
+	}
+	.s2_mcb_ml_left_container{
+		float:none;
+		width:100%;
+	}
+	.s2_mcb_ml_right_container{
+		float:none;
+		width:100%;
+	}
+	.s2_mcb_ml_left{
+		width:100%;
+		float:none;
+	}
+	.s2_mcb_midline{
+		background-image:none;
+	}
+	.s2_mcb_io_right{
+		display:none;
+	}
+	.s2_mcb_io_left{
+		width:100%;
+		float:none;
+	}
+	.s2_mcbcl_text{
+		padding-left:0px;
+	}
+	.s2_mcbc_b1_left{
+		padding-left:10px;
+	}
+	.s2mcbc_b1lr_text2 span{
+		font-size:30px;
+	}
+	.s2mcbc_b1lr_text2{
+		font-size:20px;
+	}
+	.s2_mcbc_b1l_left{
+		width:50%;
+	}
+	.s2_mcbc_b1l_right{
+		width:50%;
+	}
+	.flight_filter_tag{
+		display:inherit;
+		padding-left:2%;
+		padding-right:2%;
+	}
+	.s2_pf_left{
+		float:none;
+		width:100%;
+		text-align:center;
+		margin-bottom:45px;
+	}
+	.s2_pf_right{
+		float:none;
+		width:100%;
+	}
+	.s2_sf_right{
+		width:34%;
+	}
+	.s2_sf_mid{
+		width:22%;
+	}
+	.s2_sf_right span{
+		font-size:16px;
+	}
+	.s2_sf_left, .s2_sf_mid, .s2_sf_right{
+		font-size:14px;
+	}
+	.s2_fil_inl_filboxes{
+		width:25%;
+		border-bottom:1px solid #cfcfcf;
+	}
+	.s2_fil_redfont{
+		display:none;
+	}
+	.s2_fil_in_right select{
+		margin-bottom:25px;
+	}
+	.s2_filter_inner{
+		width:100%;
+	}
+	.s2_fil_in_left, .s2_fil_in_left_hotel{
+		display:none;
+		float:none;
+		width:100%;
+	}
+	.s2_fil_in_right{
+		text-align:center;
+		display:none;
+		float:none;
+		width:100%;
+	}
+	.s2_ib_inr_left{
+		width:70%;
+	}
+	.s2_ib_inr_right{
+		width:30%;
+	}
+	.s2_ibinr_txtbox{
+		background-color:transparent;
+		background-image:none;
+		text-align:left;
+	}
+	.s2_ml_20{
+		margin-top:8px;
+	}
+	.s2_ib_inr_left{
+		padding-top:0px;
+		padding-bottom:0px;
+	}
+	.s2_ibinrl_b2, .s2_ibinrl_b4{
+		width:48%;
+		margin-right:2%;
+	}
+	.s2_ibinrl_b1, .s2_ibinrl_b3{
+		/*display:none;*/
+	}
+	.s2_ib_inner_left{
+		width:20%;
+		padding-left:0px;
+		border-right:1px solid #c4c4c4;
+		padding-top:7px;
+		padding-bottom:7px;
+	}
+	.s2_ib_inner_right{
+		width:80%;
+	}
+	.s5_payin_left{
+		width:100%;
+		float:none;
+	}
+	.ipay_paynow_button1{
+		position:relative;
+		margin-top:20px;
+	}
+	.ipay_paynow_button,#payment-later{
+		position:static;
+        margin: 10px 5px;
+	}
+	.ipay_con_left{
+		width:100%;
+		padding-right:0px;
+	}
+	.pfdc_right_total{
+		padding:0px;
+	}
+	.pfdc_left_total{
+		font-size:15px;
+		width:50%;
+	}
+	.payment_graytab_container{
+		margin-left:10px;
+		margin-right:10px;
+	}
+	.pfdc_left_total{
+		padding-left:0px;
+	}
+	.pgt_right{
+		margin-right:0px;
+		padding-right:24px;
+	}
+	.pgt_left{
+		padding-left:0px;
+	}
+	.pfdc_left, .pfdc_right{
+		float:none;
+		width:100%;
+		border-right:0px;
+	}
+	.destoponly{
+		display:none;
+	}
+	.mobileonly{
+		display:inherit;
+	}
+	.mf_ib_border_box{
+		background-image:none;
+		border:0px;
+		margin:10px;
+	}
+	.mf_ib_bb_lrbox, .mf_ib_bb_lrbox2{
+		width:100% !important;
+		float:none;
+		border:1px solid #d5d5d5;
+	}
+	#headingforsmall{
+		display:inherit;
+	}
+	.s3-1_form_button{
+		margin-top:20px;
+		margin-bottom:40px;
+	}
+	.forsscreen{
+		display:inherit;
+	}
+	.contact_detail_heading_small{
+		display:inherit;
+	}
+	.s3-1_guestdetail_box{
+		display:none;
+	}
+	.s3-1_guestdetail_box H2{
+		display:none;
+	}
+	.s3-1_phonenumber_left{
+		width:33%;
+	}
+	.s3-1_phonenumber_right{
+		width:65%;
+	}
+	.s3-1_dob{
+		width:95%;
+	}
+	.s3-1_fir1_b3{
+		width:30%;
+	}
+	.s3-1_fir1_b2{
+		width:46%;
+	}
+	.s3-1_fir1_b1{
+		width:23%;
+	}
+	.s3-1_fi_row1, .s3-1_fullform_left{
+		float:none;
+		width:100%;
+	}
+	.s3-1_fi_row1-right, .s3-1_fullform_right{
+		display:none;
+	}
+	.s3_1_fdb_i3_da_lable, .s3_1_fdb_i3_da_timing{
+		margin-top:5px;
+	}
+	.forbscreen{
+		display:none;
+	}
+	
+	.s3_1_fdb4_inner_ri_ans_hotel{
+		float:none;
+		width:100%;
+	}
+	.s3_1_fdb4_inner_ri_ans span{
+		display:block;
+	}
+	.s3_1_fdb4_inner_ri_ans{
+		float:none;
+		width:100%;
+	}
+	.s3_1_fdb4_inner_lf_lable{
+		float:none; /* In Hotel mobile float need inherit/initial */
+	}
+	.s3_1_fdb_inner_b3{
+		width:48%;
+	}
+	.s3_1_fdb_inner_b4{
+		width:24%;
+	}
+	.s3_1_fdb_i3_inner{
+		width:95%;
+		max-width:inherit;
+	}
+	.s3_1_fdb_inner_b2{
+		width:28%;
+	}
+	.s3_1_fdb_child_det{
+		float:none;
+		width:100%;
+	}
+	.s3_1_fdb_class_det{
+		margin-top:15px;
+	}
+	.s3_1_fdb_big{
+		display:none;
+	}
+	.s3_1_fdb_inner_b1{
+		display:none;
+	}
+	.fi_col1, .fi_col2, .fi_col3, .fi_r2_c1, .fi_r2_c2{
+		width:100%;
+		float:none;
+	}
+	.mobile_menu_button{
+		display:inherit;
+	}
+	.dekstop_menu{
+		display:none;
+	}
+	.search_area_inner{
+		position:relative;
+	}
+	.sai_inner_left{
+		display:none;
+	}
+	.header_iamge_big{
+		display:none;
+	}
+	.sai_inner_right{
+		width:100%;
+	}
+	.sir_tab_container{
+		border-top:1px solid #ee3739;
+		border-bottom:1px solid #ee3739;
+		height:47px;
+	}
+	
+	.mid_content_area, .mid_content_area1{
+		display:none;
+	}
+	.tlla_right{
+		float:none;
+		position:absolute;
+		width:100%;
+		right:0px;
+		z-index:9999;
+	}
+	.tlla_right ul{
+		margin-top:0px;
+		background-color:#fff;
+	}
+	.dekstop_menu{
+		border:1px solid #ee3739;
+		margin-top:20px;
+		background-color:#fff;
+	}
+	.tlla_right ul li{
+		display:block;
+		text-align:right;
+		padding-right:15px;
+		border-right:0px;
+	}
+	.tlla_right ul li a{
+		color:#000;
+	}
+	.flight_form_container1{
+		width:100%;
+	}
+	.flight_form_container2{
+		padding-left:0px;
+	}
+	.ffc1_left{
+		width:11%;
+		padding-left:0px;
+	}
+	.ffc1_left1{
+		width:11%;
+		padding-left:0px;
+	}
+	.tapto_search{
+		display:inherit;
+	}
+	.taptosearch_tick{
+		display:inherit;
+	}
+	.sir_tabresult{
+		display:none;
+	}
+	.sorttag{
+		display:inherit;
+	}
+    .s3_form_toll_tip .s2-1_tt_right span{
+        display:inline;
+    }
+}
+@media screen and (min-width: 601px) and (max-width: 900px) {
+            .s3_1_fdb_i3_da_lable{
+                text-align:center;
+                width: 100%;
+            }
+            .s3_1_fdb_flight_name{
+                float:none;
+            }
+            .s3_1_fdb_i3_da_timing {
+                width: 100%;
+            }
+            .s3_1_fdb_i3_da_timing .tim_box, .s3_1_fdb_i3_da_timing .img_box {
+                float:none !important;
+                display:inline;
+            }
+            .mob_passengerdetails{
+                width: 39%;
+                float: left;
+                padding-bottom: 18px;
+                text-align: center;    
+                padding-top: 15px;
+            }
+            .s3_1_fdb_inner_b3 {
+                width: 33%;
+            }
+            .s3_1_fdb_child_det {
+                display: inline;
+                width: auto;
+                margin-left: 0px !important;
+            }
+            .s3_1_fdb_class_det {
+                margin-top: 6px;
+                float:none;
+                display: inline;
+            }
+            .s3_1_fdb4_inner_ri_ans {
+                width: auto;
+                display: inline;
+            }
+            .s3_1_fdb4_inner_lf_lable {
+                display: inline;
+            }
+            .s3_1_ans_myr, .s3_1_ans_fig {
+                float: none;
+                text-align: center;
+                display:inline;
+            }
+            .center{
+                text-align:center;
+            }
+        }
+@media screen and (max-width : 625px){
+	.s2_ib_inr_left{
+		border-right:0px;
+	}
+	.s2_ib_inner_left{
+		float:none;
+		border-right:0px;
+	}
+	.s2_ibinrl_b1{
+		text-align:left;
+	}
+	.s2_ib_inr_left, .s2_ib_inr_right{
+		float:none;
+		width:100%;
+	}
+	.s3_1_fdb_modify_icon{
+		margin-left:0px !important;
+	}
+}
+@media screen and (max-width : 600px){
+	.s3_bc_fourboxes{
+		text-align:center;
+		padding-right:30px;
+		font-size:12px;
+	}
+	.flight_form_container1, .flight_form_container2{
+		padding-left:20px;
+	}
+	.ffc2_r2_b5{
+		/* display:none; */ /* i ICON from search panel */
+	}
+	.ffc1spwidth, .ffc1spwidth2, .ffc1spwidth1{
+		width:38px !important;
+	}
+	.modifysearch_left_box, .modifysearch_right_box, .mswi_withflying_left, .mswi_withflying_right{
+		float:none;
+		width:100%;
+	}
+	.mswi_searchleft, .mswi_searchright{
+		float:none;
+		width:100%;
+	}
+}
+@media screen and (max-width : 550px){
+	.div8_tab3_img_txt{
+		width:100%;
+		text-align:center;
+	}
+	.div8_tab3{
+		width:100%;
+		text-align:center;
+	}
+	.div8_tab3_img{
+		display:none;
+	}
+}
+@media screen and (max-width : 500px){
+	.s3_1_fdb_inner_b2_new{
+		width:50%;
+	}
+	.s3_1_fdb_inner_b3_new{
+		width:50%;
+	}
+	.s3_1_fdb_inner_b4_new{
+		width:100%;
+		float:none;
+		clear:both;
+		padding-left:0px;
+		padding-right:0px;
+		padding-top:20px;
+	}
+	.top_logo_links_area{
+		height:auto;
+		padding-bottom:10px;
+	}
+	.newlinks_mid_container{
+		width:100%;
+		float:none;
+	}
+	
+	.s3_1_fdb_inner_b4{
+		width:100%;
+	}
+	.mbdconrl_left, .mbdconrl_right{
+		width:100%;
+	}
+	.s4_blt_py_con_left{
+		margin-bottom:3px;
+		float:none;
+	}
+	.s4_blt_py_con_right{
+		float:none;
+	}
+	.mpjm_pd_heading_right{
+		margin-bottom:15px;
+	}
+	.pdcont_nameleft, .pdcont_nameright{
+		float:none;
+		width:100%;
+	}
+	.field_error_msg{
+		margin-top:-15px;
+	}
+	.spcl_bigfont{
+		font-size:15px;
+	}
+	.spcl_bigfont1{
+		font-size:18px;
+		margin-bottom:15px;
+	}
+	.mpjm_pd_heading_left{
+		width:100px;
+		height:100px;
+		line-height:100px;
+		margin-bottom:20px;
+	}
+	.mpjm_pd_heading_right, .mpjm_pd_heading_right span{
+		font-size:25px;
+		line-height:33px;	}
+	.mpjm_halfdiv{
+		float:none;
+		width:100%;
+	}
+	.qcw_gray_bar, .qcw_subgraybox{
+		padding-left:10px;
+	}
+	.fth_left_lable{
+		font-size:15px;
+	}
+	.s2_mcbml_inner_left{
+		width:100%;
+		float:none;
+	}
+	.s2_mcbml_inner_right{
+		margin-top:20px;
+		width:100%;
+		float:none;
+	}
+	.s2_mcbmlid_dc_right{
+		width:29%;
+	}
+	.s2_mcbmlid_dc_right > .showdetails{
+		margin-right:5px;
+	}
+	.s2_mcbmlid_dc_mid{
+		width:44%;
+	}
+	.s2_mcbml_inner_left{
+		width:100%;
+		float:none;
+	}
+	.s2_mcbml_inner_right{
+		width:100%;
+		float:none;
+	}
+	.s2_mcbc_b1_left{
+		width:100%;
+		float:none;
+		border-right:0px;
+	}
+	.s2_mcbc_b1_right{
+		width:100%;
+		float:none;
+	}
+	.s2fil_filboxes_inner{
+		font-size:13px;
+	}
+	.s2_sf_mid, .s2_sf_right{
+		width:50%;
+	}
+	.s2_sf_left{
+		float:none;
+		width:100%;
+		border-bottom:0px;
+	}
+	.s2_ib_inr_left{
+		border-right:0px;
+	}
+	.s2_ml_20{
+		margin-left:0px;
+	}
+	.s2_ib_inr_left{
+		width:100%;
+		float:none;
+	}
+	.s2_ib_inr_right{
+		width:100%;
+		float:none;
+	}
+	.s2_ib_inner_left{
+		width:100%;
+		float:none;
+	}
+	.s2_ib_inner_right{
+		width:100%;
+		float:none;
+	}
+	.fcd_nc_left, .fcd_nc_right{
+		float:none;
+		width:100%;
+		text-align:center;
+	}
+	.fcd_login_txt{
+		width:auto;
+	}
+	.s3-1_fi_row1{
+		height:auto;
+	}
+	.impreq_padding_right{
+		padding-right:0px;
+	}
+	.s3-1_fir1_b2, .s3-1_fir1_b3{
+	}
+	.s3-1_contactform_left, .s3-1_contactform_right, .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3{
+		float:none;
+		width:100%;
+	}
+	.s3_1_fdb4_inner{
+		width:100%;
+		max-width:inherit !important;
+	}
+	
+	.s3_1_fdb_inner_b2{
+		width:40%;
+	}
+	.s3_1_fdb_inner_b3{
+		width:60%;
+		border-right:0px;
+	}
+	
+	.s3_1_fdb_inner_b3_hotel{
+		width:60%;
+		border-right:0px;
+	}
+}
+@media screen and (max-width : 450px){
+	.div8_toptabs, .div8_tab3_img_txt{
+		font-size:12px;
+	}
+	.vmicr_allicons_cont{
+		width:100%;
+	}
+}

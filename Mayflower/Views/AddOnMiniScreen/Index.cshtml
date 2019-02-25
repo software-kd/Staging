@@ -1,0 +1,66 @@
+﻿@{
+    Layout = null;
+}
+<link href="~/CSS/MiniScreenCSS/theme.css" rel="stylesheet" />
+<link href="~/CSS/MiniScreenCSS/custom.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+<link href="~/CSS/checkout/styles_v2.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+
+<style>
+    .gray {
+        background: #e6e6e6;
+        border: 1px solid #8e8e8e;
+    }
+</style>
+
+<body class="gray">
+    <div class="section ">
+        <div class="container">
+            <div class="row">
+                <div class="main-content col-12">
+                    <div class="box-wrap b-login f-500 text-center">
+                        <img src="~/Images/red-logo.gif" class="img-responsive">
+                        <div class="wrap">
+                          @using (Html.BeginForm("CheckPNR", "AddOnMiniScreen", FormMethod.Post, new { @class = "form-horizontal" }))
+                          {
+                                <p class="lead ">Need Add-On Services? </p>
+                                <p class="lead text-primary">You Can Do it Yourself... </p>
+                                <input id="pnr" name="pnr" type="text" class="form-control" placeholder="Enter PNR Here">
+                                <span id="PNRError"><strong class="textforerrormsg">Booking PNR is required </strong></span>
+                                @Html.Raw(ViewBag.HtmlStr)
+                                <button type="submit" class="btn btn-primary ">Check </button>
+                          }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="icons-bg">
+        <i class="fa fa-plane" aria-hidden="true"></i>
+        <i class="fa fa-briefcase" aria-hidden="true"></i>
+        <i class="fa fa-building" aria-hidden="true"></i>
+        <i class="fa fa-car" aria-hidden="true"></i>
+        <i class="fa fa-wifi" aria-hidden="true"></i>
+        <i class="fa fa-shield" aria-hidden="true"></i>
+        <i class="fa fa-users" aria-hidden="true"></i>
+        <i class="fa fa-mobile" aria-hidden="true"></i>
+        <i class="fa fa-address-card" aria-hidden="true"></i>
+        <i class="fa fa-shield" aria-hidden="true"></i>
+    </div>
+</body>
+
+<script>
+    $("#PNRError").hide();
+
+    $(".btn-primary").on("click", function () {
+        if ($("#pnr").val() == "") {
+            $("#PNRError").show();
+        }
+        else {
+            $("#PNRError").hide();
+        }
+    });
+   
+</script>

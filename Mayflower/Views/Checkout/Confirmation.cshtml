@@ -1,0 +1,1299 @@
+﻿@model SuperPNR
+
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@using Alphareds.Module.Model
+
+@{
+    ViewBag.Title = "Confirmation";
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+    ViewBag.HeaderRed = true;
+
+    Model.GetContactPerson();
+    Model.LoadPaymentDetailList();
+
+
+    MayFlower db = new MayFlower();
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+    var bookTourSuccess = Model.TourPackageBookings.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI" || x.BookingStatusCode == "DPT")?.FirstOrDefault();
+    var bookFlightSuccess = Model.Bookings.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI" || true);
+    var bookHotelSuccess = Model.BookingHotels.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI" || true);
+    var bookEventSuccess = Model.EventBookings.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI");
+    var bookInsuranceSuccess = Model.BookingInsurances.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI");
+    var bookCarRentalSuccess = Model.CarRentalBookings.Where(x => x.BookingStatusCode == "CON" || x.BookingStatusCode == "RHI");
+
+    string contactPhone1 = bookTourSuccess != null ? $"({UtilitiesService.GetPhoneCode(bookTourSuccess.ContactLocationCode)}) {bookTourSuccess.ContactNo}" : (Model.ContactPerson != null ? $"({UtilitiesService.GetPhoneCode(Model.ContactPerson.Phone1LocationCode)}) {Model.ContactPerson.Phone1}" : $"({UtilitiesService.GetPhoneCode(Model.BookingContact.Phone1LocationCode)}) {Model.BookingContact.Phone1}");
+    string contactPhone2 = bookTourSuccess != null ? "" : (Model.ContactPerson != null ? $"({UtilitiesService.GetPhoneCode(Model.ContactPerson.Phone2LocationCode)}) {Model.ContactPerson.Phone2}" : $"({UtilitiesService.GetPhoneCode(Model.BookingContact.Phone2LocationCode)}) {Model.BookingContact.Phone2}");
+    var tourbooking = new ProductTourPackage();
+    contactPhone2 = contactPhone2.Contains("()") ? "-" : contactPhone2;
+    if (bookTourSuccess != null)
+    {
+        tourbooking = new ProductTourPackage(bookTourSuccess.TourPackageID);
+        Model.ContactPerson = new ContactPerson();
+        Model.ContactPerson.Email = bookTourSuccess.PassengerEmail;
+        Model.ContactPerson.GivenName = bookTourSuccess.GivenName;
+        Model.ContactPerson.Surname = bookTourSuccess.SurName;
+    }
+    bool hasFlight = bookFlightSuccess.Count() > 0;
+    bool hasHotel = bookHotelSuccess.Count() > 0;
+    bool hasAddOn = bookEventSuccess.Count() > 0 || bookInsuranceSuccess.Count() > 0;
+    bool isDisplayPrice = !(Model.SuperPNROrders.FirstOrDefault().IsFixed ?? false);
+
+    int orderCount = 1;
+    bool allowSendDisplayPDF = false;
+    List<HotelRoomCharge> feesExcludedInTotal = new List<HotelRoomCharge>();
+}
+
+@{
+    var TrivagoTrackPixelUrl = TempData["TrivagoTrackPixelUrl"] != null ? TempData["TrivagoTrackPixelUrl"].ToString() : null;
+    if (!string.IsNullOrEmpty(TrivagoTrackPixelUrl))
+    {
+        <img height="1" width="1" style="border-style:none;" alt="" src="@TrivagoTrackPixelUrl" />
+    }
+}
+<!-- Booker Details -->
+<div class="booker-details m-u-20">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="booker-details-left">
+                    <div class="booker-header">
+                        <ul>
+                            <li>1. Contact/guest Details</li>
+                            <li>2. Addons</li>
+                            <li>3. Payment</li>
+                            <li class="active">4. Confirmation</li>
+                        </ul>
+                    </div>
+                    <div class="confirmation-details">
+                        <div class="confirm-item shadow bg-white">
+
+                            <h2>Booking Confirmation - Reference number <span>@Model.SuperPNRNo</span></h2>
+
+                            @{
+                                bool anyConfirmed = false;
+                            }
+                            @foreach (var item in Model.SuperPNROrders)
+                            {
+                                if (item.BookingStatusCode == "CON" || item.BookingStatusCode == "TKI" || item.BookingStatusCode == "QPL")
+                                {
+                                    <h3 class="text-success">
+                                        @if (Model.SuperPNROrders.Count > 1)
+                                        {
+                                            <span class="text-dark mr-2">@(orderCount++).</span>
+                                        }
+                                        <img src="~/images/success_py.png" alt=""> Order Confirmed@*Payment successful*@
+                                        <br class="d-block d-sm-none" />
+                                        <span class="text-dark ml-2">
+                                            [@item.CreatedDate.ToString("MMM d, yyyy h:mm tt (ddd)")]
+                                        </span>
+                                    </h3>
+
+                                    if (!anyConfirmed)
+                                    {
+                                        anyConfirmed = true;
+                                    }
+                                }
+                                else
+                                {
+                                    var bkStatusEF = db.BookingStatus.FirstOrDefault(x => x.BookingStatusCode == item.BookingStatusCode);
+                                    <h3>
+                                        @if (Model.SuperPNROrders.Count > 1)
+                                        {
+                                            <span class="text-dark mr-1">@(orderCount++).</span>
+                                        }
+                                        <img alt=""> - @(bkStatusEF?.BookingStatus ?? "Unknown")
+                                        <span class="text-dark ml-2">
+                                            [@item.CreatedDate.ToString("MMM d, yyyy h:mm tt (ddd)")]
+                                        </span>
+                                    </h3>
+                                }
+                            }
+
+                            @if (anyConfirmed)
+                            {
+                                <p>
+                                    An email confirmation has been sent to your email. <br> Thank you for choosing Mayflower, we look forward to servicing you soon!
+                                </p>
+                            }
+                        </div>
+                        <div class="confirm-item shadow bg-white">
+                            <div class="col-12">
+                                <div class="form-tag type-2">Contact Details</div>
+                            </div>
+                            @if (Model.ContactPerson != null)
+                            {
+                                <h3>
+                                    @($"{Model.ContactPerson.Title} {Model.ContactPerson.FullName}".ToUpper())
+                                </h3>
+
+                                <p>
+                                    Email: <strong>@Model.ContactPerson.Email.ToLower()</strong>
+                                </p>
+                            }
+                            else
+                            {
+                                <h3>
+                                    @($"{Model.BookingContact.Title.TitleCode} {Model.BookingContact.GivenName} {Model.BookingContact.Surname}".ToUpper())
+                                </h3>
+
+                                <p>
+                                    Email: <strong>@Model.BookingContact.Email.ToLower()</strong>
+                                </p>
+
+                            }
+                            @*<h3>
+                                    @($"{Model.ContactPerson.Title} {Model.ContactPerson.FullName}".ToUpper())
+                                </h3>
+
+                                <p>
+                                    Email: <strong>@Model.ContactPerson.Email.ToLower()</strong>
+                                </p>*@
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>Primary Phone Number:<strong> @contactPhone1</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>Secondary Phone Number:<strong> @contactPhone2</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (hasHotel)
+                        {
+                            <div class="confirm-item shadow bg-white">
+                                <div class="col-12">
+                                    <div class="form-tag type-2">Hotel Check-In Instruction</div>
+                                    <div class="custom-hotel-instruc">
+
+                                        @foreach (var _hotel in bookHotelSuccess)
+                                        {
+                                            var htInst = GetHotelCheckInstruction(db, _hotel);
+
+                                            var splitedObj = htInst.CheckInInstruct?
+                                                .Replace("<ul>", "")
+                                                .Replace("</ul>", "")
+                                                .Replace("</li>", "")
+                                                .Split(new string[] { "<br />", "<li>" }, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+
+                                            <u>Check-In Instruction</u>
+                                            <ul class="mt-1 mb-2">
+                                                @foreach (var item in splitedObj)
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(item))
+                                                    {
+                                                        <li>@Html.Raw(item)</li>
+                                                    }
+                                                }
+
+                                                @if (htInst.CheckInInstruct == null)
+                                                {
+                                                    <li>-</li>
+                                                }
+                                            </ul>
+                                            @*<p>@Html.Raw(htInst.CheckInInstruct ?? "-")</p>*@
+
+                                            <u class="mt-2">Special Check-In Instruction</u>
+                                            <p>@Html.Raw(htInst.SpecialCheckInInst ?? "-")</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if ((bookTourSuccess == null) && (bookCarRentalSuccess == null || bookCarRentalSuccess.Count() == 0))
+                        {
+                            bool gotDetails = false;
+
+                            <div class="confirm-item shadow bg-white">
+                                <div class="col-12">
+                                    <div class="form-tag type-2">Guest Details</div>
+                                </div>
+
+                                @foreach (var flightBooking in bookFlightSuccess)
+                                {
+                                    var flightSegments = flightBooking.FlightSegments;
+                                    List<Alphareds.Module.Model.Database.FlightSegment> outBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("O")).ToList();
+                                    List<Alphareds.Module.Model.Database.FlightSegment> inBoundFlightSegments = flightSegments.Where(x => x.SegmentOrder.Contains("I")).ToList();
+                                    var firstDepartureDate = outBoundFlightSegments.Min(x => x.DepartureDateTime);
+                                    int paxCounter = 0;
+
+                                    foreach (var paxGrp in flightBooking.Paxes.Where(x => !x.IsContactPerson ?? false).GroupBy(x => x.PassengerType))
+                                    {
+                                        if (!gotDetails)
+                                        {
+                                            gotDetails = true;
+                                        }
+
+
+                                        foreach (var pax in paxGrp)
+                                        {
+                                            DateTime? _dob = pax.DOB;
+                                            double _age = 0;
+                                            double? age = 0;
+                                            if (pax.PassengerType != "INF")
+                                            {
+                                                _age = _dob == null ? 0 : firstDepartureDate.Subtract(_dob ?? DateTime.MinValue).TotalDays;
+                                                age = _dob != DateTime.MinValue ? Math.Floor(_age / 365.25) : (double?)null;
+                                            }
+                                            else
+                                            {
+                                                _age = _dob == null ? 0 : Math.Floor(((firstDepartureDate - Convert.ToDateTime(_dob)).TotalDays) / (365.25 / 12));
+                                                age = _dob != DateTime.MinValue ? _age : (double?)null;
+                                            }
+
+                                            string passportCountryName = UtilitiesService.GetCountryName(pax.PassportIssueCountryCode, true);
+                                            passportCountryName = !string.IsNullOrWhiteSpace(passportCountryName) ? passportCountryName : "-";
+
+                                            <h3>@pax.TitleCode @pax.FullName.ToUpper()</h3>
+
+                                            <div class="mt-2">Pax Info:</div>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Date of birth: <strong>@(pax.DOB.HasValue ? pax.DOB.Value.ToString("dd MMM yyyy") : "-")</strong></p>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Age @(pax.PassengerType == "INF" ? "(In Months)" : ""): <strong>@(age == null || pax.DOB == null ? "-" : age + (pax.PassengerType == "INF" ? " Months" : " Years old"))</strong></p>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Nationality: <strong>@passportCountryName</strong></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Passenger Type: <strong>@UtilitiesService.GetPassengerTypeName(pax.PassengerType)</strong></p>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Frequent Traveller Number: <strong>@(!string.IsNullOrWhiteSpace(pax.FrequentFlyer) ? pax.FrequentFlyer : "-")</strong></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-2">Passport Info:</div>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Number: <strong>@(!string.IsNullOrWhiteSpace(pax.Passport) ? pax.Passport : "-")</strong></p>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Expiry Date: <strong>@(pax.PassportExpiryDate.HasValue ? pax.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-")</strong></p>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <p>Issuing Country: <strong>@passportCountryName</strong></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-2">Service Add-ons:</div>
+                                            <div class="row">
+                                                @GenerateFlightSSRList(flightBooking, pax.FlightSegmentPaxServiceTypes, pax.PaxID)
+                                            </div>
+
+                                            paxCounter++;
+                                            if (paxCounter <= paxGrp.Count())
+                                            {
+                                                <hr />
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @foreach (var hotelBooking in bookHotelSuccess)
+                                {
+                                    int roomCounter = 1;
+
+                                    foreach (var room in hotelBooking.RoomPaxHotels.Where(x => !x.IsContactPerson ?? false))
+                                    {
+                                        List<string> ssrAdded = new List<string>();
+
+                                        if (!gotDetails)
+                                        {
+                                            gotDetails = true;
+                                        }
+
+                                        <h3>
+                                            Room: @(room.RateDescription ?? room.RoomTypeDescription)
+                                        </h3>
+                                        <h3>@($"{room.TitleCode} {room.FullName}".ToUpper())</h3>
+                                        <p>
+                                            Itinerary #: <strong>
+                                                @Html.Raw(string.IsNullOrWhiteSpace(room.ItineraryNumber) ?
+                                           "<span class='text-danger'>Pending</span>" : room.ItineraryNumber)
+                                            </strong>
+                                        </p>
+                                        <p>
+                                            Date of birth: <strong>@(room.DOB.HasValue ? room.DOB.Value.ToString("dd MMM yyyy") : "-")</strong>
+                                        </p>
+                                        <p>
+                                            Special Request <small>(Subject to availability)</small>
+                                        </p>
+                                        <div class="row">
+
+                                            @foreach (var ssr in room.RoomPaxSpecialRequests)
+                                            {
+                                                ssrAdded.Add(ssr.SpecialRequestHotel.SpecialRequestCode);
+                                                var _desc = ssr.SpecialRequestHotel.SpecialRequest == "Smoking" ? "Smoking Room" : ssr.SpecialRequestHotel.SpecialRequest;
+
+                                                <div class="col-lg-3 col-md-6">
+                                                    <p>@_desc: <strong> @(ssr.SpecialRequestValue ?? "Either")</strong></p>
+                                                </div>
+                                            }
+
+                                            @if (!ssrAdded.Any(x => x == "CHKIN"))
+                                            {
+                                                <div class="col-lg-3 col-md-6">
+                                                    <p>Check In: <strong> Either</strong></p>
+                                                </div>
+                                            }
+
+                                            @if (!ssrAdded.Any(x => x == "BED"))
+                                            {
+                                                <div class="col-lg-3 col-md-6">
+                                                    <p>Bedding Request: <strong> -</strong></p>
+                                                </div>
+                                            }
+
+                                            @if (!ssrAdded.Any(x => x == "ADD"))
+                                            {
+                                                <div class="col-lg-3 col-md-6">
+                                                    <p>Additional Request: <strong> -</strong></p>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div style="padding: 10px 0px;">
+                                            <u>Cancellation Policy</u>
+                                            <div style="font-family: 'SFPro Regular';color: #2b2b2b;font-size: 14px;line-height: 1;margin: 4px 10px;">
+                                                @Html.Raw(room.NonRefundable.HasValue ? (room.NonRefundable.Value ? " - Non-refundable <br/>" : "") : "n/a")
+                                                @room.CancellationPolicy
+                                            </div>
+                                        </div>
+
+                                        if (roomCounter < hotelBooking.RoomPaxHotels.Count - 1)
+                                        {
+                                            <hr />
+                                        }
+                                        roomCounter++;
+                                    }
+                                }
+
+                                @if (!gotDetails)
+                                {
+                                    <p> - No Info</p>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.CarRentalBookings.Count > 0)
+                        {
+                            if (ViewBag.bookingfromAPI != null)
+                            {
+                                Alphareds.Module.CarRentalWebService.CRWS.OTA_SelectCarRentalRS APIbooking = ViewBag.bookingfromAPI;
+                                if (APIbooking.SelectCarRentalRSCore != null)
+                                {
+                                    var vehicle = APIbooking.SelectCarRentalRSCore.VehicleSelect;
+                                    var booking = APIbooking.SelectCarRentalRSCore.BookingSelect;
+                                    double totalDays = (booking.ScheduledReturnDateTime.Date - booking.ScheduledPickUpDateTime.Date).TotalDays;
+                                    <div class="confirm-item shadow bg-white">
+                                        <div class="col-12">
+                                            <div class="form-tag type-2">Reservation Details</div>
+                                        </div>
+                                        <p>@vehicle.SelectVehicleGroup.VehicleGroup</p>
+                                        <p>@vehicle.VehicleName or similars</p>
+                                        <p>@totalDays @(totalDays > 1 ? "days" : "day")</p>
+                                        <p>Special Request (Subject to availability) </p>
+                                        <p></p>
+
+                                    </div>
+                                }
+                            }
+                        }
+
+                        <div class="confirm-item shadow bg-white">
+                            <div class="col-12">
+                                <div class="form-tag type-2">Payment Details</div>
+                            </div>
+
+                            @if (Model.PaymentDetailsList.Count == 0)
+                            {
+                                foreach (var item in Model.SuperPNROrders.SelectMany(x => x.PaymentOrders))
+                                {
+                                    <p>@item.CurrencyCode @(item.PaymentAmount.ToString("n2")) - @item.PaymentStatu.PaymentStatus</p>
+                                }
+                            }
+
+
+                            @foreach (var item in Model.PaymentDetailsList)
+                            {
+                                string paymentMethodUsed = string.Join(", ", Model.PaymentDetailsList.SelectMany(x => x.PaymentMethodsUsed));
+                                paymentMethodUsed = string.IsNullOrWhiteSpace(paymentMethodUsed) ? "No Payment Record" : paymentMethodUsed;
+
+                                <p>
+                                    Total paid:  <strong>@item.CurrencyCode @item.TotalPaidAmount.ToString("n2")</strong>
+                                </p>
+                                <p>
+                                    Payment method:  <strong> @(paymentMethodUsed)</strong>
+                                </p>
+                                <p>
+                                    Payment status:   <strong>
+                                        @Html.Raw(item.TotalPendingAmount <= 0 && item.TotalPaidAmount > 0 ? "<span class='text-success'>Confirmed</span>" :
+                                                            item.TotalPaidAmount > 0 && item.TotalPendingAmount > 0 ? "Partially Confirm" :
+                                                            item.TotalPaidAmount <= 0 && item.TotalPaidAmount > 0 ? "Pending" : "Unknown")
+                                    </strong>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="booker-details-right">
+                    <h3>Reservation Details</h3>
+                    <div class="reservation-body">
+                        @foreach (var hotelBooking in bookHotelSuccess)
+                        {
+                            string _thumbUrl = string.IsNullOrWhiteSpace(hotelBooking.ThumbNailUrl) ? "~/Images/no-img-01.jpg" : hotelBooking.ThumbNailUrl;
+
+                            <img src="@(Url.IsLocalUrl(_thumbUrl) ? Url.Content(_thumbUrl): hotelBooking.ThumbNailUrl)" alt="" />
+                            <h2>@(hotelBooking.HotelName) <span>@(UtilitiesService.GetCountryName(hotelBooking.HotelCountryCode, true))</span></h2>
+                        }
+
+                        @if (hasHotel)
+                        {
+                            <div class="mt-4"></div>
+                        }
+
+                        <div class="reservation-table shadow">
+                            <div class="reservation-table-top">
+                                @foreach (var flightBooking in bookFlightSuccess)
+                                {
+                                    int segmentCounter = 1;
+                                    var _grpPsg = flightBooking.FlightSegmentPaxTypes.GroupBy(x => x.PassengerType);
+                                    <ul>
+                                        @if (hasHotel)
+                                        {
+                                            <li>Flight</li>
+                                        }
+
+                                        @foreach (var segment in flightBooking.FlightSegments)
+                                        {
+                                            var _elapsedTime = TimeSpan.FromMinutes(segment.ElapsedTime);
+
+                                            <li>
+                                                @segment.DepartureAirportLocationCode > @segment.ArrivalAirportLocationCode (@Html.Raw(_elapsedTime.Hours > 0 ?
+$"{_elapsedTime.Hours}&nbsp;&nbsp;{(_elapsedTime.Hours > 1 ? "hours" : "hour")}" : "")
+                                                &nbsp;@Html.Raw($"{_elapsedTime.Minutes.ToString("00")}&nbsp;&nbsp;{(_elapsedTime.Minutes > 1 ? "minutes" : "minute")}")), @segment.AirlineCode@segment.FlightNumber
+                                            </li>
+                                            <li>
+                                                <span>Departing</span>
+                                                <span>@(segment.DepartureDateTime.ToString("MMM d, yyyy h:mm tt (ddd)"))</span>
+                                            </li>
+                                            <li>
+                                                <span>Arrival</span>
+                                                <span>@(segment.ArrivalDateTime.ToString("MMM d, yyyy h:mm tt (ddd)"))</span>
+                                            </li>
+
+                                            if (segmentCounter < flightBooking.FlightSegments.Count)
+                                            {
+                                                <li>&darr;</li>
+                                            }
+                                            segmentCounter++;
+                                        }
+                                    </ul>
+                                    <div class="text-right">
+                                        <div class="rm-btn">
+                                            @string.Join(", ", _grpPsg.Select(x => x.FirstOrDefault().NoOfPax + " " + UtilitiesService.GetPassengerTypeName(x.Key, x.FirstOrDefault().NoOfPax))).ToLower()
+                                        </div>
+                                    </div>
+                                }
+
+                                @foreach (var hotelBooking in bookHotelSuccess)
+                                {
+                                    int totalRoomCount = hotelBooking.RoomPaxHotels.Where(x => !x.IsContactPerson ?? false).Count();
+                                    TimeSpan timeDiff = hotelBooking.CheckOutDateTime.Date - hotelBooking.CheckInDateTime.Date;
+                                    double totalNight = timeDiff.TotalDays;
+                                    int adultno = hotelBooking.TotalAdults ?? 0;
+                                    int childno = hotelBooking.TotalChild ?? 0;
+                                    var _grpHotel = bookHotelSuccess.SelectMany(x => x.RoomPaxHotels).Where(x => !(x.IsContactPerson ?? false)).GroupBy(x => x.RoomTypeDescription);
+                                    <ul>
+                                        @if (hasFlight)
+                                        {
+                                            <li>Hotel</li>
+                                        }
+
+                                        @foreach (var typeCurrencyBook in _grpHotel)
+                                        {
+                                            <li>
+                                                <span>@typeCurrencyBook.Key x @typeCurrencyBook.Count()</span>
+                                            </li>
+                                        }
+                                        <li>
+                                            <span>Check in</span>
+                                            <span>@(hotelBooking.CheckInDateTime.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                        <li>
+                                            <span>Check out</span>
+                                            <span>@(hotelBooking.CheckOutDateTime.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                    </ul>
+                                    <div class="text-right">
+                                        <div class="rm-btn">
+                                            @($"{totalNight} {(totalNight > 1 ? "nights" : "night")}"), @($"{totalRoomCount} {(totalRoomCount > 1 ? "rooms" : "room")}"), @($"{adultno} {(adultno > 1 ? "adults" : "adult")}")
+                                            @if (childno > 0)
+                                            {
+                                                @($"{childno} {(childno > 1 ? "childs" : "child")}")
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @foreach (var carBooking in bookCarRentalSuccess)
+                                {
+                                    TimeSpan timeDiff = carBooking.ScheduledReturnDateTime.Date - carBooking.ScheduledPickUpDateTime.Date;
+                                    double totalNight = timeDiff.TotalDays;
+                                    <ul>
+                                        <li>
+                                            <span>Pick-up</span>
+                                            <span>@(carBooking.ScheduledPickUpDateTime.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                        <li>
+                                            <span>Drop-off</span>
+                                            <span>@(carBooking.ScheduledReturnDateTime.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                    </ul>
+                                    <div class="text-right">
+                                        <div class="rm-btn">
+                                            @($"{totalNight} {(totalNight > 1 ? "days" : "day")}")
+                                        </div>
+                                    </div>
+                                }
+                                @if (bookTourSuccess != null)
+                                {
+                                    <ul>
+                                        <li>@tourbooking.TourPackageDetails.TourPackageName</li>
+                                        <li>
+                                            <span>Check in</span>
+                                            <span>@(bookTourSuccess.TravelDateFrom.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                        <li>
+                                            <span>Check out</span>
+                                            <span>@(bookTourSuccess.TravelDateTo.ToString("MMM d, yyyy (ddd)"))</span>
+                                        </li>
+                                    </ul>
+                                    <div class="text-right">
+                                        <div class="rm-btn">
+                                            @bookTourSuccess.NoOfPax @(bookTourSuccess.NoOfPax > 1 ? "Travellers" : "Traveller")
+                                        </div>
+                                    </div>
+                                }
+                                @if (isDisplayPrice)
+                                {
+                                    <div class="@(hasAddOn ? " mt-4 " : " mt-2 reservation-table-mid ")">
+                                        @if (hasFlight && hasHotel)
+                                        {
+                                            var _grpFlight = bookFlightSuccess.GroupBy(x => x.CurrencyCode);
+                                            var _grpHotel = bookHotelSuccess.GroupBy(x => x.CurrencyCode);
+
+                                            foreach (var typeCurrencyBook in _grpFlight)
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <span>Flight</span>
+                                                        <span>@typeCurrencyBook.Key @(typeCurrencyBook.Sum(x => x.TotalBookingAmt).ToString("n2"))</span>
+                                                    </li>
+                                                </ul>
+                                            }
+
+                                            foreach (var typeCurrencyBook in _grpHotel)
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <span>Hotel</span>
+                                                        <span>@typeCurrencyBook.Key @(typeCurrencyBook.Sum(x => x.TotalBookingAmt).ToString("n2"))</span>
+                                                    </li>
+                                                </ul>
+                                            }
+                                        }
+
+                                        @if (hasFlight)
+                                        {
+                                            var _grpFlight = bookFlightSuccess.GroupBy(x => new { x.CurrencyCode, x.FlightSegmentPaxTypes });
+                                            var flightSegmentPaxCharge = bookFlightSuccess.FirstOrDefault().FlightSegments.SelectMany(x => x.FlightSegmentPaxCharges);
+                                            var flightSegmentServiceType = bookFlightSuccess.FirstOrDefault().FlightSegments.SelectMany(x => x.FlightSegmentPaxServiceTypes);
+                                            var ssrList = (from a in flightSegmentPaxCharge
+                                                           join b in flightSegmentServiceType
+                                                           on new { ssrType = a.ChargeCode, flightSegmentID = a.FlightSegmentID, PaxID = a.PaxID }
+                                                           equals new { ssrType = b.ServiceType, flightSegmentID = b.FlightSegmentID, PaxID = b.PaxID }
+                                                           where a.ChargeTypeCode == "SSR"
+                                                           select new
+                                                           {
+                                                               ssrType = b.ServiceType,
+                                                               value = b.ServiceValue,
+                                                               price = a.ChargeAmount,
+                                                           }).GroupBy(x => new { x.ssrType, x.value })
+                                                            .Select(a => new { ssrType = a.Key.ssrType, value = a.Key.value, price = a.Sum(b => b.price), count = a.Count() })
+                                                            .ToList();
+                                            foreach (var item in _grpFlight)
+                                            {
+                                                <ul>
+                                                    @foreach (var _pax in item.Key.FlightSegmentPaxTypes)
+                                                    {
+                                                        var _paxRate = _pax.FlightSegmentCharges.Where(x => (x.ChargeTypeCode == "FARE" && x.ChargeCode == "FLFARE") || (x.ChargeTypeCode == "TAX" && x.IsDisplay && x.ChargeCode != "MARKUP"));
+                                                        <li>
+                                                            <span>@UtilitiesService.GetPassengerTypeName(_pax.PassengerType, _pax.NoOfPax) (@($"{_pax.NoOfPax} {(_pax.NoOfPax > 1 ? "paxes" : "pax")}"))</span>
+                                                            <span> @item.Key.CurrencyCode @_paxRate.Sum(x => x.ChargeAmount * _pax.NoOfPax).ToString("n2")</span>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            if (ssrList != null && ssrList.Count > 0 && bookFlightSuccess.FirstOrDefault().SupplierCode == "AASA")
+                                            {
+                                                List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                                foreach (var ssr in ssrList.OrderBy(x => x.value))
+                                                {
+                                                    string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == ssr.value).Value;
+                                                    string ssrDesc = string.Empty;
+                                                    switch (ssr.ssrType)
+                                                    {
+                                                        case "LUG":
+                                                            ssrDesc = "Checked Baggage";
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    }
+                                                    <ul>
+                                                        <li>
+                                                            <span>@ssrDesc @ssrLabel x@(ssr.count)</span>
+                                                            <span>@bookFlightSuccess.FirstOrDefault().CurrencyCode @ssr.price.ToString("#,##0.00")</span>
+                                                        </li>
+                                                    </ul>
+                                                }
+                                            }
+                                        }
+
+                                        @if (!hasFlight && hasHotel)
+                                        {
+                                            var _grpHotel = bookHotelSuccess.GroupBy(x => new { x.CurrencyCode });
+
+                                            foreach (var item in _grpHotel)
+                                            {
+                                                var _ht = item.First();
+                                                int _roomCount = 1;
+                                                var _roomDtls = item.SelectMany(x => x.RoomPaxHotels).Where(x => !x.IsContactPerson ?? false);
+
+                                                if (_ht.SupplierCode == "RAP")
+                                                {
+                                                    foreach (var _room in _roomDtls)
+                                                    {
+                                                        int _nightAddCount = 0;
+                                                        <ul>
+                                                            <li>
+                                                                <span>Room @(_roomCount++) - @_room.RoomTypeDescription</span>
+                                                                <span></span>
+                                                            </li>
+
+                                                            @foreach (var _charges in _room.RoomPaxCharges.OrderByDescending(x => x.ChargeTypeCode == "RATE")
+                                .ThenBy(x => x.ChargeNumber)
+                                .GroupBy(x => new { x.ChargeTypeCode, x.IsDisplay, x.CurrencyCode, x.TaxChargeType.ChargeType }))
+                                                            {
+
+                                                                if (_charges.Key.IsDisplay && _charges.Key.ChargeTypeCode == "RATE")
+                                                                {
+                                                                    foreach (var _nightlyRate in _charges)
+                                                                    {
+                                                                        <li>
+                                                                            <span> - @(_ht.CheckInDateTime.AddDays(_nightAddCount++).ToString("MMM d, yyyy (ddd)"))</span>
+                                                                            <span>@_nightlyRate.CurrencyCode @(_nightlyRate.ChargeAmount.ToString("n2"))</span>
+                                                                        </li>
+                                                                    }
+
+                                                                }
+
+                                                                if (_charges.Key.ChargeTypeCode == "MF")
+                                                                {
+                                                                    feesExcludedInTotal.Add(new HotelRoomCharge
+                                                                    {
+                                                                        Currency = _charges.Key.CurrencyCode,
+                                                                        Type = _charges.Key.ChargeType,
+                                                                        Value = _charges.Sum(s => s.ChargeAmount),
+                                                                    });
+                                                                }
+                                                                else if (_charges.Key.IsDisplay && (_charges.Key.ChargeTypeCode != "TAX" && _charges.Key.ChargeTypeCode != "RATE"))
+                                                                {
+                                                                    string _chargeDisplayTxt = _charges.Key.ChargeTypeCode?.ToLower() == "tasf" ?
+                                                                                                "Tax Recovery Charges and Service Fees" : _charges.Key.ChargeType;
+                                                                    <li>
+                                                                        <span> - @(_chargeDisplayTxt)</span>
+                                                                        <span>@_charges.Key.CurrencyCode @(_charges.Sum(s => s.ChargeAmount).ToString("n2"))</span>
+                                                                    </li>
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    // Supplier other than EAN Rapid
+                                                    int totalRoomCount = item.First().RoomPaxHotels.Where(x => !x.IsContactPerson ?? false).Count();
+                                                    TimeSpan timeDiff = item.First().CheckOutDateTime.Date - item.First().CheckInDateTime.Date;
+                                                    double totalNight = timeDiff.TotalDays;
+
+                                                    <ul>
+                                                        <li>
+                                                            <span>
+                                                                @($"{totalNight} {(totalNight > 1 ? "nights" : "night")}"), @($"{totalRoomCount} {(totalRoomCount > 1 ? "rooms" : "room")}")
+                                                            </span>
+
+                                                            <span>@item.Key.CurrencyCode @item.Sum(x => x.TotalBookingAmt).ToString("n2")</span>
+
+                                                        </li>
+
+                                                    </ul>
+                                                }
+                                            }
+                                        }
+                                        @if (bookTourSuccess != null)
+                                        {
+                                            <ul>
+                                                <li>
+                                                    <span>Tour Package</span>
+                                                    <span>@bookTourSuccess.CurrencyCode @bookTourSuccess.TotalBookingAmt.ToString("n2")</span>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                        @if (bookCarRentalSuccess.Count() > 0)
+                                        {
+                                            Alphareds.Module.CarRentalWebService.CRWS.OTA_SelectCarRentalRS APIbooking = ViewBag.bookingfromAPI;
+                                            if (APIbooking.SelectCarRentalRSCore != null)
+                                            {
+                                                var booking = APIbooking.SelectCarRentalRSCore.BookingSelect.SelectTotalCharge;
+
+                                                <ul>
+                                                    <li>
+                                                        <span>Insurance</span>
+                                                        <span>@bookCarRentalSuccess.FirstOrDefault().CurrencyCode @booking.Insurance.TotalInsuranceAmount.ToString("n2")</span>
+                                                    </li>
+                                                </ul>
+                                                if (booking.TotalOptionalServiceAmount > 0)
+                                                {
+                                                    <ul>
+                                                        <li>
+                                                            <span>Accessories</span>
+                                                            <span>@bookCarRentalSuccess.FirstOrDefault().CurrencyCode @booking.TotalOptionalServiceAmount.ToString("n2")</span>
+                                                        </li>
+                                                    </ul>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <span>Car Rental</span>
+                                                        <span>@bookCarRentalSuccess.FirstOrDefault().CurrencyCode @bookCarRentalSuccess.FirstOrDefault().TotalBookingAmt.ToString("n2")</span>
+                                                    </li>
+                                                </ul>
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (hasFlight)
+                                    {
+                                        var _grpFlight = bookFlightSuccess.GroupBy(x => new { x.CurrencyCode, x.FlightSegmentPaxTypes });
+                                        var flightSegmentPaxCharge = bookFlightSuccess.FirstOrDefault().FlightSegments.SelectMany(x => x.FlightSegmentPaxCharges);
+                                        var flightSegmentServiceType = bookFlightSuccess.FirstOrDefault().FlightSegments.SelectMany(x => x.FlightSegmentPaxServiceTypes);
+                                        var ssrList = (from a in flightSegmentPaxCharge
+                                                       join b in flightSegmentServiceType
+                                                       on new { ssrType = a.ChargeCode, flightSegmentID = a.FlightSegmentID, PaxID = a.PaxID }
+                                                       equals new { ssrType = b.ServiceType, flightSegmentID = b.FlightSegmentID, PaxID = b.PaxID }
+                                                       where a.ChargeTypeCode == "SSR"
+                                                       select new
+                                                       {
+                                                           ssrType = b.ServiceType,
+                                                           value = b.ServiceValue,
+                                                           price = a.ChargeAmount,
+                                                       }).GroupBy(x => new { x.ssrType, x.value })
+                                                        .Select(a => new { ssrType = a.Key.ssrType, value = a.Key.value, price = a.Sum(b => b.price), count = a.Count() })
+                                                        .ToList();
+
+                                        if (ssrList != null && ssrList.Count > 0 && bookFlightSuccess.FirstOrDefault().SupplierCode == "AASA")
+                                        {
+                                            List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                            <div class="@(hasAddOn ? " mt-4 " : " mt-2 reservation-table-mid ")">
+                                            @foreach (var ssr in ssrList.OrderBy(x => x.value))
+                                            {
+                                                string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == ssr.value).Value;
+                                                string ssrDesc = string.Empty;
+                                                switch (ssr.ssrType)
+                                                {
+                                                    case "LUG":
+                                                        ssrDesc = "Checked Baggage";
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                                <ul>
+                                                    <li>
+                                                        <span>@ssrDesc @ssrLabel x@(ssr.count)</span>
+                                                        <span>@bookFlightSuccess.FirstOrDefault().CurrencyCode @ssr.price.ToString("#,##0.00")</span>
+                                                    </li>
+                                                </ul>
+                                            }
+                                            </div>
+                                        }
+                                    }
+                                }
+                                @if (hasAddOn)
+                                {
+                                    var _grpEventProduct = bookEventSuccess.GroupBy(x => x.CurrencyCode);
+                                    var _grpInsurance = bookInsuranceSuccess.GroupBy(x => x.CurrencyCode);
+                                    bool isForBundleUsage = !hasFlight && !hasHotel && hasAddOn && bookTourSuccess == null;
+
+                                    string productAddOnText = "Addon experince";
+                                    //use to check if is EventBundle then display ConcertBundle
+                                    if (isForBundleUsage)
+                                    {
+                                        productAddOnText = "Concert Bundle";
+                                    }
+
+                                    <ul class="mt-3"><li><span>@productAddOnText</span></li></ul>
+                                    <div class="reservation-table-mid">
+                                        @foreach (var addOnBookingGrp in bookEventSuccess.GroupBy(grp => new { grp.EventDate }))
+                                        {
+                                            @addOnBookingGrp.Key.EventDate.ToString("MMM d, yyyy (ddd)")
+                                            foreach (var addOnBooking in addOnBookingGrp.GroupBy(grp => new { grp.CurrencyCode, grp.EventProduct.EventDetail.EventMaster.EventName, grp.EventProduct.TicketCategory.TicketCategory1 }))
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <span>@addOnBooking.Key.EventName @addOnBooking.Key.TicketCategory1 * @addOnBooking.Sum(s => s.Qty)</span>
+                                                        <span>@addOnBooking.Key.CurrencyCode @addOnBooking.Sum(s => s.TotalBookingAmt).ToString("n2")</span>
+                                                    </li>
+                                                </ul>
+                                            }
+                                        }
+
+                                        @foreach (var insuranceBooking in _grpInsurance)
+                                        {
+                                            int _paxCount = @insuranceBooking.Sum(x => x.NumberOfPax);
+                                            <ul>
+                                                <li>
+                                                    <span>Insurance (@($"{_paxCount} {(_paxCount > 1 ? "paxes" : "pax")}")) </span>
+                                                    <span> @insuranceBooking.Key @insuranceBooking.Sum(x => x.TotalBookingAmt ?? 0).ToString("n2")</span>
+                                                </li>
+                                            </ul>
+                                        }
+                                    </div>
+                                }
+
+                                @*<ul class="mt-3"><li><span>Misc. Charges</span></li></ul>
+            <div class="reservation-table-mid">
+                <ul><li><span>ss</span><span>MYR 0.00</span></li></ul>
+            </div>*@
+
+                                @foreach (var item in Model.PaymentDetailsList)
+                                {
+                                    <ul>
+                                        <li>
+                                            <span>Processing Fee</span>
+                                            <span>@(item.CurrencyCode) <span class="ProcessingFee">@(item.TotalProcessingAmount.ToString("n2"))</span></span>
+                                        </li>
+
+                                        @if (item.TotalDiscAmount > 0)
+                                        {
+                                            <li>
+                                                <span>Discount</span>
+                                                <span>@(item.CurrencyCode) <span>@(item.TotalDiscAmount.ToString("n2"))</span></span>
+                                            </li>
+                                        }
+                                        @if (item.TotalInstantDiscAmt > 0)
+                                        {
+                                            <li>
+                                                <span>Instant Discount</span>
+                                                <span>@(item.CurrencyCode) <span>@(item.TotalInstantDiscAmt.ToString("n2"))</span></span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+
+                            </div>
+                            <div class="reservation-table-bottom">
+                                <ul>
+                                    @foreach (var item in Model.PaymentDetailsList)
+                                    {
+                                        <li>
+                                            <span>Total</span>
+                                            <span>@item.CurrencyCode @item.GrandOrderAmount.ToString("n2")</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            @if (feesExcludedInTotal.Count > 0)
+                            {
+                                <div class="mt-3">
+                                    <ul>
+                                        <li>Not included in price</li>
+                                        @foreach (var item in feesExcludedInTotal.GroupBy(grp => new { grp.Currency, grp.Type }))
+                                        {
+                                            <li>
+                                                <span>@(item.Key.Type?.Replace("_", " ").ToTitleCase() ?? "unknown")</span>
+                                                <span>@item.Key.Currency @(item.Sum(s => s.Value).ToString("n2"))</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @*<a href="#" class="btn btn-primary btn--red">Confirm & continue</a>*@
+                </div>
+
+                @foreach (var item in Model.PaymentDetailsList)
+                {
+                    if (item.TotalPendingAmount <= 0 && item.TotalPaidAmount > 0 || true)
+                    {
+                        string printNow = (IsAgent) ? "Print Now (Agent View)" : "Print Now";
+
+                        if (!allowSendDisplayPDF)
+                        {
+                            allowSendDisplayPDF = true;
+                        }
+
+                        <div class="sec-print text-right">
+                            @using (Html.BeginForm("printBookingItinerary", "checkout", FormMethod.Post, new { @id = "printForm", @target = "_blank" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(x => x.SuperPNRNo);
+                            }
+                            <a href="javascript:;" class="print-now">@printNow</a>
+                        </div>
+
+                        if (IsAgent)
+                        {
+                            <div class="sec-print text-right">
+                                @using (Html.BeginForm("printBookingItinerary", "checkout", FormMethod.Post, new { @id = "printFormAgent", @target = "_blank" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(x => x.SuperPNRNo);
+                                    <input type="hidden" id="agentb2cPrint" name="agentb2cPrint" value="true">
+                                }
+                                <a href="javascript:;" class="print-now-agent">Print Now (Customer View)</a>
+                            </div>
+                        }
+
+                        <div class="sec-send-mail">
+                            @if (IsAgent)
+                            {
+                                <div>
+                                    <label for="agentsendmailb2b">Agent Mail(B2B)</label><input type="radio" id="agentsendmailb2b" name="emailtype" value="agentb2b" checked> &nbsp;&nbsp;
+                                    <label for="agentsendmailb2c">Agent Mail(B2C)</label><input type="radio" id="agentsendmailb2c" name="emailtype" value="agentb2c">
+                                </div>
+                            }
+                            <div class="input-group mb-3">
+                                <input type="email" class="form-control" name="sendMailTxt" id="sendMailTxt"
+                                       placeholder="Enter Recepients' email" aria-label="Enter Recepients' email" aria-describedby="Enter Recepients' email">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="sendMailBtn">Send</button>
+                                </div>
+                            </div>
+                            <div class="sec-info">
+                                <small class="sec-send-desc">Separate using ";" to send to multiple email address</small>
+                                <div style="margin-top: 0.3em">
+                                    <small class="text-danger" id="sendMailValMsg"></small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ./ Booker Details -->
+
+@section scripts {
+    @if (allowSendDisplayPDF)
+    {
+        <script language="javascript">
+        $("#sendMailTxt").change(function () {
+            if ($("#sendMailTxt").val() != "") {
+                var div = document.getElementById('sendMailValMsg');
+                div.innerHTML = '';
+            }
+        });
+        function checkEmail(email) {
+            var regExp = /^(?=.{5,50}$)(?=^[a-zA-Z0-9])(?=.*[a-zA-Z0-9]$)([a-zA-Z0-9_\-\.]{1,44})[a-zA-Z0-9]@@(?=(?:[^.]*\.){1,2}[^.]*$)[a-zA-Z0-9]([a-zA-Z0-9-\.]{4,47})$/;
+            return regExp.test(email);
+        }
+        function checkEmails() {
+            var emails = document.getElementById("sendMailTxt").value;
+            var invEmails = "";
+            var msg = "";
+            if ($('#sendMailTxt').val().search(';') < 0) {
+                var emailArray = emails;
+                if (checkEmail(emailArray)) {
+                    //...
+                } else {
+                    if (emailArray == "") {
+                        var div = document.getElementById('sendMailValMsg');
+                        div.innerHTML = 'Email Required.';
+                    } else if (emailArray.match(/^(?=.{5,50}$)/) != "") {
+                        msg = "Maximum length of email is 50 characters";
+                        invEmails += msg + ":\n" + emailArray + "\n";
+                    } else {
+                        invEmails += "Invalid emails:\n" + emailArray + "\n";
+                    }
+                }
+            } else {
+                var emailArray = emails.split(/[\s;]+/);
+                for (i = 0; i < (emailArray.length) ; i++) {
+                    if (checkEmail(emailArray[i])) {
+                        //...
+                    } else {
+                        if (emailArray[i].match(/^(?=.{5,50}$)/) != "") {
+                            msg = "Maximum length of email is 50 characters";
+                            invEmails += msg + ":\n" + emailArray[i] + "\n";
+                        } else {
+                            invEmails += "Invalid emails:\n" + emailArray[i] + "\n";
+                        }
+                    }
+                }
+            }
+            if (emails == "") {
+                //...
+            } else if (invEmails != "") {
+                var div = document.getElementById('sendMailValMsg');
+                div.innerHTML = invEmails;
+            } else {
+                sendEmails(emailArray, false);
+            }
+        }
+        //Send email - START
+        function sendEmails(emailArray, isBookingPerson) {
+            var SuperPNRID = '@Model.SuperPNRID';
+
+            ajaxSendMail(emailArray, SuperPNRID, isBookingPerson);
+        }
+
+        function ajaxSendMail(emailArray, SuperPNRID, isBookingPerson) {
+            var isAgentSendB2C = false;
+            var checkID = document.getElementById("agentsendmailb2c");
+            if (checkID != null) {
+                isAgentSendB2C = checkID.checked;
+            }
+            $.ajax({
+                type: "POST",
+                cache: false,
+                url: '/checkout/sendbookingitineraryemail',
+                async: true,
+                beforeSend: function () { loadModal(true); },
+                data: { emailArray: emailArray, isBookingPerson: isBookingPerson, superPNRID: SuperPNRID, isAgentSendB2C: isAgentSendB2C  }, ///////////////////////
+            }).done(function (res) {
+                loadModal(false);
+                if (res == 'True' && !isBookingPerson) {
+                    dynamicModal('Status', 'Your email was successfully sent.', false).modal();
+                } else if (res == 'False' && !isBookingPerson) {
+                    dynamicModal('Status', 'There is failed to send your email. Please try again.', false).modal();
+                }
+            });
+        }
+        //Send email - END
+
+        //Print Booking Itinerary - START
+        $('.print-now').click(function (e) {
+            $('#printForm').submit();
+        });
+
+        $('.print-now-agent').click(function (e) {
+            $('#printFormAgent').submit();
+        });
+
+        $('#sendMailBtn').click(function (e) {
+            checkEmails();
+        })
+
+        $('#sendMailTxt').keyup(function (e) {
+            if (e.keyCode === 13) {
+                checkEmails();
+            }
+        })
+        //Print Booking Itinerary - END
+        </script>
+    }
+    @*//--SkyscannerTracking end--//*@
+    @if (Request.Cookies["trackingcookies_sat"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                fireSkyscannerTag();
+                document.cookie = "trackingcookies_sat=; expires=Thu, 01 Jan 1970 12:00:00 UTC;path=/;";
+            });
+            // This line imports the Skyscanner Tag code.
+            (function (s, k, y, t, a, g) { s['SkyscannerAnalyticsTag'] = t; s[t] = s[t] || function () { (s[t].buffer = s[t].buffer || []).push(arguments) }; s[t].u = y; var l = k.createElement("script"); l.src = y + "/tag.js"; l.async = 1; var h = k.getElementsByTagName("head")[0]; h.appendChild(l); })(window, document, 'https://analytics.skyscanner.net', 'sat');
+
+            // This function calls the Skyscanner tag code to register a conversion.
+            // You should make sure to only fire this function once the page has finished loading.
+            // (For example, setting onload="fireSkyscannerTag();" attribute on the <body> tag).
+            function fireSkyscannerTag() {
+                // Initialise SAT with your Tracking Source ID
+                sat('init', 'SAT-845308-1');
+                // Send a 'conversion' event
+                sat('send', 'conversion', {
+                bookingReference: '@Model.SuperPNRNo' //document.getElementById('bookingref').innerText //superPNR
+                });
+            }
+        </script>
+    }
+    @*//--SkyscannerTracking end--//*@
+}
+
+@section priorityScript {
+    @if (Response.Cookies["jokerxue"] != null && Response.Cookies["jokerxue"].Value == "1")
+    {
+        <!-- Event snippet for Joker Xue conversion page -->
+        <script>
+            gtag('event', 'conversion', {
+                'send_to': 'AW-800132508/xobuCOiIzZIBEJybxP0C',
+                'transaction_id': ''
+            });
+        </script>
+
+        // after set remove cookies from server.
+        Response.Cookies.Remove("jokerxue");
+    }
+}
+
+
+
+@helper GenerateFlightSSRList(Booking flightBooking, ICollection<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> ssrList, int paxId)
+{
+    int ssrCount = 0;
+    var grpSsrList = ssrList.GroupBy(x => new
+    {
+        ServiceType = x.ServiceType?.Trim(),
+        SupplierCode = x.FlightSegment.Booking.SupplierCode,
+        PaxID = x.PaxID,
+    });
+
+    foreach (var ssrGrp in grpSsrList)
+    {
+        if (ssrGrp.Key.ServiceType != "LUG" && ssrGrp.Key.ServiceType != "MEAL")
+        {
+            <div class="col-lg-4 col-md-6">
+                <p>
+                    @ssrGrp.FirstOrDefault().ServiceType1.ServiceTypeName :
+                    @foreach (var ssr in ssrGrp)
+                    {
+                        <br /><strong>@ssr.ServiceValue</strong>
+                    }
+                </p>
+            </div>
+        }
+        ssrCount++;
+    }
+
+    if (ssrCount <= 0)
+    {
+        <div class="col-lg-12">-</div>
+    }
+    List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> mealList = ssrList.Where(x => x.ServiceType == "MEAL").ToList();
+    List<Alphareds.Module.Model.Database.FlightSegmentPaxServiceType> baggageList = ssrList.Where(x => x.ServiceType.Trim() == "LUG").ToList();
+
+    //var flightRouteList = flightBooking.FlightSegments.Select(x => $"{x.DepartureAirportLocationCode} > {x.ArrivalAirportLocationCode}");
+    if (mealList.Count > 0)
+    {
+        <div class="col-lg-4 col-md-6">
+            <p>
+                Meal:
+                @foreach (var ssr in mealList)
+                {
+                    string mealIncluded = string.IsNullOrEmpty(ssr.ServiceValue) ? "Meal not Included" : "Meal Included";
+                    <br /><strong>@ssr.FlightSegment.DepartureAirportLocationCode > @ssr.FlightSegment.ArrivalAirportLocationCode (@mealIncluded)</strong>
+                }
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="col-lg-4 col-md-6"><p>Meal: <strong>-</strong></p></div>
+    }
+    if (baggageList.Count > 0)
+    {
+        <div class="col-lg-4 col-md-6">
+            <p>
+                Baggage:
+                @foreach (var ssr in baggageList)
+                {
+                    if (flightBooking.SupplierCode == "SBRE")
+                    {
+                        if (!string.IsNullOrEmpty(ssr.ServiceValue))
+                        {
+                            string[] baggageValue = ssr.ServiceValue.Split(' ');
+                            if (baggageValue[1] == "piece")
+                            {
+                                <br /><strong>Free Baggage (@baggageValue[0] x 15kg)</strong>
+                            }
+                            else
+                            {
+                                <br /><strong>Free Baggage (@baggageValue[0] @baggageValue[1])</strong>
+                            }
+                        }
+                        else
+                        {
+                            <br /><strong>No Free Baggage</strong>
+                        }
+                    }
+                    else
+                    {
+                        if (ssr.Pax.PassengerType != "INF")
+                        {
+                            if (ssr.ServiceValue != null)
+                            {
+                                List<KeyValuePair<string, string>> ssrDtlList = UtilitiesService.AirAsiaSSR(GetAllSSR: true);
+                                string ssrLabel = ssrDtlList.FirstOrDefault(x => x.Key == ssr.ServiceValue).Value;
+                                <br /><strong>@ssr.FlightSegment.DepartureAirportLocationCode > @ssr.FlightSegment.ArrivalAirportLocationCode (@ssrLabel)</strong>
+                            }
+                        }
+                    }
+                }
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="col-lg-4 col-md-6">
+            <p>Baggage: <br /><strong>@(flightBooking.SupplierCode == "SBRE" ? "No Free Baggage" : "No checked baggage")</strong></p>
+        </div>
+    }
+}
+
+@functions{
+    class TempHotelCheckIn
+    {
+        public string CheckInInstruct { get; set; }
+        public string SpecialCheckInInst { get; set; }
+    }
+
+    TempHotelCheckIn GetHotelCheckInstruction(MayFlower dbContext, BookingHotel hotelRecord)
+    {
+        TempHotelCheckIn _inst = null;
+        try
+        {
+            string sqlQuery = @"SELECT CheckInInstruct, SpecialCheckInInst FROM Hotel.BookingHotel
+        WHERE BookingID = @p0 AND SuperPNRID = @p1";
+
+            System.Data.SqlClient.SqlParameter[] sqlParameters = new System.Data.SqlClient.SqlParameter[]
+            {
+    new System.Data.SqlClient.SqlParameter("p0", hotelRecord.BookingID),
+    new System.Data.SqlClient.SqlParameter("p1", hotelRecord.SuperPNRID),
+            };
+
+            _inst = dbContext.Database.SqlQuery<TempHotelCheckIn>(sqlQuery, sqlParameters).FirstOrDefault();
+        }
+        catch
+        {
+        }
+
+        return _inst ?? new TempHotelCheckIn();
+    }
+}

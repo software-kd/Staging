@@ -1,0 +1,175 @@
+﻿@model Alphareds.Module.Model.ProductCarRental
+@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@using Alphareds.Module.ServiceCall;
+@using PagedList;
+@using PagedList.Mvc;
+@using System.Text.RegularExpressions;
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    Mayflower.General.CustomPrincipal customPrincipal = User as Mayflower.General.CustomPrincipal;
+    var carList = (Model.FilterCarResult != null ? Model.FilterCarResult.IPagedCarList : null) ?? new List<Alphareds.Module.CarRentalWebService.CRWS.VehVendorAvail>().ToPagedList(1, 1);
+    string[] typeList = Model.FilterCarResult != null ? Model.Result.VehAvailRSCore.VehVendorAvails.VehVendorAvail.Select(x => x.VehAvails.VehAvailCore.Vehicle.VehicleGroup.GroupName).Distinct().ToArray() : new string[0];
+    bool isFilterEmpty = carList != null && carList.Count() == 0 && Model.Result.VehAvailRSCore.VehVendorAvails.VehVendorAvail.Count() > 0;
+}
+
+@if (carList != null && carList.Count() > 0)
+{
+    <input type="hidden" class="submit hidden invisible" data-url="@Url.Action("ReserveCar", "CarRental", new { tripid = tripid })">
+    foreach (var cars in carList.GroupBy(x=> new { x.VehAvails.VehAvailCore.Vehicle.VehicleName, x.Branch.BranchName }))
+    {
+        var car = cars.FirstOrDefault();
+        var period = Model.Result.VehAvailRSCore.VehRentalCore;
+        var vehicle = car.VehAvails.VehAvailCore.Vehicle;
+        <div class="box-product">
+            <div class="row">
+                <div class="col-lg-3 product-img col-md-5">
+                    @if (!string.IsNullOrEmpty(vehicle.PictureURL))
+                    {
+                        <img class="w-100" src="@Url.Content(vehicle.PictureURL)" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Content("~/Images_hotel/no-img-01.png")" />
+                    }
+                </div>
+                <div class="mid-content">
+                    <h2 class="f-500">@vehicle.VehicleGroup.GroupName</h2>
+                    <div>
+                        @vehicle.VehicleName or similar
+                        <br>
+                        <span>
+                            <i class="fa fa-fw smart-icon-car i1 "></i>@vehicle.VehicleGroup.SeatNumber
+                        </span>
+                        <span>
+                            <i class="fa fa-fw smart-icon-car i2 "></i>@vehicle.VehicleGroup.BaggageQuantity
+                        </span>
+                        <span>
+                            <i class="fa fa-fw  smart-icon-car i3 "></i>@vehicle.VehicleGroup.DoorNumber
+                        </span>
+                        @if (vehicle.AirConditioner == "YES")
+                        {
+                        <span>
+                            <i class="fa fa-fw smart-icon-car i4 "></i>A/C
+                        </span>
+                        }
+                    </div>
+                    <div>
+                        Fuel info: @(vehicle.IsFullTank == "YES" ? "Full to full" : "")
+                        <br>
+                        <span>
+                            <i class="fa fa-check  check-ico text-success" aria-hidden="true"></i>@(vehicle.VehicleGroup.Transmission == "AUTO" ? "Automatic transmission" : car.VehAvails.VehAvailCore.Vehicle.VehicleGroup.Transmission + " transmission")
+                        </span>
+                        <span>
+                            <i class="fa fa-check  check-ico text-success" aria-hidden="true"></i>@(vehicle.IsMileageUnlimited == "YES" ? "Unlimited mileage" : "Mileage limit : " + car.VehAvails.VehAvailCore.Vehicle.MileageLimit.ToString())
+                        </span>
+                        <span>
+                            <i class="fa fa-check  check-ico text-success" aria-hidden="true"></i>Free Cancellation
+                        </span>
+                        @*<span><i class="fa fa-check  check-ico text-success" aria-hidden="true"></i>Earn Reward points</span>*@
+                        <br> Pick-up/ DropOff: @car.VehAvails.VehAvailCore.Cust.PickUp (@car.Branch.BranchName) <br />* Additional charges will be imposed upon collection for a different location and non-operating hour. Please <a href="http://www.mayflowercarrental.com.my/contact.html">contact us</a> in advance for the arrangement.
+                    </div>
+                </div>                
+                @{ 
+                    decimal MarkupAmtTotal = 0;
+                    var markupInfo = Model.FilterCarResult.MarkupInfo;
+                    int totalDays = Convert.ToInt32((period.ReturnDateTime.Value.Date - period.PickUpDateTime.Value.Date).TotalDays);
+                    if (markupInfo != null && markupInfo.DiscountOrMarkup != 0)
+                    {
+                        if (markupInfo.MarkupPricingTypeCode == "PCT")
+                        {
+                            MarkupAmtTotal = (markupInfo.DiscountOrMarkup / 100) * vehicle.VehicleCharge.TotalRentalFee.Value;
+                        }
+                        else if (markupInfo.MarkupPricingTypeCode == "FIX")
+                        {
+                            MarkupAmtTotal = markupInfo.DiscountOrMarkup * totalDays;
+                        }
+                    }
+                    var insurancePrice = car.Insurance != null && car.Insurance.Count() > 0 ? (car.Insurance.FirstOrDefault().InsurancePrice * totalDays) : 0;
+                    var totalPrice = vehicle.VehicleCharge.TotalRentalFee.Value + MarkupAmtTotal + insurancePrice;
+                }
+                <div class="mob_width text-center align-self-center">
+                    <div class="custom_width justify-content-between">
+                        <div class="box-from  col-6 col-sm-4 col-lg-12">
+                            <div class="b-from">
+                                <span class="text-primary">MYR @totalPrice.ToString("n2")</span>
+                                <br>Total for @totalDays @(totalDays > 1 ? "days" : "day")
+                            </div>
+                            <div class="b-tax">Include insurance</div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-lg-12 align-self-center">
+                            <div class="panel panel-default">
+                                <a class="btn btn-block btn-primary reservebtn btn--red" data-vehicleid="@vehicle.VehicleID" data-branchid="@car.Branch.PickupBranchID.ToString()">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else if (ViewBag.SysErrMsg != null || isFilterEmpty)
+{
+    <div class="s2_main_container">
+        <div class="s2_mc_border_conainer no-result">
+            <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    @if(ViewBag.SysErrMsg == "No record found!" || isFilterEmpty)
+                    {
+                        <h2 style="color:#be2e30">Opps! We're sorry but there is no car available for your search. Please try to search again with another combinations. Thank you!</h2>
+                    }
+                    else
+                    {
+                        <h2 style="color:#be2e30">@ViewBag.SysErrMsg</h2>
+                        <div class="member_fp_text" style="text-align:left;display:inline-block">
+                            <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                                <li>Please try again later.</li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+        var myobject = @Html.Raw(Json.Encode(typeList));
+        var select = document.getElementById("sortby");
+        for (index in myobject) {
+            select.options[index] = new Option(myobject[index], myobject[index]);
+        }
+        var selected = '@(Model.FilterCarResult?.FilterSettings?.SortBy)';
+        if(selected!=''){
+            document.getElementById('sortby').value = selected;
+    }
+
+    $(function() {       
+        var min = @(Model.FilterCarResult?.FilterSettings?.defaultMin ?? 0);
+        var max = @(Model.FilterCarResult?.FilterSettings?.defaultMax ?? 0);
+        var from = '@(Model.FilterCarResult?.FilterSettings?.minPrice.ToDecimalNullable())' == '' ? min : @(Model.FilterCarResult?.FilterSettings?.minPrice.ToDecimal());
+        var to = '@(Model.FilterCarResult?.FilterSettings?.maxPrice.ToDecimalNullable())' == '' ? max :  @(Model.FilterCarResult?.FilterSettings?.minPrice.ToDecimal());
+
+        var saveResult = function (data) {
+            var filter = {
+                minPrice: data.from,
+                maxPrice: data.to,
+            };
+            getCList(1, filter);
+        };
+
+        $("#range_03").ionRangeSlider({
+            type: "double",
+            grid: true,
+            min: min,
+            max: max,
+            from: from,
+            to: to,
+            prefix: "",
+            onFinish: function (data) {
+                saveResult(data);
+            },
+        });
+    })
+</script>

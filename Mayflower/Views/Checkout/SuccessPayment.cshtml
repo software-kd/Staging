@@ -1,0 +1,47 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    ViewBag.HeaderRed = true;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    string tripid = Request.QueryString["tripid"];
+
+    ViewBag.Title = "Payment";
+    ViewBag.tripid = tripid;
+    ViewBag.HideHeader = true;
+    ViewBag.HideFooter = true;
+}
+
+@section style{
+    <style>
+        html, body, .main-body, .booker-details, .container, .row, .booker-details-left{
+            height:100%;
+        }
+        .booker-body{
+            height:80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+}
+
+    <!-- Booker Details -->
+    <div class="booker-details m-u-20">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-lg-8">
+                    <div class="booker-details-left">
+                        <div class="booker-body shadow bg-white">
+                            <h3 class="default-red text-center">Payment Successful!</h3>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,64 @@
+﻿@model Alphareds.Module.Model.SearchHotelModel
+
+@{
+    string PLACE = Model.Destination ?? "-";
+    string ROOM = Model.NoOfRoom == 0 ? "-" : Model.NoOfRoom.ToString();
+    string ADULT = Model.NoOfAdult.ToString();
+    string CHILD = Model.NoOfInfant.ToString();
+    string FROM = Model.Destination != null ? Model.ArrivalDate == DateTime.MinValue ? "-" : Model.ArrivalDate.ToString("dd-MMM-yy, ddd") : "-";
+    string TO = Model.Destination != null ? Model.DepartureDate == DateTime.MinValue ? "-" : Model.DepartureDate.ToString("dd-MMM-yy, ddd") : "-";
+    string star = Model.Star == 10 ? "All Stars" : Model.Star + " Stars";
+}
+
+<div class="step2_informationbox">
+    <div class="s2_ib_inner">
+        <div class="s2_ib_inner_left">
+            <div class="hotelIcone">
+                <div class="s3_1_fdb_flight_name">@PLACE</div>
+                <div class="clear"></div>
+                @*<div class="star">@star</div>*@
+            </div>
+        </div>
+        <div class="s2_ib_inner_right">
+            @*<div class="s2_ib_inr_left mobileonly3">
+                    <div class="s2_ibinrl_b1">from <span class="s2span_rightgap">@FROM</span>to<span class="s2span_leftgap">@TO</span></div>
+                </div>*@
+            <div class="s3_1_fdb_inner_b3 mobileonly3">
+                <div class="s3_1_fdb_i3_inner">
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="dep">Check In</div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <span class="s2span_rightgap">@FROM</span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="ret">Check Out</div>
+                    </div>
+                    <span class="s2span_leftgap">@TO</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="s2_ib_inr_left mobileonly4">
+            <div class="s3_1_fdb_inner_b34">
+                <div class="s2_ibinrl_b1">Check in</div>
+                <div class="s2span_rightgap"><span>@FROM</span></div>
+            </div>
+            <div class="s3_1_fdb_inner_b34">
+                <div class="s2_ibinrl_b1">Check out</div>
+                <div class="s2span_rightgap s2span_rightgap2"><span>@TO</span></div>
+            </div>
+        </div>
+        <div class="s2_ib_inr_right">
+            <div class="s3_1_fdb_class_det rp15"><span style="color: #ec1c24;">@ROOM</span> @(ROOM.Equals("1") ? "Room " : "Rooms ")</div>
+            <div class="clear"></div>
+            <div class="s3_1_fdb_modify_icon s2_ml_20" data-bundle="@Model.BundleExist()"><span><img src="@Url.Content("~/Images_hotel/modify_icon.png")" /></span>Modify Search</div>
+        </div>
+        <div class="clear"></div>
+    </div>
+        <div class="clear"></div>
+    </div>
+</div>

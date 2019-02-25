@@ -1,0 +1,377 @@
+﻿/* footer start */
+.footer .followus_mob, .fi_col3 {
+    padding-top: 0px;
+}
+
+.footer p {
+    margin: 0 0 10px;
+}
+
+.footer h4 {
+    font-size: 18px;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+    color: inherit;
+}
+
+.footer .fi_col1 {
+    padding-top: 5px;
+}
+
+.footer .otherservice_link {
+    text-align: left;
+}
+
+.paymentSummary .s4_blt_py_con_right {
+    float: right !important;
+    display: inline;
+}
+
+.notisection {
+    margin-left: 18px;
+}
+
+.s4_png_inner_row {
+    margin-left: -15px;
+}
+
+.ipay_con_left {
+    padding-left: 60px;
+}
+
+.radio1_s4 {
+    margin-left: -20px;
+}
+
+.radio2_s4 {
+    margin-left: -5px;
+}
+
+.save_button {
+    float: right;
+    background-color: #908e8e;
+    width: 100px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 14px;
+    color: #000;
+    -webkit-border-radius: 23px;
+    -moz-border-radius: 23px;
+    border-radius: 23px;
+    margin-top: -40px;
+    margin-right: 10px;
+}
+
+    .save_button a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .save_button a:hover {
+            text-decoration: none;
+        }
+
+.save-flight-btn {
+    padding: 4px 35px;
+}
+
+.payment-btn-area {
+    text-align: center;
+}
+
+#payment-later {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    /*background-color: #00a3e8;
+    width: 235px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 14px;
+    color: #fff;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    border: 0;*/
+}
+
+@media screen and (max-width : 1320px) {
+    .save_button {
+        float: none;
+        background-color: #908e8e;
+        width: 100px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-size: 14px;
+        color: #000;
+        -webkit-border-radius: 23px;
+        -moz-border-radius: 23px;
+        border-radius: 23px;
+        margin: auto;
+        margin-bottom: 10px;
+    }
+}
+
+@media screen and (max-width : 1024px) {
+    .ipay_con_left {
+        padding-left: 50px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .ipay_con_left {
+        padding-left: 35px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .ipay_con_left {
+        padding-left: 0px;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .radio1_s4 {
+        margin-left: -5px;
+    }
+}
+
+@media screen and (max-width : 900px) {
+    .night-charge {
+        display: none;
+    }
+
+    .night-charge1 {
+        padding-left: 25px !important;
+        width: 50% !important;
+    }
+
+    .night-charge2 {
+        width: 50%;
+        text-align: right;
+    }
+
+    .paymentSummary .s4_blt_py_con_left {
+        display: inline;
+        max-width: 80%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .footer .otherservice_link {
+        text-align: center;
+    }
+
+    .night-charge1 {
+        padding-right: 0px;
+        padding-left: 1px;
+        width: 40%;
+    }
+
+    .night-charge {
+        width: 32%;
+    }
+}
+/* footer end */
+
+/* hotel info styling start */
+.d8c1_gallery .callbacks_nav {
+    top: 60%;
+}
+
+.d8c1_gallery .callbacks_tabs {
+    display: none;
+}
+
+.d8c1_gallery .callbacks_container {
+    position: relative;
+}
+
+.d8c1_gallery > .callbacks_container, .rslides > li {
+    max-width: initial;
+    height: 330px;
+    margin: 0 auto;
+}
+
+.d8c1_gallery .callbacks_container_room {
+    position: relative;
+}
+
+.d8c1_gallery > .callbacks_container_room, .callbacks_container_room > .rslides > li {
+    max-width: initial;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.d8c1_gallery .callbacks_container_room .callbacks_nav {
+    top: 70%;
+}
+
+.d8c1_gallery .callbacks_container {
+    max-width: 495px;
+    max-height: 330px;
+    margin: 0 auto;
+}
+
+.d8c1_gallery a.left.carousel-control, a.right.carousel-control {
+    background: none
+}
+
+.d8c1_gallery .rslides > li img {
+    width: initial !important;
+    height: 100% !important;
+    margin: 0 auto;
+    float: none;
+}
+
+@media only screen and (max-width: 500px) {
+    .d8c1_gallery > .callbacks_container, .rslides > li {
+        max-width: 495px;
+        height: 230px;
+    }
+}
+/* hotel info styling end */
+
+/* hotel popup start */
+.fullcover_div_GoogleMap {
+    display: none;
+}
+/* hotel popup end */
+
+.blackLine {
+    border-top: 2px solid #0d0d0d;
+    margin-top: 4px;
+}
+
+.boldText {
+    font-family: UbuntuBold;
+    padding-top: 5px;
+}
+
+.btmPadding {
+    padding-bottom: 31px;
+}
+
+/* I'm Seperator START */
+.fullcover_div_GoogleMap {
+    width: 100%;
+    height: auto;
+    background: rgba(0,0,0,0.8);
+    position: fixed;
+    overflow-y: auto;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+    display: none;
+}
+
+.viewmorehotel_container.hotel-info {
+    margin: auto !important;
+}
+
+.viewmorehotel_container {
+    max-width: 883px;
+    width: 96%;
+    margin: 2em auto;
+    height: 500px;
+}
+
+.viewmorehotel_white1nn {
+    height: 510px;
+    overflow: auto;
+    text-align: center;
+}
+
+.vm_inner_content {
+    width: 95%;
+    margin: auto;
+    text-align: left;
+}
+/* I'm Seperator END */
+
+.s3_bc_fourboxes {
+    width: 20%;
+}
+
+.night-charge2 {
+    width: auto;
+    padding-right: 0px;
+}
+
+section.addons {
+    padding-bottom: 0px;
+}
+
+button, input, select, textarea {
+    font-family: 'Conv_Ubuntu-Light' !important;
+}
+
+.section-tabs .nav-wizard {
+    margin: 25px auto !important;
+    max-width: 600px;
+}
+
+@media only screen and (min-device-width : 414px) and (max-device-width : 736px) and (orientation : portrait) { /* STYLES GO HERE */
+    .radio1_s4 {
+        margin-left: -21px !important;
+    }
+}
+
+/* Promo Code Section Start */
+.promo-container .toggle-code {
+    font-size: 14px;
+    color: #4CAF50;
+    display: inline-block;
+    text-decoration: none;
+}
+
+    .promo-container .toggle-code:hover {
+        color: #57c75b;
+    }
+
+.promo-container span.pCode-text {
+    font-size: 14px;
+}
+
+.promo-container .pCode-inputArea {
+    display: none;
+}
+
+.promo-container input#promo-code {
+    height: 34px;
+    line-height: 34px;
+    max-width: 250px;
+    padding: 0 1em;
+    width: 55%;
+}
+
+.promo-container button#apply-code {
+    height: 34px;
+    max-width: 80px;
+    width: 100%;
+    margin: 1em;
+    border: none;
+    color: #fff;
+    background-color: #4CAF50;
+}
+
+.promo-container input#promo-code:focus {
+    border-color: initial;
+    box-shadow: none;
+}
+
+.promo-container {
+    margin: 3px;
+    margin-top: 1em;
+    padding-bottom: 1.5em;
+}
+
+    .promo-container .promo-sMsg {
+        margin-top: -1.5em;
+        display: block;
+    }
+/* Promo Code Section End */

@@ -1,0 +1,266 @@
+﻿@using Alphareds.Module.Common
+
+@functions{
+    string destinationUrl = new UriBuilder(System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"]).Uri.ToString();
+}
+
+@{
+    string AuthUserName = string.Empty;
+    string rolename = string.Empty;
+    string creditAmt = "0.00";
+    string cashCreditAmt = "0.00";
+    string logoUrl = "";
+    bool isLocalHost = Core.IsForLocalHost;
+    bool isB2BEnabled = Core.IsEnableB2B && ((Core.IsForStaging) || false); // Hardcode to false first, mean hide for public, but still accessible by Url link
+    Mayflower.General.CustomPrincipal customPrincipal = (User as Mayflower.General.CustomPrincipal);
+    string OrganizationLogo = null;
+    string logoColorImg = ViewBag.HeaderRed == true ? "~/images/Mayflower-with-flower-symbolic-in-White.png" : "~/images/Mayflower-with-flower-symbolic-in-Red.png";
+    bool IsAgent = customPrincipal.IsAgent;
+    string navbarTop = "";
+    string navHeight = "";
+    var creditExp = new Alphareds.Module.Model.CreditExpList();
+    var cashcreditExp = new Alphareds.Module.Model.CreditExpList();
+
+    if (User.Identity.IsAuthenticated)
+    {
+        AuthUserName = customPrincipal.FirstName;
+
+        if (User.IsInRole("Company Admin"))
+        { rolename = "Company Admin"; }
+        else if (User.IsInRole("Traveller"))
+        { rolename = "Traveller"; }
+        else if (User.IsInRole("System Admin"))
+        { rolename = "System Admin"; }
+
+        System.Data.SqlClient.SqlCommand sqlCommand = new System.Data.SqlClient.SqlCommand();
+        creditAmt = Alphareds.Module.MemberController.MemberServiceController.ChkCreditAmtRemain.ByUserId(customPrincipal.UserId, customPrincipal.UserTypeCode, sqlCommand).ToString("n2");
+        cashCreditAmt = Alphareds.Module.MemberController.MemberServiceController.GetUserCashCredit(customPrincipal.UserId, sqlCommand).ToString("n2");
+        sqlCommand.Connection.Close();
+
+        if (customPrincipal.IsAgent)
+        {
+            OrganizationLogo = string.IsNullOrWhiteSpace(customPrincipal.OrganizationLogo) ? logoColorImg : customPrincipal.OrganizationLogo;
+            OrganizationLogo = File.Exists(Server.MapPath(OrganizationLogo)) ? OrganizationLogo : logoColorImg;
+        }
+        navbarTop = "top: 0px;";
+        creditExp = Alphareds.Module.MemberController.MemberServiceController.GetCreditExp(customPrincipal.UserId, Alphareds.Module.Model.DiscountType.TC);
+        cashcreditExp = Alphareds.Module.MemberController.MemberServiceController.GetCreditExp(customPrincipal.UserId, Alphareds.Module.Model.DiscountType.TW);
+    }
+    else
+    {
+        navHeight = "mob-nav-nologin";
+    }
+
+    if (!Alphareds.Module.Common.Core.EnableCMS)
+    {
+        logoUrl = ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index" &&
+            ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "home"
+            ? Url.Action("Index", "Home") : Url.Action("Index", "Home");
+        //? "https://www.mayflower.com.my" : Url.Action("Index", "Home");
+    }
+    else
+    {
+        logoUrl = Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl, type = "MenuTransfer" });
+    }
+
+    string navbar = ViewBag.HeaderRed == true ? "navbar-dark" : "navbar-light";
+    string mobHeaderBgColor = ViewBag.HeaderRed == true ? "bg-white" : "bg-light";
+    string menuBgColor = ViewBag.HeaderRed == true ? "bg-primary" : "bg-white";
+    string redLineCss = "";
+    if (ViewBag.RenderRedLine == true)
+    {
+        redLineCss = "top_logo_link_area_outer sticky";
+    }
+
+    List<Alphareds.Module.Model.GetMenuModel> MenusArr = new List<Alphareds.Module.Model.GetMenuModel>();
+    object obj = System.Web.HttpContext.Current.Cache.Get(Enumeration.SessionName.MenuAPI.ToString());
+    if (obj == null || true)
+    {
+        try
+        {
+            var GetMenuUrl = Core.GetAppSettingValueEnhanced("MenuItemAPIUrl");
+            if (!string.IsNullOrEmpty(GetMenuUrl))
+            {
+                var getMenujson = new WebClient().DownloadString(GetMenuUrl);
+                MenusArr = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Alphareds.Module.Model.GetMenuModel>>(getMenujson).ToList();
+                if (MenusArr.Count > 0 && false)
+                {
+                    System.Web.HttpContext.Current.Cache.Insert(Alphareds.Module.Common.Enumeration.SessionName.MenuAPI.ToString(),
+                                                                MenusArr);
+                }
+            }
+        }
+        catch
+        {
+        }
+    }
+    else
+    {
+        MenusArr = (List<Alphareds.Module.Model.GetMenuModel>)obj;
+    }
+}
+
+<!-- Navigation -->
+<div class="navigation @navHeight" style="background-color: #ed1d27;">
+   <nav class="navbar navbar-expand-lg @navbar @menuBgColor" style="@navbarTop">
+       @if (!User.Identity.IsAuthenticated)
+       {
+           <div class="mob-header @mobHeaderBgColor">
+             <ul>
+               <li><a href="@Url.Action("Login", "Account")">Log In</a></li>
+               <li><a href="/Member/SimpleRegister">Register</a></li>
+             </ul>
+           </div>
+       }
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="@logoUrl"><img src="@Url.Content(OrganizationLogo ?? logoColorImg)" alt="Mayflower Logo"></a>
+            </div>
+            @if (!(ViewBag.HideHeader == true))
+            {
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="true" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse navbar-light" id="navbarColor02" style="">
+                     <ul class="navbar-nav ml-auto">
+                        @if (MenusArr != null)
+                        {
+                            var CMSUrl = Alphareds.Module.Common.Core.EnableCMS ? System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"] : "https://www.mayflower.com.my";
+                            foreach (var menu in MenusArr)
+                            {
+                                if (menu.Child == null)
+                                {
+                                    var destinationUrl = CMSUrl + menu.URL;
+                                    <li class="nav-item"><a class="nav-link" href="@destinationUrl" target="@menu.Target">@menu.Name</a></li>
+                                }
+                                else
+                                {
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@menu.Name</a>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                            @foreach (var item in menu.Child)
+                                            {
+                                                var destinationUrl = (item.URL.Contains("http") ? "" : CMSUrl) + item.URL;
+                                                <a class="dropdown-item" href="@destinationUrl" target="@item.Target">@item.Name</a>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hi, <span>@AuthUserName</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right user-profile" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-item font-weight-bold">@(IsAgent ? "Agent Credit" : "Travel Credit") : <br />RM @creditAmt
+                                    @if (creditExp != null)
+                                    { 
+                                        <br /><span class="credit_exp_text">RM @creditExp.CreditAmt (Expires in @creditExp.CreditExp.ToString("dd/MM/yyyy"))</span> 
+                                    }
+                                    </div>
+                                    @if (!IsAgent)
+                                    {
+                                        <div class="dropdown-item font-weight-bold">Travel Wallet : <br />RM @cashCreditAmt
+                                        @if (cashcreditExp != null)
+                                        {
+                                            <br /><span class="credit_exp_text">RM @cashcreditExp.CreditAmt (Expires in @cashcreditExp.CreditExp.ToString("dd/MM/yyyy"))</span> 
+                                        }
+                                        </div>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="@Url.Action("ManageProfile", "Member")">View/Update Profile</a>
+                                    }
+                                    @if (customPrincipal.IsLoginPasswordNotSetup)
+                                    {
+                                        <a class="dropdown-item" href="@Url.Action("SetupPassword", "Account")">Set a Password</a>
+                                    }
+                                    <a class="dropdown-item" href="@Url.Action("ManagePassword", "Account")">Change Password</a>
+                                    <a class="dropdown-item" href="@Url.Action("UpcomingTrips", "Account")">@(IsAgent ? "Upcoming Bookings" : "My Upcoming Trips")</a>
+                                    <a class="dropdown-item" href="@Url.Action("TravelHistory", "Account")">@(IsAgent ? "Booking History" : " My Travel History")</a>
+                                    <a class="dropdown-item" href="@Url.Action("FrequentFlyer", "Tools")">Frequent Traveller</a>
+                                    @if (!IsAgent)
+                                    {
+                                        <a class="dropdown-item" href="@Url.Action("TravellerGroup", "Tools")">Traveller Group</a>
+                                    } 
+                                    @if (Core.IsForStaging)
+                                    {
+                                        <a class="dropdown-item" href="@Url.Action("SavedSearch", "Account")">@(IsAgent ? "Saved Search" : "My Saved Search")</a>
+                                    }
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="javascript:;" onclick="document.getElementById('logoutForm').submit();">Log Out</a>
+                                </div>
+                            </li>
+                            using (Html.BeginForm("LogOff", "Account", routeValues: new { }, method: FormMethod.Post, htmlAttributes: new { id = "logoutForm", @style = "display:none" }))
+                            {
+                                //@Html.AntiForgeryToken()
+                            }
+                        }
+                        else
+                        {
+                            <li class="dropdown navlogin @(ViewBag.HeaderRed == true ? "" : "ml-2")">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" title="Log in/Register" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user fa-lg"></i> </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="@Url.Action("Login", "Account")">Log In</a>
+                                    <a class="dropdown-item" href='@(isB2BEnabled ? "/Member/SimpleRegister" : @Url.RouteUrl("Register"))'>Register</a>
+                                    <a class="dropdown-item" href='@(isB2BEnabled ? Url.Action("Login", "Agent") : "http://ecom.mayflower.com.my/eanb2b")'>Agency</a>
+                                    @if (isB2BEnabled)
+                                    {
+                                        <a class="dropdown-item" href='@Url.Action("AgentRegister", "Agent")'>Agent Registration</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                </div>
+            }
+        </div>
+     </nav>
+</div>
+<div id="ars-header1" class="@redLineCss">
+
+    @if (ViewBag.HeaderRed == true)
+    {
+        @Html.Raw("<div class='top_red_portion'>")
+    }
+
+    @*2017/02/22 - If keep load at any page might caused AntiForgery issues,
+        if need to use PLEASE call ViewBag.UsePopupLoginBox = true*@
+    @if (!User.Identity.IsAuthenticated && ViewBag.UsePopupLoginBox == true)
+    {
+        @Html.Partial("~/Views/Shared/Theme_3/_BootstrapLoginModal.cshtml", new Alphareds.Module.Model.LoginModel())
+    }
+
+    <div class="clear"></div>
+    @if (ViewBag.HeaderRed == true)
+    {
+        @Html.Raw("</div>")
+    }
+</div>
+<script type="text/javascript">
+    var ptitle = @Html.Raw(Json.Encode(ViewBag.Title));
+    if(ptitle == "Flight Search Result"){
+    } else if(ptitle == "Traveller Info"){
+    } else if(ptitle == "Booking Payment"){
+    } else{
+        localStorage.removeItem("outbdep");
+        localStorage.removeItem("outbarr");
+        localStorage.removeItem("inbdep");
+        localStorage.removeItem("inbarr");
+        localStorage.removeItem("pricefil");
+    }
+</script>
+
+@*@helper GenerateCMSUrl(string rawUrl, string urlText)
+    {
+        <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = destinationUrl + rawUrl, type = "MenuTransfer" })'>@urlText</a>
+}*@

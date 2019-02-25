@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/TCG.Entities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/TCG.Entities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="AllowCurrencyResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="stCurrency" nillable="true" type="tns:ArrayOfstCurrency" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AllowCurrencyResponse" nillable="true" type="tns:AllowCurrencyResponse" />
+  <xs:complexType name="ResponseBase">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ExceptionMessage" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="NSProcessTime" type="xs:long" />
+      <xs:element minOccurs="0" name="ProcessTime" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResponseBase" nillable="true" type="tns:ResponseBase" />
+  <xs:complexType name="ArrayOfstCurrency">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="stCurrency" nillable="true" type="tns:stCurrency" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfstCurrency" nillable="true" type="tns:ArrayOfstCurrency" />
+  <xs:complexType name="stCurrency">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="sBuy" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="sSell" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="stCurrency" nillable="true" type="tns:stCurrency" />
+  <xs:complexType name="ArrayOfInputDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="InputDetail" nillable="true" type="tns:InputDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfInputDetail" nillable="true" type="tns:ArrayOfInputDetail" />
+  <xs:complexType name="InputDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="SSRCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FeeCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CountryCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AirlineCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OriginCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DestinationCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AircraftCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PremiumBooking" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="InputDetail" nillable="true" type="tns:InputDetail" />
+  <xs:complexType name="GetSSRDetailsResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ResultDetails" nillable="true" type="tns:ArrayOfResultDetail" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetSSRDetailsResponse" nillable="true" type="tns:GetSSRDetailsResponse" />
+  <xs:complexType name="ArrayOfResultDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ResultDetail" nillable="true" type="tns:ResultDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResultDetail" nillable="true" type="tns:ArrayOfResultDetail" />
+  <xs:complexType name="ResultDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="OriginCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DestinationCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DetailInfos" nillable="true" type="tns:ArrayOfSSRDetail" />
+      <xs:element minOccurs="0" name="ErrorMessage" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResultDetail" nillable="true" type="tns:ResultDetail" />
+  <xs:complexType name="ArrayOfSSRDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SSRDetail" nillable="true" type="tns:SSRDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSSRDetail" nillable="true" type="tns:ArrayOfSSRDetail" />
+  <xs:complexType name="SSRDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="SSRCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SSRDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FeeDetails" nillable="true" type="tns:FeeDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SSRDetail" nillable="true" type="tns:SSRDetail" />
+  <xs:complexType name="FeeDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="FeeCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FeeDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CountryCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DiscountCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TerritoryCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AirlineCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FeeAmount" type="xs:double" />
+      <xs:element minOccurs="0" name="FeeTax1" type="xs:double" />
+      <xs:element minOccurs="0" name="FeeTax2" type="xs:double" />
+      <xs:element minOccurs="0" name="FeeTax3" type="xs:double" />
+      <xs:element minOccurs="0" name="FeeTax4" type="xs:double" />
+      <xs:element minOccurs="0" name="IsDiscountRecord" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsDiscountTotalRecord" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsLoyalty" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsPaymentDiscount" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsTotalRecord" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsValidLoyalty" type="xs:boolean" />
+      <xs:element minOccurs="0" name="FeeNetAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeePerAdultPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeePerChildPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeePerInfantPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="PromoStatus" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FeeRoundedAdjustmentAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeDiscountAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalPromoAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalAdultTax" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalChildTax" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalInfantTax" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalChildPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalInfantPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeMarkUp" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeTotalAdultPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="FeeCurrencyRatio" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FeeDetail" nillable="true" type="tns:FeeDetail" />
+  <xs:complexType name="GetRouteListResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RouteListExtend" nillable="true" type="tns:ArrayOfRouteListExtend" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetRouteListResponse" nillable="true" type="tns:GetRouteListResponse" />
+  <xs:complexType name="ArrayOfRouteListExtend">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RouteListExtend" nillable="true" type="tns:RouteListExtend" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRouteListExtend" nillable="true" type="tns:ArrayOfRouteListExtend" />
+  <xs:complexType name="RouteListExtend">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:RouteList">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DepartureStationName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DepartureStationAirportName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DepartureTimeZoneCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ArrivalStationName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ArrivalStationAirportName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ArrivalTimeZoneCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CultureCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CountryCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarrierCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RouteListExtend" nillable="true" type="tns:RouteListExtend" />
+  <xs:complexType name="RouteList">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DepartureStation" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DepartureStationCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ArrivalStation" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ArrivalStationCurrencyCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointToPointFlag" type="xs:unsignedByte" />
+      <xs:element minOccurs="0" name="ConnectionFlag" type="xs:int" />
+      <xs:element minOccurs="0" name="InternationalFlag" type="xs:unsignedByte" />
+      <xs:element minOccurs="0" name="DomesticFlag" type="xs:unsignedByte" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RouteList" nillable="true" type="tns:RouteList" />
+  <xs:complexType name="GetExternalRateListResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ExternalRates" nillable="true" type="tns:ArrayOfExternalRate" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetExternalRateListResponse" nillable="true" type="tns:GetExternalRateListResponse" />
+  <xs:complexType name="ArrayOfExternalRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ExternalRate" nillable="true" type="tns:ExternalRate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfExternalRate" nillable="true" type="tns:ArrayOfExternalRate" />
+  <xs:complexType name="ExternalRate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="RateID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ExchangeRate" type="xs:decimal" />
+      <xs:element minOccurs="0" name="QuotedCurrency" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CollectedCurrency" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ExternalRate" nillable="true" type="tns:ExternalRate" />
+  <xs:complexType name="GetCodeNameResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CodeNames" nillable="true" type="tns:ArrayOfCodeName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetCodeNameResponse" nillable="true" type="tns:GetCodeNameResponse" />
+  <xs:complexType name="ArrayOfCodeName">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CodeName" nillable="true" type="tns:CodeName" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCodeName" nillable="true" type="tns:ArrayOfCodeName" />
+  <xs:complexType name="CodeName">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CultureCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CodeName" nillable="true" type="tns:CodeName" />
+  <xs:complexType name="GetFeeDetailsResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ResultDetails" nillable="true" type="tns:ArrayOfResultDetail" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetFeeDetailsResponse" nillable="true" type="tns:GetFeeDetailsResponse" />
+  <xs:complexType name="GetPaymentMethodRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ContextIDInfo" nillable="true" type="tns:GetSetContextID" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetPaymentMethodRequest" nillable="true" type="tns:GetPaymentMethodRequest" />
+  <xs:complexType name="GetSetContextID">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ContextID" nillable="true" type="q1:ArrayOfKeyValueOfstringstring" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetSetContextID" nillable="true" type="tns:GetSetContextID" />
+  <xs:complexType name="GetPaymentMethodResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PaymentMedhod" nillable="true" type="tns:ArrayOfPaymentMethod" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetPaymentMethodResponse" nillable="true" type="tns:GetPaymentMethodResponse" />
+  <xs:complexType name="ArrayOfPaymentMethod">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PaymentMethod" nillable="true" type="tns:PaymentMethod" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPaymentMethod" nillable="true" type="tns:ArrayOfPaymentMethod" />
+  <xs:complexType name="PaymentMethod">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Instructed" type="xs:boolean" />
+      <xs:element minOccurs="0" name="PaymentName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PaymentMethodID" type="xs:int" />
+      <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ApplicableTo" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="BookingStatus" type="xs:int" />
+      <xs:element minOccurs="0" name="CreditCardChargeAsDiscount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="CustomerUserID" type="xs:int" />
+      <xs:element minOccurs="0" name="CustomerUserPaymentMethodID" type="xs:int" />
+      <xs:element minOccurs="0" name="DisplayTextinPricing" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InstTextInThanksPage" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InstructionsInEnglish" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsB2BCreditPayment" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsCaptureCardDetails" type="xs:boolean" />
+      <xs:element minOccurs="0" name="LangCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LangText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Markup" type="xs:decimal" />
+      <xs:element minOccurs="0" name="PaymentOrder" type="xs:int" />
+      <xs:element minOccurs="0" name="SellingCurrency" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SupportedCurrencies" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TotalSellingPrice" type="xs:decimal" />
+      <xs:element minOccurs="0" name="SupplierID" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PaymentMethod" nillable="true" type="tns:PaymentMethod" />
+  <xs:complexType name="GetCreditBalanceResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="GetCreditBalance" nillable="true" type="tns:GetCreditBalance" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetCreditBalanceResponse" nillable="true" type="tns:GetCreditBalanceResponse" />
+  <xs:complexType name="GetCreditBalance">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AvailableAmount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Currency" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Error" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ErrorDescription" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetCreditBalance" nillable="true" type="tns:GetCreditBalance" />
+  <xs:complexType name="GetPackageSummaryRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ContextIDInfo" nillable="true" type="tns:GetSetContextID" />
+      <xs:element minOccurs="0" name="insuranceStatus" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PaymentMethod" nillable="true" type="tns:PaymentMethod" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetPackageSummaryRequest" nillable="true" type="tns:GetPackageSummaryRequest" />
+  <xs:complexType name="GetPackageSummaryResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ResponseBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FeeDetails" nillable="true" type="tns:ArrayOfFeeDetail" />
+          <xs:element minOccurs="0" name="ErrorMsgs" nillable="true" type="tns:Error" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetPackageSummaryResponse" nillable="true" type="tns:GetPackageSummaryResponse" />
+  <xs:complexType name="ArrayOfFeeDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="FeeDetail" nillable="true" type="tns:FeeDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfFeeDetail" nillable="true" type="tns:ArrayOfFeeDetail" />
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ErrorText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InboundOutBound" type="tns:InboundOutbound" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Error" nillable="true" type="tns:Error" />
+  <xs:simpleType name="InboundOutbound">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Inbound" />
+      <xs:enumeration value="Outbound" />
+      <xs:enumeration value="Both" />
+      <xs:enumeration value="RoundFrom" />
+      <xs:enumeration value="RoundTo" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="InboundOutbound" nillable="true" type="tns:InboundOutbound" />
+</xs:schema>

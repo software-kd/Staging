@@ -1,0 +1,206 @@
+﻿@* Please don't add style tag at partial view. *@
+<footer>
+    <div class="footer-mid">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="footer-mid-left">
+                        <h3 class="why_mayflower_text">WHY MAYFLOWER.COM.MY</h3>
+                        <div class="f-img">
+                            <img class="f-img-file" src="~/images/assets/Over80airlines.png" alt="" />
+                            <img class="f-img-file" src="~/images/assets/CheapestRate.png" alt="" />
+                            <img class="f-img-file" src="~/images/assets/Over5000.png" alt="" />
+                            <img class="f-img-file" src="~/images/assets/Over380000.png" alt="" />
+                            <img class="f-img-file" src="~/images/assets/60Years.png" alt="" />
+                            @*<img class="f-img-file" src="~/images/assets/ZeroProcessing.png" alt="" />*@
+                            <img class="f-img-file" src="~/images/assets/GreaterSavings.png" alt="" />
+                            <img class="f-img-file" src="~/images/assets/Personalized.png" alt="" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="NewsLetter_class col-sm-4 border-left">
+                    <div class="footer-social">
+                        <div class="social-link text-center">
+                            <h3 class="follow_us_text">FOLLOW US</h3>
+                            <a class="link_text" href="https://www.facebook.com/mayflowerholidaysMH/" target="_blank"><i class="fa fa-facebook"></i></a>
+
+                            <a class="link_text" href="https://www.instagram.com/mayflowerholidays/" target="_blank"><i class="fa fa-instagram"></i></a>
+                        </div>
+
+                        <div class="clear"></div>
+
+                        <div class="social-top">
+                            @{ 
+                                string cmsUrl = Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("AlphaReds.CMSUrl");
+
+                                UriBuilder uri = new UriBuilder(cmsUrl);
+                                uri.Path = "/umbraco/surface/homepage/newssubcribe";
+
+                                string subscribePostUrl = uri.ToString();
+                                string respondUrl = Request?.Url?.ToString() ?? "/";
+                            }
+
+                            <form action="@subscribePostUrl" enctype="multipart/form-data" id="subcribeForm" method="post">
+                                <div class="input-group">
+                                    <input type="text" id="email" name="email" class="form-control" placeholder="Email address">
+                                    <input id="url" name="url" type="hidden" value="@respondUrl">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-secondary" type="submit" id="subcribe-btn">Signup!</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="social-bottom">
+                            <img class="note_img" src="https://ik.imagekit.io/mayflower/assets/images/note.png" alt="">
+                            <h3 class="sign_up_text">
+                                Sign up to get the latest
+                                updates and promotions!
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-wrapper">
+        <div class="footer-center-list container">
+        <div class="list-row">
+            <div class="list-title">
+                <p class="list-title-text">SPEAK TO US</p>
+            </div>
+            <div class="list-content">
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/contactus">Contact Us</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/user-guide">Self-help</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/faq">FAQ</a> | </p>
+                <!--<p class="list-content-text"><a class="list-link" href='@System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.BookingUrl"]Account/Login'>Login</a> | </p>-->
+                <p class="list-content-text"><a class="list-link" href="https://book.mayflower.com.my/Agent/Login">Agent Login</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="https://book.mayflower.com.my/Agent/AgentRegister">Partner with Us</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://www.warisantc.com.my/index.php/rtl-demos?id=97" target="_blank">Be Part of Our Team</a></p>
+            </div>
+        </div>
+        <div class="list-row">
+            <div class="list-title">
+                <p class="list-title-text">ABOUT US</p>
+            </div>
+            <div class="list-content">
+                <p class="list-content-text"><a class="list-link" href="http://www.mayflowerholidays.com/" target="_blank">Mayflower Holidays</a> | </p>
+                <!--<li><a href="#">Our Partners</a></li> -->
+                <p class="list-content-text"><a class="list-link" href='http://www.mayflower-group.com/' target="_blank">Corporate Information</a> | </p>
+                <p class="list-content-text"> <a class="list-link" href="@cmsUrl/csr">Corporate Responsibility</a> | </p>
+                <!--<li><a href="#">Media Room</a></li> -->
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/tnc">Term &amp; Condition</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/pdpa">Privacy Policy</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="@cmsUrl/cancel">Refund Policy</a></p>
+                <!-- <li><a href="#">Sitemap</a></li> -->
+            </div>
+        </div>
+        <!--<div class="list-row">
+            <div class="list-title">
+                <p class="list-title-text">SERVICES</p>
+            </div>
+            <div class="list-content">
+                <p class="list-content-text"><a class="list-link" href="http://mayflowermm2h.com/?page_id=527">Medical Tourism </a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://mayflowermm2h.com/?page_id=675">Education </a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://mayflowermm2h.com/" target="_blank">Mayflower My 2nd Home(MM2H)</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://www.mayflowercarrental.com.my/" target="_blank">Mayflower Car Rental</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://www.mayflowerborneo.com/" target="_blank">Mayflower Holidays Borneo</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="https://www.mayflower-gbt.com/" target="_blank">Mayflower Corporate Travel Services</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="http://cn.mayflower.com.my/" target="_blank">Mayflower Greater China Inbound | </a></p>
+                <p class="list-content-text"><a class="list-link" href="http://web.mayflower.com.my/image/TransportServices.pdf" target="_blank">Mayflower Transport Services</a> | </p>
+                <p class="list-content-text"><a class="list-link" href="/mice">MICE </a></p>
+                @*<p class="list-content-text"><a class="list-link" href="http://www.mayflowerholidays.com/" target="_blank">Mayflower International Sales Inbound</a> | </p>*@
+            </div>
+        </div>-->
+        @*<div class="list-row">
+            <div class="short-list-row short-list-row-gp">
+                <div class="list-title list-title-gp">
+                    <p class="list-title-text">GLOBAL PARTNER</p>
+                </div>
+                <div class="short-list-content">
+                    <a class="footer-img-link" href="https://www.tripadvisor.com.my/" target="_blank"><img class="footer-img" src="~/images/assets/TripAdvisor.jpg" alt="" title="TripAdvisor" /></a>
+                </div>
+            </div>
+            <div class="short-list-row short-list-row-pt">
+                <div class="list-title list-title-pt">
+                    <p class="list-title-text">PARTNERS</p>
+                </div>
+                <div class="short-list-content">
+                    <a class="footer-img-link footer-img-link-Chubb" href="https://www.chubbtravelinsurance.com.my/en/" target="_blank"><img class="footer-img-Chubb" src="~/images/assets/Chubb.jpg" alt="" title="Chubb" /></a>
+                    <a class="footer-img-link footer-img-link-GoAsiaPlus" href="http://www.goasiaplus.com/" target="_blank"><img class="footer-img-GoAsiaPlus" src="~/images/assets/GoAsiaPlus.jpg" alt="" title="GoAsiaPlus" /></a>
+                    <a class="footer-img-link footer-img-link-Aforadio" href="https://www.aforadio.com/" target="_blank"><img class="footer-img-Aforadio" src="~/images/assets/Aforadio.com.jpg" alt="" title="Aforadio" /></a>
+                </div>
+            </div>
+        </div>*@
+        @*<div class="list-row list-row-airline-pt">
+            <div class="list-title">
+                <p class="list-title-text">AIRLINE PARTNERS</p>
+            </div>
+            <div class="list-content list-content-airline-pt">
+                <a class="footer-img-link" href="https://www.airasia.com/en/home.page?cid=1" target="_blank"><img class="footer-img" src="~/images/assets/AirAsia.jpg" alt="" title="AirAsia" /></a>
+                <a class="footer-img-link" href="https://www.ana.co.jp/en/my/" target="_blank"><img class="footer-img" src="~/images/assets/Ana Airlines.jpg" alt="" title="Ana Airlines" /></a>
+                <a class="footer-img-link" href="http://www.bangkokair.com/" target="_blank"><img class="footer-img" src="~/images/assets/Bangkok Airways.jpg" alt="" title="Bangkok Airways" /></a>
+                <a class="footer-img-link" href="https://www.britishairways.com/en-us/home#/" target="_blank"><img class="footer-img" src="~/images/assets/British Airways.jpg" alt="" title="British Airways" /></a>
+                <a class="footer-img-link" href="https://www.flyscoot.com/en/" target="_blank"><img class="footer-img" src="~/images/assets/Scoot.jpg" alt="" title="Scoot" /></a>
+                <a class="footer-img-link" href="https://www.cathaypacific.com/cx/en_MY.html/" target="_blank"><img class="footer-img" src="~/images/assets/Cathay Pacific.jpg" alt="" title="Cathay Pacific" /></a>
+                <a class="footer-img-link" href="http://us.ceair.com/en/" target="_blank"><img class="footer-img" src="~/images/assets/China Eastern.jpg" alt="" title="China Eastern" /></a>
+                <a class="footer-img-link" href="https://www.emirates.com/my/english/" target="_blank"><img class="footer-img" src="~/images/assets/Emirates Airlines.jpg" alt="" title="Emirates Airlines" /></a>
+                <a class="footer-img-link" href="http://www.etihad.com/en-my/" target="_blank"><img class="footer-img" src="~/images/assets/Etihad Airways.jpg" alt="" title="Etihad Airways" /></a>
+                <a class="footer-img-link" href="http://www.singaporeair.com/en_UK/my/home/" target="_blank"><img class="footer-img" src="~/images/assets/Singapore Airlines.jpg" alt="" title="Singapore Airlines" /></a>
+                <a class="footer-img-link  footer-img-link-empty" href="javascript: void(0);" target="_blank"><img class="footer-img" src="" alt="" title="" /></a>
+                <a class="footer-img-link" href="http://www.jal.com/index.html/" target="_blank"><img class="footer-img" src="~/images/assets/Japan Airlines.jpg" alt="" title="Japan Airlines" /></a>
+                <a class="footer-img-link" href="https://www.klm.com/" target="_blank"><img class="footer-img" src="~/images/assets/KLM.jpg" alt="" title="KLM" /></a>
+                <a class="footer-img-link" href="https://www.lufthansa.com/us/en/Homepage/" target="_blank"><img class="footer-img" src="~/images/assets/Lufthansa.jpg" alt="" title="Lufthansa" /></a>
+                <a class="footer-img-link" href="https://www.malaysiaairlines.com/my/en.html/" target="_blank"><img class="footer-img" src="~/images/assets/Malaysia Airlines.jpg" alt="" title="Malaysia Airlines" /></a>
+                <a class="footer-img-link" href="https://www.swiss.com/ch/en/" target="_blank"><img class="footer-img" src="~/images/assets/Swiss.jpg" alt="" title="Swiss" /></a>
+                <a class="footer-img-link" href="https://www.malindoair.com/" target="_blank"><img class="footer-img" src="~/images/assets/Malindo Airlines.jpg" alt="" title="Malindo Airlines" /></a>
+                <a class="footer-img-link" href="https://www.omanair.com/en/" target="_blank"><img class="footer-img" src="~/images/assets/Oman Airlines.jpg" alt="" title="Oman Airlines" /></a>
+                <a class="footer-img-link" href="https://www.philippineairlines.com/en/" target="_blank"><img class="footer-img" src="~/images/assets/Philippines Airlines.jpg" alt="" title="Philippines Airlines" /></a>
+                <a class="footer-img-link" href="https://www.qatarairways.com/en-my/homepage.html/" target="_blank"><img class="footer-img" src="~/images/assets/Qatar Airways.jpg" alt="" title="Qatar Airways" /></a>
+            </div>
+        </div>*@
+        @*<div class="list-row list-row-we-accept">
+            <div class="list-title">
+                <p class="list-title-text">WE ACCEPT</p>
+            </div>
+            <div class="list-content list-content-we-accept">
+                <a class="footer-img-link" href="https://www.affinbank.com.my/" target="_blank"><img class="footer-img" src="~/images/assets/Affin Bank.jpg" alt="" title="Affin Bank" /></a>
+                <a class="footer-img-link" href="https://www.alliancebank.com.my/" target="_blank"><img class="footer-img" src="~/images/assets/Alliance Bank.jpg" alt="" title="Alliance Bank" /></a>
+                <a class="footer-img-link" href="https://www.ambank.com.my/eng/" target="_blank"><img class="footer-img" src="~/images/assets/Ambank.jpg" alt="" title="Ambank" /></a>
+                <a class="footer-img-link" href="http://www.bankislam.com.my/home/" target="_blank"><img class="footer-img" src="~/images/assets/Bank Islam.jpg" alt="" title="Bank Islam" /></a>
+                <a class="footer-img-link" href="https://www.muamalat.com.my" target="_blank"><img class="footer-img" src="~/images/assets/Bank Muamalat.jpg" alt="" title="Bank Muamalat" /></a>
+                <a class="footer-img-link" href="http://www.bankrakyat.com.my" target="_blank"><img class="footer-img" src="~/images/assets/Bank Rakyat.jpg" alt="" title="Bank Rakyat" /></a>
+                <a class="footer-img-link" href="https://www.mybsn.com.my/" target="_blank"><img class="footer-img" src="~/images/assets/BSN.jpg" alt="" title="BSN" /></a>
+                <a class="footer-img-link" href="https://www.cimbbank.com.my/en/personal/index.html/" target="_blank"><img class="footer-img" src="~/images/assets/CIMB Bank.jpg" alt="" title="CIMB Bank" /></a>
+                <a class="footer-img-link" href="https://www.hsbc.com.my/1/2/HSBC-Bank-Malaysia-Berhad/" target="_blank"><img class="footer-img" src="~/images/assets/HSBC.jpg" alt="" title="HSBC" /></a>
+                <a class="footer-img-link" href="https://www.kfh.com.my/kfhmb/" target="_blank"><img class="footer-img" src="~/images/assets/Kuwait Finance Hosue.jpg" alt="" title="Kuwait Finance Hosue" /></a>
+                <a class="footer-img-link footer-img-link-empty" href="javascript: void(0);" target="_blank"><img class="footer-img" src="" alt="" title="" /></a>
+                <a class="footer-img-link" href="https://www.maybank.com/en/index.page" target="_blank"><img class="footer-img" src="~/images/assets/Maybank.jpg" alt="" title="Maybank" /></a>
+                <a class="footer-img-link" href="https://www.ocbc.com.my/group/group-home.html" target="_blank"><img class="footer-img" src="~/images/assets/OCBC Bank.jpg" alt="" title="OCBC Bank" /></a>
+                <a class="footer-img-link" href="https://www.pbebank.com/" target="_blank"><img class="footer-img" src="~/images/assets/Public Bank.jpg" alt="" title="Public Bank" /></a>
+                <a class="footer-img-link" href="https://www.rhbgroup.com/" target="_blank"><img class="footer-img" src="~/images/assets/RHB.jpg" alt="" title="RHB" /></a>
+                <a class="footer-img-link" href="https://www.sc.com/my/" target="_blank"><img class="footer-img" src="~/images/assets/Standard Chartered.jpg" alt="" title="Standard Chartered" /></a>
+                <a class="footer-img-link" href="https://www1.uob.com.my/default/index.page?origref=http%3A%2F%2Fwww.uob.com.my%2F/" target="_blank"><img class="footer-img" src="~/images/assets/UOB.jpg" alt="" title="UOB" /></a>
+                <a class="footer-img-link" href="https://www.hlb.com.my/en/personal-banking.html" target="_blank"><img class="footer-img" src="~/images/assets/Hong Leong Bank.jpg" alt="" title="Hong Leong Bank" /></a>
+                <a class="footer-img-link" href="https://www.mastercard.com.my/en-my.html/" target="_blank"><img class="footer-img" src="~/images/assets/Master.jpg" alt="" title="Master" /></a>
+                <a class="footer-img-link" href="https://www.visa.com.my/" target="_blank"><img class="footer-img" src="~/images/assets/Visa.jpg" alt="" title="Visa" /></a>
+            </div>
+        </div>*@
+    </div>
+    </div>
+
+    <div class="copyright">
+        <div class="container">
+            <p>Copyright © Mayflower Holidays Sdn Bhd (843960-T)(KPK/LN 7367) 2017.</p>
+        </div>
+    </div>
+</footer>
+@if (Session["newsletter_msg"] != null)
+{
+    var msg = Session["newsletter_msg"].ToString();
+    Session["newsletter_msg"] = null;
+    <script>$(document).ready(function (e) { dynamicModal('', '@msg', false).modal(); });</script>
+}

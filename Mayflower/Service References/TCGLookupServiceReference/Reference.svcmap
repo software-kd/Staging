@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="4d70a495-6226-49e1-8e9d-7b13d6657f97" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://23.97.52.180/TCG_Malindo/lookupservice.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Lookup1.wsdl" MetadataType="Wsdl" ID="3314da9f-4211-4c75-b9d8-ed0e8af8a92a" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?wsdl" />
+    <MetadataFile FileName="LookupService4.xsd" MetadataType="Schema" ID="eb0613fe-b4b4-4d73-a8bd-9f7a862b5750" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd3" />
+    <MetadataFile FileName="LookupService41.xsd" MetadataType="Schema" ID="b49fa768-d806-442c-93e2-35ad490bd28c" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd2" />
+    <MetadataFile FileName="LookupService42.xsd" MetadataType="Schema" ID="400fed4d-f5c1-46ad-b6ee-892cacc5aa10" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd1" />
+    <MetadataFile FileName="LookupService43.xsd" MetadataType="Schema" ID="b3afe44b-5707-45e5-8844-048ce0ec3f0b" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?xsd=xsd0" />
+    <MetadataFile FileName="LookupService1.disco" MetadataType="Disco" ID="1089fc7b-1503-4cd1-ae98-6d3c7a68a9be" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/LookupService.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,138 @@
+﻿@using Alphareds.Module.Common;
+@*@model Alphareds.Module.Model.SearchHotelModel*@
+@model Alphareds.Module.Model.SearchFlightResultViewModel
+@{
+    string tripid = Request.QueryString["tripid"];
+
+    Model.NoOfRoom = Model.NoOfRoom == 0 ? 1 : Model.NoOfRoom;
+    Model.Adults = Model.Adults == 0 ? 2 : Model.Adults;
+}
+
+@using (Html.BeginForm("GetFixedHotelSearch", "Hotel", new { tripid, newsearch = "1" }, FormMethod.Post))
+{
+    <!-- Top filter -->
+    <div class="filter-wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="top-filter">
+                        <div class="filter-item">
+                            <div class="form-group autocomplete">
+                                <div class="typeahead__container">
+                                    @Html.TextBoxFor(model => model.DepartureStation,
+                                    new { @id = "from", @name = "from", @class = "dt-hotel flt-dest form-control", data_provide = "typeahead", @placeholder = "Enter city or airport", autocomplete = "off" })
+                                </div>
+                            </div>
+                            <div class="err-msg-area">
+                                @Html.ValidationMessageFor(model => model.DepartureStation, null, new { @class = "textforerrormsg" })
+                            </div>
+                        </div>
+                        <div class="filter-item">
+                            <div class="form-group autocomplete">
+                                <div class="typeahead__container">
+                                    @Html.TextBoxFor(model => model.ArrivalStation,
+                                    new { @id = "to", @name = "to", @class = "dt-hotel ht-dest flt-dest form-control", data_provide = "typeahead", @placeholder = "Enter city or airport", autocomplete = "off" })
+                                </div>
+                            </div>
+                            <div class="err-msg-area">
+                                @Html.ValidationMessageFor(model => model.ArrivalStation, null, new { @class = "textforerrormsg" })
+                            </div>
+                        </div>
+                        <div class="filter-item">
+                            <div class="form-group">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1" style="border: none;background-color: transparent;">
+                                            <img src="/images/assets/icon_calendar.png" alt="">
+                                        </span>
+                                    </div>
+                                    <input type="text" class="daterange form-control" data-type="dtPicker" value="@($"{(Model.BeginDate ?? DateTime.MinValue).ToString("dd MMM yyyy")} - { (Model.EndDate ?? DateTime.MaxValue).ToString("dd MMM yyyy")}")" />
+                                    @Html.HiddenFor(model => model.BeginDate, new { @class = "dt-hotel dtFrom" })
+                                    @Html.HiddenFor(model => model.EndDate, new { @class = "dt-hotel dtTo" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter-item">
+                            <div class="custom-drop form-group">
+                                <a href="#" class="drop-trigger form-control">
+                                    <span data-type="NoOfRoom">@Model.NoOfRoom @(Model.NoOfRoom > 1 ? "Rooms" : "Room")</span>,
+                                    <span data-type="Adults"> @Model.Adults @(Model.NoOfRoom > 1 ? "Adults" : "Adult")</span>,
+                                    <span data-type="Childrens"> @Model.Childrens @(Model.NoOfRoom > 1 ? "Children" : "Child")</span>,
+                                    <span data-type="Infants"> @Model.Infants @(Model.NoOfRoom > 1 ? "Infants" : "Infant")</span>
+                                    <input type="hidden" class="dt-hotel ht-rooms" name="NoOfRoom" data-type="NoOfRoom" value="@Model.NoOfRoom" />
+                                    <input type="hidden" class="dt-hotel ht-adults" name="Adults" data-type="Adults" value="@Model.Adults" />
+                                    <input type="hidden" class="dt-hotel ht-kids" name="Childrens" data-type="Childrens" value="@Model.Childrens" />
+                                    <input type="hidden" class="dt-hotel ht-kids" name="Infants" data-type="Infants" value="@Model.Infants" />
+                                </a>
+                                <ul>
+                                    <li>
+                                        <span>Rooms</span>
+                                        <span>
+                                            <a href="#" class="count-minus" data-type="NoOfRoom" data-label="Room" data-max="8" data-min="1"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                            <span data-type="NoOfRoom">@Model.NoOfRoom</span>
+                                            <a href="#" class="count-plus" data-type="NoOfRoom" data-label="Room" data-max="8" data-min="1"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span>Adults</span>
+                                        <span>
+                                            <a href="#" class="count-minus" data-type="Adults" data-label="Adult" data-max="24" data-min="1"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                            <span data-type="Adults">@Model.Adults</span>
+                                            <a href="#" class="count-plus" data-type="Adults" data-label="Adult" data-max="24" data-min="1"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span>Children</span>
+                                        <span>
+                                            <a href="#" class="count-minus" data-type="Childrens" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                            <span data-type="Childrens">@Model.Childrens</span>
+                                            <a href="#" class="count-plus" data-type="Childrens" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span>Infants</span>
+                                        <span>
+                                            <a href="#" class="count-minus" data-type="Infants" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                            <span data-type="Infants">@Model.Infants</span>
+                                            <a href="#" class="count-plus" data-type="Infants" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="hide invisible hidden">
+                                @Html.HiddenFor(x => x.PromoCode)
+                                @Html.HiddenFor(x => x.IsFixedPrice)
+                                @Html.HiddenFor(x => x.IsDynamic)
+                                @Html.HiddenFor(x => x.CabinClass)
+                                @Html.HiddenFor(x => x.TripType)
+                            </div>
+                        </div>
+
+                        <div class="filter-item">
+                            <button class="btn">Update</button>
+                        </div>
+                    </div>
+
+                 </div>
+                 <div class="col-12 mb-3">
+                    <a href="javascript:;" data-target="#advance-search" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="advance-search">Advance Search</a>
+                    <div class="top-filter mb-4 collapse" id="advance-search">
+                        <div class="filter-item">
+                            <div class="form-group autocomplete">
+                                <div class="typeahead__container">
+                                    @Html.TextBox("Destination", null, new { id = "destination", placeholder = "Enter Hotel Destination", data_provide = "typeahead", @class = "dt-hotel ht-dest form-control", autocomplete = "off" })
+                                </div>
+                            </div>
+                            <div class="err-msg-area">
+                                @Html.ValidationMessage("Destination", null, new { @class = "textforerrormsg" })
+                            </div>
+                        </div>
+                        <div class="filter-item"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ./Top filter -->
+}

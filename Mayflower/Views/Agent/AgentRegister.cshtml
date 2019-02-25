@@ -1,0 +1,696 @@
+﻿@model Alphareds.Module.Model.AgentRegisterModels
+
+
+@{
+    ViewBag.Title = "Agents Registration";
+    ViewBag.RenderRedLine = true;
+
+    if (Request.IsAuthenticated)
+    {
+        Response.Redirect("~/");
+    }
+}
+
+
+@section style{
+    <style>
+        .agentsupport {
+            display: inline-block;
+            padding-top: 2%;
+            background: url(checks4.png) no-repeat 0 0;
+            line-height: 24px;
+            font-size: 15px;
+            font-family: 'Conv_Ubuntu-Light';
+            font-style: italic;
+        }
+
+        .supportlink {
+            color: -webkit-link;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        span.textforerrormsg.phonenoerror.gabbtm.tata.field-validation-valid {
+            margin-bottom: 0px;
+        }
+
+        .TempData, .TempData2, .TempData3, .TempData4, .faxNoReq {
+            color: #dc2009;
+            font-size: 13px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .fullform_left {
+            padding-top: 8px;
+        }
+
+        .dropDownField {
+            height: 91px;
+        }
+
+        .otherField {
+            display: inline-block;
+            background-color: transparent;
+            height: 23px;
+            width: 50%;
+            border: 0px;
+            border-bottom: 1px solid #1d1b1a;
+            text-align: center;
+            font-size: 13px;
+            font-style: italic;
+            border-radius: 0;
+        }
+
+            .otherField input {
+                border: none;
+                text-align: center;
+                width: 100%;
+            }
+
+        .lable_text {
+            height: 50px;
+        }
+
+        .s3-1_fi_row1-right2 {
+            margin-top: 50px !important;
+        }
+
+        .cp2 {
+            padding-top: 20px;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .rpc_redtabs {
+            cursor: pointer;
+        }
+
+        button.add-cursor-pointer {
+            width: 100%;
+            background-color: #eb1c24;
+            height: 60px;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 45px;
+            border-radius: 30px;
+            border: 0px;
+        }
+
+        select.s3-1_flyer_left_dupinput {
+            background: none;
+            padding-left: 4em;
+            padding-top: 0;
+        }
+
+        .ff-img-container > img {
+            height: 55px;
+        }
+
+        .ff-img-container {
+            position: absolute;
+            height: 55px;
+            width: 60px;
+            padding-left: 5px;
+        }
+
+        .mr_form_confirm > label {
+            text-align: justify;
+        }
+
+        .s3-1_fi_row1 {
+            border: none;
+            height: auto;
+            float: left;
+        }
+
+        .s3-1_cf_lable_text span {
+            color: #eb1c24;
+        }
+
+        .s3-1_contactform_title_first_row {
+            width: 14%;
+            float: left;
+        }
+
+        .s3-1_contactform_firstname_first_row {
+            width: 49%;
+            float: left;
+        }
+
+        .s3-1_contactform_familyname_first_row {
+            width: 49%;
+            float: right;
+        }
+
+        .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+            width: 100%;
+            float: left;
+            padding-left: 0%;
+        }
+
+        .s3_1_contactform_name {
+            width: 84%;
+            float: right;
+        }
+
+        .s3-1_fi_row1-right {
+            margin-top: 28px;
+        }
+
+        .s3-1_fir1_b1 select {
+            font-family: 'Conv_Ubuntu-Light';
+            height: 56px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url(../images/drop_down_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border: 1px solid #000;
+            width: 100%;
+            font-size: 16px;
+            padding-left: 15%;
+        }
+
+        .s3-1_full_textbox_com {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .s3-1_full_textbox_name_com {
+            width: 100%;
+            height: 56px;
+            background-color: transparent;
+            border: 1px solid #000;
+            font-size: 16px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .s3-1_flyer_right {
+            width: 70%;
+        }
+
+        .s3-1_contactform_right {
+            float: right;
+        }
+
+        #cssmenu > ul > li > a {
+            color: #ea0512 !important;
+            text-decoration: none;
+            font-family: 'UbuntuMedium';
+        }
+
+        .optional-label {
+            font-size: 15px;
+            font-family: 'Conv_Ubuntu-Light';
+            display: inline-block;
+        }
+
+        .code-msg {
+            font-family: 'UbuntuMedium';
+            font-size: 13px;
+        }
+
+        /* Lee Zein Khai 30-5-2017 Start for phonenoerror width */
+        .phonenoerror {
+            width: 100%;
+        }
+        /* Lee Zein Khai 30-5-2017 Start for phonenoerror width */
+
+        @@media screen and (min-width : 1000px) {
+            #KplUpload, #BusinessUpload, #BorangUpload {
+                width: 25%;
+            }
+        }
+
+        @@media screen and (max-width : 500px) {
+            .s3-1_fir1_b1, .s3-1_fir1_b2, .s3-1_fir1_b3 {
+                width: 105% !important;
+            }
+
+            .otherField {
+                width: 70% !important;
+            }
+        }
+
+        @@media screen and (max-width : 900px) {
+            .fcd_white3_op {
+                position: relative;
+                top: 25%;
+            }
+        }
+
+        @@media screen and (max-width : 600px) {
+            .optional-label {
+                display: normal !important;
+            }
+
+            .rpc_redtabs {
+                height: auto !important;
+                line-height: 25px;
+                padding: 10px;
+            }
+        }
+
+        @@media screen and (min-width : 901px) {
+            .rpc_wtc_inner {
+                margin-left: 80px;
+            }
+
+            .s3-1_fullform_left.topgab {
+                margin-top: -16px;
+            }
+
+            .textforerrormsg.gabbtm {
+                margin-bottom: 16px;
+            }
+        }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="registration_page_container registration_page_container2">
+    <div class="rpc_inner">
+        <h2>Agent Registration</h2>
+        <h3>Register for a Mayflower account now for speedier bookings in the future.</h3>
+        @if (ViewBag.StatusMessage != null)
+        {
+            <noscript>
+                <h3 style="color:#ff0000">@ViewBag.StatusMessage</h3>
+            </noscript>
+        }
+        @Html.Partial("_AgentFullRegisterPartial")
+    </div>
+
+</div>
+<!-- MAIN CONTENT PORTION END -->
+@Html.Partial("~/Views/Shared/MasterThemes/_OopsBox.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+        $(document).ready(function (e) {
+            var url = window.location.href;
+            var split = url.toLowerCase().split("message=");
+            var qparam = split[1];
+            if (qparam != undefined && qparam.toLowerCase() == "registerfail") {
+                $('#oops-msg').text('We are very sorry but we seem to have encountered an issue with your registration. Our administrator is looking into this as soon as possible. We would greatly appreciate if you can try again later.');
+                $('.fullcover_div4').show();
+            }
+
+            $("[name*=PassportExpiryDate]").rules("remove", "date");
+            $("[name*=DOB]").rules("remove", "date");
+            $("[name*=PassportExpiryDate]").rules("add", "passportValid");
+            $("[name*=DOB]").rules("add", "dobValid");
+            $("select[name*='passport_expire']").each(function (index, element) {
+                $(element).rules("add", "passportValid");
+            });
+            $("select[name*='user_dob']").each(function (index, element) {
+                $(element).rules("add", "dobValid");
+            });
+        });
+
+        $(function () {
+            $("#KplUpload").bind("change", function () {
+                var filePath = $("#KplUpload").val();
+                var size = parseFloat($("#KplUpload")[0].files[0].size / 1024).toFixed(2);
+                var allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
+                //alert(size + " KB.");
+                if (size > 5210) {
+                    $('.TempData2').text('File Size Cannot More Than 5MB.');
+                }
+                else {
+                    $('.TempData2').text('');
+                }
+                if (!allowedExtensions.exec(filePath)) {
+                    $('.TempData2').text('Invalid File Format.');
+                }
+            });
+        });
+
+        $(function () {
+            $("#BusinessUpload").bind("change", function () {
+                var filePath = $("#BusinessUpload").val();
+                var size = parseFloat($("#BusinessUpload")[0].files[0].size / 1024).toFixed(2);
+                var allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
+                //alert(size + " KB.");
+                if (size > 5210) {
+                    $('.TempData3').text('File Size Cannot More Than 5MB.');
+                }
+                else {
+                    $('.TempData3').text('');
+                }
+                if (!allowedExtensions.exec(filePath)) {
+                    $('.TempData3').text('Invalid File Format.');
+                }
+            });
+        });
+
+        $(function () {
+            $("#BorangUpload").bind("change", function () {
+                var filePath = $("#BorangUpload").val();
+                var size = parseFloat($("#BorangUpload")[0].files[0].size / 1024).toFixed(2);
+                var allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
+                //alert(size + " KB.");
+                if (size > 5210) {
+                    $('.TempData4').text('File Size Cannot More Than 5MB.');
+                }
+                else {
+                    $('.TempData4').text('');
+                }
+                if (!allowedExtensions.exec(filePath)) {
+                    $('.TempData4').text('Invalid File Format.');
+                }
+            });
+        });
+
+        //$(function () {
+        //        if ($('#KplUpload').val() == '') {
+        //            $('.FileReq').text('The KPL field is required.');
+        //        }
+        //        else {
+        //            $('.FileReq').text('');
+        //        }
+        //        if ($('#BusinessUpload').val() == '') {
+        //            $('.FileReq2').text('The Business Registration field is required.');
+        //        }
+        //        else {
+        //            $('.FileReq2').text('');
+        //        }
+        //});
+
+        $(function () {
+            $(".faxValidation").bind("change", function () {
+                if (($('.faxNumber').val() != '') && ($('.faxCodeNo').val() == '')) {
+                    $(".tata").css("display", "none");
+                    $('.faxNoReq').css("display", "block");
+                    if ($('.faxNumber').val().length > 3) {
+                        $('.faxNoReq').text('Please Select Fax Code Number').css("margin-bottom", "16px");
+                    }
+                    else {
+                        $('.faxNoReq').text('Please Select Fax Code Number and the entered Fax Nummber is not valid').css("margin-bottom", "16px");
+                    }
+                }
+
+                else if (($('.faxNumber').val() == '') && ($('.faxCodeNo').val() != '')) {
+                    $(".tata").css("display", "none");
+                    $('.faxNoReq').css("display", "block");
+                    $('.faxNoReq').text('Please insert Fax Number.').css("margin-bottom", "16px");
+                }
+
+                else if (($('.faxNumber').val() == '') && ($('.faxCodeNo').val() == '')) {
+                    $(".tata").css("display", "block");
+                    $('.faxNoReq').css("display", "none");
+                    $('.faxNoReq').text('');
+                }
+
+                else if (($('.faxNumber').val() != '') && ($('.faxCodeNo').val() != '')) {
+                    $(".tata").css("display", "block");
+                    $('.faxNoReq').css("display", "none");
+                    $('.faxNoReq').text('');
+                }
+            });
+        });
+
+        $(function () {
+            var form = $('#register-form');
+            var formValidator = form.validate();
+            formValidator.settings.ignore = ''; // validate hidden fields
+            //var errors = formValidator.numberOfInvalids();
+
+            var focusError = function (element) {
+                $('html, body').animate({
+                    scrollTop: $(element).offset().top
+                }, 300);
+            };
+
+            var validateForm = function () {
+                var isExpend = false;
+                if (formValidator.errorList.length > 0) {
+                    var dfd = $.Deferred();
+
+                    for (x = 0; x < formValidator.errorList.length; x++) {
+                        if (!isExpend) {
+                            var element = formValidator.errorList[x].element;
+                            $('.rpc_redtabs').next().each(function (index, e) {
+                                var fi = $(e).find(element);
+                                var fiVisible = fi.is(':visible');
+                                if (fiVisible) {
+                                    isExpend = true;
+                                }
+                                if (fi.length > 0 && x == 0 && !fiVisible) {
+                                    isExpend = true;
+                                    $(e).slideToggle();
+                                    $(e).prev().toggleClass('rpc_minustab');
+                                    dfd.resolve();
+                                }
+                            });
+                        }
+                    }
+                    dfd.done(function (e) {
+                        formValidator.focusInvalid();
+                    });
+                }
+            }
+
+            var tncChkBox = function () {
+                if ($("#checkbox_tnc").is(':checked') == false) {
+                    $('[data-valmsg-for=agreeTnc]').addClass('textforerrormsg').html('<span>Please check the terms and condition to register.</span>');
+                }
+                else {
+                    $('[data-valmsg-for=agreeTnc]').removeClass('textforerrormsg').empty();
+                }
+            }
+
+            $("#checkbox_tnc").on('change', function (e) {
+                tncChkBox();
+            })
+
+            $('#ActivationCode').keydown(function (e) {
+                $('.code-msg').text('');
+            });
+
+            $('#ActivationCode').on('keyup keydown', function (e) {
+                if (e.keyCode == 32) {
+                    this.value = this.value.replace(' ', '');
+                }
+            });
+
+            $('#ActivationCode').on('blur', function (e) {
+                this.value = this.value.toUpperCase().replace(' ', '');
+                if ($('#ActivationCode').valid()) {
+                    $.chkCode(this.value);
+                }
+            });
+
+            $.chkCode = function (e) {
+                var params = { ActivationCode: e };
+                var result = false;
+                $.ajax({
+                    url: '/Member/ValidActivationCode' + '?' + $.param(params),
+                    method: 'POST',
+                    async: true,
+                    cache: false,
+                    beforeSend: function () {
+                        $('.code-msg').text('');
+                        $('.code-checking').show();
+                    },
+                    contentType: "json",
+                }).then(function (res) {
+                    var css = res.status ? '' : 'textforerrormsg';
+                    var msg = '<div class="' + css + '">' + (res.result != null ? res.result : '') + '</div>';
+                    $('.code-checking').hide();
+                    $('#codeToken').val(res.status);
+                    $('.code-msg').html(msg);
+                }, function () {
+                    $('.code-checking').hide();
+                    $('.code-msg').text('Unexpected error. Please try again later.');
+                });
+            };
+
+
+            form.on('submit', function (e) {
+                tncChkBox();
+
+                if ($('#Email').valid() && $('#Password').valid() && $('#ConfirmPassword').valid()) {
+                    $.chkCode($('#ActivationCode').val());
+                    if ($("#codeToken").val() == 'false') {
+                        focusError(".mem-refprog");
+                        e.preventDefault();
+                        $('#popup-modal').show();
+                        unloadScrollBars();
+                        $('#modal-container').html("<div class='session_lb_text'>Important</div><div class='session_lb_text1'>Invalid referral code entered, please confirm your code and try again!</div><a href='javascript:;' class='modal-close' style='text-decoration:none'><div class='redbacktohome_button'>Close</div></a>");
+                        return false;
+                    }
+                }
+
+                var isValid = $(this).valid();
+
+                if (!isValid) {
+                    e.preventDefault();
+                    validateForm();
+                }
+                else {
+                    if ($("#checkbox_tnc").is(':checked') == false) {
+                        e.preventDefault();
+                        focusError("#checkbox_tnc");
+                        $('#popup-modal').show();
+                        unloadScrollBars();
+                        $('#modal-container').html("<div class='session_lb_text'>Important</div><div class='session_lb_text1'>Please accept the Terms & Conditions.</div><a href='javascript:;' class='modal-close' style='text-decoration:none'><div class='redbacktohome_button'>Close</div></a>");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $(function () {
+            $(".s3-1_flyer_left_dupinput").click(function () {
+                //$(".ffn_inputbox ul").toggle();
+                $(this).parent().find(".ffn_inputboxulli_container ul").toggle();
+            });
+        });
+
+        $(document).on('change', 'select.s3-1_flyer_left_dupinput', function (e) {
+            var selectedAirlineCode = $(this).val();
+            airImg(selectedAirlineCode).done(function (res) {
+                $('.ff-img-container > img').attr('src', res.ImagePath);
+            });
+        });
+
+        $('input[name="SecondaryPhone"], select[name="PhoneCode2"]').on('change', function (e) {
+            phoneValidation();
+            $('select[name="PhoneCode2"]').valid();
+            $('input[name="SecondaryPhone"]').valid();
+        });
+
+        var phoneValidation = function () {
+            //if($(element).val().length == 0){
+            if ($('input[name="SecondaryPhone"]').val().length == 0 && $('select[name="PhoneCode2"]').val().length == 0) {
+                $('input[name="SecondaryPhone"]').rules('remove', 'required');
+                $('select[name="PhoneCode2"]').rules('remove', 'required');
+                $('[data-valmsg-for="PhoneCode2"]').empty();
+            }
+            else {
+                $('input[name="SecondaryPhone"]').rules('add', 'required');
+                $('select[name="PhoneCode2"]').rules('add', 'required');
+            }
+        }
+
+        function checkOthers() {
+            var emails = document.getElementById("otherField").value;
+            var invOtherField = "";
+            if ($('#otherField').val().search(',') < 0) {
+                var OtherArray = otherField;
+                if (checkOthers(OtherArray)) {
+                    //...
+                } else {
+                    invOtherField += OtherArray + "\n";
+                }
+            } else {
+                var OtherArray = otherField.split(/[\s;]+/);
+                for (i = 0; i < (OtherArray.length) ; i++) {
+                    if (checkOthers(OtherArray[i])) {
+                        //...
+                    } else {
+                        invOtherField += OtherArray[i] + "\n";
+                    }
+                }
+            }
+
+            if (invOtherField != "") {
+                alert("Invalid Others Fields:\n" + invOtherField);
+            } else {
+                sendEmails(emailArray, false);
+            }
+        }
+
+        if ($('#freelancer_0').on('click', function (e) {
+            $('.hideField, .contactPerson_1').hide();          
+            $('.s3-1_fi_freelancer_icon, .freelancerField').show();
+            $('#CompanyName').text('Name').append('<span style="color:red"> *</span>');
+            $('#EmailAddress').text('Email Address').append('<span style="color:red"> *</span>')
+            $('#FlcIc').text('IC Number').append('<span style="color:red"> *</span>');
+            $('#OfficeNo').text('Phone Number (Office)').append('<span style="color:red"> *</span>');
+            $('#MobileNo').text('Phone Number (Mobile)').append('<span style="color:red"> *</span>');
+            $('#Address1').text('Mailing Address Line1').append('<span style="color:red"> *</span>');
+            $('#Address2').text('Mailing Address Line2');
+            $('#City').text('City').append('<span style="color:red"> *</span>');
+            $('#PostCode').text('Postal Code').append('<span style="color:red"> *</span>');
+            $('#State').text('State').append('<span style="color:red"> *</span>');
+            $('#Country').text('Country').append('<span style="color:red"> *</span>');
+            $('#KplName').text("A. IC Number").append('<span style="color:red"> *</span>');
+            $('#Borang9').text("B. SSM");
+            $('#BusinessRegisterationNo').rules("remove");
+            $('#KPLNo').rules("remove");
+            $('#ContactDetails_1__FirstName').rules("remove");
+            $('#ContactDetails_1__LastName').rules("remove");
+            $('#ContactDetails_1__Designation').rules("remove");
+            $('#ContactDetails_1__Email').rules("remove");
+            $('#ContactDetails_1__OfficePhonePhoneCode').rules("remove");
+            $('#ContactDetails_1__OfficePhone').rules("remove");
+            $('#ContactDetails_1__MobilePhone').rules("remove");
+            $('#BusinessUpload').rules("remove");
+            $('#ICNumber').rules("add", { required: true });
+            $('#ContactDetails_1__TitleCode').val("")
+            $('#ContactDetails_1__OfficePhonePhoneCode').val("")
+            $('#ContactDetails_1__MobilePhonePhoneCode').val("")
+        }));
+
+        if ($('#agent_0').on('click', function (e) {
+            $('.hideField, .s3-1_fi_freelancer_icon, .contactPerson_1').show();         
+            $('.freelancerField').hide();
+            $('#CompanyName').text('Company Name').append('<span style="color:red"> *</span>');
+            $('#EmailAddress').text('Company Email Address').append('<span style="color:red"> *</span>');
+            $('#FlcIc').text("Company Registration Number").append('<span style="color:red"> *</span>');
+            $('#OfficeNo').text("Company's Phone Number (Office)").append('<span style="color:red"> *</span>');
+            $('#MobileNo').text("Company's Phone Number (Mobile)").append('<span style="color:red"> *</span>');
+            $('#Address1').text("Company's Address Line1").append('<span style="color:red"> *</span>');
+            $('#Address2').text("Company's Address Line2").append('<span style="color:red"> *</span>');
+            $('#Address2').text("Company's Address Line2");
+            $('#City').text("Company's City").append('<span style="color:red"> *</span>');
+            $('#PostCode').text("Company's Postal Code").append('<span style="color:red"> *</span>');
+            $('#State').text("Company's State").append('<span style="color:red"> *</span>');
+            $('#Country').text("Company's Country").append('<span style="color:red"> *</span>');
+            $('#KplName').text("A. KPL (Ministry of Tourism)").append('<span style="color:red"> *</span>');
+            $('#Borang9').text("C. Borang 9 (if applicable)");
+            $('#ICNumber').rules("remove");
+            $('#BusinessRegisterationNo').rules("add", { required: true });
+        }));
+
+        $(function () {
+            $('.freelancerField').hide();
+            $('#ICNumber').rules("remove");
+        });
+
+        if ($('#checkbox2').on('click', function (e) {
+            var imFreelancer = $("#checkbox2").is(':checked');
+                if (imFreelancer) {
+                    bindToFirstContactPerson();
+        }
+        }));
+
+        var bindToFirstContactPerson = function () {
+            $('#@Html.IdFor(m => m.EmergencyContact[0].FirstName)').val($('#@Html.IdFor(m => m.ContactDetails.FirstName)').val());
+            $('#@Html.IdFor(m => m.EmergencyContact[0].LastName)').val($('#@Html.IdFor(m => m.ContactDetails.LastName)').val());
+            $('#@Html.IdFor(m => m.EmergencyContact[0].TitleCode)').val($('#@Html.IdFor(m => m.ContactDetails.TitleCode)').val());
+            $('#@Html.IdFor(m => m.EmergencyContact[0].TitleCode)').prop('selectedIndex', $('#@Html.IdFor(m => m.ContactDetails.TitleCode)').prop('selectedIndex'));
+            $('#@Html.IdFor(m => m.EmergencyContact[0].MobilePhonePhoneCode)').val($('#@Html.IdFor(m => m.ContactDetails.MobilePhonePhoneCode)').val());
+            $('#@Html.IdFor(m => m.EmergencyContact[0].MobilePhone)').val($('#@Html.IdFor(m => m.ContactDetails.MobilePhone)').val());
+            $('#@Html.IdFor(m => m.EmergencyContact[0].Designation)').val($('#@Html.IdFor(m => m.ContactDetails.Designation)').val());
+        }   
+    </script>
+}
+
+
+
+
+
+

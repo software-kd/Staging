@@ -1,0 +1,46 @@
+/* stylesheet for demo and examples */
+
+
+.content1{
+			overflow: auto;
+			position: relative;
+			padding: 10px;
+			background: #333;
+			margin: 10px auto;
+			width: 85%;
+			height: 215px;
+		}
+		.content1 li{ margin: 0 4px; position:relative;}
+		.content1 li a{
+			display: block;
+			border: 7px solid rgba(255,255,255,.1);
+		}
+
+.content{
+			overflow: auto;
+			position: relative;
+			padding: 10px;
+			background: #333;
+			margin: 10px auto;
+			width: 85%;
+			height: 310px;
+		}
+		.content li{ margin: 0 4px; position:relative;}
+		.content li a{
+			display: block;
+			border: 7px solid rgba(255,255,255,.1);
+		}
+		#content-1, #content-2, #content-3, #content-4{
+			padding: 10px 60px;
+			background-color: transparent;
+			width: 100%;
+		}
+		#content-1 .mTSButtonIcon, #content-2 .mTSButtonIcon, #content-3 .mTSButtonIcon, #content-4 .mTSButtonIcon{ fill: #27aae2; }
+		#content-1 .mTSButton .mTSButtonIcon, #content-2 .mTSButton .mTSButtonIcon, #content-3 .mTSButton .mTSButtonIcon, , #content-4 .mTSButton .mTSButtonIcon{ opacity: 1; }
+		#content-1 .mTSButton:hover .mTSButtonIcon, #content-2 .mTSButton:hover .mTSButtonIcon, #content-3 .mTSButton:hover .mTSButtonIcon, #content-4 .mTSButton:hover .mTSButtonIcon{ opacity: 1; }
+		#content-1 .mTSContainer li p, #content-2 .mTSContainer li p, #content-3 .mTSContainer li p, #content-4 .mTSContainer li p{
+			margin: 0;
+			height: 100px;
+			background-color: rgba(255,255,255,.1);
+			padding: 0 5px;
+		}

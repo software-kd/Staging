@@ -1,0 +1,50 @@
+﻿@model Alphareds.Module.Model.CreditCard
+@{
+    bool isPromoCodeUsed = ViewBag.IsPromoCodeUsed == null ? false : ViewBag.IsPromoCodeUsed;
+    var test = Model;
+}
+<div id="adyen-encrypted-form">
+    @Html.HiddenFor(model => model.GenerationTime, new { @Value = System.DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz"), data_encrypted_name = "generationtime" })
+
+    <div class="creditCard-container Creditcard">
+        <div class="pCode-lblArea">
+            <div class="s3-1_contactform_left credit_box3">
+                <div class="s3-1_cf_lable_text credit_Text">Credit Card Type</div>
+                <div>@Html.TextBoxFor(model => Model.CardType, new { @class = "s3-1_full_textbox_name_com credit_cardtype", disabled = "true" })</div>
+            </div>
+            <div class="s3-1_contactform_left credit_box">
+                <div class="s3-1_cf_lable_text credit_Text">Cardholder Name</div>
+                <div>@Html.TextBoxFor(model => Model.CardholderName, new { @class = "s3-1_full_textbox_name_com credit_textbox2", @required = "required", data_encrypted_name = "holderName" })</div>
+                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.CardholderName, null, new { @class = "textforerrormsg" })</div>
+            </div>
+            <div class="s3-1_contactform_right credit_box">
+                <div class="s3-1_cf_lable_text credit_Text">Credit Card No</div>
+                <div>@Html.TextBoxFor(model => Model.CreditCardNo, new { @class = "s3-1_full_textbox_name_com credit_textbox2", @required = "required", data_encrypted_name = "number" })</div>
+                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.CreditCardNo, null, new { @class = "textforerrormsg" })</div>
+            </div>
+            <div class="clear"></div>
+            <div class="s3-1_contactform_left credit_box">
+                <div class="s3-1_dob_container">
+                    <div class="s3-1_cf_lable_text credit_Text">Expiry Date</div>
+                    <div>
+                        @Html.DropDownListFor(model => Model.ExpMonths, Mayflower.General.Utilities.MonthsDropList, "-", new { @class = "s3-1_dob month s3-1_dob_credit", @required = "required", data_encrypted_name = "expiryMonth" })
+                        @Html.DropDownListFor(model => Model.ExpYear, Mayflower.General.Utilities.CreditCardYearDropList, "-", new { @class = "s3-1_dob month s3-1_dob_credit", @required = "required", data_encrypted_name = "expiryYear" })
+                        <div class="field_error_msg " style="display : inline-block">
+                            @Html.ValidationMessageFor(model => Model.ExpMonths, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="field_error_msg " style="display : inline-block">
+                            @Html.ValidationMessageFor(model => Model.ExpYear, null, new { @class = "textforerrormsg" })
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="s3-1_contactform_right credit_box">
+                <div class="s3-1_cf_lable_text credit_Text">CVC/CVV2</div>
+                <div class="mobileCredit_pic">@Html.TextBoxFor(model => Model.CVC, new { @class = "s3-1_full_textbox_name_com credit_textbox", @required = "required", data_encrypted_name = "cvc" })</div>
+                <img src="~/Images/cvv-icon.png" />
+                <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.CVC, null, new { @class = "textforerrormsg" })</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model Alphareds.Module.Model.CreditCard
+<div id="adyen-encrypted-form">
+    <div class="card-form form-wrapper">
+        @Html.HiddenFor(model => model.GenerationTime, new { @Value = System.DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz"), data_encrypted_name = "generationtime" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Name on card</label>
+                    @Html.TextBoxFor(model => model.CardholderName, new { @class = "form-control", @required = "required", data_encrypted_name = "holderName" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.CardholderName, null, new { @class = "textforerrormsg" })</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Card number</label>
+                    @Html.TextBoxFor(model => model.CreditCardNo, new { @class = "form-control", @required = "required", data_encrypted_name = "number" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => model.CreditCardNo, null, new { @class = "textforerrormsg" })</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="form-group">
+                    <label>Expiration Date</label>
+                    <input type="text" id="CVV" name="CVV" class="form-control datepicker2" placeholder="MM/YYYY"
+                           required="required" aria-required="true" data-val-required="Expiration Date is required."
+                           data-val-length-max="7" maxlength="7"
+                           data-val="true" data-val-regex-pattern="^((([0][1-9])|[1][0-2])\/((2[0][1][8-9])|(2[0-9][2-9][0-9])))$"
+                           data-val-regex="Format: MM/YYYY<br/>MM: 01-12, YYYY: @(DateTime.Now.Year)-@(DateTime.Now.Year+30)">
+                    <div class="field_error_msg">@Html.ValidationMessage("CVV", null, new { @class = "textforerrormsg" })</div>
+                    @Html.HiddenFor(model => model.ExpMonths, new { @required = "required", data_encrypted_name = "expiryMonth" })
+                    @Html.HiddenFor(model => model.ExpYear, new { @required = "required", data_encrypted_name = "expiryYear" })
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="form-group">
+                    <label>CVC Code <img class="img-responsive" src="~/Images/cvv-icon.png" style="max-height: 21px;vertical-align: text-bottom;" /></label>
+                    @Html.TextBoxFor(model => model.CVC, new { @class = "form-control", @required = "required", autocomplete = "off", data_encrypted_name = "cvc" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => model.CVC, null, new { @class = "textforerrormsg" })</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

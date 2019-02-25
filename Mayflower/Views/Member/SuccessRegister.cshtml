@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Success Register";
+    ViewBag.RenderRedLine = true;
+}
+
+@section priorityScript {
+    @if (Response.Cookies["advenuedmp"] != null && Response.Cookies["advenuedmp"].Value == "1")
+    {
+        <!-- Advenue DMP Container - Mayflower Website -->
+        <script type="text/javascript" charset="UTF-8">
+            (function (w, d, s, i, c) { var f = d.createElement(s); f.type = "text/javascript"; f.async = true; f.src = "https://avd.innity.net/" + i + "/container_" + c + ".js"; var g = d.getElementsByTagName(s)[0]; g.parentNode.insertBefore(f, g); })(window, document, "script", "356", "591a7b0b47e704373678e74a");
+        </script>
+        <!-- End Advenue DMP Container -->
+
+        // after set remove cookies from server.
+        Response.Cookies.Remove("advenuedmp");
+    }
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="registration_page_container">
+    <div class="rpc_inner">
+        <h2>One more thing...</h2>
+        <div class="member_fp_text mem_text_center">
+            Thank you for registering with us.<br />
+            Please look out for a verification email in your inbox to validate your account.
+        </div>
+
+        <br /><br /><br />
+
+    </div>
+</div>
+<!-- MAIN CONTENT PORTION END -->

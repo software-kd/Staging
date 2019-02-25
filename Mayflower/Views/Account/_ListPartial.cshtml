@@ -1,0 +1,71 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model  IPagedList<Alphareds.Module.Model.TripHistoryViewModel>
+
+@{
+    ViewBag.Title = "Pending List";
+    Layout = null;
+
+    var list = new SelectList(new[] {
+        new { Name="Pending", Value = "PEND" },
+        new { Name="Approved", Value = "APPR" },
+        new { Name="Rejected", Value = "REJ" },
+        new { Name="All", Value = "ALL" },
+    },
+   "Value", "Name", ViewData.Model);
+}
+
+@using (Html.BeginScriptContext())
+{
+
+}
+
+@*<div class="booking-history">*@
+@{ int i = 1; }
+@foreach (var item in Model)
+{
+
+    <div class="clearfix @if (i % 2 == 0){<text>booking_history_gray_bg</text>} else {<text>booking_history_white_bg</text>}">
+        <div class="mcp_inner_b0 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.Type</div>
+        <div class="mcp_inner_b2 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@Html.Raw(item.Description)</div>
+        <div class="mcp_inner_b1 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.From.ToString("dd-MMM-yy, ddd")</div>
+        <div class="mcp_inner_b1 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.To.ToString("dd-MMM-yy, ddd")</div>
+        <div class="mcp_inner_b3 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.Name</div>
+        <div class="mcp_inner_b1 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.BookingStatus.BookingStatusDesc</div>
+        <div class="mcp_inner_b1 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.CreatedDate.ToString("dd-MMM-yy, ddd")</div>
+        <div class="mcp_inner_b1 mcp_grayfont @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">@item.BookingNo</div>
+        @*<div class="mcp_inner_b0 mcp_grayfont mcp_text-center @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}"><a href="javascript:(window.location.href = '@Url.Action("OrderHistory", "Flight", new { BookingId = item.BookingNo })');">View</a></div>*@
+        <div class="mcp_inner_b0 mcp_grayfont mcp_text-center @if (i % 2 == 0){<text>mcp_gray_bg</text>} else {<text>mcp_white_bg</text>}">
+            @if (item.Type.Equals(Alphareds.Module.Common.Enumeration.ProductType.Flight.ToString()))
+            {
+                <a onclick="window.open('@Url.Action("OrderHistory", "Flight", new { BookingId = item.BookingNo })');" href="#">@(item.BookingStatus.PNRBookStatus == "HTP" ? "Pay Now" : "View")</a>
+            }
+            else if (item.Type.Equals(Alphareds.Module.Common.Enumeration.ProductType.Hotel.ToString()))
+            {
+                <a onclick="window.open('@Url.Action("OrderHistory", "Hotel", new { confirmid = item.BookingNo })');" href="#">View</a>
+            }
+            else if (item.Type.Equals(Alphareds.Module.Common.Enumeration.ProductType.TourPackage.ToString()) || item.Type.Equals(Alphareds.Module.Common.Enumeration.ProductType.Event.ToString()) || item.Type.Equals(Alphareds.Module.Common.Enumeration.ProductType.CarRental.ToString()))
+            {
+                <a onclick="window.open('@Url.Action("Confirmation", "Checkout", new { confirmid = item.BookingNo })');" href="#">View</a>
+            }
+        </div>
+    </div>
+            i++;
+}
+
+@*</div>*@
+
+@{
+    string pagingUrl = ViewContext.ParentActionViewContext != null ? ViewContext.ParentActionViewContext.RouteData.Values["Action"].ToString()
+        : ViewContext.RouteData.Values["Action"].ToString();
+
+    if(Model.TotalItemCount > 10)
+    {
+        <div style="margin: 20px">
+            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+            @Html.PagedListPager(Model, page => Url.Action(pagingUrl,
+                                    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, BookingStatus = ViewBag.BookingStatus }))
+        </div>
+    }
+}

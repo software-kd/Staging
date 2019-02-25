@@ -1,0 +1,88 @@
+﻿@model OfflinePayment
+
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@using Alphareds.Module.Model
+
+@{
+    ViewBag.Title = "Confirmation";
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+    ViewBag.HeaderRed = true;
+}
+
+<!-- Booker Details -->
+<div class="booker-details m-u-20">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="booker-details-left">
+                    <div class="booker-header">
+                        <ul>
+                            <li class="">Confirmation</li>
+                        </ul>
+                    </div>
+                    <div class="confirmation-details">
+                        <div class="confirm-item shadow bg-white">
+
+                            <h2>Payment Confirmation - Payment Reference <span>@(string.IsNullOrEmpty(Model.SystemRemarks) ? Model.Remarks : Model.SystemRemarks)</span></h2>
+                            @if (Model.PaymentStatusCode == "CAPT" || Model.PaymentStatusCode == "PAID")
+                            {
+                                <h3 class="text-success">
+                                    <img src="~/images/success_py.png" alt=""> Payment Confirmed
+                                    <br class="d-block d-sm-none" />
+                                    <span class="text-dark ml-2">
+                                        [@Model.CreatedDate.ToString("MMM d, yyyy h:mm tt (ddd)")]
+                                    </span>
+                                </h3>
+                            }
+                            else
+                            {
+                                <h3>
+                                    <img alt=""> - @(Model.PaymentStatu?.PaymentStatus ?? "Unknown")
+                                    <span class="text-dark ml-2">
+                                        [@Model.CreatedDate.ToString("MMM d, yyyy h:mm tt (ddd)")]
+                                    </span>
+                                </h3>
+                            }
+                        </div>
+                        <div class="confirm-item shadow bg-white">
+                            <div class="col-12">
+                                <div class="form-tag type-2">Payment Details</div>
+                            </div>
+                            <p>@Model.CurrencyCode @(Model.PaymentAmount.ToString("n2")) - @Model.PaymentStatu.PaymentStatus</p>
+                            <p>
+                                Total paid:  <strong>@Model.CurrencyCode @Model.PaymentAmount.ToString("n2")</strong>
+                            </p>
+                            <p>
+                                Payment method:  <strong> @(Model.PaymentMethod.PaymentMethod1)</strong>
+                            </p>
+                            <p>
+                                Payment status:   <strong>@Model.PaymentStatu.PaymentStatus
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="confirm-item shadow bg-white">
+                            <div class="col-12">
+                                <div class="form-tag type-2">Contact Details</div>
+                            </div>
+                            <h3>
+                                @(Model.StaffName ?? "-")
+                            </h3>
+
+                            <p>
+                                Email: <strong>@(Model.StaffEmail ?? "-")</strong>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>Phone Number:<strong> @(Model.StaffContact ?? "-")</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ./ Booker Details -->

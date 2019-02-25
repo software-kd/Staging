@@ -1,0 +1,68 @@
+﻿@model Alphareds.Module.Model.CrossSellItemsAvailable.InsuranceInformation
+
+<div class="container4">
+    <div class="section-BRD section-insurance" style="margin-bottom: 10px;">
+
+        <h3 class="box-heading blue-bg">
+            <span class="addon-ico">
+                <img src="@Url.Content("~/Images/ico/insurance.png")" />
+            </span>
+            <span class="addon-title">Travel Insurance</span>
+        </h3>
+
+        <div class="addon-etc hg-md ins">
+            <div class="content-left">
+                <img class="img-responsive" src="@Url.Content("~/Images/addon-bg/insurance2.jpg")" />
+            </div>
+            <div class="content-right">
+                <div class="etc-detail">
+                    <div class="block-lf insurance-block">
+                        <div class="title">
+                            <div class="t-ico">
+                                <img style="max-height:30px;" src="~/Images/ico/info-ico.png" />
+                            </div>
+                            <div class="add-cr-subtitle">
+                                Chubb Travel Protection
+                                
+                                <div class="insurance-cover">
+                                    Add travel insurance and protect everyone from
+                                    <ul class="insuranceList">
+                                        <li class="tick">Personal Accident</li>
+                                        <li class="tick">Overseas Medical </li>
+                                        <li class="tick">Flight/baggage delay</li>
+                                    </ul>
+                                </div>
+                                <div class="etc-desc">
+                                    <span><a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/ScheduleOfBenefits.pdf" target="_blank" style="color: #00A651; font-size: 12px;">Click to view Full Coverage</a></span>
+                                </div>                              
+                            </div>
+                        </div>
+                        <p class="insuranceTNC">I confirm I have read, understood and accepted the <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/PolicyWording.pdf" target="_blank">Terms & Conditions</a> and <a href="http://docs.chubbtravelinsurance.com/aceStatic/Doc/MY/Mayflower/Declaration.pdf" target="_blank">Declaration</a>.</p>
+                    </div> 
+                    <div class="block-rg insurance-price">
+                        <div class="desc-price block">
+                            <div class="p-wrapper">
+                                <div class="cur">+ @Model.PricingDetail.Currency</div>
+                                <div class="rate"> @(Model.PricingDetail.ProductTotalAmount.ToString("n2"))</div> <br/>
+                                @if (Model.QuotedInformations.FirstOrDefault().PlanType.Contains("Domestic"))
+                                {
+                                    <p style="font-size:x-small">Premium is inclusive of 6% Sales and Service Tax (SST) for all Malaysia Domestic flights</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="etc-selection">
+                            <div class="etc-selection">
+                                <select id="requireInsurance" name="requireInsurance" class="etc-select-opt">
+                                    <option value="true" selected>Yes, I need this</option>
+                                    <option value="false">No, thanks</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

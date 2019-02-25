@@ -1,0 +1,140 @@
+﻿@model Alphareds.Module.Model.Database.BookingHotel
+@using Alphareds.Module.Common;
+
+@{ 
+    var booking = Model;
+    var grpRoom = booking.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value).GroupBy(x => new { x.RateDescription });
+
+    var ticketInfo = grpRoom.Select(grp =>
+    {
+        var rateDesc = grp.FirstOrDefault().RateDescription;
+        return new
+        {
+            Count = grp.Sum(x => x.QuotedOccupancy ?? 0),
+            Zone = rateDesc.Substring(rateDesc.IndexOf("(") + 1, rateDesc.IndexOf(")") - rateDesc.IndexOf("(") - 1)
+        };
+    });
+}
+
+<link rel="stylesheet" href="http://fonts.googleapis.com/earlyaccess/notosanssc.css">
+<style>
+    .concert th{width:15%;text-align:left;}
+    .concert td{width:70%;padding:.5em;}
+    .concert table.table{width:96%;margin:0 auto;}
+    .concert tr{margin:50px;padding:50px;}
+    .ticket_tbl td{text-align:center;}
+    .ticket_tbl th,.ticket_tbl td{padding:.5em 0;}
+    .mayday li{margin-bottom:.5em;}
+    .shuttle_service td{padding-bottom:.5em;}
+    .shuttle_service td:first-child{width:15%;}
+    .shuttle_service td:last-child{width:75%;}
+</style>
+
+<div class="" style="font-family: 'Conv_Ubuntu-Light';margin-top: 30px;height: 40px;line-height: 40px;color: #0070c0;font-size: 28px;text-align: center;">Concert Ticket Details</div>
+<div class="mf_ib_border_box">
+
+    <div class="concert table-responsive">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th scope="row">Concert</th>
+                    <td>
+                        <span style="font-family: 'Noto Sans SC', sans-serif;">五月天 2017 LIFE《人生无限公司》世界巡回演唱会 (大马站)</span><br />MAYDAY 2017 LIFE TOUR (MALAYSIA)
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Venue</th>
+                    <td>
+                        Stadium Merdeka, Kuala Lumpur, Malaysia<br />
+                        Jalan Stadium, City Centre, 50150 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur, Malaysia
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Date</th>
+                    <td>28 October 2017</td>
+                </tr>
+                <tr>
+                    <th scope="row">Time</th>
+                    <td>8:00pm</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clear"></div>
+    <br />
+    <div>
+        <table style="border:1px solid black; border-collapse: collapse" class="ticket_tbl">
+            <tr style="background-color:blue;height:25px">
+                <th colspan="4" style="text-align:center;color:white">Ticket Redemption</th>
+            </tr>
+            <tr style="background-color:#1E90FF;color:white;height:25px">
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">Ticket Type</td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">Venue</td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">Date</td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">Time</td>
+            </tr>
+            <tr style="height:50px">
+                <td style="color:#ff0000;width:15%;border:1px solid black; border-collapse: collapse">Mayday Concert Ticket
+                @foreach (var item in ticketInfo)
+                {
+                    <div>(@item.Zone) x @item.Count</div>
+                }
+                </td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">Mayflower Booth, Stadium Merdeka, Kuala Lumpur, Malaysia</td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">28 October 2017</td>
+                <td style="width:15%;border:1px solid black; border-collapse: collapse">From 5pm to 8pm</td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div class="mayday">
+        <h2 style="font-family: 'UbuntuMedium' ; padding:10px">Terms & Conditions:</h2>
+        <hr style="border:1px solid" />
+        <p style="font-family: 'UbuntuMedium';font-size: 14px;text-align: justify ; padding:10px">For security reasons, the following are required upon ticket issuance and redemption. Failure to produce these may result in denied redemption:</p>
+        <ul style="margin:10px 3% 0;font-size: 14px;text-align: justify;line-height:20px">
+            <li>According to the general industry practice, concert ticket(s) purchased is normally non-refundable, non-exchangeable and nontransferable once payment in made.</li>
+            <li>There shall be no cancellations and amendments are allowed unless otherwise specified be Mayflower.</li>
+            <li>Under special circumstances and is subject to the respective organizer/ Mayflower terms and conditions, shall any cancellation/ amendment is required, please contact the Mayflower Customer Service Team accordingly; charges may be applied.</li>
+            <li>In the event that the purchaser(s) contacting the respective organizer directly for any cancellation/ amendment without Mayflower's acknowledgement, Mayflower therefor shall not be liable for any losses/damages/costs which may be incurred resulting from and/ or arising out of or in connection with this cancellation/ amendment.</li>
+            <li>All other respective organizer's terms & conditions apply and are subject to change without prior notice.</li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <br />
+    <br />
+    
+    @if (booking.BundleID == 1 && booking.CreateDateTime <= new DateTime(2017, 8, 2))
+    {
+        <div style="margin-bottom: 1em">
+        <h2 style="color:#e46c0a; padding:10px">Shuttle Service Details</h2>
+        <hr style="border:1px solid #e46c0a" />
+        <p style="padding:10px">To & Fro Shuttle Services will be provided on the day (28 October 2017) with following schedule:-</p>
+        <table class="shuttle_service" style="padding-left:30px">
+            <tr>
+                <td><ul><li>Planned Journey</li></ul></td>
+                <td>: Hotel &rarr; @Html.Raw(Model.HotelName) &rarr; Hotel</td>
+            </tr>
+            <tr>
+                <td><ul><li>Pick-up Time</li></ul></td>
+                <td>: 5:00pm</td>
+            </tr>
+            <tr>
+                <td><ul><li>Returning Time</li></ul></td>
+                <td>: 12:00am, 29 Octorber 2017</td>
+            </tr>
+            <tr>
+                <td valign="top"><ul><li>Pick-up Point</li></ul></td>
+                <td>: <span>@(booking.DisplayAddress())</span></td>
+            </tr>
+            <tr>
+                <td valign="top"><ul><li>Returning Pick-up Point</li></ul></td>
+                <td>
+                    : Red Gate      (Rock Zone, VIP, CAT1, CAT2 and CAT 3)
+                    <br /> &nbsp;&nbsp;Green Gate    (CAT 4, CAT 5 and CAT 6)
+                </td>
+            </tr>
+        </table>
+    </div>
+    }
+
+</div>

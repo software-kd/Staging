@@ -1,0 +1,56 @@
+﻿@using Alphareds.Module.Common;
+@model Mayflower.Models.UserProfileEditModel
+@{
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+}
+
+@*<div class="fullcover_div2" id="FlyerPopModal">
+    <div class="fcd_white2">
+        <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" alt="" width="31" height="29"></div>
+        <h3>Frequent Traveller number</h3>
+        <div class="fcd_white_field_container">
+            <div id="loading" style="width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120">
+                    <p id="msglbl" style="color:#808080;margin:1em">Hold on, your holiday is on the way...</p>
+                </div>
+            </div>
+            <div id="popOutEdit"> 
+            </div>
+        </div>
+    </div>
+</div>*@
+
+@using (Html.BeginForm("_FrequentFlyerSection", "User"))
+{
+<h4 style="float:left;">Frequent Traveller Details</h4>
+<a class="popout-content" href="javascript:;" data-url="@Url.Action("_AddFrequentFlyerNumber", "User")"><div class="s3-1_flyer_newplus">+</div></a>
+<div class="clear"></div>
+<div class="rpc_wtc_inner_ep">
+    @foreach (var frequentFlyer in Model.FrequentFlyerList)
+    {
+        <div class="s3-1_fullform_left">
+            <div class="s3-1_contactform_left" style="width:66%">
+                @*<div class="s3-1_cf_lable_text">Frequent traveller number</div>*@
+                <div class="ffn_input">
+                    <div class="mpjmhdans_left"><img src="@Url.Content(UtilitiesService.GetAirlineImagePath(frequentFlyer.AirlineCode))" width="34" height="39" alt=""></div>
+                    <input name="" type="hidden" value="" id="frquentflyer">
+                    <div class="mpjmhdans_right" style="line-height: 1.1;">
+                        <span style="font-size: small;color: gray;">@UtilitiesService.GetAirlineName(frequentFlyer.AirlineCode)</span><br>
+                        @frequentFlyer.FrequentFlyerNumber
+                    </div>
+                    <a class="popout-content" href="javascript:;" data-url="@Url.Action("_UpdateFrequentFlyerNumber", "User")" data-airlinecode="@frequentFlyer.AirlineCode" data-ffrno="@frequentFlyer.FrequentFlyerNumber"><div class="s3-1_flyer_newedit"></div></a>
+                    @*<a class="popout-delete" href="javascript:;" data_toggle="modal" data-target="#FlyerPopModal3" data-airlinecode="@frequentFlyer.AirlineCode" data-ffrno="@frequentFlyer.FrequentFlyerNumber"><div class="s3-1_flyer_newplus delff">-</div></a>*@
+                    <div class="clear"></div>
+                    <div class="ffn_inputboxulli_container">
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    }
+</div>
+}

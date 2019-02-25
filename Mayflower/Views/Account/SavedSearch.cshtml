@@ -1,0 +1,237 @@
+﻿@{
+    ViewBag.Title = "My Saved Search";
+    ViewBag.RenderSideBar = true;
+    ViewBag.RenderRedLine = true;
+
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+
+    var prdList = new List<SelectListItem>
+                    {
+                       new SelectListItem { Text = "Flight", Value = "FLT" },
+                       new SelectListItem { Text = "Hotel", Value = "HTL" },
+                    };
+}
+
+@section style{
+    <style>
+        .mcp_inner_b6 {
+            width: 17%;
+            float: left;
+        }
+
+        .mcp_inner_b7 {
+            width: 10%;
+            float: left;
+        }
+
+        .mcp_inner_b0 {
+            width: 6%;
+        }
+
+        .mcp_inner_b1 {
+            width: 10%;
+        }
+
+        .mcp_inner_b2 {
+            width: 15%;
+        }
+
+        .mcp_inner_b3 {
+            width: 12%;
+        }
+
+        .prd_type {
+            text-align: center;
+            width: 30%;
+        }
+
+            .prd_type select {
+                font-family: 'UbuntuMedium';
+                width: 90%;
+                height: 42px;
+                background-color: transparent;
+                border: 1px solid #eb1c24;
+                font-size: 20px;
+                margin-top: 25px;
+                color: #eb1c24;
+                padding-left: 25px;
+                background-image: url(../images/sort_arrow.png);
+                background-position: right center;
+                background-repeat: no-repeat;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+        .continue_booking_btn {
+        }
+    </style>
+}
+
+<!-- MAIN CONTENT PORTION START -->
+<div class="member_profile_heading_container">
+    <div class="mphc_t1">Saved Search</div>
+    <div class="mphc_t2">Below are your list of Saved Search</div>
+</div>
+
+@*<div>
+        <select id="product_type">
+            <option value="FLT">Flight</option>
+            <option value="HTL">Hotel</option>
+        </select>
+    </div>*@
+
+<div class="member_profile_container">
+    <div class="prd_type mpc_inner_container">
+        @Html.DropDownList("sorting", prdList, new { id = "product_type" })
+    </div>
+    <div class="clear"></div>
+
+    <div class="mpc_inner_container" id="saved_search_content">
+        @*<div class="mpc_inner">
+                <!-- red tab start -->
+                <div class="mcp_inner_tabred">
+                    <div class="mcp_inner_b2 mcp_whitefont mcp_sort_icon">Description</div>
+                    <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">From</div>
+                    <div class="mcp_inner_b1 mcp_whitefont mcp_sort_icon">To</div>
+                    <div class="mcp_inner_b0 mcp_whitefont"></div>
+                    <div class="clear"></div>
+                </div>
+                <!-- red tab end -->
+                <!-- row start -->
+                @Html.Action("_ListSavedSearch", "Account")
+            </div>*@
+    </div>
+</div>
+<!-- MAIN CONTENT PORTION END -->
+
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var selectedPrd = $('#product_type').val();
+            getSaveSearch(selectedPrd);
+        });
+
+        //Get Saved Search when page finish loaded
+        var getSaveSearch = function (prdType) {
+            var param = { prdType: prdType };
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: "@Url.Action("_ListSavedSearch", "Account")",
+                async: true,
+                data: param,
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                },
+                complete: function () {
+                    $('#loading-modal').hide();
+                }
+            }).then(function (res) {
+                $('#saved_search_content').html(res);
+            }, function (res) {
+            }).promise();
+        }
+
+        $('#product_type').on('change', function () {
+            var value = $(this).val();
+            getSaveSearch(value);
+        });
+
+        $('#saved_search_content').on('click', '.continue_button_btn', function () {
+            var savedID = $(this).data('saveid');
+            var skipCheckPrice = $(this).data('valueid');
+            var params = { savedID: savedID, skipCheckPrice: skipCheckPrice };
+            var url = "@Url.Action("SavedSearch", "Account")";
+
+            $.ajax({
+                type: "POST",
+                cache: false,
+                url: url,
+                data: params,
+                async: true,
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                },
+                success: function (result) {
+                    var currentPrice, savedPrice, color = "";
+                    $('#loading-modal').hide();
+
+                    if (result.isEmptyFlight) {
+                        var removeUrl = "@Url.Action("removeSavedResult", "Account")";
+                        var params = { savedID: savedID };
+                        $('#popup-modal').show();
+                        $('#modal-container').html("<div class='session_lb_text1' style='color: #000'><p>You missed your favorite flight.</br></br> Do you want to REMOVE this flight?</p></div><a href='javascript:;' class='modal-close'><div id='redirectBtn' class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Remove</div><div class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Cancel</div></a>");
+                        $('#redirectBtn').click(function () {
+                            $('#loading-modal').show();
+                            $('<form action="' + removeUrl + '?' + $.param(params) + '" method="POST" />')
+                                .appendTo($(document.body))
+                                .submit();
+                        });
+                    }
+                    if (result.isEmptyHotel) {
+                        var removeUrl = "@Url.Action("removeSavedResult", "Account")";
+                        var params = { savedID: savedID };
+                        $('#popup-modal').show();
+                        $('#modal-container').html("<div class='session_lb_text1' style='color: #000'><p>You missed your favorite hotel.</br></br> Do you want to REMOVE this hotel?</p></div><a href='javascript:;' class='modal-close'><div id='redirectBtn' class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Remove</div><div class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Cancel</div></a>");
+                        $('#redirectBtn').click(function () {
+                            $('#loading-modal').show();
+                            $('<form action="' + removeUrl + '?' + $.param(params) + '" method="POST" />')
+                                .appendTo($(document.body))
+                                .submit();
+                        });
+                    }
+
+                    if (result.isEqual) {
+                        $('#loading-modal').show();
+                        var params = { savedID: savedID, skipCheckPrice: 0 };
+                        $('<form action="' + url + '?' + $.param(params) + '" method="POST" />')
+                            .appendTo($(document.body))
+                            .submit();
+                    }
+                    if (result.isMatched) {
+                        var params = { savedID: savedID, skipCheckPrice: 0 };
+                        currentPrice = result.currentPrice;
+                        savedPrice = result.savedPrice;
+
+                        if (result.isHigherPrice) {
+                            color = "red";
+                        }
+                        if (result.isLowerPrice) {
+                            color = "green";
+                        }
+
+                        $('#popup-modal').show();
+                        $('#modal-container').html("<div class='session_lb_text1' style='color: #000'><p>Saved Price : RM " + savedPrice + "</br> Current Price : <span style='color:" + color + "'> RM " + currentPrice + "</span></br></br> Do you want to CONTINUE with Current Price?</p></div><a href='javascript:;' class='modal-close'><div id='continueBtn' class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Continue</div><div class='redcontinue_button' style='margin-top: 1em;display: inline-block;'>Cancel</div></a>");
+                        $('#continueBtn').click(function () {
+                            $('#loading-modal').show();
+                            $('<form action="' + url + '?' + $.param(params) + '" method="POST" />')
+                                .appendTo($(document.body))
+                                .submit();
+                        });
+                    }
+                },
+            });
+        });
+
+        //Remove Saved Search when click remove button
+        $('#saved_search_content').on('click', '.remove_button_btn', function () {
+            $('#loading-modal').show();
+
+            var savedID = $(this).data('saveid');
+            var params = { savedID: savedID };
+            var url = "@Url.Action("removeSavedResult", "Account")";
+            $('<form action="' + url + '?' + $.param(params) + '" method="POST" />')
+            .appendTo($(document.body))
+            .submit();
+        });
+
+    </script>
+}

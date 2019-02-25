@@ -1,0 +1,83 @@
+﻿@{ 
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"] ??
+        Request.Form["tripid"];
+}
+
+<script type="text/javascript">
+    //Fare Rules -- START
+    $('#result-content').on('click', '.farerules', function (e) {
+        showFareRules(this);
+    });
+
+    //Fare Rules -- START
+    $('.farerules').on('click', function () {
+        showFareRules(this);
+    });
+
+    function showFareRules(fareRules) {
+        var outInIndicator = $(fareRules).data('indicator');
+        var index = $(fareRules).data('index');
+        var serviceSource = $(fareRules).data('servicesource');
+        var superPNR = $(fareRules).data('superpnr');
+        var url = '';
+        if (index != undefined) {
+            var url = '@Url.Action("_FareRulesView", "Flight")?outInIndicator=' + outInIndicator + '&serviceSource=' + serviceSource + '&odoIndex=' + index;
+            //url = '@Url.Action("_FareRulesView", "Flight")?outInIndicator=' + outInIndicator + '&odoIndex=' + index;
+        } else {
+            url = '@Url.Action("_FareRulesView", "Flight")?outInIndicator=' + outInIndicator + '&serviceSource=' + serviceSource + '&superPNR=' + superPNR;
+        }
+
+        $.ajaxSettings.traditional = true;
+        $.ajaxSetup({ cache: false });
+        $.ajax({
+            url: url + @(tripid != null ? Html.Raw("'&tripid=" + tripid + "'") : new HtmlString("''")),
+            type: "GET",
+            traditional: true,
+            contentType: "application/json",
+            beforeSend: function () {
+                $('#loading-modal').show();
+                $(".fullcover_div1").empty();
+            }
+        })
+        .done(function (res) {
+            $('#loading-modal').fadeOut();
+            $("#fareRulesClass").fadeIn();
+            $("#fareRulesClass").html(res);
+
+            $("#content-5").mThumbnailScroller({
+                type: "click-50",
+                theme: "buttons-out",
+                callbacks: {
+                    onTotalScroll: function () {
+                        //$.get("ajax.html", function (data) {
+                        //    $("#content-5 .mTSContainer").append(data); //load new content inside .mTSContainer
+                        //});
+                    }
+                }
+            });
+        });
+    }
+
+    $(document).on('click', '#fareRules ul li > div', function (e) {
+        $("#RulesDetail").empty();
+        $(this).parents('#content-5').find('.filter-airline-active').removeClass('filter-airline-active');
+        $(this).addClass('filter-airline-active');
+
+        var ruleIndex = $(this).data('ruleindex');
+
+        var url = '@Url.Action("_FareRulesPartialView", "Flight")?ruleIndex=' + ruleIndex;
+
+        $.ajaxSettings.traditional = true;
+        $.ajaxSetup({ cache: false });
+        $.ajax({
+            url: url,
+            type: "GET",
+            traditional: true,
+            contentType: "application/json"
+        })
+        .done(function (res) {
+            $("#RulesDetail").html(res);
+        });
+    });
+    //Fare Rules -- END
+</script>

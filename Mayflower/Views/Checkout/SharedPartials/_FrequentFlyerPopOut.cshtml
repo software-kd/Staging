@@ -1,0 +1,35 @@
+﻿@using Alphareds.Module.Common;
+@model IQueryable<Alphareds.Module.Model.Airlines>
+
+@{
+    //var airline = "";
+    //testing
+
+    //var airline = UtilitiesService.GetAllAirlines;
+    string logo;
+}
+
+<div class="fullcover_div_FFPO">
+    <div id="ffleyer_pop" class="viewmorehotel_container setwidth">
+        <div class="tl_right loginclose" style="background-color:white">
+            <img src="../images_hotel/close.jpg" class="map" width="31" height="29" alt="">
+        </div>
+        <div style="background-color:white">
+            <b style="padding-left:10px">Choose Frequent Traveller</b>
+        </div>
+        <div id="forfilter" style="background-color:white;padding:10px 0px 10px 10px;">
+            Search By:
+            <input name="filter" type="text" value="" id="filterforffair" />
+            @*<div id="search_airline" class="sairline">Search</div>*@ 
+            @*add one no choose button*@
+            <button type="button" id="nochoosebutton">No, Thanks!</button>
+        </div>
+        <div class="loadingBackground">
+            
+        </div>
+        <div id="AirLineList">@*here add the list by script*@
+        </div>
+        <input name="guestNo" type="hidden" value="" id="guestnoforffair" />
+        <input name="airLine" type="hidden" value="" id="airlinetype" /> @*for get airline type*@
+    </div>
+</div>

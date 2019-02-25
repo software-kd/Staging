@@ -1,0 +1,121 @@
+﻿@model Alphareds.Module.Model.HotelCheckoutModel
+
+@{
+            string returnAction = Url.Action("Index", "Home", new { @ref = Url.RequestContext.RouteData.Values["action"].ToString() }, Request.Url.Scheme);
+            string tripid = ViewBag.tripid;
+
+            if (!string.IsNullOrWhiteSpace(ViewBag.ReturnAction))
+            {
+                returnAction = Url.Action(ViewBag.ReturnAction, "Hotel", new { @ref = Url.RequestContext.RouteData.Values["action"].ToString(), tripid }, Request.Url.Scheme);
+            }
+
+            int hotelstar = Convert.ToInt16(Math.Truncate(Convert.ToDouble(Model.SearchHotelModel.Result.HotelList.Where(x => Model.RoomAvailabilityResponse.HotelRoomInformationList.Any(y => y.hotelId == x.hotelId
+            || (x.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan && (y.hotelId == Model.ReserveRoomModel.HotelID || x.hotelId == Model.ReserveRoomModel.HotelID))
+            //|| (Model.SearchHotelModel.BundleType() == BundleTypes.TPConcert && x.hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.Tourplan && x.hotelId.StartsWith(y.hotelId.Remove(y.hotelId.Length - 6, 6)))
+            )).FirstOrDefault().hotelRating)));
+            // 2017/01/26 - Heng Added, for display room count in HotelItineraryDetails section.
+            ViewBag.GuestRoom = Model.ReserveRoomModel.GuestRooms;
+        }
+
+<!-- GRAY FLIGHT DETAIL START -->
+<div class="s3_1_flight_details_box s3_1_flight_details_box2">
+    <div class="s3_1_fdb_inner">
+        <div class="s3_1_fdb_inner_b1"><a href="javascript:;" class="back-sp" data-location="@returnAction"><img src="@Url.Content("~/images/arrow_left.jpg")" width="40" height="29" alt=""></a></div>
+        <div class="s3_1_fdb_inner_b2">
+            <div class="hotelIcone">
+                <div class="s3_1_fdb_flight_name">
+                    @Html.Encode(string.Join("<br/>", Model.RoomSelected.HotelRoomInformationList.Select(x => x.hotelName).Distinct()))
+                </div>
+                <div class="clear"></div>
+
+                <div class="s3_1_fdb_child_det hotel_nm">
+                    @for (int i = 0; i < hotelstar; i++)
+                    {
+                        <img src="@Url.Content("~/images/hotel_star_am.png")" width="10" height="10" alt="">
+                    }
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="s3_1_fdb_inner_b3">
+            <div class="s3_1_fdb_i3_inner">
+                <div class="mobileL">
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="date1">Check In</div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_timing">
+                        <div class="datebox">@Model.SearchHotelModel.ArrivalDate.ToString("dd-MMM-yy, ddd")</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="mobileL mobileL2">
+                    <div class="s3_1_fdb_i3_da_lable">
+                        <div class="date">Check Out</div>
+                    </div>
+                    <div class="s3_1_fdb_i3_da_timing ">
+                        <div class="datebox">@Model.SearchHotelModel.DepartureDate.ToString("dd-MMM-yy, ddd")</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        <div class="s3_1_fdb_inner_b4">
+            <div class="s3_1_fdb4_inner">
+                @{
+                    var roomGrp = Model.ReserveRoomModel.GuestRooms.GroupBy(x => x.RoomTypeName);
+    decimal totalAmt = Model.ReserveRoomModel.GuestRooms.Sum(x => (x.TotalBaseRate + x.TotalTaxAndServices));
+    string currency = Model.SearchHotelModel.CurrencyCode;
+
+}
+
+
+                @*<div class="hotel_room_detailtop destoponly">@item.Count() x <span>@item.Key</span></div>*@
+                <div class="hotel_room_detailtop">@Model.ReserveRoomModel.GuestRooms.Count() <span>@(Model.ReserveRoomModel.GuestRooms.Count > 1 ? "Rooms" : "Room")</span></div>
+
+                @*<div class="hotel_room_detailtop mobileonly">@Model.ReserveRoomModel.GuestRooms.Count() <span>@(Model.ReserveRoomModel.GuestRooms.Count > 1 ? "Rooms" : "Room")</span></div>*@
+
+                <div class="s3_1_detailtop_outer">
+                    <div class="s3_1_fdb4_inner_lf_lable">Total</div>
+                    <div class="s3_1_fdb4_inner_ri_ans">
+                        <div class="s3_1_ans_myr"> @currency</div>
+                        <div class="s3_1_ans_fig TotalPrice"> @totalAmt.ToString("#,##0.00")</div>
+                        <div class="s3_1_includetax_lable">Included tax</div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!-- GRAY FLIGHT DETAIL END -->
+<!-- MORE FLIGHTS BOX START -->
+<div class="moreflight_container">
+    <div class="moreflight_box">
+        <div class="more_flight_innerbox">
+            <div class="mf_content_container">
+                <div class="close_tabn"><img src="@Url.Content("~/images/close_tab.png")" width="23" height="21" alt=""></div>
+
+                @* Prepare for Package Flight Detail Start *@
+                @*
+                    <div class="s3_blt_heading">Flight Itinerary</div>
+                *@
+                @* Prepare for Package Flight Detail End *@
+
+                <!-- HOTEL DETAILS STARTS -->
+                @Html.Partial("~/Views/Booking/Hotel/_HotelItineraryDetails.cshtml", Model)
+                <!-- HOTEL DETAILS END -->
+                @if (ViewBag.RenderSummaryContactSection == true)
+                {
+                    <!-- ROOM CONTACT DETAILS START -->
+                    @Html.Partial("~/Views/Booking/Hotel/_ContactInformation.cshtml", Model.ReserveRoomModel)
+                    <!-- ROOM CONTACT DETAILS END -->
+                }
+            </div>
+            <div class="show_more_flight_icon">Show more booking details</div>
+        </div>
+    </div>
+</div>
+<!-- MORE FLIGHTS BOX END -->

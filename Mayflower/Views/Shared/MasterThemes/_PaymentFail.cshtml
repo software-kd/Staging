@@ -1,0 +1,27 @@
+﻿@{
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+}
+
+<div id="paymentFail" class="fullcover_div4" style="display: none">
+    <div class="fcd_white3_op">
+        <div class="tl_right loginclose"><img src="@Url.Content("~/images/close.jpg")" alt="" width="31" height="29"></div>
+        <div class="fcd_op_inner">
+            <div><img src="@Url.Content("~/images/ops.jpg")" width="87" height="118" alt=""></div>
+            <div class="fcd_op_text">OOPS!</div>
+            <div class="fcd_op_text1" id="oops-msg">Your payment was failed.<br>Please try again.</div>
+            @if (!isEnableCMS)
+            {
+                <div class="redbacktohome_button"><a href="@Url.Action("Index", "Home")">Back to Homepage</a></div>
+            }
+            else
+            {
+                <div class="redbacktohome_button">
+                    <a href='@Url.Action("RedirectAndPOST", "DynamicFormPostSurface", new { destinationUrl = System.Web.Configuration.WebConfigurationManager.AppSettings["AlphaReds.CMSUrl"], type = "MenuTransfer" })'>
+                        @*<input type="button" value="Back to Homepage" />*@
+                        Back to Homepage
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

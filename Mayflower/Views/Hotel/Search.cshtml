@@ -1,0 +1,1655 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@using Alphareds.Module.ExpediaHotelsWebService.ExpediaHotels;
+@using Alphareds.Module.ServiceCall;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    ViewBag.Title = "Hotel Search Result";
+    ViewBag.HeaderRed = true;
+    ViewBag.CheckSession = true;
+    ViewBag.UsePopupLoginBox = true;
+    bool isAjax = Request.IsAjaxRequest();
+    string tripid = Request.QueryString["tripid"];
+}
+
+@section style{
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/hotel/style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2responsive.css")" type="text/css" />
+    @*<link rel="stylesheet" class="slidercss" href="@Url.Content("~/CSS/sliders.css")" type="text/css" />*@
+    <link rel="stylesheet" class="slidercss" href="@Url.Content("~/CSS/price_slider.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/hotel/jquery.mThumbnailScroller.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/tripadvisorsprite.css")">
+    <link rel="stylesheet" href="@Url.Content("~/CSS/ars-ui-autocomplete.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/ars-hotel-tab.css?ver=1.01")" />
+
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/bootstrap.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/hotel/bootstrap-carousel.css")">
+    <link href="@Url.Content("~/CSS/checkout/style.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+    <link href="@Url.Content("~/CSS/checkout/styles_v2.min.css?v=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+
+    @if (Model.IsDynamic)
+    {
+        <style>
+            .s2_filer_container {
+                width: 100%;
+                background-color: #fff;
+                border-bottom: 1px solid #d9d9d9;
+                border-top: 1px solid #d9d9d9;
+                margin-top: 50px;
+            }
+
+            .col-lg-offset-2 {
+                width: 100% !important;
+                margin-left: 11% !important;
+            }
+
+            .section-tabs .nav-wizard {
+                margin: 0px !important;
+                max-width: 100% !important;
+            }
+
+            @@media screen and (min-device-width : 992px)and (max-width : 1200px) {
+                .addons > .container > .section-tabs > .col-md-offset-1 {
+                    margin-left: unset !important;
+                }
+            }
+
+            @@media screen and (min-width : 768px) and (max-width : 991px) {
+                .nav-pills.nav-wizard > li > a > .visible-sm {
+                    display: none !important;
+                }
+
+                .nav-pills.nav-wizard > li > a > .visible-xs {
+                    display: block !important;
+                }
+
+                .nav-pills.nav-wizard > li > a {
+                    width: 70px !important;
+                }
+            }
+        </style>
+    }
+
+    <style>
+        .showroom-btn {
+            min-height: 35px;
+            line-height: 35px;
+            padding: 0 1em;
+            background-color: #2e6bde;
+            color: #fff;
+        }
+
+        /*hotel save button*/
+        .hotel_save_button {
+            background-color: #908e8e;
+            width: 100px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            font-size: 14px;
+            color: #000;
+            cursor: pointer;
+            -moz-border-radius: 23px;
+            border-radius: 23px;
+            margin: auto;
+            margin-top: -40px;
+            margin-bottom: 10px;
+        }
+
+            .hotel_save_button a {
+                color: #fff;
+                text-decoration: none;
+            }
+        /*for paging styling start*/
+        .pagination > li > a, .pagination > li > span {
+            position: unset !important;
+            float: none !important;
+            padding: unset !important;
+            color: black !important;
+            background-color: unset !important;
+            border: none !important;
+        }
+
+        .pagination > .active > a {
+            color: white !important;
+        }
+        /*for paging styling end*/
+        .h2_mainhoteldetail_box2_inner {
+            max-width: none;
+            width: 100%;
+        }
+
+        .img_loading {
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        span.clearTxt {
+            height: 25px;
+            width: 25px;
+            background: url('../images_hotel/close_tab.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        .propertyClear {
+            top: 25%;
+            right: 2%;
+        }
+
+        .clearTxt_wrap {
+            position: relative;
+        }
+
+        @@media screen and (-ms-high-contrast: active), screen and (-ms-high-contrast: none) {
+            /*for ie 10 and 11 only*/
+            .all_iconbox img {
+                width: 41px;
+            }
+
+            .h2_mhd3_rl_row_b2.show_toltip1 img {
+                width: 41px;
+            }
+        }
+
+        .s2_fil_in_right_sm_flight.selected {
+            background-color: #fc950d !important;
+            color: #fff;
+        }
+
+        .tabsformobile4 {
+            background-position: 20px center, right center;
+        }
+
+        .vmicr_allicons_cont_result {
+            width: 40%;
+            height: 40px;
+        }
+
+        .footer {
+            margin-top: 0px;
+        }
+
+        .s2_main_container {
+            margin-top: 2%;
+            margin-bottom: 2%;
+        }
+
+        .s2_mc_border_conainer2 {
+            border: none;
+            text-align: center;
+            margin: 1%;
+        }
+
+        .div8_tab_container4 {
+            width: 95%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .h2_mainhoteldetail_box3 {
+            z-index: 0;
+        }
+
+        .all_iconbox {
+            height: initial;
+            margin-bottom: 0;
+        }
+
+            .all_iconbox > div {
+                font-size: 11px;
+                line-height: 10px;
+            }
+
+        #slider-range {
+            width: 90%;
+            margin-left: 5%;
+        }
+
+        .strikeout {
+            font-size: 17px;
+            line-height: 1em;
+            position: relative;
+        }
+
+            .strikeout::after {
+                border-bottom: 0.125em solid #eb1c24;
+                content: "";
+                left: 0;
+                margin-top: calc(0.125em / 2 * -1);
+                position: absolute;
+                right: 0;
+                top: 50%;
+            }
+
+        .map_bestdeal_container {
+            margin-top: 10px;
+        }
+
+        .s3_1_fdb_inner_b3 {
+            width: 100%;
+            border-left: 1px solid #0d0d0d;
+        }
+
+        .Descs {
+            border-top: 1px solid #8c8b87;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .s2-1_form_toll_tip_1 {
+            right: -15%;
+        }
+
+        .h2_mhd3_rl_row_b2, .h2_mhd3_rl_row_b2_mobile {
+            position: relative;
+        }
+
+        .h2_mhdb2_heading {
+            background-image: none;
+            font-size: 17px;
+        }
+
+        .h2_mhdb2_heading2 {
+            background-image: url(../images/info-icon.png);
+            background-position: top center;
+            background-repeat: no-repeat;
+            margin-left: 6px;
+            height: 15px;
+            font-size: 14px;
+            float: inherit;
+            color: #ec1c24;
+            /*height: 35px;*/
+            overflow: hidden;
+            min-width: 35px;
+            z-index: 1;
+            display: inline-block;
+        }
+
+        .h2_mhdb2_mapbox {
+            font-size: 16px;
+        }
+
+            .h2_mhdb2_mapbox span {
+                padding-right: 15px;
+            }
+
+        .all_iconbox {
+            margin-right: 5%;
+        }
+
+        .mobileshow {
+            display: none;
+        }
+
+        .h2_mhdb2_mapbox span {
+            margin-left: 5px;
+        }
+
+        .callbacks_nav {
+            top: 70%;
+        }
+
+        .rslides2 {
+            width: 197px;
+            height: 123px;
+        }
+
+        .h2_mhd3_rlr_b3_right select {
+            padding-left: 10%;
+            background-size: 20px;
+            font-size: 17px;
+            font-family: 'UbuntuMedium';
+            border: 1px solid #eb1c24;
+            color: #eb1c24;
+            background-image: url(../images/sort_arrow.png);
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-color: white;
+        }
+
+        .h2_mhdb2_iconbox {
+            margin-top: 0px;
+        }
+
+        .h2_mhdb3_price_full {
+            font-family: 'UbuntuMedium';
+        }
+
+            .h2_mhdb3_price_full span {
+                font-size: 23px;
+            }
+
+        .fullcover_div_GoogleMap {
+            margin-top: -80px;
+            padding-top: 60px;
+        }
+
+        .callbacks_tabs {
+            display: none;
+        }
+
+        .callbacks_container {
+            position: relative;
+        }
+
+        .s2_pf_right .ui-widget-content {
+            background: none !important;
+            border: 0px !important;
+            border-bottom: 3px solid #666 !important;
+            height: 7px;
+        }
+
+        #ui-datepicker-div {
+            font-size: 12px;
+        }
+
+        #price-filter .ui-state-default, #price-filter .ui-widget-content #price-filter .ui-state-default, #price-filter .ui-widget-header #price-filter .ui-state-default {
+            text-align: center !important;
+            background-image: none !important;
+            background-color: #f5930c !important;
+            border: 0px !important;
+        }
+
+        #times-filter .ui-state-default, #times-filter .ui-widget-content #times-filter .ui-state-default, #times-filter .ui-widget-header #times-filter .ui-state-default {
+            text-align: center !important;
+            background-image: none !important;
+            background-color: #00a5a0 !important;
+            border: 0px !important;
+        }
+
+        #search_hotel {
+            display: block;
+        }
+
+        .hs2_icondiv {
+            width: 22px;
+            height: 25px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .fullcover_div_GoogleMap {
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            position: fixed;
+            top: 80px;
+            left: 0px;
+            z-index: 999999;
+            display: none;
+        }
+
+        .viewmorehotel_container {
+            max-width: 883px;
+            width: 96%;
+            margin: auto;
+            height: 500px;
+            margin-top: 2%;
+        }
+
+        .viewmorehotel_white1nn {
+            height: 510px;
+            overflow: auto;
+            text-align: center;
+        }
+
+        .vm_inner_content {
+            width: 95%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .div8_toptabs {
+            margin-top: initial;
+        }
+
+        .ReserveButton {
+            max-width: 155px;
+            width: 80%;
+            height: 40px;
+            color: #fff;
+            border: 0px;
+            background-color: #ec1c24;
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .mobileonly4 {
+            display: none !important;
+        }
+
+        .s2_ib_inner_right, .s2_ib_inr_left, .s2_ibinrl_b1 {
+            display: initial;
+        }
+
+        .s2_ib_inner_left {
+            width: 33%;
+        }
+
+        .s2_ib_inner_right {
+            width: 30%;
+        }
+
+        .s2_ib_inr_left {
+            min-height: 50px;
+        }
+
+        .s3_1_fdb_modify_icon {
+            background-image: none;
+            margin-left: 0px;
+            float: right;
+        }
+
+        .red {
+            color: red;
+        }
+
+        .h2_mhd3_rl_row_b3, .rp15 {
+            float: right;
+        }
+
+        .fullcover_div8 {
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .h2_mainhoteldetail_box1, .h2_mainhoteldetail_box2, .h2_mainhoteldetail_box3 {
+            max-height: 205px;
+        }
+
+        .h2_mainhoteldetail_box1 {
+            cursor: pointer;
+            position: relative;
+            height: 205px;
+            overflow: hidden;
+        }
+
+        .h2_mainhoteldetail_boxM {
+            background: url(../Images_hotel/magnifying_glass.png);
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 50%;
+            height: 50%;
+            background-size: 40%;
+            position: absolute;
+            left: 25%;
+            top: 25%;
+            opacity: 0;
+        }
+
+        .h2_mainhoteldetail_boxM_overlay {
+            /*background-color: rgba(158, 158, 158, 0.4);*/
+            background-color: rgba(0,0,0,0.4);
+            width: 100%;
+            height: 100%;
+            max-width: 323px;
+            position: absolute;
+            top: 0;
+            opacity: 0;
+        }
+
+        .h2_mainhoteldetail_box1:hover .h2_mainhoteldetail_boxM, .h2_mainhoteldetail_box1:hover .h2_mainhoteldetail_boxM_overlay {
+            opacity: 1;
+            transition: opacity 0.5s linear;
+        }
+
+        .h2_mhd3_selectroom_bar {
+            /*height: 60px;
+        line-height: 60px;*/
+            font-size: 18px;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .h2_mhdb2_mapbox {
+            font-size: 15px;
+        }
+
+        .ta_text1, .ta_text2 {
+            font-size: 11px;
+        }
+
+        .h2_mhdb2_heading, .all_iconbox, .ta_text1, .h2_mhd3_r1bh_right {
+            color: #5a5a5a;
+        }
+
+        .h2_mhdb3_heading {
+            font-size: 18px;
+            color: #ec1c24;
+            font-family: 'UbuntuMedium';
+        }
+
+        .h2_mhdb3_promo {
+            background-color: #f28f2a;
+            color: #fbf7eb;
+            padding: 0.1em 0.1em;
+            width: 160px;
+            font-size: 13px;
+            float: right;
+            border-radius: 4px;
+            text-align: center;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .words .words-innertext {
+            display: inline-block;
+            margin-top: 4px;
+            z-index: 1;
+        }
+
+        .mbdconr_left {
+            width: 340px;
+        }
+
+        .mbdcon_right {
+            width: 351px;
+        }
+
+        .mbdconr_right {
+            width: 30%;
+            padding-left: 3%;
+            padding-top: 1%;
+        }
+
+        a.back-to-top {
+            display: none;
+            width: 55px;
+            height: 55px;
+            text-indent: -9999px;
+            position: fixed;
+            z-index: 999;
+            right: 20px;
+            bottom: 20px;
+            background: #fc950d url(../Images/hide_arrow_white.png) no-repeat center 50%;
+            background-size: 28px 18px;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+            border-radius: 30px;
+            box-shadow: 0 0 0 1px #e8e8e8, 0 0 0 4px #fc950d;
+        }
+
+        .s2span_leftgap, .s2span_rightgap, .star {
+            color: #000;
+            font-family: 'Conv_Ubuntu-Light';
+            padding-left: 0;
+        }
+
+        .s3_1_fdb_i3_da_lable .dep, .s3_1_fdb_i3_da_lable .ret {
+            background-image: none;
+        }
+
+        .s2_ml_20 {
+            margin-top: 7px;
+        }
+
+        .room-label {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .fillter_tags:empty {
+            display: none;
+        }
+
+        #ddlSorting option {
+            padding-left: 25px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        @@media screen and (min-width :760px) {
+            .h2_mhdb2_iconbox {
+                display: flex;
+                flex-flow: row wrap;
+            }
+        }
+
+        @@media screen and (min-width :1261px) {
+            .s2_ib_inner_left {
+                padding-left: 10px;
+            }
+
+            .s2_filer_container {
+                padding-left: 10px;
+            }
+
+            .map_bestdeal_container span {
+                margin-left: 10px;
+            }
+
+            .mbdcon_right {
+                margin-top: 0px;
+                margin-right: 3px;
+            }
+        }
+
+        @@media screen and (min-width :900px) and (max-width :1260px) {
+            .s2_ib_inner_left {
+                padding-left: 0px;
+            }
+
+            .mbdcon_right {
+                margin-top: 0px;
+                margin-right: -12px;
+            }
+        }
+
+        @@media screen and (min-width :900px) {
+
+            .step2_informationbox {
+                padding-top: 24px;
+            }
+
+            .h2_mhd3_r1bh_left {
+                width: auto !important;
+            }
+
+            .all_iconbox {
+                /*margin-top: -15px;*/
+            }
+
+            .s3_1_fdb_class_det {
+                margin-top: 2px;
+                padding-right: 0px;
+            }
+
+            .s3_1_fdb_flight_name {
+                margin-bottom: 7px;
+            }
+
+            .s3_1_fdb_i3_inner {
+                margin: 0;
+                max-width: 300px;
+                margin-left: 10px;
+            }
+
+            .s2span_leftgap {
+                padding-left: 0px;
+            }
+
+            .hotelIcone {
+                background-image: url('../../Images/ht_t_ico.png');
+                background-repeat: no-repeat;
+                padding-left: 50px;
+                height: 50px;
+            }
+
+            .words-innertext {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+
+        @@media screen and (max-width : 910px) and (min-width :800px) {
+            .s3_1_fdb_i3_da_lable {
+                width: 40%;
+            }
+        }
+
+        @@media screen and (max-width : 900px) {
+            .hotel_save_button {
+            }
+            /* Lee Zein Khai 24-5-2017 start */
+            #cssmenu #menu-button:after {
+                height: 4px; /*!important*/
+            }
+            /* Lee Zein Khai 24-5-2017 End */
+            .s3_1_ans_myr {
+                margin-right: 0px;
+            }
+
+            .s2span_rightgap2 {
+                border-left: 1px solid #0d0d0d;
+            }
+
+            .s2_ib_inr_right {
+                width: 100%;
+                text-align: center;
+                float: none;
+            }
+
+            .s2span_rightgap, .s2_ibinrl_b1 {
+                text-align: center;
+                width: 100%;
+            }
+
+            .s3_1_fdb_modify_icon, .rp15 {
+                float: none;
+            }
+
+            .s2_ibinrl_b1 {
+                font-family: 'Conv_Ubuntu-Light';
+                color: #eb1c24;
+                height: 20px;
+                line-height: 20px;
+            }
+
+            .s2_ib_inr_left, .s2_ib_inner_left {
+                width: 100%;
+                border-right: none;
+            }
+
+            .s3_1_fdb_inner_b34 {
+                width: 49%;
+                display: inline-block;
+            }
+
+            .s2_ib_inner_left {
+                width: 100%;
+                float: none;
+                text-align: center;
+            }
+
+            .mobileonly3 {
+                display: none;
+            }
+
+            .mobileonly4 {
+                display: initial !important;
+            }
+
+            .mobileview {
+                display: inherit;
+            }
+
+            .s2-1_form_toll_tip_1 {
+                left: 0%;
+            }
+
+            .position {
+                margin-left: -30% !important;
+            }
+
+            .mobileonly {
+                margin-top: 10px;
+            }
+
+            .mbdconrl_right span {
+                display: none !important;
+            }
+        }
+
+        @@media screen and (max-width : 768px) {
+            .room-label {
+                font-size: 13px;
+            }
+        }
+
+        @@media screen and (max-width : 900px) and (min-width :600px) {
+            .s3_1_fdb_modify_icon {
+                padding-left: 0px;
+                margin-left: 0px !important;
+            }
+        }
+
+        @@media screen and (max-width : 625px) {
+            .s2_ib_inner_left {
+                float: left;
+                /*border-right: 1px solid #c4c4c4;*/
+            }
+            /*.s2_ibinrl_b1 {
+            margin-left: 10px;
+            }*/
+        }
+
+        @@media screen and (max-width : 600px) {
+            .h2_mhdb3_trip_adv {
+                width: 171px !important;
+            }
+
+            .h2_mainhoteldetail_box2 {
+                padding-left: 12px;
+            }
+
+            .tripadivisor_left {
+                width: 41px;
+                display: inline-block;
+            }
+
+            .tripadivisor_right {
+                width: 125px;
+                display: inline-block;
+                float: right;
+            }
+
+            .h2_mhdb2_mapbox span {
+                width: 41px;
+                display: inline-block;
+            }
+
+            .room-label {
+                font-size: 10px;
+            }
+
+            .s3_1_fdb_flight_name {
+                float: none;
+                text-align: center;
+                font-size: 18px;
+                font-family: 'Conv_Ubuntu-Light';
+            }
+
+            .s2_ib_inner_right, .s2_ib_inr_left, .s2_ibinrl_b1 {
+                display: initial;
+                width: 100%;
+            }
+
+            .step2_informationbox {
+                padding-top: 0px !important;
+                padding-bottom: 30px;
+            }
+
+            .s2_ib_inner_left, .s3_1_fdb_class_det {
+                width: 100%;
+            }
+
+            .s3_1_fdb_class_det {
+                text-align: center;
+                margin-bottom: 5px;
+            }
+
+            .s3_1_fdb_modify_icon {
+                padding-left: 0px;
+                float: initial;
+            }
+
+            .h2_mhdb2_heading {
+                font-size: 16px;
+                font-family: 'UbuntuBold';
+            }
+
+            .ta_text1, .ta_text2 {
+                font-size: 12px;
+            }
+
+            .h2_mhd3_r1bh_right {
+                font-size: 14px;
+            }
+
+            .ShowHotelInfo2 {
+                display: inline-block;
+                float: initial;
+                margin-left: unset;
+            }
+
+            .h2_mhdb2_heading2 {
+                background-image: url(../images/info-icon.png);
+                background-position: top center;
+                background-repeat: no-repeat;
+                font-size: 14px;
+                /*float: right;*/
+                color: #ec1c24;
+                min-width: 24px;
+            }
+            /*.position {
+            margin-left: 50%;
+        }*/
+            /*.s2_main_container {
+                padding-bottom: 20px;
+            }*/
+        }
+
+        @@media screen and (max-width : 500px) {
+            .s3-1_form_toll_tip_b2 {
+                margin-left: 0% !important;
+            }
+
+            .vmicr_allicons_cont_result {
+                width: 100%;
+            }
+        }
+
+        @@media screen and (max-width : 450px) {
+            .all_iconbox {
+                width: 68px;
+                height: 69px;
+            }
+
+            .words {
+                /*width: 180px;*/
+                display: flex;
+            }
+
+            .words-innertext {
+                font-size: 13px;
+            }
+
+            .h2_mainhoteldetail_box2_inner .h2_mhdb2_mapbox {
+                font-size: 11px;
+            }
+
+            .h2_mainhoteldetail_box3 {
+                padding-right: initial;
+            }
+
+            .h2_mainhoteldetail_box3_inner {
+                width: 90%;
+                margin-bottom: 0.5em;
+                margin-right: 1em;
+            }
+
+                .h2_mainhoteldetail_box3_inner .h2_tempdoleft1 {
+                    width: 50%;
+                }
+
+                .h2_mainhoteldetail_box3_inner .h2_mhdb3_price_full {
+                    font-size: 12px;
+                }
+
+                    .h2_mainhoteldetail_box3_inner .h2_mhdb3_price_full span {
+                        font-size: 16px;
+                    }
+
+                .h2_mainhoteldetail_box3_inner .h2_mhdb3_tax {
+                    font-size: 12px;
+                }
+        }
+
+        @@media screen and (max-width : 400px) {
+            .words-innertext {
+                float: left;
+                width: 50%;
+            }
+
+            .words {
+                /*width:150px;*/
+                margin-bottom: 0.5em;
+                display: inline-flex;
+            }
+
+            .all_iconbox {
+                /* fullfill 3 icon */
+                /*width: 40px;
+                font-size: 10px;
+                display: inline-block;
+                margin-right: 3%;*/
+                /* fullfill 4 icon */
+                width: 30px;
+                font-size: 7px;
+                display: inline-block;
+                margin-right: 6%;
+            }
+
+                .all_iconbox > div {
+                    font-size: inherit !important;
+                    line-height: inherit !important;
+                }
+        }
+
+        @@media screen and (max-width : 380px) {
+            .h2_mhdb2_mapbox {
+                float: left;
+            }
+        }
+
+        @@media screen and (min-width:453px) and (max-width:900px) {
+            .all_iconbox {
+                margin-bottom: 10%;
+            }
+        }
+
+        @@media screen and (min-width:453px) and (max-width:645px) {
+            .all_iconbox {
+                width: 26%;
+            }
+        }
+
+        .pagination_container {
+            max-width: 380px;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .ShowMoreRoom {
+            cursor: pointer;
+        }
+
+        button#btnHotelOnly {
+            background-color: #eb1c24;
+            border: 0px;
+            width: 100%;
+            max-width: 175px;
+            color: #fff;
+            font-size: 15px;
+            height: 43px;
+            display: block;
+            margin: 0 auto;
+            margin-top: 1em;
+            cursor: pointer;
+        }
+
+            button#btnHotelOnly:hover {
+                background-color: #ea5258;
+            }
+
+        .modifysearch_white1nn {
+            height: initial;
+        }
+
+        .lazy-loading {
+            /*max-height: 100px; position: absolute; top: 26%; left: 35%;*/
+            position: absolute;
+            left: 25%;
+            top: 25%;
+            width: 50%;
+            height: 50%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 60%;
+            background-image: url(../Images/mayflower_loading.gif);
+        }
+
+        .ht-img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            min-height: 100%;
+        }
+
+        .trans_background {
+            animation: highlight 2s;
+            -moz-animation: highlight 2s infinite; /* Firefox */
+            -webkit-animation: highlight 2s infinite; /* Safari and Chrome */
+        }
+
+        @@-moz-keyframes highlight /* Firefox */ {
+            0% {
+                background: #f3f3f3;
+            }
+
+            50% {
+                background: #dad9d9;
+            }
+
+            100% {
+                background: #f3f3f3;
+            }
+        }
+
+        @@-webkit-keyframes highlight /* Safari and Chrome */ {
+            0% {
+                background: #f3f3f3;
+            }
+
+            50% {
+                background: #dad9d9;
+            }
+
+            100% {
+                background: #f3f3f3;
+            }
+        }
+
+        td.ui-datepicker-week-end.event_highlight a {
+            background-color: #4CAF50 !important;
+            color: #fff;
+            border-radius: 1em;
+            margin: 0 auto;
+        }
+    </style>
+    @if (Model.Hotel.SearchHotelInfo.BundleType() == BundleTypes.TPConcert && Model.Hotel.SearchHotelInfo.BundleInfo != null)
+    {
+        <style>
+            @@media screen and (min-width : 700px) {
+            .s2_mc_border_conainer3 {
+                border: none;
+                height: 300px;
+                text-align: center;
+                background-repeat: no-repeat;
+                background-image: url('@Url.Content("~/Images/BundleItems/" + Model.Hotel.SearchHotelInfo.BundleInfo.BundleID + "_" + Model.Hotel.SearchHotelInfo.BundleInfo.EventDesc + "_768px.jpg")');
+                background-position: center;
+            }
+        }
+
+        @@media screen and (max-width : 699px) {
+            .s2_mc_border_conainer3 {
+                border: none;
+                height: 190px;
+                text-align: center;
+                background-repeat: no-repeat;
+                background-image: url('@Url.Content("~/Images/BundleItems/" + Model.Hotel.SearchHotelInfo.BundleInfo.BundleID + "_" + Model.Hotel.SearchHotelInfo.BundleInfo.EventDesc + "_320px.jpg")');
+                background-position: center;
+            }
+        }
+        </style>
+    }
+    @if (Model.Hotel.SearchHotelInfo.IsPromoCodeUsed)
+    {
+        <style>
+            .toggle-code {
+                font-size: 14px;
+                color: #4CAF50;
+                display: inline-block;
+                text-decoration: none;
+            }
+
+                .toggle-code:hover {
+                    color: #57c75b;
+                }
+
+            span.pCode-text {
+                font-size: 14px;
+            }
+
+            .pCode-inputArea {
+                display: none;
+            }
+
+            input#promo-code {
+                height: 34px;
+                line-height: 34px;
+                max-width: 250px;
+                padding: 0 1em;
+                width: 55%;
+            }
+
+            button#apply-code {
+                height: 34px;
+                max-width: 80px;
+                width: 100%;
+                margin: 1em;
+                border: none;
+                color: #fff;
+                background-color: #4CAF50;
+            }
+
+            input#promo-code:focus {
+                border-color: initial;
+                box-shadow: none;
+            }
+
+            .promo-container {
+                margin: 3px;
+                margin-top: 1em;
+                padding-bottom: 0.6em;
+            }
+
+            .promo-sMsg {
+                margin-top: -1.5em;
+                display: block;
+            }
+
+            .s2_main_container {
+                position: relative;
+            }
+
+            .ipromo-container {
+                background-color: rgba(139, 195, 74, 0.9);
+                border-bottom-right-radius: 0.5em;
+                border-top-left-radius: 0.5em;
+                display: block;
+                width: 100%;
+                max-width: 200px;
+                height: 50px;
+                position: absolute;
+                top: 6px;
+                left: -5px;
+                z-index: 1;
+            }
+
+            .ipromo-highlight {
+                line-height: 50px;
+                margin: 0 1em;
+                width: 90%;
+            }
+
+                .ipromo-highlight p {
+                    margin: 0;
+                }
+
+            .cr-icon-container {
+                width: 30px;
+                margin-right: 5px;
+                float: left;
+            }
+
+            .ipromo-textcontainer {
+                line-height: 15px;
+                font-size: 12px;
+                max-width: 130px;
+                color: #fff;
+                display: inline-block;
+                padding-top: 10px;
+                margin-left: 10px;
+            }
+
+            .glyphicon.glyphicon-tags.ipromo {
+                height: 30px;
+                line-height: 30px;
+                width: 30px;
+                text-align: center;
+                color: rgb(149, 199, 90);
+                background: #fff;
+                border-radius: 2em;
+                display: inline-block;
+            }
+        </style>
+    }
+}
+<!-- hotel view more start -->
+@Html.Partial("_PopupRoomInfo")
+<!-- hotel view more end -->
+<!-- MODIFY SEARCH START -->
+@if (!Model.IsDynamic)
+{
+    @Html.Partial("_ModifySearchHotel", Model.Hotel.SearchHotelInfo)
+}
+@if (Model.Hotel.SearchHotelInfo.BundleExist())
+{
+    @Html.Partial("_ModifySearchHotelBundle", Model.Hotel.SearchHotelInfo)
+}
+<!-- MODIFY SEARCH END -->
+<!-- INFORMATION BOX START -->
+<div id="infobox">
+    @if (Model.IsDynamic)
+    {
+        @Html.Partial("~/Views/Checkout/SharedPartials/_ProductSummary.cshtml", Model)
+        @Html.Partial("~/Views/Checkout/SharedPartials/_ProgressBar.cshtml", Model)
+        <div id="fareRulesClass" style="display: none;">
+            @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+        </div>
+    }
+    else
+    {
+        @Html.Partial("_InformationBox", Model.Hotel.SearchHotelInfo)
+    }
+</div>
+<!-- INFORMATION BOX END -->
+<!-- FILTER CONTAINER START -->
+<div id="filter">
+    <div id="filterForm">
+        @Html.Partial("_HotelFilter", Model.Hotel.SearchHotelInfo)
+        @if (isAjax)
+        {
+        }
+    </div>
+</div>
+<!-- FILTER CONTAINER END -->
+<!-- filter tag start -->
+<div class="loadingArea">
+    @if (!string.IsNullOrWhiteSpace(Model.Hotel.SearchHotelInfo.Destination))
+    {
+        <div class="s2_main_container">
+            <div class="s2_mc_border_conainer loading" style="display: none">
+                <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                    <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                        <img src="@Url.Content("~/Images/mayflower_loading.gif")" width="120">
+                        <p id="msglbl" style="color:#808080;margin:1em">Hold on, your holiday is on the way...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- MAIN CONTENT PORTION START -->
+    <div id="hotelresultlist" @*style="display: none"*@>
+
+        @Html.Partial("_HotelList", Model.Hotel.SearchHotelInfo)
+        @if (Model.Hotel?.SearchHotelInfo?.Result?.HotelList != null)
+        {
+
+        }
+    </div>
+</div>
+
+
+@*@{ Html.RenderPartial("_FilterTag"); }*@
+<!-- filter tag end -->
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+
+<!-- MAIN CONTENT PORTION START -->
+<input type="hidden" id="hidViewMore" />
+@Html.Partial("_HotelInformation")
+@Html.Partial("_GoogleMap")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+@*
+    <!-- HOTEL LIST START -->
+    <div id="hotelresultlist">
+        @Html.Partial("_HotelList")
+    </div>
+    <!-- HOTEL LIST END -->
+
+    <!-- PAGING AREA START -->
+        @Html.Partial("_HotelListPaging")
+    <!-- PAGING AREA END -->
+*@
+
+<!-- MAIN CONTENT PORTION END -->
+@section scripts{
+    @Html.Partial("_Scripts_Styles")
+    @Html.Partial("_SearchDestinationWidgetScripts")
+    @if (Model.IsDynamic)
+    {
+        @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+    }
+    <script>
+        $(function () {
+            $.ajaxSetup({ data: JSON.stringify({ tripid: '@tripid' }) });
+        });
+
+        $(document).ready(function (e) {
+            history.pushState('', '', window.location.href);
+
+            var toggleLoadArea = function (option) {
+                option = option == undefined ? 'slow' : option;
+                $('.s2_main_container .loading, #hotelresultlist, #searchHotelForm').toggle(option);
+            };
+
+            $.getHotelPanel = function () {
+                return $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: '/Hotel/GetHotelPanel' + '?&tripid=@tripid',
+                    async: true,
+                }).then(function (res) {
+                    $("#filterForm").hide();
+                    $("#filterForm").html(res);
+                    iniPropertyAuto(); @* Required for hotel filter autocomplete *@
+                    iniDestinationAuto();
+                    $.getScript('@Url.Content("~/Scripts/hotel/slider_hotel.js")');
+                    //loadhotelbubble();
+                }, function (res) {
+                    $("#hotelresultlist").html(res);
+                    toggleLoadArea(400);
+                    setTimeout(function (e) {
+                        $('#oopsbox').fadeIn();
+                    }, 500);
+                }).promise();
+            };
+
+            $.getHotelList = function () {
+                //var dataf = $('#searchHotelForm').serialize();
+                return $.ajax({
+                    method: 'POST',
+                    url: '/Hotel/GetHotelList' + '?newsearch=1&tripid=@tripid',
+                    cache: false,
+                    async: true,
+                    contentType: "application/json",
+                }).promise();
+            };
+
+            if ($('[data-htres="empty"]').length) {
+                lazyPreLoad();
+                $.getHotelList().then(
+                    function (data) {
+                        // success
+                        $("#hotelresultlist").html(data);
+                        if ($('.no-result').length == 0) {
+                            upPc();
+                            $.getHotelPanel().done(function (e) {
+                                lazyPreLoad();
+                                //toggleLoadArea();
+                                $("#filterForm").fadeToggle();
+                            });
+                        }
+                    }, function (data) {
+                        // failed
+                        toggleLoadArea(400);
+                        setTimeout(function (e) {
+                            $('#oopsbox').fadeIn();
+                        }, 500);
+                    });
+            }
+            else {
+                lazyPreLoad();
+                $.getScript('@Url.Content("~/Scripts/hotel/slider_hotel.js")');
+                upPc();
+                /*$.getHotelPanel().done(function (e) {
+                    //toggleLoadArea();
+                    $("#filterForm").fadeToggle();
+                });*/
+            }
+
+        });
+        var toggleLoadSection = function (result) {
+            focusHotelResult();
+            if (typeof result == "undefined") {
+                $("#hotelresultlist").html('');
+            }
+            else {
+                $("#hotelresultlist").html(result);
+                lazyPreLoad();
+            }
+            $('.s2_main_container .loading').toggle();
+        }
+    </script>
+
+    <script type="text/javascript">
+        $('body').prepend('<a href="#" class="back-to-top"></a>');
+
+        window.addEventListener("scroll", scTop);
+
+        function scTop() {
+            var b = document.querySelector('#ars-header1');
+            if (b != null) {
+                var a = document.querySelector('.back-to-top');
+                var h = b.offsetHeight;
+                if (document.body.scrollTop > h || document.documentElement.scrollTop > h) {
+                    a.style.display = 'block';
+                } else {
+                    a.style.display = 'none';
+                }
+            }
+        }
+
+        $('a.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 700);
+            return false;
+        });
+
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#starrating").val($("#hidStar").val());
+        });
+
+        $("#starrating").change(function () {
+            $("#hidStar").val($("#starrating").val());
+        });
+
+        //Prevent safari loading from cache when back button is clicked
+        $(window).bind("pageshow", function (event) {
+            if (event.originalEvent.persisted) {
+                window.location.reload()
+            }
+        });
+
+        $('body').on('click', 'span.clearTxt', function (e) {
+            $(this).hide();
+            $(this).prev().val('');
+        })
+
+        $("#search_hotel").on('keyup', '#destination', function () {
+            var raw_text = $(this).val();
+            var return_text = raw_text.replace('<', '').replace('>', '');
+            $(this).val(return_text);
+
+            fPropNam(this);
+        });
+    </script>
+
+    @if (Model.Hotel.SearchHotelInfo.BundleExist() && Model.Hotel.SearchHotelInfo.BundleInfo != null)
+    {
+        var bundleInfo = Model.Hotel.SearchHotelInfo.BundleInfo;
+        var eventDate = bundleInfo.EventDates.Last();
+
+        <script>
+            var eventDates = new Date(@eventDate.ToJSDateTimeFormat());
+
+            $("#checkin_b").datepicker({
+                numberOfMonths: 1,
+                showButtonPanel: true,
+                defaultDate: new Date(@bundleInfo.CheckInStart.ToJSDateTimeFormat()),
+                minDate: new Date(@bundleInfo.CheckInStart.ToJSDateTimeFormat()),
+                maxDate: new Date(@bundleInfo.CheckInEnd.ToJSDateTimeFormat()),
+                dateFormat: 'dd-M-yy',
+                dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+                beforeShowDay: function (date) {
+                    // check if date is in your array of dates
+                    if (date.toDateString() == eventDates.toDateString()) {
+                        // if it is return the following.
+                        return [true, 'event_highlight', '@bundleInfo.EventDesc'];
+                    }
+                    else {
+                        // default
+                        return [true, '', ''];
+                    }
+                },
+                onClose: function (selectedDate) {
+                    if (returndate == "show") {
+                        if ($.trim($('#checkin_b').val()) != '') {
+                            $('#checkin_b').datepicker("option", "buttonText", selectedDate.substr(0, 10));
+                        }
+                    }
+                    if (dateOnSelect == true) {
+                        setTimeout(function () { $('#checkout_b').datepicker('show') }, 0);
+                        dateOnSelect = false;
+                    }
+                },
+                onSelect: function (selectedDate) {
+                    if ($.trim($('#checkin_b').val()) != '') {
+                        var selectedBeginDate = $('#checkin_b').datepicker('getDate');
+                        var selectedEndDate = $('#checkout_b').datepicker('getDate');
+                        var default_end = new Date(selectedBeginDate.getFullYear(), selectedBeginDate.getMonth(), selectedBeginDate.getDate() + 1);
+                        dateOnSelect = true;
+                    }
+                }
+            });
+
+            $("#checkout_b").datepicker({
+                numberOfMonths: 1,
+                showButtonPanel: true,
+                defaultDate: new Date(@bundleInfo.CheckOutStart.ToJSDateTimeFormat()),
+                minDate: new Date(@bundleInfo.CheckOutStart.ToJSDateTimeFormat()),
+                maxDate: new Date(@bundleInfo.CheckOutEnd.ToJSDateTimeFormat()),
+                dateFormat: 'dd-M-yy',
+                dayNamesMin: ["S", "M", "T", "W", "T", "F", "S"],
+                //beforeShowDay: function (date) {
+                //    // check if date is in your array of dates
+                //    if ($.inArray(date, eventDates)) {
+                //        // if it is return the following.
+                //        return [true, 'event_highlight', 'MAYDAY'];
+                //    } else {
+                //        // default
+                //        return [true, '', ''];
+                //    }
+                //},
+                beforeShow: function (input, inst) {
+                    var date = $('#checkin_b').datepicker('getDate');
+                    if (date) {
+                        date.setDate(date.getDate() + 1);
+                    }
+                },
+                onClose: function (selectedDate) {
+                    if (returndate == "show") {
+                        if ($.trim($('#checkout_b').val()) != '') {
+                            $('#checkout_b').datepicker("option", "buttonText", selectedDate.substr(0, 10));
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+    <script>
+        $.getSInfo = function () {
+            return $.ajax({
+                method: 'POST',
+                url: '/hotel/setsearchinfo' + '?tripid=@tripid',
+                cache: false,
+                async: true,
+                contentType: "application/json",
+            }).promise();
+        };
+
+        var hsInfo = '';
+
+        $.getSInfo().then(function (res) {
+            // success
+            hsInfo = res;
+            //location.hash = $.param(hsInfo);
+        }, function (res) {
+            // failed
+            });
+
+
+        function upPc() {
+            $('.h2_mainhoteldetail_box1').each(function (i, e) {
+                var htdt = $(e).data('hotelid');
+                gtPc(htdt);
+            });
+        }
+
+        function gtPc(ht) {
+            $.ajax({
+                url: '/spagent/ahotel/_gtpc?tripid=@tripid',
+                dataType: 'json',
+                async: true,
+                data: {
+                    htid: ht
+                },
+                method: 'get',
+                complete: function (res) {
+                    var lowest = 0;
+                    var curr = '';
+                    var pList = $('.s2_main_container .h2_mainhoteldetail_box1[data-hotelid="' + ht + '"]').parent();
+
+                    if (typeof (res.responseJSON) === 'undefined') {
+                        return false;
+                    }
+                    var pPrice = pList.find('.desc-price');
+
+                    pList = pList.find('.slider-sup ul');
+
+                    pList.find('li').each(function (i, e) {
+                        $(e).addClass('disabled');
+                    });
+
+                    $(res.responseJSON).each(function (i, e) {
+                        if (e.Price < lowest || lowest == 0) {
+                            lowest = e.Price;
+                            curr = e.Curr;
+
+                            pPrice.html(lowest.toFixed(2));
+                        }
+
+                        var pcBlock = pList.find('li[data-supp="' + e.Source + '"]');
+                        pcBlock.attr('data-price', e.Price);
+                        pcBlock.attr('data-hotelid', e.HID);
+                        pcBlock.addClass('ShowMoreRoom');
+                        pcBlock.removeClass('disabled');
+                    });
+                },
+            });
+        }
+
+        $('#hotelresultlist').on('mouseover', '.s2_starbuy_flag', function () {
+            $(this).find(".s2_marketingMsg_toll_tip").show();
+        });
+        $('#hotelresultlist').on('click', '.marketingMsgclose', function () {
+            $(this).parent().parent().hide();
+        });
+    </script>
+}

@@ -1,0 +1,551 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    Mayflower.General.CustomPrincipal CustomPrincipal = (User as Mayflower.General.CustomPrincipal);
+
+    bool isB2BAgentAndAllowHold = User.Identity.IsAuthenticated && CustomPrincipal.IsAgent && Model.Hotel == null
+        && Model.Flight != null && Model.Flight.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.SACS;
+
+    string tripid = Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+
+    ViewBag.Title = "Payment";
+    ViewBag.HeaderRed = true;
+    ViewBag.tripid = tripid;
+    //ViewBag.CheckSession = true;
+    ViewBag.ReturnAction = Model.SellItemsAvailable.EventProducts != null || Model.SellItemsAvailable.Hotels != null || Model.SellItemsAvailable.Insurance != null ?
+        Url.Action("AddOn", "Checkout", new { tripid, affiliationId }) : Url.Action("GuestDetails", "Checkout", new { tripid, affiliationId });
+
+    Alphareds.Module.Model.Database.MayFlower db = new Alphareds.Module.Model.Database.MayFlower();
+    var taxRate = db.TaxCodeTypes.FirstOrDefault(x => x.TaxCode == "SR").TaxPercentage;
+
+    PromoCodeRule promoCodeRule = Model.PromoID != 0 ? db.PromoCodeRules.FirstOrDefault(x => x.PromoID == Model.PromoID) : null;
+
+    string currencyCode = Model.CheckOutSummary.CurrencyCode;
+
+    BundleTable.Bundles.Add(new ScriptBundle("~/scripts/bundle")
+                                .Include("~/Scripts/page-scripts.js")
+                                .Include("~/Scripts/common/payment.js"));
+
+    BundleTable.Bundles.Add(new StyleBundle("~/css/bundle")
+                                        .Include("~/CSS/v2style.css")
+                                        .Include("~/CSS/v2responsive.css")
+                                        .Include("~/CSS/bootstrap/bootstrap.min.css")
+                                        .Include("~/CSS/bootstrap/bootstrap-carousel.css")
+                                        .Include("~/CSS/crosssell/style.css"));
+}
+
+@section style{
+    <link href="@Url.Content("~/css/bundle?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+    <link href="@Url.Content("~/CSS/checkout/style.min.css?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))" rel="stylesheet" />
+
+    @if (Core.IsEnableAdyen)
+    {
+        <link href="@Url.Content("~/CSS/checkout/adyencc.min.css")?ver=@DateTime.Now.ToString("yyyyMMddhh")" rel="stylesheet" />
+    }
+}
+
+@if (Model.IsDynamic)
+{
+    <style>
+        .s2_filer_container {
+            width: 100%;
+            background-color: #fff;
+            border-bottom: 1px solid #d9d9d9;
+            border-top: 1px solid #d9d9d9;
+            margin-top: 50px;
+        }
+
+        .col-lg-offset-2 {
+            width: 100% !important;
+            margin-left: 11% !important;
+        }
+
+        .section-tabs .nav-wizard {
+            margin: 0px !important;
+            max-width: 100% !important;
+        }
+
+        @@media screen and (min-device-width : 992px)and (max-width : 1200px) {
+            .addons > .container > .section-tabs > .col-md-offset-1 {
+                margin-left: unset !important;
+            }
+        }
+
+        @@media screen and (min-width : 768px) and (max-width : 991px) {
+            .nav-pills.nav-wizard > li > a > .visible-sm {
+                display: none !important;
+            }
+
+            .nav-pills.nav-wizard > li > a > .visible-xs {
+                display: block !important;
+            }
+
+            .nav-pills.nav-wizard > li > a {
+                width: 70px !important;
+            }
+        }
+
+        @@media screen and (min-width: 769px) {
+            .flex {
+                display: flex;
+            }
+        }
+    </style>
+}
+
+
+@Html.Partial("~/Views/Checkout/SharedPartials/_ProductSummary.cshtml", Model)
+@Html.Partial("~/Views/Checkout/SharedPartials/_ProgressBar.cshtml", Model)
+@if (Model.IsDynamic || Model.Flight != null)
+{
+    <div id="fareRulesClass" style="display: none;">
+        @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+    </div>
+}
+
+<div class="st4_payment_heading_container">
+    <span>Payment</span>
+    Please ensure that all your details are correct before payment.
+    @Html.ValidationMessage("Error", new { style = "font-size: 22px;font-style: italic;" })
+</div>
+
+@using (Html.BeginForm("Payment", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { id = "checkoutForm" }))
+{
+    <div class="s3-1_form">
+        <div class="payment_innerbox">
+            <div class="payment_content_container">
+                <div class="s3_hotel_topline lineblack"></div>
+                <div class="s4_blt_heading payment">Payment Summary</div>
+                <div class="s4_blt_sub_heading">
+                    @*@outboundDepartDate @(isReturn ? "to + inboundDepartDate" : null)*@
+                </div>
+
+                <div class="s4_blt_py_container">
+                    @foreach (var product in Model.Products.GroupBy(grp => grp.ProductType))
+                    {
+                        if (Model.Products.Count == 1 & Model.Hotel != null)
+                        {
+                            foreach (var room in Model.Hotel.RoomDetails.GroupBy(x => x.RoomTypeName))
+                            {
+                                var allInPrice = room.Sum(x => x.TotalBaseRate_BeforeDiscount) + room.Sum(x => x.TotalTaxAndServices) + room.Sum(x => x.TotalGST);
+                                <div class="s4_blt_py_con_left no-margin">@room.Key x @room.Count()</div>
+                                if (Core.IsForStaging)
+                                {
+                                    <span style="color:red; padding-left: 5px;">(Base: @currencyCode @room.Sum(x => x.TotalBaseRate_BeforeDiscount).ToString("#,##0.00"))</span>
+                                }
+                                <div class="s4_blt_py_con_right no-margin">
+                                    @currencyCode
+                                    <span>@allInPrice.ToString("#,##0.00")</span>
+                                </div>
+                                <div style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                                    @{
+                                        var pernight = room.SelectMany(x => x.ChargeableRatePerNight).GroupBy(x => x.CheckInDate);
+                                    }
+                                    @foreach (var nightly in pernight)
+                                    {
+                                        <div class="night-charge"></div>
+                                        <div class="night-charge1">@nightly.Key.ToString("ddd, dd MMM")</div>
+                                        <div class="night-charge2"><span>@currencyCode </span>@Math.Round(Convert.ToDouble(nightly.Sum(x => x.BaseRate_BeforeDiscount + x.TaxAndServices + x.GST)), 2).ToString("n2")</div>
+                                        <div class="clear"></div>
+                                    }
+                                </div>
+                                <div class="clear"></div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="s4_blt_py_con_left">@product.Key.ToString().AddSpacingAfterUpCase()</div>
+
+                            if (Core.IsTestInstantDisc && Model.IsDynamic)
+                            {
+                                <small style="color:red;"> (selling: @product.Sum(x => x.PricingDetail.ProductTotalAmount).ToString("n2") cost: @product.Sum(x => x.PricingDetail.ProductTtlAmount_SupplierSource).ToString("n2"))</small>
+                            }
+
+                            var allInPrice = product.Sum(x => x.PricingDetail.BaseRate_BeforeDisc) + product.Sum(x => x.PricingDetail.Surcharge) + product.Sum(x => x.PricingDetail.GST);
+                            <div class="s4_blt_py_con_right">MYR&nbsp;<span>@allInPrice.ToString("n2")</span></div>
+
+                            <div class="nightly-break">
+                                @foreach (var item in product.SelectMany(x => x.PricingDetail.Items))
+                                {
+                                    <div class="night-charge"></div>
+                                    if (product.Key == ProductTypes.Insurance)
+                                    {
+                                        int paxCountForInsurance = Model.Flight.TravellerDetails.Count();
+                                        <div class="night-charge1">@item.ItemDetail x @paxCountForInsurance</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="night-charge1">@item.ItemDetail x @item.ItemQty</div>
+                                    }
+                                    <div class="night-charge2"></div>
+                                    <div class="clear"></div>
+                                    @*foreach (var room in item.DisplayChargeableRatePerNightModel.GroupBy(x => x.CheckInDate))
+                                        {
+                                            <div class="night-charge"></div>
+                                            <div class="night-charge1">@room.Key.ToString("ddd, dd MMM")</div>
+                                            <div class="night-charge2"><span>MYR </span>@(room.Sum(x => x.BaseRate).ToString("#,##0.00"))</div>
+                                            <div class="clear"></div>
+                                        }*@
+                                }
+                            </div>
+                            <div class="clear"></div>
+                        }
+                    }
+
+                    @if (Model.Hotel != null)
+                    {
+                        if (Model.Hotel.SearchHotelInfo.BundleType() == BundleTypes.TPConcert)
+                        {
+                            var roomList = Model.Hotel.RoomSelected.HotelRoomInformationList.SelectMany(x => x.roomAvailabilityDetailsList);
+
+                            <div class="s4_blt_py_con_left">Bundled Items</div>
+                            <div class="s4_blt_py_con_right"></div>
+                            <div class="clear"></div>
+                            <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+                                @foreach (var item in Model.Hotel.RoomDetails.GroupBy(x => x.RateDesc))
+                                {
+                                    int ttl = 0;
+                                    foreach (var room in item)
+                                    {
+                                        var _grpRoom = roomList.FirstOrDefault(x => x.rateCode == room.RateCode && x.rateDescription == item.Key && x.roomTypeCode == room.RoomTypeCode);
+                                        ttl += Convert.ToInt32(_grpRoom.quotedOccupancy);
+                                    }
+
+                                    <div style="margin-left: 5%;">@ttl x @item.Key.Remove(0, item.Key.IndexOf('+') + 1)</div>
+                                    <div class="clear"></div>
+                                }
+                            </div>
+                        }
+                    }
+
+                    @*<div class="s4_blt_py_con_left">Taxes &amp; Fees</div>
+                        <div class="s4_blt_py_con_right"><span></span></div><div class="s4_blt_py_con_right"><span></span></div>
+                        <div class="s4_blt_py_con_right">MYR <span>@Model.CheckOutSummary.TtlSurchage.ToString("n2")</span></div>
+                        <div class="clear"></div>*@
+
+                    <div class="s4_blt_py_con_left">Processing Fee</div>
+                    <div class="s4_blt_py_con_right">MYR <span class="ProcessingFee">@Model.CheckOutSummary.ProcessingFee.TtlAmt.ToString("n2")</span></div>
+                    <div class="clear"></div>
+
+                    @*<div class="s4_blt_py_con_left">GST (SR @(taxRate.ToString("n0"))%)</div>
+                        <div class="s4_blt_py_con_right">MYR <span class="Gst">@Model.CheckOutSummary.TtlGST.ToString("n2")</span></div>
+                        <div class="clear"></div>*@
+
+                    @if (Model.IsDynamic && Model.CheckOutSummary.DiscountDetails.Where(s => s.Disc_Desc == "Instant Discount").Count() > 0)
+                    {
+                        decimal ttlCodeDisc = Model.CheckOutSummary.DiscountDetails.Where(s => s.Disc_Desc == "Instant Discount").Sum(s => s.Disc_Amt);
+                        <div id="instantdisc_detail">
+                            <div id="p_left" class="s4_blt_py_con_left">Instant Discount</div>
+                            <div id="p_right" class="s4_blt_py_con_right">
+                                @Model.CheckOutSummary.CurrencyCode <span class="promo-code-payment">@((-Math.Abs(ttlCodeDisc)).ToString("n2"))</span>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="instantdisc_detail" class="instantdiscdiv">
+                            <div id="p_left" class="s4_blt_py_con_left">
+                            </div>
+                            <div id="p_right" class="s4_blt_py_con_right">
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    }
+
+                    @if (Model.PromoID != 0)
+                    {
+                        decimal ttlCodeDisc = Model.CheckOutSummary.DiscountDetails.Where(s => s.DiscType == DiscountType.CODE && s.Disc_Desc != "Instant Discount").Sum(s => s.Disc_Amt);
+                        // Promo Code Section Here
+                        bool isHidePromoCode = Model.PromoCodeFunctions.GetFrontendFunction.FlightAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.HotelAutoApplied
+                            || Model.PromoCodeFunctions.GetFrontendFunction.PackageAutoApplied || Model.PromoCodeFunctions.GetFrontendFunction.PromoCodeHideForCustomer;
+                        string displaypromoname = string.IsNullOrWhiteSpace(promoCodeRule.DisplayPromoName) ? null : $" - {promoCodeRule.DisplayPromoName}";
+                        string displaypromocode = $"Promo Code {(!isHidePromoCode ? $"({promoCodeRule.PromoCode}{displaypromoname})": "")}";
+                        <div id="pcode_detail">
+                            <div id="p_left" class="s4_blt_py_con_left">
+                                @displaypromocode
+                                @if (!Model.PromoCodeFunctions.GetFrontendFunction.WaiveCreditCardFee)
+                                {
+                                    <span><a id="promo-remove" href="javascript:;">Remove</a></span>
+                                }
+                            </div>
+                            <div id="p_right" class="s4_blt_py_con_right">
+                                @Model.CheckOutSummary.CurrencyCode <span class="promo-code-payment">@((-Math.Abs(ttlCodeDisc)).ToString("n2"))</span>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="pcode_detail">
+                            <div id="p_left" class="s4_blt_py_con_left">
+                            </div>
+                            <div id="p_right" class="s4_blt_py_con_right">
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    }
+
+                    @if (Core.IsTestInstantDisc && Model.IsDynamic)
+                    {
+                        IList<ICheckoutProduct> allPrd = Model.Products.OrderBy(x => x.ProductSeq).ToList();
+                        <small style="color:red;">
+                            (total selling: @allPrd.Sum(x => x.PricingDetail.ProductTotalAmount).ToString("n2"))
+                            (total cost: @allPrd.Sum(x => x.PricingDetail.ProductTtlAmount_SupplierSource).ToString("n2"))
+                        </small>
+                    }
+
+                    <div class="s4_total_price"></div>
+                    <div class="s4_blt_py_con_left">Total Price</div>
+                    <div class="s4_blt_py_con_right" id="Totalprice"><span class="Currency">MYR</span><span id="ttlPrice" class="TotalPrice">@((Model.CheckOutSummary.GrandTtlAmt_InPaymentSummary).ToString("n2"))</span></div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            @if (Model.Hotel != null)
+            {
+                bool gothotelinstruc = Model.Hotel.HotelInstrusction != null && (!string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.NotificationFee) ||
+                !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.MandatoryFee) || !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.SpecialCheckInInstruction) ||
+                !string.IsNullOrEmpty(Model.Hotel.HotelInstrusction.KnowBeforeYouGoDesc));
+                bool HBhotelratedesc = Model.Hotel.RoomSelected.HotelRoomInformationList.Any(x => x.roomAvailabilityDetailsList.FirstOrDefault().rateDescription != null) && Model.Hotel.RoomSelected.HotelRoomInformationList.FirstOrDefault().hotelSupplier == Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelSupplier.HotelBeds;
+                if (gothotelinstruc || HBhotelratedesc)
+                {
+                    // Hotel Notification Information Here
+                    <div class="notification_content_container">
+                        <div class="s4_blt_py_container2">
+                            @if (gothotelinstruc)
+                            {
+                                var checkoutHotelModel = Model.Hotel.HotelInstrusction;
+                                if (!string.IsNullOrEmpty(checkoutHotelModel.NotificationFee))
+                                {
+                                    <h3>Notification and Fees</h3>
+                                    <small>@Html.Raw(checkoutHotelModel.NotificationFee)</small>;
+                                }
+
+                                if (!string.IsNullOrEmpty(checkoutHotelModel.MandatoryFee))
+                                {
+                                    <h3>Mandatory Fees</h3>
+                                    <small>@Html.Raw(checkoutHotelModel.MandatoryFee)</small>;
+                                }
+
+                                if (!string.IsNullOrEmpty(checkoutHotelModel.KnowBeforeYouGoDesc))
+                                {
+                                    <h3>Know Before You Go</h3>
+                                    <small>@Html.Raw(checkoutHotelModel.KnowBeforeYouGoDesc)</small>;
+                                }
+
+                                if (!string.IsNullOrEmpty(checkoutHotelModel.SpecialCheckInInstruction))
+                                {
+                                    <h3>Special Check In Instruction</h3>
+                                    <small>@Html.Raw(checkoutHotelModel.SpecialCheckInInstruction)</small>;
+                                }
+                    }
+                            @if (HBhotelratedesc)
+                            {
+                                foreach (var room in Model.Hotel.RoomSelected.HotelRoomInformationList)
+                                {
+                                    <h3>Rate Description</h3>
+                                    List<string> ratedesclist = room.roomAvailabilityDetailsList.FirstOrDefault().rateDescription.Split(new string[] { ". -" }, StringSplitOptions.None).ToList<string>();
+                                    <small>
+                                        @foreach (var ratedesc in ratedesclist)
+                                        {
+                                            @ratedesc<br />
+                                        }
+                                    </small>;
+                        }
+                    }
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="s4_payment_nextbox" style="position: relative">
+                <div class="s4_pnb_red_heading">Pay Using</div>
+
+                <div class="s4_pnb_inner">
+                    @{
+                        ViewBag.PromoCodeRule = promoCodeRule;
+                        ViewBag.PromoID = Model.PromoID;
+                        ViewBag.AllowWithTC = Model.PromoCodeFunctions.GetFrontendFunction.AllowWithTC;
+                    }
+
+                    @Html.Partial("~/Views/Checkout/PaymentPartials/_CreditPaymentPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())
+
+                    @Html.Partial("~/Views/Checkout/PaymentPartials/_PaymentMethodPartial.cshtml", Model.PaymentDetails ?? new PaymentCheckout())
+
+                    @if (Core.IsEnablePayByPromoCode)
+                    {
+                        ViewBag.IsPromoCodeUsed = ((Model.Flight != null && Model.Flight.SearchFlightInfo.IsPromoCodeUsed) ||
+                                                  (Model.Hotel != null && Model.Hotel.SearchHotelInfo.IsPromoCodeUsed) && Model.PromoID != 0);
+                        @Html.Partial("~/Views/Payment/_PromoCodePartial.cshtml")
+                    }
+                </div>
+            </div>
+
+            <!-- ipay portion start -->
+            <div class="ipay_container">
+
+                <div class="ipay_con_left">
+                    <h3>Read me - I'm important!</h3>
+                    
+                    @if (DateTime.Now < new DateTime(2018, 04, 01))
+                    {
+                        <div class="radio1_s4 radio1_s5">
+                            <div class="contestTNC">
+                                <input id="contesttnc" type="checkbox" name="contesttnc" value="true" @(false ? "checked" : "")>
+                                <label for="contesttnc">By ticking this box, I agree to all of the <a href="@Url.Content("~/ContestTNC/contestT&C.pdf")" target="_blank">Terms & Conditions</a> of this Buy Travel Win Contest.</label>
+                            </div>
+                            <img class="contestPic" src="~/Images/BTW-Logo-RGB-w-background.png" />
+                        </div>
+                    }
+
+                    <div class="radio1_s4">
+                        <input id="tnc" type="checkbox" name="tnc" value="true" @(false ? "checked" : "")>
+                        <label for="tnc">I agree to all the <a href="@(Core.IsForStaging ? Url.Action("TermsConditions", "Public" ) : "https://www.mayflower.com.my/tnc")" target="_blank">Terms & Conditions</a> of Mayflower Holidays.</label>
+                    </div>
+                    <div class="radio2_s4">
+                        <input id="policy" type="checkbox" name="policy" value="true" @(false ? "checked" : "")>
+                        <label for="policy">
+                            By using and accessing any of the websites and / or services (whether by your mobile phone, PC or any other means), I am deemed to agree to the provisions of the
+                            &nbsp;<a href="@(Core.IsForStaging ? Url.Action("PDPA", "Public") : "https://www.mayflower.com.my/pdpa")" target="_blank">Protection Act 2010</a>
+                            &nbsp;as well as other applicable laws protecting privacy. I also read, understand and agree with the
+                            &nbsp;<a href="@(Core.IsForStaging ? Url.Action("Cancel", "Public") : "https://www.mayflower.com.my/cancel")" target="_blank">Cancellation Policies</a> of this hotel rate.
+                            <br><br>Reminder: Please ensure that all of your contact information are correct, then click 'Pay Now' to continue.
+                            &nbsp;You will then be taken to the credit card verification process page.
+                        </label>
+                    </div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="payment-btn-area">
+                    @if (Core.IsEnableAdyen)
+                    {
+                        <a href="javascript:;" class="ars-payment"><button type="submit" class="ars-btn ipay_paynow_button">Pay Now</button></a>
+                    }
+                    else
+                    {
+                        <a href="javascript:;" class="ars-payment"><div class="ipay_paynow_button">Pay Now</div></a>
+                    }
+
+                    @if (isB2BAgentAndAllowHold)
+                    {
+                        <button id="payment-later" type="button" class="ars-btn ars-btn-lg ars-btn-blue">Payment Later</button>
+                    }
+                </div>
+            </div>
+            <!-- ipay portion end -->
+        </div>
+    </div>
+}
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+@section scripts{
+    <script>
+        var paymentCalcUrl = '@Url.Action("UpdatePayment", "Checkout")';
+
+        $(document).ready(function () {
+                            history.pushState('', '', window.location.href);
+                        });
+    </script>
+    <script type="text/javascript" src="@Url.Content("~/scripts/bundle?" + DateTime.Now.ToString("yyyyMMddhhmm"))"></script>
+    @Html.Partial("~/Views/Checkout/_checkoutScripts.cshtml")
+    @if (Model.IsDynamic || Model.Flight != null)
+    {
+        @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+    }
+
+    <script type="text/javascript">
+        var voidPayment = false;
+                        var isValid = @Html.Raw(Json.Encode(ViewData.ModelState.IsValid));
+                        var errorsMsg = @Html.Raw(Json.Encode(string.Join(Environment.NewLine,ViewData.ModelState.Where(x => x.Value.Errors.Count > 0).SelectMany(x => x.Value.Errors).Select(error => error.ErrorMessage))));
+
+                        @if (Request.QueryString["status"] == "payment-void") {
+            <text> voidPayment = true; </text>
+                        }
+
+        if (!isValid) {
+            $('#popup-modal').show();
+            $('#modal-container').html("<div class='session_lb_text1' style='color: #000'><p>" + errorsMsg + "</p></div><a href='javascript:;' class='modal-close'><div class='redcontinue_button bckHomeBtn' style='margin-top: 1em;display: inline-block;'>Back to Homepage</div></a>");
+                        }
+        if (voidPayment) {
+            $('#popup-modal').show();
+            $('#modal-container').html("<div class='session_lb_text1' style='color: #000'><p>" + "Your payment was cancelled succesfully. You will not be charged any amount.</br></br>If you have any enquiries, please contact us." + "</p></div><a href='javascript:;' class='modal-close'><div class='redcontinue_button bckHomeBtn' style='margin-top: 1em;display: inline-block;'>Back to Homepage</div></a>");
+                        }
+
+        $('.bckHomeBtn').on('click', function (event) {
+            event.preventDefault();
+                            location.href = "/";
+        });
+    </script>
+
+    @if (Core.IsEnableAdyen)
+    {
+        BundleTable.Bundles.Add(new ScriptBundle("~/js/payment")
+                                        .Include("~/scripts/checkout/adyencc.js"));
+
+        @*//--Credit Card--Start//*@
+        <script type="text/javascript" src="@Core.GetAppSettingValueEnhanced("AdyenEncryption")"></script>
+        <script type="text/javascript" src="@Url.Content("~/js/payment?ver=" + DateTime.Now.ToString("yyyyMMddhhmm"))"></script>
+
+        @*//--Credit Card--End//*@
+    }
+    else
+    {
+        <script>
+            $('.ars-payment').on('click', function (e) {
+                var hiddenValue = $('#buttonValue');
+                var clickedVal = $(this).val();
+                hiddenValue.val('PaymentNow');
+                $('#checkoutForm').submit();
+            });
+        </script>
+    }
+
+    @if (isB2BAgentAndAllowHold)
+    {
+        <div class="modal fade" id="prompthold" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="border-radius: 0">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you confirm to hold the booking?</p>
+                        <br />
+                        <p>Please be aware that the booking will expire and unable to recover after the hold period is over. </p>
+                        <p>Kindly add payment promptly before expiry.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="confirm-paylater" class="btn btn-primary">Proceed</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <script>
+            $('#payment-later').on('click', function (e) {
+                if ($('#paymentLater').length == 0) {
+                    $('#checkoutForm').append('<input id="paymentLater" name="paymentLater" type="hidden" value="1">');
+                }
+
+                $('#prompthold').modal({
+                    show: true,
+                });
+            });
+
+            $('#confirm-paylater').on('click', function (e) {
+                if (!$(this).hasClass('disabled')) {
+                    $('#checkoutForm').unbind('submit');
+                    $('#checkoutForm').submit();
+                    $(this).addClass('disabled');
+                }
+            });
+        </script>
+    }
+}

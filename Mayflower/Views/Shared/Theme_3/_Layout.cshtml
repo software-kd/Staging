@@ -1,0 +1,160 @@
+﻿@{
+    string tripid = Request.QueryString["tripid"];
+    var controllerContext = ViewContext.RouteData.Values["controller"];
+    var actionContext = ViewContext.RouteData.Values["action"];
+    string controller = controllerContext != null ? controllerContext.ToString().ToLower() : "";
+    string action = actionContext?.ToString()?.ToLower() ?? "";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="keywords" content="mayflower, air tickets, flights, hotel, tour package, tour, Malaysia, Asia, travel" />
+
+    @if (ViewBag.MetaDescription == null)
+    {
+        <meta name="description" content="@ViewBag.Title">
+    }
+    else
+    {
+        <meta name="description" content="@ViewBag.MetaDescription">
+    }
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title - One-Stop Travel Site: Cheap Hotels, Flights &amp; Holidays | Mayflower.com.my</title>
+
+    <link type="text/css" rel="stylesheet" href="~/CSS/bootstrap_v4.1.1/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap_v4.1.1/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="~/css/font-awesome/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap_v4.1.1/bootstrap-datepicker.min.css">
+    <link type="text/css" rel="stylesheet" href="~/CSS/v3.0_style.css?v=1.1">
+    <link type="text/css" rel="stylesheet" href="~/CSS/v3.0_responsive.css">
+    <link href="~/CSS/checkout/v2/styles.min.css?v=@DateTime.Today.ToString("yyyyMMdd")" rel="stylesheet" />
+    <link rel="stylesheet" href="@Url.Content("~/css/headerfooter/style1.css?v=1.93")" type="text/css" />
+
+    @if (ViewBag.HeaderRed != true)
+    {
+        <link rel="stylesheet" href="@Url.Content("~/css/headerfooter/headerRedstyle.css")" type="text/css" />
+    }
+
+    <link rel="stylesheet" href="~/CSS/v3.0/styles.min.css?v=@(DateTime.Now.ToString("yyyyMMddHH"))_1" type="text/css" />
+    @RenderSection("style", false)
+    @{
+        bool enableGoogleAnalytics = false;
+        bool.TryParse(Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("EnableGoogleAnalytics"), out enableGoogleAnalytics);
+    }
+
+    @RenderSection("priorityScript", required: false)
+
+    <script>
+		var initgafn = @enableGoogleAnalytics.ToString().ToLower();
+    </script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/moment.min.js")"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    <!-- jQuery -->
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/gastatis.js?ver=1.04")"></script>
+    <script src="@Url.Content("~/Scripts/gastatis-init.js?ver=1.05")"></script>
+
+    @if (Alphareds.Module.Common.Core.GetAppSettingValueEnhanced("Apps.Environment")?.ToLower() == "production")
+    {
+        <!-- Global site tag (gtag.js) - Google Ads: 848468073 -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-848468073"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'AW-848468073');
+        </script>
+
+        <!-- Global site tag (gtag.js) - Google Ads: 800132508 -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-800132508"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'AW-800132508');
+        </script>
+
+
+    }
+</head>
+
+<body>
+    @* Header *@
+
+    @if (false && Alphareds.Module.Common.Core.IsForStaging && Request.Cookies["version"]?.Value == "v2")
+    {
+        <nav class="navbar sticky-top navbar-light" style="height: 27px;background-color: #edb752;justify-content: center">
+            <a class="navbar-brand" href="javascript:;" onclick="window.location.href='@Url.Action("switchlayout", "public", new { version = "v1"})';" style="font-size: 14px;color: #fff;">Switch back old themes.</a>
+        </nav>
+    }
+
+    @Html.Partial("~/Views/Shared/Theme_3/_Header.cshtml")
+
+    <div class="main-body">
+        @RenderBody()
+
+
+        @Html.Partial("~/Views/Shared/Theme_3/_BootstrapModal.cshtml")
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="@Url.Action("SInfo", "Public")" type="text/javascript"></script>
+    <script src="~/Scripts/v3.0/popper.min.js"></script>
+    <!-- Bootstrap Dependency -->
+    <script src="~/Scripts/bootstrap_v4.1.1/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap_v4.1.1/bootstrap-datepicker.min.js"></script>
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js", "~/Scripts/jquery.validate.js", "~/Scripts/jquery.validate.unobtrusive.js")
+    <script src="~/Scripts/v3.0/page-scripts.js"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
+    <script src="@Url.Action("SInfo", "Public")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/footer.js")"></script>
+
+    @*
+        <script>
+                $(document).ready(function () {
+                $('.datepicker2').datepicker({}); //Datepicker
+
+                //Toggle password box
+                $('#pw-box').on('click', function () {
+                    if ($('#pw-box input[type="checkbox"]').prop('checked')) {
+                        $('.pw-wrap').fadeIn(100);
+                    } else {
+                        $('.pw-wrap').fadeOut(100);
+                    }
+                });
+            });
+
+        </script>
+    *@
+
+    <script>
+		$(function () {
+			$.ajaxSetup({ data: { tripid: '@tripid' } });
+		});
+    </script>
+    @RenderSection("scripts", required: false)
+    @Html.RenderScripts()
+    @if (!(ViewBag.HideFooter == true))
+    {
+        @Html.Partial("~/Views/Shared/Theme_3/_Footer.cshtml")
+    }
+
+</body>
+
+</html>

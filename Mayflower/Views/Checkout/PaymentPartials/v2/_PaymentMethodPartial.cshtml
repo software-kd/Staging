@@ -1,0 +1,147 @@
+﻿@model Alphareds.Module.Model.PaymentCheckout
+
+@functions{
+    decimal currentPaymentAmt = 0m;
+    string lastPaymentRecord = null;
+}
+
+@{
+    string currentPayment = Model.PaymentMethod != null ? Model.PaymentMethod.ToLower() : "";
+    currentPaymentAmt = (Model.DepositAmt > 0 || currentPayment == "tw") ? Model.DepositAmt : Model.GrandTotalForPayment;
+    string _currencyCode = Model.PaymentCurrencyCode;
+
+    switch (currentPayment)
+    {
+        case "adyenc":
+            lastPaymentRecord = "adyenc";
+            break;
+        case "ipacc":
+            lastPaymentRecord = "ipacc";
+            break;
+        case "ipafpx":
+            lastPaymentRecord = "ipafpx";
+            break;
+        default:
+            lastPaymentRecord = "ipafpx";
+            break;
+    }
+
+    Mayflower.General.CustomPrincipal customPrincipal = User as Mayflower.General.CustomPrincipal;
+    bool isAgent = customPrincipal.IsAgent;
+}
+
+@if (customPrincipal.Identity.IsAuthenticated && ViewBag.isEventBundle != true)
+{
+    @Html.Partial("~/Views/Checkout/PaymentPartials/v2/_CreditPaymentPartial.cshtml")
+}
+
+@if (ViewBag.AllowPayAsDeposit == true)
+{
+    <!-- Payment Single -->
+    <div class="payment-single @needDisplay("MHDPT")" data-pmethod="MHDPT">
+        <div class="payment-top custom-radio">
+            <label>
+                <input id="fpx" type="radio" class="paymentMethod" name="paymentMethod" value="MHDPT" @checkLastPayment("MHDPT") />
+                <span>Deposit</span>
+            </label>
+            @currentPaymentAmtLabel("MHDPT", _currencyCode, currentPaymentAmt)
+        </div>
+    </div>
+    <!-- ./Payment Single -->
+}
+
+
+<!-- Payment Single -->
+<div class="payment-single @needDisplay("IPAFPX")" data-pmethod="IPAFPX">
+    <div class="payment-top custom-radio">
+        <label>
+            <input id="fpx" type="radio" class="paymentMethod" name="paymentMethod" value="IPAFPX" @checkLastPayment("IPAFPX") />
+            <span><img src="~/images/payment/fpx_logo.png" alt="" /></span>
+        </label>
+        @currentPaymentAmtLabel("IPAFPX", _currencyCode, currentPaymentAmt)
+    </div>
+</div>
+<!-- ./Payment Single -->
+
+@if (ViewBag.AllowCC == null || ViewBag.AllowCC == true)
+{
+    // Disable Credit Card option on repayment
+    if (!Alphareds.Module.Common.Core.IsEnableAdyen || isAgent)
+    {
+        <!-- Payment Single -->
+        <div class="payment-single @needDisplay("IPACC")" data-pmethod="IPACC">
+            <div class="payment-top custom-radio">
+                <label>
+                    <input id="ivisaMaster" type="radio" class="paymentMethod" name="paymentMethod" value="IPACC" @checkLastPayment("IPACC") />
+                    <span><img class="img-fluid" src="~/images/payment/ipa_cc.png" alt="ipa_creditcard" /></span>
+                </label>
+                @currentPaymentAmtLabel("IPACC", _currencyCode, currentPaymentAmt)
+            </div>
+        </div>
+        <!-- ./Payment Single -->
+    }
+
+    //hide boost for offline payment page
+    if (Alphareds.Module.Common.Core.IsForStaging && Model.OfflinePaymentDetails == null)
+    {
+        <div class="payment-single @needDisplay("BOOST")" data-pmethod="BOOST">
+            <div class="payment-top custom-radio">
+                <label>
+                    <input id="BoostID" type="radio" class="paymentMethod" name="paymentMethod" value="BOOST" @checkLastPayment("BOOST") />
+                    
+                    <span><img class="img-fluid" src="~/images/payment/Boost_logo.png" alt="boost" style="width: 100px; height: 50px;" /></span>
+                </label>
+                @currentPaymentAmtLabel("BOOST", _currencyCode, currentPaymentAmt)
+            </div>
+        </div>
+    }
+
+    if (Alphareds.Module.Common.Core.IsEnableAdyen)
+    {
+        <!-- Payment Single -->
+        <div class="payment-single @needDisplay("ADYENC")" data-pmethod="ADYENC">
+            <div class="payment-top custom-radio">
+                <label>
+                    <input type="radio" id="visaMaster" class="paymentMethod" name="paymentMethod" value="ADYENC" @checkLastPayment("ADYENC") />
+                    <span><img class="img-fluid" src="~/images/payment/cards_graphic.png" alt="" /></span>
+                </label>
+                @currentPaymentAmtLabel("ADYENC", _currencyCode, currentPaymentAmt)
+            </div>
+            @Html.Partial("~/Views/Checkout/PaymentPartials/v2/_AdyenPaymentPartial.cshtml", Model.CreditCard ?? new Alphareds.Module.Model.CreditCard())
+        </div>
+        <!-- ./Payment Single -->
+    }
+
+}
+
+
+@functions{
+    string checkLastPayment(string radioPayment)
+    {
+        radioPayment = radioPayment ?? "";
+        string output = radioPayment.ToLower() == lastPaymentRecord.ToLower() && currentPaymentAmt > 0 ? "checked" : "";
+        output += currentPaymentAmt == 0 ? " disabled" : "";
+
+        return output;
+    }
+
+    string needDisplay(string radioPayment)
+    {
+        return checkLastPayment(radioPayment).Contains("checked") ? " in " : "";
+    }
+
+    string checkIsFullCreditUsed(decimal currentPaymentAmt)
+    {
+        return currentPaymentAmt <= 0 ? " isInvalid" : "";
+    }
+}
+
+@helper currentPaymentAmtLabel(string radioPayment, string currencyCode, decimal currentPaymentAmt)
+{
+    radioPayment = radioPayment ?? "";
+    string outputHtmlString = radioPayment.ToLower() == lastPaymentRecord.ToLower() && currentPaymentAmt > 0
+        ? $"<p>Payable: <span>{currencyCode} {currentPaymentAmt.ToString("n2")}</span></p>"
+        : "<p class='in' id='adyAmt'>Payable: <span></span></p>";
+
+    @Html.Raw(outputHtmlString)
+}

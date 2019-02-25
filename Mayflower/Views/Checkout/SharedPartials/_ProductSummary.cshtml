@@ -1,0 +1,22 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model CheckoutProduct
+
+@if (Model.IsDynamic && ViewBag.Title == "Hotel Search Result")
+{
+    //product summary bar for dynamic hotel search page only
+    @Html.Partial("~/Views/Checkout/SharedPartials/_ProductSummaryDynamicHeaderBar.cshtml", Model)
+}
+else
+{
+    @Html.Partial("~/Views/Checkout/SharedPartials/_ProductSummaryHeaderBar.cshtml", Model)
+}
+
+
+
+@if (Model.Flight != null)
+{
+    <div id="fareRulesClass" style="display: none;">
+        @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+    </div>
+}

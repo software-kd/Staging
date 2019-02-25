@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="4cb3edcd-dfc0-47e4-aba4-c7e67eb9d18e" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://23.97.52.180/TCG_Malindo/BookingService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="BookingService5.xsd" MetadataType="Schema" ID="9ed30af6-f8f6-421d-b83a-3faf427a37b1" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?xsd=xsd3" />
+    <MetadataFile FileName="BookingService1.disco" MetadataType="Disco" ID="21b87086-97e7-4bbc-8d83-a61bf53df7a5" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?disco" />
+    <MetadataFile FileName="BookingService51.xsd" MetadataType="Schema" ID="34dfad87-1081-4203-9213-90dca09243df" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?xsd=xsd4" />
+    <MetadataFile FileName="BookingService52.xsd" MetadataType="Schema" ID="cab9fd67-063a-44d8-85eb-06e5bf3bdb11" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?xsd=xsd1" />
+    <MetadataFile FileName="BookingService53.xsd" MetadataType="Schema" ID="07646b9c-2fd4-4e96-8cf8-e21e126f5223" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?xsd=xsd2" />
+    <MetadataFile FileName="BookingService54.xsd" MetadataType="Schema" ID="70ebf610-6426-4d10-b1fb-24bc36d019ff" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?xsd=xsd0" />
+    <MetadataFile FileName="Book1.wsdl" MetadataType="Wsdl" ID="7aac7c66-0562-4487-8422-333e85fecfac" SourceId="1" SourceUrl="http://23.97.52.180/TCG_Malindo/BookingService.svc?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

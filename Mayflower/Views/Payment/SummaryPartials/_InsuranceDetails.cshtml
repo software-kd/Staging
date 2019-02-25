@@ -1,0 +1,21 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.Model.Database
+@model IEnumerable<BookingInsurance>
+
+@if (Model != null)
+{
+    foreach (var item in Model.Where(x => x.BookingStatusCode != "EXP"))
+    {
+        int qtyWithoutMain = item.InsurancePaxes.Count() -1;
+        string qty = qtyWithoutMain.ToString();
+
+        <div class="s4_blt_py_con_left">@item.ProductName x @(qty)</div>
+        <div class="s4_blt_py_con_right">@item.CurrencyCode <span>@(item.TotalBookingAmt.Value.ToString("n2"))</span></div>
+        <div class="clear"></div>
+        
+        <div class="bundles_item" style="margin-bottom: 20px;clear: both; color: #1C75BC">
+            @item.PolicyNumber
+        </div>
+    }
+}

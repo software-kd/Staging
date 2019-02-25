@@ -1,0 +1,40 @@
+﻿@model Alphareds.Module.Model.FlightSegmentFareRule
+
+@{
+    Layout = null;
+}
+
+<div class="fcd_w1_innertextportion">
+    @if (Model.airFareRules != null)
+    {
+        <h2>Fare Rules</h2>
+        foreach (var fareRules in Model.airFareRules)
+        {
+            <h3>@fareRules.Title</h3>
+
+            if (!string.IsNullOrEmpty(fareRules.DescriptionADT))
+            {
+                <div>Adult</div>
+                <div class="fcd_w1_normal_text">
+                    @Html.Raw(fareRules.DescriptionADT)
+                </div>
+            }
+
+            if (!string.IsNullOrEmpty(fareRules.DescriptionCNN))
+            {
+                <div>Child</div>
+                <div class="fcd_w1_normal_text">
+                    @Html.Raw(fareRules.DescriptionCNN)
+                </div>
+            }
+
+            if (!string.IsNullOrEmpty(fareRules.DescriptionINF))
+            {
+                <div>Infant</div>
+                <div class="fcd_w1_normal_text">
+                    @Html.Raw(fareRules.DescriptionINF)
+                </div>
+            }
+        }
+    }
+</div>

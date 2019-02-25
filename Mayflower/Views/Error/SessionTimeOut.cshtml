@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "SessionTimeOut";
+
+    if (Request.IsAjaxRequest())
+    {
+        Layout = null;
+    }
+    else
+    {
+
+    }
+}
+
+@*@Scripts.Render("~/bundles/mainfunc")*@
+@Scripts.Render("~/bundles/jqueryval")
+
+
+<div class="white-bg @if (!Request.IsAjaxRequest()){ <text>panel-body</text>;}">
+
+    <p>Session Time Out. Please select your flight again.</p>
+
+    <div class="form-group text-center">
+        <button id="btnSubmit" type="submit" value="CONTINUE" name="btnUpdateProfile" class="btn btn-primary" onclick="location.href='@Url.Action("Index", "Home")'" />
+    </div>
+</div>

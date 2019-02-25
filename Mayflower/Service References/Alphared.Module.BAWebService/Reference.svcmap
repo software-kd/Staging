@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="ca30f597-a4ba-4b0d-b308-934e3d540066" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="BritishAirwaysManager.xsd" MetadataType="Schema" ID="e289328b-7445-4a82-989d-003391b190a7" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd9" />
+    <MetadataFile FileName="BritishAirwaysManager1.xsd" MetadataType="Schema" ID="abf57ce3-f559-4e92-8b6f-afac9d2ddbc0" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd19" />
+    <MetadataFile FileName="BritishAirwaysManager2.xsd" MetadataType="Schema" ID="e9a1cf97-0d6e-4a67-a2c4-47d5d268f3ec" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd18" />
+    <MetadataFile FileName="BritishAirwaysManager3.xsd" MetadataType="Schema" ID="b5b467e0-5348-4759-aa8e-83db84e57f0c" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd12" />
+    <MetadataFile FileName="BritishAirwaysManager4.xsd" MetadataType="Schema" ID="56c2fac1-b56f-4c2c-a76f-16d00148150d" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd13" />
+    <MetadataFile FileName="BritishAirwaysManager5.xsd" MetadataType="Schema" ID="6eb59455-dbe4-4f37-8a74-49683b9ddb27" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd3" />
+    <MetadataFile FileName="BritishAirwaysManager6.xsd" MetadataType="Schema" ID="a85675f9-5e0c-460b-bd79-83dbf556a773" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd0" />
+    <MetadataFile FileName="BritishAirwaysManager7.xsd" MetadataType="Schema" ID="76e6199b-518f-4fec-bb87-df13f3449e73" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd10" />
+    <MetadataFile FileName="BritishAirwaysManager8.xsd" MetadataType="Schema" ID="7ea78cff-6578-441e-ba91-02d5f22199cf" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd17" />
+    <MetadataFile FileName="BritishAirwaysManager9.xsd" MetadataType="Schema" ID="de728960-09c7-47a5-b866-848980c62315" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd6" />
+    <MetadataFile FileName="BritishAirwaysManager10.xsd" MetadataType="Schema" ID="6aadc504-0ab2-4afc-b96e-9daedc1a7aa1" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd15" />
+    <MetadataFile FileName="BritishAirwaysManager11.xsd" MetadataType="Schema" ID="b66952e2-a60d-4abe-98cf-c0a85011a1b2" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd14" />
+    <MetadataFile FileName="BritishAirwaysManager12.xsd" MetadataType="Schema" ID="29fe4a71-dd4c-464e-859b-b642f945e24a" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd4" />
+    <MetadataFile FileName="BritishAirwaysManager.wsdl" MetadataType="Wsdl" ID="cd66acdf-1133-4fa5-9d94-652f5213931b" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?wsdl" />
+    <MetadataFile FileName="BritishAirwaysManager13.xsd" MetadataType="Schema" ID="d2a13ac3-6566-44c4-b6e4-b420c7fb7222" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd8" />
+    <MetadataFile FileName="BritishAirwaysManager14.xsd" MetadataType="Schema" ID="7ae59014-712a-4ae9-ab5d-5f6f6f79b1bb" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd16" />
+    <MetadataFile FileName="BritishAirwaysManager15.xsd" MetadataType="Schema" ID="56d6efc6-1bbd-4a8f-8ad6-c15d6655628f" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd21" />
+    <MetadataFile FileName="BritishAirwaysManager.disco" MetadataType="Disco" ID="2cae520d-185f-4f9b-9884-ad220a5f22f8" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?disco" />
+    <MetadataFile FileName="BritishAirwaysManager16.xsd" MetadataType="Schema" ID="f89cfa6b-cc86-4740-b34a-0bd810d993e7" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd2" />
+    <MetadataFile FileName="BritishAirwaysManager17.xsd" MetadataType="Schema" ID="d3826b04-a7c0-441c-af15-4cd6528131c1" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd7" />
+    <MetadataFile FileName="BritishAirwaysManager18.xsd" MetadataType="Schema" ID="7d8e0a8b-33ea-4eca-b050-eb8f4da7ea2e" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd1" />
+    <MetadataFile FileName="BritishAirwaysManager19.xsd" MetadataType="Schema" ID="5fa8be34-4cb6-429a-849e-8a1811671bbe" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd5" />
+    <MetadataFile FileName="BritishAirwaysManager20.xsd" MetadataType="Schema" ID="172e4d24-e6cc-4a3c-8316-85095192b15f" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd20" />
+    <MetadataFile FileName="BritishAirwaysManager21.xsd" MetadataType="Schema" ID="49838648-083a-40f3-be86-7cbcfdc7b3cc" SourceId="1" SourceUrl="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd11" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ItemsList path="~/images_hotel/hotel_amenities/" DefaultImage="unknown-icon.png">
+  <item id="1" image="Air-conditioning.png" category="RoomAmenity">Air conditioning</item>
+  <item id="3" image="unknown-icon.png" category="PropertyAmenity">Bar/lounge</item>
+  <item id="6" image="unknown-icon.png" category="PropertyAmenity">Babysitting or childcare</item>
+  <item id="8" image="unknown-icon.png" category="PropertyAmenity">Elevator/lift</item>
+  <item id="9" image="unknown-icon.png" category="PropertyAmenity">Fitness facilities</item>
+  <item id="10" image="unknown-icon.png" category="PropertyAmenity">Free airport transportation</item>
+  <item id="14" image="unknown-icon.png" category="PropertyAmenity">Indoor pool</item>
+  <item id="19" image="unknown-icon.png" category="PropertyAmenity">Restaurant</item>
+  <item id="20" image="unknown-icon.png" category="RoomAmenity">Room service (limited hours)</item>
+  <item id="24" image="unknown-icon.png" category="PropertyAmenity">Outdoor pool</item>
+  <item id="26" image="unknown-icon.png" category="RoomAmenity">Television</item>
+  <item id="38" image="unknown-icon.png" category="PropertyAmenity">Supervised childcare/activities</item>
+  <item id="40" image="unknown-icon.png" category="PropertyAmenity">Hair salon</item>
+  <item id="41" image="unknown-icon.png" category="PropertyAmenity">ATM/banking</item>
+  <item id="43" image="unknown-icon.png" category="PropertyAmenity">Concierge services</item>
+  <item id="44" image="unknown-icon.png" category="PropertyAmenity">Gift shops or newsstand</item>
+  <item id="45" image="unknown-icon.png" category="PropertyAmenity">Shopping on site</item>
+  <item id="51" image="unknown-icon.png" category="Policy">Pets allowed</item>
+  <item id="52" image="unknown-icon.png" category="PropertyAmenity">Total number of rooms - </item>
+  <item id="54" image="unknown-icon.png" category="PropertyAmenity">Number of floors - </item>
+  <item id="55" image="unknown-icon.png" category="PropertyAmenity">Number of buildings/towers - </item>
+  <item id="56" image="shuttle_icon.png" category="PropertyAmenity">Airport transportation (surcharge)</item>
+  <item id="57" image="unknown-icon.png" category="Policy">Caters to women only</item>
+  <item id="58" image="unknown-icon.png" category="Policy">Caters to men only</item>
+  <item id="81" image="unknown-icon.png" category="PropertyAmenity">Conference space</item>
+  <item id="121" image="unknown-icon.png" category="RoomAmenity">Wheelchair accessible</item>
+  <item id="128" image="Newspaper.png" category="RoomAmenity">Free newspaper</item>
+  <item id="130" image="unknown-icon.png" category="RoomAmenity">Refrigerator</item>
+  <item id="131" image="unknown-icon.png" category="RoomAmenity">Minibar</item>
+  <item id="132" image="Coffee-maker.png" category="RoomAmenity">Coffee/tea maker</item>
+  <item id="133" image="unknown-icon.png" category="RoomAmenity">Daily housekeeping</item>
+  <item id="135" image="unknown-icon.png" category="RoomAmenity">Hypo-allergenic bedding available</item>
+  <item id="136" image="unknown-icon.png" category="RoomAmenity">Phone</item>
+  <item id="139" image="unknown-icon.png" category="RoomAmenity">Free local calls</item>
+  <item id="141" image="unknown-icon.png" category="RoomAmenity">Private bathroom</item>
+  <item id="142" image="Bathrobes.png" category="RoomAmenity">Bathrobes</item>
+  <item id="143" image="unknown-icon.png" category="RoomAmenity">Free toiletries</item>
+  <item id="144" image="unknown-icon.png" category="RoomAmenity">Hair dryer</item>
+  <item id="145" image="Ironing-facilties.png" category="RoomAmenity">Iron/ironing board</item>
+  <item id="146" image="unknown-icon.png" category="RoomAmenity">In-room safe</item>
+  <item id="147" image="unknown-icon.png" category="RoomAmenity">Fireplace</item>
+  <item id="148" image="Bathtub.png" category="RoomAmenity">Jetted bathtub</item>
+  <item id="171" image="unknown-icon.png" category="Policy">American Express</item>
+  <item id="177" image="unknown-icon.png" category="Policy">Carte Blanche</item>
+  <item id="179" image="unknown-icon.png" category="Policy">Diners Club</item>
+  <item id="180" image="unknown-icon.png" category="Policy">Discover</item>
+  <item id="183" image="unknown-icon.png" category="Policy">JCB International</item>
+  <item id="184" image="unknown-icon.png" category="Policy">MasterCard</item>
+  <item id="189" image="unknown-icon.png" category="Policy">Visa</item>
+  <item id="190" image="unknown-icon.png" category="Policy">Cash not accepted</item>
+  <item id="200" image="unknown-icon.png" category="PropertyAmenity">Business services</item>
+  <item id="312" image="unknown-icon.png" category="RoomAmenity">Kitchenette</item>
+  <item id="317" image="unknown-icon.png" category="PropertyAmenity">Fireplace in lobby</item>
+  <item id="318" image="unknown-icon.png" category="RoomAmenity">Balcony</item>
+  <item id="321" image="unknown-icon.png" category="PropertyAmenity">Barbecue grill(s)</item>
+  <item id="322" image="unknown-icon.png" category="RoomAmenity">Yard</item>
+  <item id="324" image="unknown-icon.png" category="PropertyAmenity">Coffee/tea in common areas</item>
+  <item id="331" image="unknown-icon.png" category="RoomAmenity">Ceiling fan</item>
+  <item id="340" image="unknown-icon.png" category="RoomAmenity">Washer/dryer</item>
+  <item id="354" image="unknown-icon.png" category="PropertyAmenity">Ski storage</item>
+  <item id="361" image="breakfast_icon.jpg" category="PropertyAmenity">Breakfast available (surcharge)</item>
+  <item id="369" image="unknown-icon.png" category="PropertyAmenity">Laundry facilities</item>
+  <item id="371" image="unknown-icon.png" category="PropertyAmenity">Spa tub</item>
+  <item id="372" image="unknown-icon.png" category="PropertyAmenity">Television in common areas</item>
+  <item id="375" image="unknown-icon.png" category="PropertyAmenity">Arcade/game room</item>
+  <item id="378" image="unknown-icon.png" category="PropertyAmenity">Garden</item>
+  <item id="385" image="unknown-icon.png" category="PropertyAmenity">Library</item>
+  <item id="388" image="unknown-icon.png" category="RoomAmenity">Lanai</item>
+  <item id="399" image="Coffee-maker.png" category="RoomAmenity">Espresso maker</item>
+  <item id="400" image="Swimming-pool.png" category="PropertyAmenity">Poolside bar</item>
+  <item id="2000" image="unknown-icon.png" category="PropertyAmenity">Swim-up bar</item>
+  <item id="2001" image="breakfast_icon.jpg" category="PropertyAmenity">Free breakfast</item>
+  <item id="2004" image="Coffee-maker.png" category="PropertyAmenity">Coffee shop or café</item>
+  <item id="2008" image="unknown-icon.png" category="PropertyAmenity">Health club</item>
+  <item id="2010" image="unknown-icon.png" category="PropertyAmenity">Nightclub</item>
+  <item id="2014" image="unknown-icon.png" category="PropertyAmenity">Children's pool</item>
+  <item id="2015" image="unknown-icon.png" category="RoomAmenity">Room service (24 hours)</item>
+  <item id="2016" image="unknown-icon.png" category="PropertyAmenity">Safe-deposit box at front desk</item>
+  <item id="2017" image="unknown-icon.png" category="PropertyAmenity">Spa services on site</item>
+  <item id="2019" image="unknown-icon.png" category="Policy">Check-in time starts at</item>
+  <item id="2020" image="unknown-icon.png" category="Policy">Check-out time is</item>
+  <item id="2025" image="unknown-icon.png" category="RoomAmenity">Designer toiletries</item>
+  <item id="2026" image="Desk.png" category="RoomAmenity">Desk</item>
+  <item id="2028" image="unknown-icon.png" category="RoomAmenity">Video-game console</item>
+  <item id="2030" image="unknown-icon.png" category="RoomAmenity">In-room climate control (air conditioning)</item>
+  <item id="2031" image="Newspaper.png" category="RoomAmenity">Free weekday newspaper</item>
+  <item id="2032" image="unknown-icon.png" category="RoomAmenity">Patio</item>
+  <item id="2034" image="Bed.png" category="RoomAmenity">Premium bedding</item>
+  <item id="2035" image="unknown-icon.png" category="RoomAmenity">Second bathroom</item>
+  <item id="2036" image="unknown-icon.png" category="RoomAmenity">Shared bathroom</item>
+  <item id="2037" image="unknown-icon.png" category="RoomAmenity">Separate sitting area</item>
+  <item id="2038" image="Bed.png" category="RoomAmenity">Sofa bed</item>
+  <item id="2039" image="unknown-icon.png" category="RoomAmenity">Pay movies</item>
+  <item id="2043" image="unknown-icon.png" category="PropertyAmenity">Multilingual staff</item>
+  <item id="2044" image="Bed.png" category="RoomAmenity">Rollaway/extra beds available</item>
+  <item id="2045" image="Bed.png" category="RoomAmenity">Cribs/infant beds available</item>
+  <item id="2047" image="Newspaper" category="PropertyAmenity">Free newspapers in lobby</item>
+  <item id="2048" image="unknown-icon.png" category="PropertyAmenity">Free use of nearby fitness center</item>
+  <item id="2049" image="unknown-icon.png" category="PropertyAmenity">Picnic area</item>
+  <item id="2050" image="unknown-icon.png" category="Policy">Pets not allowed</item>
+  <item id="2053" image="unknown-icon.png" category="RoomAmenity">Room service</item>
+  <item id="2054" image="unknown-icon.png" category="RoomAmenity">Soundproofed rooms</item>
+  <item id="2055" image="Ironing-facilties.png" category="RoomAmenity">Iron/ironing board (on request)</item>
+  <item id="2056" image="unknown-icon.png" category="RoomAmenity">Turndown service</item>
+  <item id="2057" image="unknown-icon.png" category="RoomAmenity">Free bottled water</item>
+  <item id="2058" image="unknown-icon.png" category="RoomAmenity">Microwave</item>
+  <item id="2059" image="unknown-icon.png" category="RoomAmenity">Cookware, dishware, and utensils</item>
+  <item id="2063" image="unknown-icon.png" category="PropertyAmenity">24-hour front desk</item>
+  <item id="2064" image="unknown-icon.png" category="PropertyAmenity">Front desk (limited hours)</item>
+  <item id="2065" image="unknown-icon.png" category="PropertyAmenity">Business center</item>
+  <item id="2066" image="unknown-icon.png" category="PropertyAmenity">Porter/bellhop</item>
+  <item id="2067" image="unknown-icon.png" category="PropertyAmenity">Express check-out</item>
+  <item id="2070" image="unknown-icon.png" category="PropertyAmenity">Dry cleaning/laundry service</item>
+  <item id="2072" image="unknown-icon.png" category="PropertyAmenity">Limo or Town Car service available</item>
+  <item id="2080" image="unknown-icon.png" category="PropertyAmenity">On private beach</item>
+  <item id="2081" image="unknown-icon.png" category="RoomAmenity">Premium TV channels</item>
+  <item id="2082" image="unknown-icon.png" category="PropertyAmenity">Ski-in/ski-out access</item>
+  <item id="2086" image="unknown-icon.png" category="RoomAmenity">DVD player</item>
+  <item id="2112" image="unknown-icon.png" category="PropertyAmenity">Casino</item>
+  <item id="2123" image="unknown-icon.png" category="PropertyAmenity">Full-service spa</item>
+  <item id="2128" image="unknown-icon.png" category="PropertyAmenity">Marina on site</item>
+  <item id="2129" image="unknown-icon.png" category="PropertyAmenity">Spa treatment room(s)</item>
+  <item id="2130" image="unknown-icon.png" category="RoomAmenity">Microwave (on request)</item>
+  <item id="2131" image="unknown-icon.png" category="PropertyAmenity">Meeting rooms</item>
+  <item id="2134" image="unknown-icon.png" category="PropertyAmenity">Steam room</item>
+  <item id="2135" image="unknown-icon.png" category="PropertyAmenity">Sauna</item>
+  <item id="2136" image="unknown-icon.png" category="PropertyAmenity">Ski shuttle</item>
+  <item id="2137" image="unknown-icon.png" category="PropertyAmenity">Smoke-free property</item>
+  <item id="2138" image="unknown-icon.png" category="PropertyAmenity">Outdoor seasonal pool</item>
+  <item id="2148" image="unknown-icon.png" category="RoomAmenity">Access via exterior corridors</item>
+  <item id="2149" image="unknown-icon.png" category="RoomAmenity">Bidet</item>
+  <item id="2150" image="unknown-icon.png" category="RoomAmenity">Blackout drapes/curtains</item>
+  <item id="2151" image="unknown-icon.png" category="RoomAmenity">In-room childcare (surcharge)</item>
+  <item id="2158" image="unknown-icon.png" category="RoomAmenity">Kitchen</item>
+  <item id="2160" image="unknown-icon.png" category="RoomAmenity">In-room massage available</item>
+  <item id="2162" image="unknown-icon.png" category="RoomAmenity">Slippers</item>
+  <item id="2166" image="Bathtub.png" category="RoomAmenity">Shower only</item>
+  <item id="2167" image="unknown-icon.png" category="PropertyAmenity">Wedding services</item>
+  <item id="2168" image="Bathtub.png" category="RoomAmenity">Bathtub only</item>
+  <item id="2170" image="unknown-icon.png" category="RoomAmenity">Separate bathtub and shower</item>
+  <item id="2177" image="unknown-icon.png" category="PropertyAmenity">Express check-in</item>
+  <item id="2178" image="unknown-icon.png" category="PropertyAmenity">Use of nearby fitness center (discount)</item>
+  <item id="2180" image="unknown-icon.png" category="RoomAmenity">Hair dryer (on request)</item>
+  <item id="2181" image="unknown-icon.png" category="RoomAmenity">Refrigerator (on request)</item>
+  <item id="2183" image="unknown-icon.png" category="RoomAmenity">Shower/tub combination</item>
+  <item id="2186" image="unknown-icon.png" category="PropertyAmenity">Children's club</item>
+  <item id="2189" image="unknown-icon.png" category="PropertyAmenity">Local Expert Concierge</item>
+  <item id="2349" image="unknown-icon.png" category="PropertyAmenity">Designated smoking areas</item>
+  <item id="2352" image="unknown-icon.png" category="PropertyAmenity">Pool umbrellas</item>
+  <item id="2353" image="unknown-icon.png" category="PropertyAmenity">Airport transportation</item>
+  <item id="2370" image="unknown-icon.png" category="RoomAmenity">Separate dining area</item>
+  <item id="2371" image="unknown-icon.png" category="RoomAmenity">Shared bathroom with sink in room</item>
+  <item id="2378" image="unknown-icon.png" category="RoomAmenity">Dishwasher</item>
+  <item id="2379" image="unknown-icon.png" category="RoomAmenity">Full-sized refrigerator/freezer</item>
+  <item id="2381" image="unknown-icon.png" category="RoomAmenity">Stovetop</item>
+  <item id="2385" image="unknown-icon.png" category="PropertyAmenity">Billiards or pool table</item>
+  <item id="2386" image="unknown-icon.png" category="PropertyAmenity">Grocery/convenience store</item>
+  <item id="2387" image="unknown-icon.png" category="PropertyAmenity">Tours/ticket assistance</item>
+  <item id="2389" image="unknown-icon.png" category="RoomAmenity">In-room safe (laptop compatible)</item>
+  <item id="2390" image="Wifi.png" category="PropertyAmenity">Free WiFi</item>
+  <item id="2391" image="Wifi.png" category="PropertyAmenity">WiFi (surcharge)</item>
+  <item id="2392" image="Internet-access-LAN.png" category="PropertyAmenity">Free wired high-speed Internet</item>
+  <item id="2393" image="Internet-access-LAN.png" category="PropertyAmenity">Wired (high-speed) Internet access - surcharge</item>
+  <item id="2396" image="unknown-icon.png" category="RoomAmenity">Satellite TV service</item>
+  <item id="2397" image="unknown-icon.png" category="RoomAmenity">Digital TV service</item>
+  <item id="2398" image="unknown-icon.png" category="RoomAmenity">Cable TV service</item>
+  <item id="2399" image="unknown-icon.png" category="RoomAmenity">Flat-panel TV</item>
+  <item id="2402" image="unknown-icon.png" category="RoomAmenity">HDTV</item>
+  <item id="2403" image="Internet-access-wireless.png" category="RoomAmenity">Free WiFi</item>
+  <item id="2404" image="Internet-access-wireless.png" category="RoomAmenity">WiFi (surcharge)</item>
+  <item id="2405" image="Internet-access-LAN.png" category="RoomAmenity">Free wired high-speed Internet</item>
+  <item id="2406" image="Internet-access-LAN.png" category="RoomAmenity">Wired high-speed Internet access (surcharge)</item>
+  <item id="2407" image="Internet-access-LAN.png" category="RoomAmenity">Free dial-up Internet access</item>
+  <item id="2408" image="Internet-access-LAN.png" category="RoomAmenity">Dial-up Internet access (surcharge)</item>
+  <item id="2416" image="shuttle_icon.png" category="PropertyAmenity">Free train station pickup</item>
+  <item id="2420" image="unknown-icon.png" category="PropertyAmenity">Accessible bathroom</item>
+  <item id="2421" image="unknown-icon.png" category="PropertyAmenity">Roll-in shower</item>
+  <item id="2423" image="unknown-icon.png" category="PropertyAmenity">In-room accessibility</item>
+  <item id="2515" image="unknown-icon.png" category="PropertyAmenity">Year Built</item>
+  <item id="2528" image="unknown-icon.png" category="PropertyAmenity">Free area shuttle</item>
+  <item id="2529" image="unknown-icon.png" category="PropertyAmenity">Area shuttle (surcharge)</item>
+  <item id="2537" image="unknown-icon.png" category="PropertyAmenity">Number of restaurants - </item>
+  <item id="2538" image="unknown-icon.png" category="PropertyAmenity">24-hour business center</item>
+  <item id="2539" image="unknown-icon.png" category="PropertyAmenity">Conference space size (feet) - </item>
+  <item id="2544" image="unknown-icon.png" category="Policy">No rollaway/extra beds available</item>
+  <item id="2545" image="unknown-icon.png" category="Policy">No cribs (infant beds) available</item>
+  <item id="2549" image="unknown-icon.png" category="Policy">No elevators</item>
+  <item id="2551" image="unknown-icon.png" category="Policy">Minimum check-in age is</item>
+  <item id="2554" image="unknown-icon.png" category="Policy">Parking height restrictions apply</item>
+  <item id="2557" image="unknown-icon.png" category="Policy">Cash Deposit Required</item>
+  <item id="2559" image="unknown-icon.png" category="RoomAmenity">Down comforter</item>
+  <item id="2561" image="unknown-icon.png" category="RoomAmenity">Egyptian-cotton sheets</item>
+  <item id="2563" image="unknown-icon.png" category="RoomAmenity">First-run movies</item>
+  <item id="2565" image="unknown-icon.png" category="RoomAmenity">Frette Italian sheets</item>
+  <item id="2567" image="unknown-icon.png" category="RoomAmenity">Individually furnished</item>
+  <item id="2568" image="unknown-icon.png" category="RoomAmenity">Individually decorated</item>
+  <item id="2569" image="unknown-icon.png" category="RoomAmenity">Memory foam mattress</item>
+  <item id="2571" image="unknown-icon.png" category="RoomAmenity">Pillowtop mattress</item>
+  <item id="2572" image="unknown-icon.png" category="RoomAmenity">Pillow menu</item>
+  <item id="2573" image="unknown-icon.png" category="RoomAmenity">Sleep Number by Select Comfort mattress</item>
+  <item id="2575" image="unknown-icon.png" category="RoomAmenity">LCD TV</item>
+  <item id="2576" image="unknown-icon.png" category="RoomAmenity">Plasma TV</item>
+  <item id="2577" image="unknown-icon.png" category="RoomAmenity">Tempur-Pedic mattress</item>
+  <item id="2592" image="unknown-icon.png" category="PropertyAmenity">Conference space size (meters) - </item>
+  <item id="2593" image="unknown-icon.png" category="PropertyAmenity">Number of meeting rooms - </item>
+  <item id="2594" image="unknown-icon.png" category="PropertyAmenity">Free reception</item>
+  <item id="2617" image="unknown-icon.png" category="PropertyAmenity">Golf course on site</item>
+  <item id="2618" image="unknown-icon.png" category="PropertyAmenity">Tennis on site</item>
+  <item id="2644" image="unknown-icon.png" category="Policy">Pet maximum weight in kg is</item>
+  <item id="2646" image="unknown-icon.png" category="Policy">Pet maximum weight in lb is</item>
+  <item id="2783" image="unknown-icon.png" category="PropertyAmenity">RV, bus, truck parking</item>
+  <item id="2789" image="Room-size.png" category="RoomAmenity">Room size (square feet)</item>
+  <item id="2790" image="Room-size.png" category="RoomAmenity">Room size (square meters)</item>
+  <item id="2806" image="unknown-icon.png" category="RoomAmenity">MP3 docking station</item>
+  <item id="2807" image="unknown-icon.png" category="RoomAmenity">iPod docking station</item>
+  <item id="2808" image="unknown-icon.png" category="Policy">No pets or service animals allowed</item>
+  <item id="2809" image="unknown-icon.png" category="Policy">Only dogs are allowed</item>
+  <item id="2810" image="unknown-icon.png" category="Policy">Only dogs and cats are allowed</item>
+  <item id="2811" image="unknown-icon.png" category="Policy">Maximum number of pets per room</item>
+  <item id="2817" image="unknown-icon.png" category="PropertyAmenity">Lazy river</item>
+  <item id="2818" image="unknown-icon.png" category="PropertyAmenity">Waterslide</item>
+  <item id="2819" image="unknown-icon.png" category="PropertyAmenity">Water park</item>
+  <item id="2820" image="unknown-icon.png" category="PropertyAmenity">Number of indoor pools - </item>
+  <item id="2821" image="unknown-icon.png" category="PropertyAmenity">Number of outdoor pools - </item>
+  <item id="2822" image="unknown-icon.png" category="PropertyAmenity">Number of spa tubs - </item>
+  <item id="2854" image="unknown-icon.png" category="RoomAmenity">Partially open bathroom</item>
+  <item id="2855" image="unknown-icon.png" category="Policy">KBYG-Multiple locations</item>
+  <item id="2859" image="unknown-icon.png" category="RoomAmenity">Private pool</item>
+  <item id="2860" image="unknown-icon.png" category="RoomAmenity">Private plunge pool</item>
+  <item id="2940" image="unknown-icon.png" category="Policy">Minimum guest age is</item>
+  <item id="2942" image="shuttle_icon.png" category="PropertyAmenity">Free casino shuttle</item>
+  <item id="2943" image="shuttle_icon.png" category="PropertyAmenity">Casino shuttle (surcharge)</item>
+  <item id="2944" image="shuttle_icon.png" category="PropertyAmenity">Free cruise terminal shuttle</item>
+  <item id="2945" image="shuttle_icon.png" category="PropertyAmenity">Cruise terminal shuttle (surcharge)</item>
+  <item id="2946" image="shuttle_icon.png" category="PropertyAmenity">Free ferry terminal shuttle</item>
+  <item id="2947" image="shuttle_icon.png" category="PropertyAmenity">Ferry terminal shuttle (surcharge)</item>
+  <item id="2948" image="shuttle_icon.png" category="PropertyAmenity">Free shopping center shuttle</item>
+  <item id="2949" image="shuttle_icon.png" category="PropertyAmenity">Shopping center shuttle (surcharge)</item>
+  <item id="2950" image="shuttle_icon.png" category="PropertyAmenity">Free theme park shuttle</item>
+  <item id="2951" image="shuttle_icon.png" category="PropertyAmenity">Theme park shuttle (surcharge)</item>
+  <item id="3266" image="unknown-icon.png" category="Policy">Noise-free rooms not guaranteed</item>
+  <item id="3269" image="unknown-icon.png" category="PropertyAmenity">Designated smoking areas (fines apply)</item>
+  <item id="3357" image="unknown-icon.png" category="Policy">Caters to adults only</item>
+  <item id="3372" image="unknown-icon.png" category="PropertyAmenity">Conference center</item>
+  <item id="3373" image="unknown-icon.png" category="PropertyAmenity">Indoor tennis court</item>
+  <item id="3374" image="unknown-icon.png" category="PropertyAmenity">Indoor tennis courts - </item>
+  <item id="3375" image="unknown-icon.png" category="PropertyAmenity">Outdoor tennis court</item>
+  <item id="3376" image="unknown-icon.png" category="PropertyAmenity">Outdoor tennis courts - </item>
+  <item id="3500" image="unknown-icon.png" category="PropertyAmenity">Snack bar/deli</item>
+  <item id="3501" image="unknown-icon.png" category="RoomAmenity">Deep soaking bathtub</item>
+  <item id="3502" image="unknown-icon.png" category="RoomAmenity">Rainfall showerhead</item>
+  <item id="3547" image="breakfast_icon.jpg" category="PropertyAmenity">Breakfast service</item>
+  <item id="3601" image="unknown-icon.png" category="PropertyAmenity">Turkish bath/Hammam</item>
+  <item id="3616" image="unknown-icon.png" category="RoomAmenity">Weekly housekeeping provided</item>
+  <item id="3637" image="unknown-icon.png" category="PropertyAmenity">One meeting room</item>
+  <item id="3726" image="unknown-icon.png" category="RoomAmenity">Private bathroom (not in room)</item>
+  <item id="3761" image="unknown-icon.png" category="PropertyAmenity">Parking (limited spaces)</item>
+  <item id="3763" image="unknown-icon.png" category="Policy">Check-in time ends at</item>
+  <item id="3777" image="unknown-icon.png" category="PropertyAmenity">Beach bar</item>
+  <item id="3779" image="unknown-icon.png" category="RoomAmenity">Furnished balcony</item>
+  <item id="3856" image="unknown-icon.png" category="RoomAmenity">In-room computer</item>
+  <item id="3857" image="unknown-icon.png" category="RoomAmenity">Separate living room</item>
+  <item id="3858" image="Bathtub.png" category="RoomAmenity">Bathtub or shower</item>
+  <item id="3859" image="Bathtub.png" category="RoomAmenity">Private spa tub</item>
+  <item id="3861" image="unknown-icon.png" category="PropertyAmenity">Free self parking</item>
+  <item id="3862" image="unknown-icon.png" category="PropertyAmenity">Self parking (surcharge)</item>
+  <item id="3863" image="unknown-icon.png" category="PropertyAmenity">Free valet parking</item>
+  <item id="3864" image="unknown-icon.png" category="PropertyAmenity">Valet parking (surcharge)</item>
+  <item id="3865" image="unknown-icon.png" category="PropertyAmenity">Computer station</item>
+  <item id="3911" image="unknown-icon.png" category="RoomAmenity">Sofa bed size</item>
+  <item id="3912" image="unknown-icon.png" category="PropertyAmenity">Rooftop terrace</item>
+  <item id="3913" image="unknown-icon.png" category="PropertyAmenity">Number of bars/lounges - </item>
+  <item id="3914" image="unknown-icon.png" category="PropertyAmenity">Number of poolside bars - </item>
+  <item id="3915" image="unknown-icon.png" category="PropertyAmenity">Number of beach bars - </item>
+  <item id="3916" image="unknown-icon.png" category="PropertyAmenity">Number of swim-up bars - </item>
+  <item id="3923" image="unknown-icon.png" category="RoomAmenity">Free long-distance calls</item>
+  <item id="3924" image="unknown-icon.png" category="RoomAmenity">Free international calls</item>
+  <item id="3929" image="Coffee-maker.png" category="PropertyAmenity">Number of coffee shops/cafes - </item>
+  <item id="3984" image="unknown-icon.png" category="RoomAmenity">Housekeeping - weekdays only</item>
+  <item id="3985" image="unknown-icon.png" category="RoomAmenity">Housekeeping - weekends only</item>
+  <item id="4003" image="unknown-icon.png" category="PropertyAmenity">Luggage storage</item>
+  <item id="4004" image="unknown-icon.png" category="PropertyAmenity">Free airport transportation - pickup</item>
+  <item id="4005" image="unknown-icon.png" category="PropertyAmenity">Free airport transportation - drop-off</item>
+  <item id="4006" image="unknown-icon.png" category="PropertyAmenity">Airport transportation - pickup (surcharge)</item>
+  <item id="4007" image="unknown-icon.png" category="PropertyAmenity">Airport transportation - drop-off (surcharge)</item>
+  <item id="4008" image="unknown-icon.png" category="RoomAmenity">Housekeeping - once per stay</item>
+  <item id="4010" image="unknown-icon.png" category="PropertyAmenity">Train station pickup (surcharge)</item>
+  <item id="4025" image="unknown-icon.png" category="PropertyAmenity">Winery attached</item>
+  <item id="4111" image="unknown-icon.png" category="PropertyAmenity">Free grocery shopping service</item>
+  <item id="4118" image="unknown-icon.png" category="RoomAmenity">Balcony or patio</item>
+  <item id="4174" image="unknown-icon.png" category="PropertyAmenity">Free water park access</item>
+  <item id="4175" image="unknown-icon.png" category="PropertyAmenity">Water park access (surcharge)</item>
+  <item id="4293" image="unknown-icon.png" category="RoomAmenity">Shared accommodations</item>
+  <item id="4296" image="unknown-icon.png" category="RoomAmenity">Furnished balcony or patio</item>
+  <item id="4297" image="unknown-icon.png" category="RoomAmenity">Furnished lanai</item>
+  <item id="4298" image="unknown-icon.png" category="RoomAmenity">Furnished patio</item>
+  <item id="4420" image="unknown-icon.png" category="RoomAmenity">Connecting/adjoining rooms available</item>
+  <item id="4421" image="unknown-icon.png" category="PropertyAmenity">Free ski shuttle</item>
+  <item id="4422" image="unknown-icon.png" category="PropertyAmenity">Ski shuttle (surcharge)</item>
+  <item id="4423" image="unknown-icon.png" category="PropertyAmenity">Ski passes available</item>
+  <item id="4428" image="unknown-icon.png" category="PropertyAmenity">Free beach shuttle</item>
+  <item id="4429" image="unknown-icon.png" category="PropertyAmenity">Beach shuttle (surcharge)</item>
+  <item id="4431" image="unknown-icon.png" category="PropertyAmenity">Direct access to private beach</item>
+  <item id="4432" image="unknown-icon.png" category="PropertyAmenity">Beach umbrellas</item>
+  <item id="4433" image="unknown-icon.png" category="PropertyAmenity">Free beach cabanas</item>
+  <item id="4434" image="unknown-icon.png" category="PropertyAmenity">Beach cabanas (surcharge)</item>
+  <item id="4435" image="unknown-icon.png" category="PropertyAmenity">Pool cabanas (surcharge)</item>
+  <item id="4436" image="unknown-icon.png" category="PropertyAmenity">Free pool cabanas</item>
+  <item id="4437" image="unknown-icon.png" category="PropertyAmenity">Beach sun loungers</item>
+  <item id="4438" image="unknown-icon.png" category="PropertyAmenity">Pool sun loungers</item>
+  <item id="4450" image="unknown-icon.png" category="PropertyAmenity">Free long-term parking</item>
+  <item id="4451" image="unknown-icon.png" category="PropertyAmenity">Long-term parking (surcharge)</item>
+  <item id="4452" image="unknown-icon.png" category="PropertyAmenity">Free RV, bus, truck parking</item>
+  <item id="4453" image="unknown-icon.png" category="PropertyAmenity">RV, bus, truck parking (surcharge)</item>
+  <item id="4454" image="unknown-icon.png" category="PropertyAmenity">Free parking nearby</item>
+  <item id="4455" image="unknown-icon.png" category="PropertyAmenity">Offsite parking discounted rates available</item>
+  <item id="4456" image="unknown-icon.png" category="PropertyAmenity">Offsite parking reservations required</item>
+  <item id="4467" image="unknown-icon.png" category="PropertyAmenity">Beach towels</item>
+  <item id="4468" image="unknown-icon.png" category="PropertyAmenity">24-hour fitness facilities</item>
+  <item id="4506" image="unknown-icon.png" category="Policy">Debit cards not accepted</item>
+  <item id="4514" image="unknown-icon.png" category="PropertyAmenity">Terrace</item>
+  <item id="4695" image="unknown-icon.png" category="PropertyAmenity">Babysitting or childcare (free)</item>
+  <item id="4696" image="unknown-icon.png" category="PropertyAmenity">Babysitting or childcare (surcharge)</item>
+  <item id="4697" image="unknown-icon.png" category="PropertyAmenity">Children's club (free)</item>
+  <item id="4698" image="unknown-icon.png" category="PropertyAmenity">Children's club (surcharge)</item>
+  <item id="4699" image="unknown-icon.png" category="PropertyAmenity">Supervised childcare/activities (free)</item>
+  <item id="4700" image="unknown-icon.png" category="PropertyAmenity">Supervised childcare/activities (surcharge)</item>
+  <item id="4947" image="unknown-icon.png" category="RoomAmenity">Hydromassage showerhead</item>
+  <item id="4950" image="unknown-icon.png" category="RoomAmenity">Cribs/infant beds (surcharge)</item>
+  <item id="4951" image="Bed.png" category="RoomAmenity">Free cribs/infant beds</item>
+  <item id="4954" image="unknown-icon.png" category="RoomAmenity">Separate bedroom</item>
+  <item id="5013" image="unknown-icon.png" category="RoomAmenity">Spring water bathtub</item>
+  <item id="5015" image="unknown-icon.png" category="PropertyAmenity">Private beach nearby</item>
+  <item id="5052" image="unknown-icon.png" category="Policy">Please note, some room types at this property are not available when booking a stay with children.</item>
+  <item id="5054" image="unknown-icon.png" category="PropertyAmenity">24-hour health club</item>
+  <item id="5058" image="unknown-icon.png" category="Policy">Only service animals are allowed</item>
+  <item id="5059" image="unknown-icon.png" category="Policy">Service animals exempt from fees/restrictions</item>
+  <item id="5088" image="unknown-icon.png" category="Policy">Debit cards only</item>
+  <item id="5093" image="unknown-icon.png" category="RoomAmenity">Shared/communal kitchen</item>
+  <item id="5105" image="unknown-icon.png" category="RoomAmenity">iPad</item>
+  <item id="5106" image="unknown-icon.png" category="RoomAmenity">Tablet computer</item>
+  <item id="5109" image="unknown-icon.png" category="Policy">Hotel Registry Number -</item>
+  <item id="5115" image="unknown-icon.png" category="Policy">24-hour check-in</item>
+  <item id="5178" image="unknown-icon.png" category="RoomAmenity">Day bed</item>
+  <item id="6142" image="unknown-icon.png" category="RoomAmenity">Minibar (stocked, free items)</item>
+  <item id="6143" image="unknown-icon.png" category="RoomAmenity">Minibar (stocked, some free items)</item>
+  <item id="6147" image="unknown-icon.png" category="RoomAmenity">LED TV</item>
+  <item id="1073742676" image="unknown-icon.png" category="RoomAmenity">Limited housekeeping</item>
+  <item id="1073742764" image="unknown-icon.png" category="RoomAmenity">Air conditioning (surcharge)</item>
+  <item id="1073742765" image="unknown-icon.png" category="PropertyAmenity">Fitness facilities (surcharge)</item>
+  <item id="1073742766" image="unknown-icon.png" category="PropertyAmenity">Sauna (surcharge)</item>
+  <item id="1073742767" image="unknown-icon.png" category="PropertyAmenity">Spa tub (surcharge)</item>
+  <item id="1073742768" image="unknown-icon.png" category="PropertyAmenity">Indoor pool (surcharge)</item>
+  <item id="1073742769" image="unknown-icon.png" category="PropertyAmenity">Outdoor pool (surcharge)</item>
+  <item id="1073742770" image="unknown-icon.png" category="RoomAmenity">Housekeeping (surcharge)</item>
+  <item id="1073742771" image="unknown-icon.png" category="RoomAmenity">Kitchen (surcharge)</item>
+  <item id="1073742772" image="unknown-icon.png" category="RoomAmenity">Kitchenette (surcharge)</item>
+  <item id="1073742773" image="unknown-icon.png" category="RoomAmenity">Microwave (surcharge)</item>
+  <item id="1073742774" image="unknown-icon.png" category="RoomAmenity">Refrigerator (surcharge)</item>
+  <item id="1073742775" image="unknown-icon.png" category="RoomAmenity">In-room safe (surcharge)</item>
+  <item id="1073742776" image="unknown-icon.png" category="RoomAmenity">Television (surcharge)</item>
+  <item id="1073742791" image="unknown-icon.png" category="PropertyAmenity">Newspapers in lobby (surcharge)</item>
+  <item id="1073742807" image="unknown-icon.png" category="Policy">Pets allowed (no fees)</item>
+  <item id="1073742815" image="unknown-icon.png" category="RoomAmenity">Rollaway/extra beds (free)</item>
+  <item id="1073742816" image="unknown-icon.png" category="RoomAmenity">Rollaway/extra beds (surcharge)</item>
+  <item id="1073742865" image="unknown-icon.png" category="RoomAmenity">Towels/sheets (surcharge)</item>
+  <item id="1073742906" image="unknown-icon.png" category="PropertyAmenity">Parking onsite</item>
+  <item id="1073742907" image="internet1_iicon.jpg" category="PropertyAmenity">Internet access</item>
+  <item id="1073742908" image="internet1_iicon.jpg" category="RoomAmenity">Internet access</item>
+  <item id="1073743284" image="unknown-icon.png" category="RoomAmenity">Heating</item>
+  <item id="1073743285" image="unknown-icon.png" category="RoomAmenity">In-room climate control (heating)</item>
+  <item id="1073743289" image="unknown-icon.png" category="RoomAmenity">Electric kettle</item>
+  <item id="1073743291" image="unknown-icon.png" category="RoomAmenity">Oven</item>
+  <item id="1073743293" image="unknown-icon.png" category="RoomAmenity">Portable fan</item>
+  <item id="1073743304" image="unknown-icon.png" category="PropertyAmenity">Karaoke</item>
+  <item id="1073743305" image="unknown-icon.png" category="PropertyAmenity">Free train station drop-off</item>
+  <item id="1073743306" image="unknown-icon.png" category="PropertyAmenity">Train station drop-off (surcharge)</item>
+  <item id="1073743307" image="unknown-icon.png" category="Policy">Union Pay</item>
+  <item id="1073743311" image="unknown-icon.png" category="RoomAmenity">Washing machine</item>
+  <item id="1073743312" image="unknown-icon.png" category="RoomAmenity">Dryer</item>
+  <item id="1073743315" image="unknown-icon.png" category="PropertyAmenity">Electric car charging station</item>
+  <item id="1073743316" image="unknown-icon.png" category="RoomAmenity">Rice cooker</item>
+  <item id="1073743368" image="unknown-icon.png" category="Policy">Car required</item>
+  <item id="1073743369" image="unknown-icon.png" category="Policy">Car recommended</item>
+  <item id="1073743370" image="unknown-icon.png" category="RoomAmenity">Towels provided</item>
+  <item id="1073743371" image="unknown-icon.png" category="RoomAmenity">Linens provided</item>
+  <item id="1073743372" image="unknown-icon.png" category="RoomAmenity">Highchair</item>
+  <item id="1073743373" image="unknown-icon.png" category="RoomAmenity">Toaster</item>
+  <item id="1073743378" image="unknown-icon.png" category="PropertyAmenity">Number of bedrooms - </item>
+  <item id="1073743379" image="unknown-icon.png" category="PropertyAmenity">Number of bathrooms - </item>
+  <item id="1073743380" image="unknown-icon.png" category="PropertyAmenity">Max occupancy - </item>
+  <item id="1073743381" image="unknown-icon.png" category="PropertyAmenity">Stereo</item>
+  <item id="1073743382" image="unknown-icon.png" category="PropertyAmenity">Books</item>
+  <item id="1073743383" image="unknown-icon.png" category="PropertyAmenity">Games</item>
+  <item id="1073743384" image="unknown-icon.png" category="PropertyAmenity">Video library</item>
+  <item id="1073743385" image="unknown-icon.png" category="PropertyAmenity">Toys</item>
+  <item id="1073743386" image="unknown-icon.png" category="PropertyAmenity">Ping pong table</item>
+  <item id="1073743387" image="unknown-icon.png" category="PropertyAmenity">Music library</item>
+  <item id="1073743388" image="unknown-icon.png" category="PropertyAmenity">Foosball</item>
+  <item id="1073743392" image="unknown-icon.png" category="PropertyAmenity">Free WiFi (limited) time</item>
+  <item id="1073743393" image="unknown-icon.png" category="PropertyAmenity">Free WiFi (limited) duration</item>
+  <item id="1073743394" image="unknown-icon.png" category="PropertyAmenity">Free WiFi (limited) device count</item>
+  <item id="1073743395" image="unknown-icon.png" category="PropertyAmenity">Limited WiFi (surcharge) device count</item>
+  <item id="1073743396" image="Internet-access-wireless.png" category="RoomAmenity">Free WiFi (limited) time</item>
+  <item id="1073743397" image="Internet-access-wireless.png" category="RoomAmenity">Free WiFi (limited) duration</item>
+  <item id="1073743398" image="Internet-access-wireless.png" category="RoomAmenity">Free WiFi (limited) device count</item>
+  <item id="1073743399" image="Internet-access-wireless.png" category="RoomAmenity">Limited WiFi (surcharge) device count</item>
+  <item id="1073743404" image="unknown-icon.png" category="PropertyAmenity">Shared microwave</item>
+  <item id="1073743405" image="unknown-icon.png" category="PropertyAmenity">Shared refrigerator</item>
+  <item id="1073743406" image="unknown-icon.png" category="RoomAmenity">No housekeeping</item>
+  <item id="1073743409" image="unknown-icon.png" category="RoomAmenity">In-room dining only</item>
+</ItemsList>

@@ -1,0 +1,194 @@
+﻿footer {
+    .footer-wrapper {
+        background-color: #fff;
+    }
+
+    .container {
+        max-width: 1170px;
+    }
+}
+
+footer .footer-mid {
+    padding: 20px 0px;
+    background: #ec2028;
+}
+
+footer .footer-center-list {
+    padding-top: 15px;
+}
+
+footer .footer-mid .col-sm-8 {
+    width: 63%;
+}
+
+.footer-social .social-link {
+    padding-top: 0;
+    padding-bottom: 14px;
+}
+
+footer .f-img .f-img-file {
+    width: 84px;
+    height: 100px;
+}
+
+footer .list-row .list-title {
+    width: 12%;
+    float: left;
+}
+
+footer .list-row .list-content {
+    width: 88%;
+    float: left;
+}
+
+footer .list-row .list-content-airline-pt,
+footer .list-row .list-content-we-accept {
+    width: 77%;
+}
+
+footer .footer-center-list .list-row {
+    width: 100%;
+    padding: 10px 0;
+    display: inline-block;
+}
+
+footer .list-row .short-list-row-pt {
+    display: inline-block;
+    width: 40%;
+    padding: 20px 0;
+}
+
+footer .list-row .short-list-row-gp {
+    display: inline-block;
+    padding: 20px 0;
+    width: 26%;
+}
+
+footer .short-list-row-pt .list-title-pt {
+    width: 20%;
+    margin-top: 5px;
+}
+
+footer .short-list-row-gp .list-title-gp {
+    width: 46%;
+    margin-top: 5px;
+}
+
+footer .short-list-row .list-content {
+    width: 71.5%;
+}
+
+footer .list-title .list-title-text, footer .list-content .list-content-text,
+footer .list-content .list-link, footer .list-content .list-link:hover,
+footer .list-content .list-link:focus {
+    color: #989898;
+    font-size: 13px;
+}
+
+/*footer .list-content .list-content-text, footer .list-content .list-link,
+footer .list-content .list-link:hover, footer .list-content .list-link:focus {
+    font-family: 'OpenSans Regular';
+}*/
+
+footer .list-title .list-title-text {
+    font-family: 'SFPro Bold';
+}
+
+footer .list-content .list-content-text {
+    display: inline-block;
+}
+
+footer .list-row .footer-img {
+    width: 56px;
+    height: 30px;
+}
+
+footer .list-row .footer-img-Chubb, footer .list-row .footer-img-GoAsiaPlus {
+    width: 60px;
+    height: 30px;
+}
+
+footer .list-row .footer-img-Aforadio {
+    width: 40px;
+    height: 30px;
+}
+
+footer .list-row .footer-img-link {
+    display: inline-block;
+    margin-right: 15px;
+    width: 56px;
+    height: 30px;
+}
+
+footer .list-row .footer-img-link-Chubb,
+footer .list-row .footer-img-link-GoAsiaPlus,
+footer .list-row .footer-img-link-Aforadio {
+    width: auto;
+    height: auto;
+}
+
+footer .list-row-airline-pt .footer-img-link,
+footer .list-row-we-accept .footer-img-link {
+    margin-bottom: 15px;
+}
+
+footer .copyright {
+    padding: 5px 0;
+    text-align: center;
+}
+
+.NewsLetter_class.col-sm-4 {
+    padding-left: 25px;
+    width: 37%;
+}
+
+.NewsLetter_class.col-sm-4 .social-link {
+    line-height: 20px;
+}
+
+.NewsLetter_class.col-sm-4 .footer-social .social-top {
+    padding-top: 0;
+    float: left;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.NewsLetter_class.col-sm-4 .social-bottom {
+    padding-top: 15px;
+}
+
+.NewsLetter_class.col-sm-4 .social-link .follow_us_text {
+    float: left;
+    padding-right: 20px;
+    margin-bottom: 0;
+    line-height: 30px;
+}
+
+.NewsLetter_class.col-sm-4 .social-link .link_text {
+    float: left;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.NewsLetter_class.col-sm-4 .social-link .fa-facebook,
+.NewsLetter_class.col-sm-4 .social-link .fa-twitter,
+.NewsLetter_class.col-sm-4 .social-link .fa-instagram {
+    width: 36px;
+    height: 36px;
+    font-size: 30px;
+}
+
+.NewsLetter_class.col-sm-4 .social-top .input-group {
+    width: 95%;
+}
+
+.NewsLetter_class.col-sm-4 .social-bottom .note_img {
+    float: left;
+}
+
+.NewsLetter_class.col-sm-4 .social-bottom .sign_up_text {
+    width: 70%;
+    display: inline-block;
+    margin-bottom: 0;
+    margin-left: 15px;
+}

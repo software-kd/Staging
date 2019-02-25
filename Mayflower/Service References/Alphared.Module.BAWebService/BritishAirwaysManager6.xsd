@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd6" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd8" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd9" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd10" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd11" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd12" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd13" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd14" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd15" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd16" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd17" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd18" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd19" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRS" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd20" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRQ" />
+  <xs:import schemaLocation="http://13.229.31.187/BritishAirways_Debug/BritishAirwaysManager.svc?xsd=xsd21" namespace="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRS" />
+  <xs:element name="GetFlightAvailability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRQ" minOccurs="0" name="req" nillable="true" type="q1:GetFlightAvailabilityRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFlightAvailabilityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightAvailabilityRS" minOccurs="0" name="GetFlightAvailabilityResult" nillable="true" type="q2:AirShoppingRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSeatAvailability">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRQ" minOccurs="0" name="req" nillable="true" type="q3:GetSeatAvailabilityRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSeatAvailabilityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/BritishAirways.GetSeatAvailabilityRS" minOccurs="0" name="GetSeatAvailabilityResult" nillable="true" type="q4:SeatAvailabilityRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFlightPrice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRQ" minOccurs="0" name="req" nillable="true" type="q5:GetFlightPriceRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFlightPriceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/BritishAirways.GetFlightPriceRS" minOccurs="0" name="GetFlightPriceResult" nillable="true" type="q6:FlightPriceRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderCreate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRQ" minOccurs="0" name="req" nillable="true" type="q7:OrderCreateRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderCreateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCreateRS" minOccurs="0" name="OrderCreateResult" nillable="true" type="q8:OrderViewRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderRetrieve">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRQ" minOccurs="0" name="req" nillable="true" type="q9:OrderRetrieveRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderRetrieveResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/BritishAirways.OrderRetrieveRS" minOccurs="0" name="OrderRetrieveResult" nillable="true" type="q10:OrderViewRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderCancel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRQ" minOccurs="0" name="req" nillable="true" type="q11:OrderCancelRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OrderCancelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRS" minOccurs="0" name="OrderCancelResult" nillable="true" type="q12:OrderCancelRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServiceList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRQ" minOccurs="0" name="req" nillable="true" type="q13:ServiceListRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServiceListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/BritishAirways.GetServiceListRS" minOccurs="0" name="GetServiceListResult" nillable="true" type="q14:ServiceListRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AirDocIssue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRQ" minOccurs="0" name="req" nillable="true" type="q15:AirDocIssueRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AirDocIssueResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/BritishAirways.AirDocIssueRS" minOccurs="0" name="AirDocIssueResult" nillable="true" type="q16:AirDocDisplayRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="VerifyFlight">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRQ" minOccurs="0" name="req" nillable="true" type="q17:VerifyFlightRQ" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="VerifyFlightResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/BritishAirways.VerifyFlightRS" minOccurs="0" name="VerifyFlightResult" nillable="true" type="q18:VerifyFlightRS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

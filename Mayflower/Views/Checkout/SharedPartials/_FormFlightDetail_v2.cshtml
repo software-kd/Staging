@@ -1,0 +1,550 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@functions{
+    Mayflower.General.CustomPrincipal customPrincipal = null;
+}
+
+@{
+    customPrincipal = User as Mayflower.General.CustomPrincipal;
+    int counter = 0;
+    List<TravellerDetail> traveller = Model.Flight.TravellerDetails;
+    List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, "ADT");
+    List<SelectListItem> contactTitleList = UtilitiesService.GetTitleList(true, "ADT", Model.ContactPerson != null ? Model.ContactPerson.Title : string.Empty);
+    List<string> guestValue = new List<string>();
+
+    foreach (var item in Model.Flight.FlightInfo.SupplierFlightInfo.PricingInfo.FareBreakDown.Where(x => x.PassengerTypeQuantity > 0))
+    {
+        for (int i = 0; i < item.PassengerTypeQuantity; i++)
+        {
+            guestValue.Add(item.PassengerTypeCode);
+        }
+    }
+}
+
+<!-- guest form start -->
+@foreach (var item in guestValue)
+{
+    counter += 1;
+    string selector = "guest" + counter.ToString() + "form";
+    int totalGuest = guestValue.Count;
+    @guestForm(selector, counter - 1, totalGuest, item)
+}
+
+@functions{
+    private IEnumerable<SelectListItem> SetSelectedItem(IEnumerable<SelectListItem> list, string value)
+    {
+        return from a in list
+               select new SelectListItem
+               {
+                   Text = a.Text,
+                   Value = a.Value,
+                   Selected = a.Value == value
+               };
+    }
+}
+
+@helper guestForm(string guestValue, int counter, int totalGuest, string guestType)
+{
+List<SelectListItem> titleList = UtilitiesService.GetTitleList(true, guestType == "INF" || guestType == "CNN" ? "CNN" : guestType);
+
+    <!-- guest form start -->
+    <div class="tab-pane booking-form fade" id="nav-guest-@counter" role="tabpanel" aria-labelledby="nav-guest-tab" aria-expanded="false">
+        @FlightguestForm(guestValue, counter, totalGuest, guestType, Model.Flight)
+        @if (Model.Hotel != null && Model.Hotel.RoomDetails != null && guestType == "ADT")
+        {
+            int j = 1;
+            IEnumerable<SelectListItem> roomDropDown = from a in Model.Hotel.RoomDetails
+                                                       select new SelectListItem
+                                                       {
+                                                           Text = "Room " + (j++).ToString("D2") + " " + a.RoomTypeName,
+                                                           Value = a.RoomTypeCode + "_" + j,
+                                                           Selected = (Model.Flight.TravellerDetails[counter].HotelSpecialRequest != null ? (Model.Flight.TravellerDetails[counter].HotelSpecialRequest.RoomType == a.RoomTypeCode + "_" + j) : false),
+                                                       };
+
+            List<DisplaySpecialRequestModel> roomBedType = new List<DisplaySpecialRequestModel>();
+            if (Model.Hotel.RoomDetails.Any(x => x.SpecialRequestAvailable != null) && Model.Hotel.RoomDetails.Any(x => x.SpecialRequestAvailable.BeddingRequest.Count > 1))
+            {
+                foreach (var room in Model.Hotel.RoomDetails)
+                {
+                    DisplaySpecialRequestModel DisplaySpecialRequest = new DisplaySpecialRequestModel();
+                    if (room.SpecialRequestAvailable != null && room.SpecialRequestAvailable.BeddingRequest.Count > 1)
+                    {
+                        DisplaySpecialRequest.RoomTypeCode = room.RoomTypeCode;
+                        DisplaySpecialRequest.BeddingRequest = new List<BedModel>();
+                        foreach (var bed in room.SpecialRequestAvailable.BeddingRequest)
+                        {
+                            DisplaySpecialRequest.BeddingRequest.Add(new BedModel
+                            {
+                                BetTypeID = bed.BetTypeID,
+                                BedName = bed.BedName
+                            });
+                        }
+                    }
+                    else
+                    {
+                        DisplaySpecialRequest = null;
+                    }
+                    roomBedType.Add(DisplaySpecialRequest);
+                }
+            }
+            @HotelSRForm(guestValue, counter, totalGuest, guestType, Model.Flight, roomDropDown, roomBedType)
+        }
+    </div>
+
+
+    <!-- guest form end -->
+}
+
+@helper FlightguestForm(string guestValue, int counter, int totalGuest, string guestType, ProductFlight Model)
+{
+bool isGATE = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Chn
+          || Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.GATE_Int;
+bool isAirAsia = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia;
+bool isTCG = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.TCG;
+bool isFRFY = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.Firefly;
+bool isBA = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.BritishAirways;
+bool isSACS = Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.SACS;
+bool gotSSR = Model.FlightInfo.AvaSSR != null && Model.FlightInfo.AvaSSR.Count > 0;
+bool isReturn = Model.SearchFlightInfo.TripType == "Return";
+
+string outboundSegment = Model.FlightInfo.FlightDetailInfo.Origin + " > "
+                     + Model.FlightInfo.FlightDetailInfo.FlightTrip
+                     .FirstOrDefault(x => x.RouteType == Alphareds.Module.Model.RouteType.Outbound)
+                     .FlightRouteInfo.Select(x => x.ArriveAirportCode)
+                     .Aggregate((current, next) => current + " > " + next);
+
+string inboundSegment = isReturn ? Model.FlightInfo.FlightDetailInfo.Destination + " > "
+                         + Model.FlightInfo.FlightDetailInfo.FlightTrip
+                         .FirstOrDefault(x => x.RouteType == Alphareds.Module.Model.RouteType.Inbound)
+                         .FlightRouteInfo.Select(x => x.ArriveAirportCode)
+                         .Aggregate((current, next) => current + " > " + next)
+                         : string.Empty;
+
+    @Html.HiddenFor(model => Model.TravellerDetails[counter].PassengerType, new { Value = guestType })
+
+Func<SelectListItem, bool> dobYear = (x => true);
+object DOBHtmlAttr = new { @class = "form-control datepicker3 adt", placeholder = "DD-MMM-YYYY" };
+object NationalityAttr = new { @class = "form-control" };
+object PassportEXPDateAttr = new { @class = "form-control datepicker3 exp", placeholder = "DD-MMM-YYYY" };
+object PassportIssueCountryAttr = new { @class = "form-control" };
+object PassportNumberAttr = new { @class = "form-control" };
+MvcHtmlString DOBRequired = new MvcHtmlString("");
+MvcHtmlString InfMonth = new MvcHtmlString("");
+MvcHtmlString NationalityRequired = new MvcHtmlString("");
+MvcHtmlString PassportIssueCountryRequired = new MvcHtmlString("");
+bool hvDOBValue = Model.TravellerDetails[counter].DOB != null;
+bool hvNationalityValue = Model.TravellerDetails[counter].Nationality != null;
+bool hvPassportExpValue = Model.TravellerDetails[counter].PassportExpiryDate != null;
+bool hvPassportIssueCountryValue = Model.TravellerDetails[counter].PassportIssueCountry != null;
+
+if (guestType == "ADT")
+{
+    dobYear = (x => Convert.ToInt32(x.Value) <= DateTime.Now.Year - 12);
+    InfMonth = new MvcHtmlString("Age");
+}
+else if (guestType == "CNN")
+{
+    DOBRequired = new MvcHtmlString("<span>*</span>");
+    DOBHtmlAttr = new { @class = "form-control datepicker3 cnn", placeholder = "DD-MMM-YYYY", data_val_required = "DOB is required for Child.", data_val = "true" };
+    dobYear = (x => Convert.ToInt32(x.Value) >= DateTime.Now.Year - 12 && Convert.ToInt32(x.Value) <= DateTime.Now.Year - 2);
+    InfMonth = new MvcHtmlString("Age");
+}
+else if (guestType == "INF")
+{
+    DOBRequired = new MvcHtmlString("<span>*</span>");
+    DOBHtmlAttr = new { @class = "form-control datepicker3 inf", placeholder = "DD-MMM-YYYY", data_val_required = "DOB is required for Infant.", data_val = "true" };
+    dobYear = (x => Convert.ToInt32(x.Value) >= DateTime.Now.Year - 2 && Convert.ToInt32(x.Value) <= DateTime.Now.Year);
+    InfMonth = new MvcHtmlString("Age (In Months!!)");
+}
+
+if (guestType == "ADT" && (isAirAsia || isGATE || isTCG || isBA || isFRFY))
+{
+    DOBRequired = new MvcHtmlString("<span>*</span>");
+    DOBHtmlAttr = new { @class = "form-control datepicker3 adt", placeholder = "DD-MMM-YYYY", data_val_required = "DOB is required.", data_val = "true" };
+}
+
+if (isAirAsia || isTCG || isFRFY)
+{
+    NationalityRequired = new MvcHtmlString("<span>*</span>");
+    NationalityAttr = new { @class = "form-control", data_val_required = "Nationality is required.", data_val = "true" };
+}
+if (isTCG)
+{
+    PassportEXPDateAttr = new { @class = "form-control datepicker3 exp", placeholder = "DD-MMM-YYYY", data_val_required = "Passport Expiry Date is required.", data_val = "true" };
+    PassportIssueCountryRequired = new MvcHtmlString("<span>*</span>");
+    PassportIssueCountryAttr = new { @class = "form-control", data_val_required = "Passport Issuing Country is required.", data_val = "true" };
+    PassportNumberAttr = new { @class = "form-control", data_val_required = "Passport Number is required.", data_val = "true" };
+}
+
+List<SelectListItem> FrequentTravellerList = new List<SelectListItem>();
+if (User.Identity.IsAuthenticated)
+{
+    FrequentTravellerList = UtilitiesService.GetFrequentFlyerListByGrpID(customPrincipal.UserId, Model.TravellerDetails[counter].FrequentTravellerID, null);
+}
+
+    <div class="form-wrapper">
+        @if (FrequentTravellerList.Count > 0)
+        {
+            <div class="row justify-content-end">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>Select Traveller Flyer</label>
+                        <div>
+                            @Html.DropDownListFor(model => Model.TravellerDetails[counter].FrequentTravellerID, FrequentTravellerList, "-", new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div><br />
+                <div class="clear"></div>
+            </div>
+        }
+        <span class="pb-2 color_red">Mandatory fields (*) are required.</span>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-12">
+                <div class="form-group">
+                    <label>Title <span>*</span></label>
+                    @if (isSACS || isBA)
+                    {
+                        @Html.DropDownListFor(model => Model.TravellerDetails[counter].Title, UtilitiesService.GetTitleList(true, guestType == "INF" || guestType == "CNN" ? "CNN" : guestType, Model.TravellerDetails[counter].Title), "-", new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => Model.TravellerDetails[counter].Title, UtilitiesService.GetTitleListNotSabre(true, "ADT", Model.TravellerDetails[counter].Title), "-", new { @class = "form-control" })
+                    }
+
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].Title, null)</div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-4 col-6">
+                <div class="form-group">
+                    <label>First Name <span>* (Same as passport)</span>@Html.Partial("~/Views/Shared/Theme_3/_NameGuideTooltip.cshtml")</label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].GivenName, new { @class = "form-control", @required = "required" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].GivenName, null)</div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-4 col-6">
+                <div class="form-group">
+                    <label>Last Name <span>* (Same as passport)</span></label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].Surname, new { @class = "form-control", @required = "required" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].Surname, null)</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>D.O.B @DOBRequired</label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].DOB, "{0:dd-MMM-yyyy}", DOBHtmlAttr)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].DOBDays)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].DOBMonths)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].DOBYears)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].DOB, null)</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>@InfMonth</label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].Age, new { @class = "form-control", disabled = "true" })
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].Age, null)</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Nationality @NationalityRequired</label>
+                    @Html.DropDownListFor(model => Model.TravellerDetails[counter].Nationality, SetSelectedItem(Mayflower.General.Utilities.CountryDropList(), (hvNationalityValue ? Model.TravellerDetails[counter].Nationality.ToString() : null)), "-", NationalityAttr)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].Nationality, null)</div>
+                </div>
+            </div>
+            <div class="col-6" id="passpno_@counter">
+                <div class="form-group">
+                    <label>
+                        Passport Number @if (isGATE || isTCG)
+                        {<span>*</span>}
+                        else
+                        { <span style="color:black !important">(Optional)</span> }
+                    </label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].PassportNumber, PassportNumberAttr)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].PassportNumber, null)</div>
+                </div>
+            </div>
+            <div class="col-6" id="passpexp_@counter">
+                <div class="form-group">
+                    <label>
+                        Passport Expiry Date @if (isGATE || isTCG)
+                        {<span>*</span>}
+                    </label>
+                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].PassportExpiryDate, "{0:dd-MMM-yyyy}", PassportEXPDateAttr)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].PassportExpiryDateDays)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].PassportExpiryDateMonths)
+                    @Html.HiddenFor(model => Model.TravellerDetails[counter].PassportExpiryDateYears)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].PassportExpiryDate, null, new { @class = "textforerrormsg" })</div>
+                </div>
+            </div>
+            <div class="col-6" id="passpcountry_@counter">
+                <div class="form-group">
+                    <label>Passport Issuing Country @PassportIssueCountryRequired</label>
+                    @Html.DropDownListFor(model => Model.TravellerDetails[counter].PassportIssueCountry, SetSelectedItem(Mayflower.General.Utilities.CountryDropList(), (hvPassportIssueCountryValue ? Model.TravellerDetails[counter].PassportIssueCountry.ToString() : null)), "-", PassportIssueCountryAttr)
+                    <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].PassportIssueCountry, null)</div>
+                </div>
+            </div>
+            <div class="col-6" id="icno_@counter">
+                <div class="form-group">
+                    @if (Model.SearchFlightInfo.isDomesticFlight)
+                    {
+                        <label>NRIC number</label>
+                        @Html.TextBoxFor(model => Model.TravellerDetails[counter].IdentityNumber, new { @class = "form-control" })
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].IdentityNumber, null)</div>
+                    }
+                </div>
+            </div>
+            @if (Core.IsForStaging)
+            {
+                var FFNo = Model.TravellerDetails[counter].FrequrntFlyerNoAirline;
+                var FFImgUrl = FFNo == null ? null : Url.Content(UtilitiesService.getFrequrntFlyerImgUrl(FFNo));
+                var airlineType = Model.FlightInfo.FlightDetailInfo.Airline.FirstOrDefault();
+
+                var fFErrorMessageID = "FFError_" + counter.ToString();
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Frequent Traveller Number</label>
+                        <div class="row ffn_inputbox">
+                            <div class="col-4">
+                                <div class="form-control s3-1_flyer_left_dupinput" data-ffair="ffair_@counter" id="ffairID_@counter" data-airlinetype="@airlineType">
+                                    @if (FFNo != null)
+                                    {
+                                        <img src='@FFImgUrl' style='height:30px;width:30px;' />
+                                        <span> @FFNo</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size: 14px;padding-left: 14px;">-</span>
+                                    }
+
+                                </div>
+                                @Html.HiddenFor(model => Model.TravellerDetails[counter].FrequrntFlyerNoAirline, new { @class = "form-control s3-1_flyer_right" })
+                            </div>
+                            <div class="col-8">
+                                @if (Model.TravellerDetails[counter].FrequentFlyerNo != null)
+                                {
+                                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].FrequentFlyerNo, new { @class = "form-control s3-1_flyer_right ff_no" })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(model => Model.TravellerDetails[counter].FrequentFlyerNo, new { @class = "form-control s3-1_flyer_right ff_no", disabled = "true" })
+                                }
+                            </div>
+                        </div>
+                        <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].FrequentFlyerNo, null, new { id = @fFErrorMessageID })</div>
+                        <div class="ffn_inputboxulli_container ffn_select"></div>
+                    </div>
+                </div>
+            }
+
+            @if (customPrincipal.IsAgent)
+            {
+                var customizedfield1 = ViewData["CUSTOMIZEDFIELD1"] != null ? ViewData["CUSTOMIZEDFIELD1"].ToString() : null;
+                var customizedfield2 = ViewData["CUSTOMIZEDFIELD2"] != null ? ViewData["CUSTOMIZEDFIELD2"].ToString() : null;
+                var customizedfield3 = ViewData["CUSTOMIZEDFIELD3"] != null ? ViewData["CUSTOMIZEDFIELD3"].ToString() : null;
+                var customizedfield4 = ViewData["CUSTOMIZEDFIELD4"] != null ? ViewData["CUSTOMIZEDFIELD4"].ToString() : null;
+
+                if (customizedfield1 != null)
+                {
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>@customizedfield1<span>*</span></label>
+                            @Html.TextBoxFor(model => Model.TravellerDetails[counter].CustomizedField1, new { @class = "form-control", @required = "required" })
+                            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].CustomizedField1, null)</div>
+                        </div>
+                    </div>
+                }
+                if (customizedfield2 != null)
+                {
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>@customizedfield2<span>*</span></label>
+                            @Html.TextBoxFor(model => Model.TravellerDetails[counter].CustomizedField2, new { @class = "form-control", @required = "required" })
+                            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].CustomizedField2, null)</div>
+                        </div>
+                    </div>
+                }
+                if (customizedfield3 != null)
+                {
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>@customizedfield3<span>*</span></label>
+                            @Html.TextBoxFor(model => Model.TravellerDetails[counter].CustomizedField3, new { @class = "form-control", @required = "required" })
+                            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].CustomizedField3, null)</div>
+                        </div>
+                    </div>
+                }
+                if (customizedfield4 != null)
+                {
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>@customizedfield4<span>*</span></label>
+                            @Html.TextBoxFor(model => Model.TravellerDetails[counter].CustomizedField4, new { @class = "form-control", @required = "required" })
+                            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].CustomizedField4, null)</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="row">
+            @if ((Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.AirAsia
+|| Model.FlightInfo.Supplier == Alphareds.Module.CompareToolWebService.CTWS.serviceSource.TCG)
+&& gotSSR && guestType != "INF" && Model.FlightInfo.FlightDetailInfo.FlightTrip.All(x => x.FlightRouteInfo.Count <= 1)) //Disable SSR for connecting flight at the moment
+            {
+                var ssrList = Model.FlightInfo.AvaSSR;
+                int outBoundIndex = 0;
+                int inBoundIndex = 0;
+                <div class="col-12">
+                    <div class="form-tag">Special Guest Requirements**</div>
+                </div>
+                foreach (FlightSSR ssrType in Enum.GetValues(typeof(FlightSSR)))
+                {
+                    string defaultSelectDesc = string.Empty;
+                    string ssrLogo = string.Empty;
+
+                    switch (ssrType)
+                    {
+                        case FlightSSR.Baggage:
+                            defaultSelectDesc = "No Checked Baggage";
+                            ssrLogo = Url.Content("~/Images/ico/gt.png");
+                            break;
+                        case FlightSSR.Meal:
+                            defaultSelectDesc = "No Checked Meal";
+                            ssrLogo = Url.Content("~/Images/ico/ml.png");
+                            break;
+                        default:
+                            defaultSelectDesc = "No Checked Special Request";
+                            break;
+                    }
+
+                    <div class="ssr_label col-12"><img class="btn-loadstate" src="@ssrLogo" style="width: 35px;margin-right: 5px;vertical-align: middle;">@ssrType.ToDescription()</div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <div class="col-12"><label>Depart</label></div>
+                            @{ var ssrTypeGroup = ssrList.FirstOrDefault(x => x.IsOutboundFlightSSR)?.SSRTypeGroup?.FirstOrDefault(x => x.Key == ssrType); }
+                            @if (ssrTypeGroup != null)
+                            {
+                                foreach (var seg in ssrTypeGroup?.Value)
+                                {
+                                    bool disabledDropDown = outBoundIndex != 0 && ssrType == FlightSSR.Baggage;
+                                    string className = "form-control " + ssrType + (disabledDropDown ? " remove_background_pic" : "");
+                                    <div class="col-12">
+                                        <label>@seg.StationLabel</label>
+                                        @Html.DropDownListFor(model => Model.TravellerDetails[counter].OutBoundSSR[outBoundIndex].SSRCode,
+                                                                                                        Model.TravellerDetails[counter].OutBoundSSR != null ? SetSelectedItem(UtilitiesService.GetBaggageList(seg.SSR.ToList()), Model.TravellerDetails[counter].OutBoundSSR[outBoundIndex]?.SSRCode) : UtilitiesService.GetBaggageList(seg.SSR.ToList())
+                                                                                                        , defaultSelectDesc, disabledDropDown ? new { @class = className, @readonly = "readonly" } : new { @class = className } as object)
+                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].OutBoundSSR[outBoundIndex].DepartureStation, new { @Value = seg.DepartureStation })
+                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].OutBoundSSR[outBoundIndex].ArrivalStation, new { @Value = seg.ArrivalStation })
+                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].OutBoundSSR[outBoundIndex].SSRType, new { @Value = ssrType })
+                                    </div>
+                                    outBoundIndex++;
+                                }
+                            }
+                        </div>
+                    </div>
+
+                                if (isReturn)
+                                {
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <div class="col-12"><label>Return</label></div>
+
+                                            @{ ssrTypeGroup = ssrList.FirstOrDefault(x => !x.IsOutboundFlightSSR)?.SSRTypeGroup.FirstOrDefault(x => x.Key == ssrType); }
+                                            @if (ssrTypeGroup != null)
+                                            {
+                                                foreach (var seg in ssrTypeGroup?.Value)
+                                                {
+                                                    bool disabledDropDown = inBoundIndex != 0 && ssrType == FlightSSR.Baggage;
+                                                    string className = "form-control " + ssrType + (disabledDropDown ? " remove_background_pic" : "");
+                                                    <div class="col-12">
+                                                        <label>@seg.StationLabel</label>
+                                                        @Html.DropDownListFor(model => Model.TravellerDetails[counter].InBoundSSR[inBoundIndex].SSRCode,
+                                                                                                                            Model.TravellerDetails[counter].InBoundSSR != null ? SetSelectedItem(UtilitiesService.GetBaggageList(seg.SSR.ToList()), Model.TravellerDetails[counter].InBoundSSR[inBoundIndex]?.SSRCode) : UtilitiesService.GetBaggageList(seg.SSR.ToList())
+                                                                                                                            , defaultSelectDesc, disabledDropDown ? new { @class = className, @readonly = "readonly", } : new { @class = className } as object)
+                                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].InBoundSSR[inBoundIndex].DepartureStation, new { @Value = seg.DepartureStation })
+                                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].InBoundSSR[inBoundIndex].ArrivalStation, new { @Value = seg.ArrivalStation })
+                                                        @Html.HiddenFor(model => Model.TravellerDetails[counter].InBoundSSR[inBoundIndex].SSRType, new { @Value = ssrType })
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                    inBoundIndex++;
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                                        }
+                                                    }
+                                                }
+        </div>
+    </div>
+}
+
+@helper HotelSRForm(string guestValue, int counter, int totalGuest, string guestType, ProductFlight Model, IEnumerable<SelectListItem> roomDropDown, List<DisplaySpecialRequestModel> RoomBedList)
+{
+    <!-- special request of hotel start -->
+    <div class="row" id="hotelSR_@counter">
+        <div class="col-12"><hr /></div>
+        <div class="col-12">
+            <div class="form-group custom-checkbox">
+                <label><input type="checkbox" name="TravellerDetails[counter].HotelSpecialRequest.ImStaying" id="checkbox5" value="true" /><span>I'm Staying - </span></label>
+                @Html.DropDownListFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.RoomType, roomDropDown, new { @class = "s3-1_title roomChoise" })
+                @Html.HiddenFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.IsAssign, false)
+            </div>
+        </div>
+        <div class="col-12">Special Request **</div>
+        <div class="col-12">
+            <div class="form-group custom-radio">
+                Smoking
+                <div>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.SmokingPreferences, "Smoking", new { id = "smoking_" + counter })<span>Smoking</span></label>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.SmokingPreferences, "NonSmoking", new { id = "nosmoking_" + counter })<span>No-Smoking</span></label>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.SmokingPreferences, "Either", new { id = "eithersmoke_" + counter })<span>No Preference</span></label>
+                </div>
+            </div>
+        </div>
+
+        @if (RoomBedList != null && RoomBedList.Any(x => x.BeddingRequest.Count > 1))
+        {
+            int i = 0;
+            foreach (var room in RoomBedList.Where(x => x != null))
+            {
+                var ishidden = i == 0 ? "" : "hidden";
+                var roomno = "room_" + i;
+                <div data-room="@room.RoomTypeCode" class="col-12 roomsrdiv_@counter @roomno @ishidden">
+                    <div class="form-group custom-radio">
+                        Bedding request
+                        @foreach (var bed in room.BeddingRequest)
+                        {
+                            <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.BetTypeID, bed.BetTypeID, new { id = bed.BedName + "_" + counter })<span>@bed.BedName</span></label>
+                        }
+                    </div>
+                </div>
+                i++;
+            }
+        }
+        <div class="col-12">
+            <div class="form-group custom-radio">
+                Check In
+                <div>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.CheckInMode, "Early", new { id = "checkinearly_" + counter })<span>Early</span></label>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.CheckInMode, "Late", new { id = "checkinlate_" + counter })<span>Late</span></label>
+                    <label>@Html.RadioButtonFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.CheckInMode, "Either", new { id = "checkineither_" + counter })<span>No Preference</span></label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Additional Requests***</label>
+                @Html.TextAreaFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.AdditionalRequest, new { @class = "form-control", maxlength = "230" })
+            </div>
+            <div class="field_error_msg">@Html.ValidationMessageFor(model => Model.TravellerDetails[counter].HotelSpecialRequest.AdditionalRequest, null)</div>
+        </div>
+        <div class="col-12">
+            <label>* &nbsp; No special characters are allowed</label><br />
+            <label>** Special request subject to availablity</label><br>
+            <label>*** Additional request must be max 230 characters only</label>
+        </div>
+    </div>
+    <!-- special request of hotel end -->
+}

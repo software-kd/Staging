@@ -1,0 +1,10 @@
+﻿<select multiple="multiple" id="ListBox" class="ct_inner_select">
+    @foreach (var ff in Model)
+    {
+        if(ff.IsActive)
+        {
+            <option value="@ff.TravellerID" class="ct_inner_option">@ff.FullName</option>
+        }
+        
+    }
+</select>

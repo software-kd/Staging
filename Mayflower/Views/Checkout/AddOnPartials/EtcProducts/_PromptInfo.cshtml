@@ -1,0 +1,56 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CrossSellItemsAvailable.EventProductInformation
+
+<div class="fullcover_div_GoogleMap">
+    <div class="fullcover_div8">
+        <div class="viewmorehotel_container hotel-info">
+            <div class="div8_toptabs d8tab1 d8activelink" onclick="ShowTab('tab1');">Info</div>
+            <div class="div8_toptabs d8tab2" id="d8tab2" onclick="ShowTab('tab2');">Gallery</div>
+            <div class="div8_toptabs d8tab3" id="d8tab3" onclick="ShowTab('tab3');">T&C</div>
+            <div class="clear"></div>
+            <div class="tl_right text-right loginclose specialclose"><img src="@Url.Content("../images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+
+            <div class="viewmorehotel_white1nn" style="height: auto!important">
+                <div class="div8_tab_container1">
+                    <div class="pop-container">
+                        <table class="table table-condensed">
+                            <tr><th>Title</th><td>@Model.HeaderInfo.First().EventName</td></tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>
+                                    @foreach (var item in Model.HeaderInfo.First().EventDesc.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        if (item != "\r")
+                                        {
+                                            @item<br />
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr><th>Pickup Venue</th><td>@Model.HeaderInfo.First().RedemptionVenue</td></tr>
+                            @if (Model.HeaderInfo.First().VenueAddress != "")
+                            {
+                                <tr><th>Pickup Address</th><td>@Model.HeaderInfo.First().VenueAddress</td></tr>
+                            }
+                            <tr><th>Cancellation Policy</th><td>@Model.HeaderInfo.First().CancellationRule</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="div8_tab_container2" style="max-height: 510px!important">
+                    <div class="pop-container" style="text-align: center;">
+                        <img src="@(File.Exists(Server.MapPath(Model.HeaderInfo.First().EventImageWeb)) ? Url.Content(Model.HeaderInfo.First().EventImageWeb) : Url.Content("~/Images/no-img-01.jpg"))" />
+                    </div>
+                </div>
+                <div class="div8_tab_container3" >
+                    <div class="pop-container">
+                        <h4>Terms & Conditions</h4>
+                        <div>
+                            <span style="display:table-cell;">@Html.Raw(Model.HeaderInfo.First().TermsAndConditions.Replace("\r\n", "<br />"))</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

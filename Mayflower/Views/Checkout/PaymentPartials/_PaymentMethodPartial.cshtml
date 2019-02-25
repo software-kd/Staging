@@ -1,0 +1,99 @@
+﻿@model Alphareds.Module.Model.PaymentCheckout
+
+@functions{
+    decimal currentPaymentAmt = 0m;
+    string lastPaymentRecord = null;
+}
+
+@{
+    string currentPayment = Model.PaymentMethod != null ? Model.PaymentMethod.ToLower() : "";
+    currentPaymentAmt = Model.GrandTotalForPayment;
+    string _currencyCode = Model.PaymentCurrencyCode;
+
+    switch (currentPayment)
+    {
+        case "adyenc":
+            lastPaymentRecord = "adyenc";
+            break;
+        case "ipacc":
+            lastPaymentRecord = "ipacc";
+            break;
+        case "ipafpx":
+            lastPaymentRecord = "ipafpx";
+            break;
+        default:
+            lastPaymentRecord = "ipafpx";
+            break;
+    }
+
+    Mayflower.General.CustomPrincipal customPrincipal = User as Mayflower.General.CustomPrincipal;
+    bool isAgent = customPrincipal.IsAgent;
+}
+
+@if (ViewBag.AllowCC == null || ViewBag.AllowCC == true)
+{
+    // Disable Credit Card option on repayment
+    if (Alphareds.Module.Common.Core.IsEnableAdyen)
+    {
+        <div id="iPayCreditCard_div" class="s4_png_inner_row s4_png_inner_row1" data-pmethod="ADYENC">
+            <div class="s4_png_boxleft">
+                <input id="visaMaster" class="paymentMethod" type="radio" name="paymentMethod" value="@(isAgent ? "ADYENC" : "ADYENC")" @checkLastPayment("ADYENC") />
+                <label class="paymentMethodLabel @checkIsFullCreditUsed(currentPaymentAmt)" for="visaMaster">@(isAgent ? "Pay with Corporate Card" : "Pay with Credit / Debit card")</label>
+            </div>
+            <div class="s4_png_boxright"><img src="~/images/cards.jpg" width="153" height="50" alt=""></div>
+            <div class="s4_png_boxright_price" style="line-height: 50px; margin-top: 0px;">
+                @currentPaymentAmtLabel("ADYENC", _currencyCode, currentPaymentAmt)
+            </div>
+            <div class="clear"></div>
+            @Html.Partial("~/Views/Payment/_CreditCardFieldPartial.cshtml", Model.CreditCard)
+            <div class="clear"></div>
+        </div>
+        <div class="s4_png_line"></div>
+    }
+
+    if (!Alphareds.Module.Common.Core.IsEnableAdyen || isAgent)
+    {
+        <div id="iPayCreditCard_div" class="s4_png_inner_row s4_png_inner_row1" data-pmethod="IPACC">
+            <div class="s4_png_boxleft">
+                <input id="ivisaMaster" class="paymentMethod" type="radio" name="paymentMethod" value="@(isAgent ? "IPACC" : "IPACC")" @checkLastPayment("IPACC") />
+                <label class="paymentMethodLabel @checkIsFullCreditUsed(currentPaymentAmt)" for="ivisaMaster">@(isAgent ? "Pay with Corporate Card (IPAY88)" : "Pay with Credit / Debit card (IPAY88)")</label>
+            </div>
+            <div class="s4_png_boxright"><img src="~/images/cards.jpg" width="153" height="50" alt=""></div>
+            <div class="s4_png_boxright_price" style="line-height: 50px; margin-top: 0px;">
+                @currentPaymentAmtLabel("IPACC", _currencyCode, currentPaymentAmt)
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="s4_png_line"></div>
+    }
+}
+
+<div id="iPayFPX_div" class="s4_png_inner_row" data-pmethod="IPAFPX">
+    <input id="fpx" type="radio" class="paymentMethod" name="paymentMethod" value="@(isAgent ? "IPAFPX" : "IPAFPX")" @checkLastPayment("IPAFPX") />
+    <label class="paymentMethodLabel @checkIsFullCreditUsed(currentPaymentAmt)" for="fpx">Pay with FPX</label>
+    <div class="s4_png_boxright_price" data-value="@currentPaymentAmt">@currentPaymentAmtLabel("IPAFPX", _currencyCode, currentPaymentAmt)</div>
+</div>
+
+@functions{
+    string checkLastPayment(string radioPayment)
+    {
+        radioPayment = radioPayment ?? "";
+        string output = radioPayment.ToLower() == lastPaymentRecord.ToLower() && currentPaymentAmt > 0 ? "checked" : "";
+        output += currentPaymentAmt == 0 ? " disabled" : "";
+
+        return output;
+    }
+
+    string checkIsFullCreditUsed(decimal currentPaymentAmt)
+    {
+        return currentPaymentAmt <= 0 ? " isInvalid" : "";
+    }
+
+    string currentPaymentAmtLabel(string radioPayment, string currencyCode, decimal currentPaymentAmt)
+    {
+        radioPayment = radioPayment ?? "";
+        return radioPayment.ToLower() == lastPaymentRecord.ToLower() && currentPaymentAmt > 0
+            ? $"{currencyCode} {currentPaymentAmt.ToString("n2")}"
+            : "";
+    }
+}

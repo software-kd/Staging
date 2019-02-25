@@ -1,0 +1,92 @@
+﻿@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using Alphareds.Module.BookingController
+@using Alphareds.Module.Model.Database
+
+@model Booking
+
+@{
+    var passenger = Model.Paxes.Where(x => (!x.IsContactPerson ?? false)).GroupBy(x => x.PassengerType);
+    int counter = 1;
+
+    var firstDepartureDate = Model.FlightSegments.FirstOrDefault(x => x.SegmentOrder == "O1").DepartureDateTime;
+
+    bool isReturn = Model.IsReturn;
+}
+
+<div class="passDetails-box">
+    @foreach (var pType in passenger)
+    {
+        foreach (var details in pType)
+        {
+            var baggage = details.FlightSegmentPaxServiceTypes.Where(x => x.FlightSegment.SegmentOrder == "I1" || x.FlightSegment.SegmentOrder == "O1");
+
+            <div class="box-head">@UtilitiesService.GetPassengerTypeName(pType.Key) @((counter++).ToString("d2"))</div>
+            <div class="box-detail">
+                <table cellpadding="0" cellspacing="0" border="0" class="pDetails">
+                    <tbody>
+                        <tr>
+                            <td width="209"><label>Title:</label></td>
+                            <td width="267" class="info">@(details.TitleCode.ToTitleCase()).</td>
+                            <td width="209">&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td><label>First and last name:</label></td>
+                            <td class="info">@details.FullName.ToTitleCase()</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td><label>Date of birth:</label></td>
+                            <td class="info">@(details.DOB.HasValue ? details.DOB.Value.ToString("dd MMM yyyy") : "-")</td>
+                            <td><label>Age:</label></td>
+                            <td class="info">@(details.DOB.DisplayAgeMessage(details.PassengerType, firstDepartureDate) ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <td><label>Nationality:</label></td>
+                            <td class="info">@(details.Nationality.Trim() != "NA" ? UtilitiesService.GetCountryName(details.Nationality.Trim()) : "-")</td>
+                            <td><label>Passport Number:</label></td>
+                            <td class="info">@(!string.IsNullOrEmpty(details.Passport) ? details.Passport.ToUpper() : "-")</td>
+                        </tr>
+                        <tr>
+                            <td><label>Passport Expiry Date:</label></td>
+                            <td class="info">@(details.PassportExpiryDate.HasValue ? details.PassportExpiryDate.Value.ToString("dd MMM yyyy") : "-")</td>
+                            <td><label>Passport Issuing Country:</label></td>
+                            <td class="info">@(!string.IsNullOrEmpty(details.PassportIssueCountryCode) ? UtilitiesService.GetCountryName(details.PassportIssueCountryCode).ToTitleCase() : "-")</td>
+                        </tr>
+
+                        @if (baggage != null && Model.SupplierCode == "AASA" && pType.Key != "INF")
+                        {
+                            <tr>
+                                <td><label><strong>Special Request:</strong></label></td>
+                            </tr>
+                            <tr>
+                                @for (int b = 0; b < (isReturn ? 2 : 1); b++)
+                                {
+                                    bool isReturnFlight = b != 0;
+                                    var baggageInFlight = isReturnFlight ? baggage.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "I1") : baggage.FirstOrDefault(x => x.FlightSegment.SegmentOrder == "O1");
+
+                                    <td><label>@(isReturnFlight ? "Return Baggage" : "Depart Baggage")</label></td>
+                                    <td class="info">
+                                        @if (baggageInFlight != null)
+                                        {
+                                            @("Up to" + @baggageInFlight.ServiceValue);
+                                        }
+                                        else
+                                        {
+                                            @("No checked baggage");
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        // reset counter
+        counter = 1;
+    }
+</div>

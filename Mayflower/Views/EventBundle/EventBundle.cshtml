@@ -1,0 +1,79 @@
+﻿@using Alphareds.Module.ServiceCall;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+@{
+    string tripid = ViewBag.tripid ?? Request.QueryString["tripid"];
+    string affiliationId = "";
+    //string returnAction = Url.Action("GuestDetails", "Checkout", new { tripid, affiliationId });
+    bool isEnableCMS = Alphareds.Module.Common.Core.EnableCMS;
+    Layout = "~/Views/Shared/Theme_3/_Layout.cshtml";
+    ViewBag.Title = "Event Bundle";
+    ViewBag.HeaderRed = true;
+    string notStart = "";
+    if(ViewBag.EMassage != null)
+    {
+        notStart = ViewBag.EMassage;
+    }
+    //ViewBag.ReturnAction = returnAction;
+}
+
+@section style{
+    <style>
+        .notice-container {
+            /*margin: 4em 0;*/
+            width: 100%;
+            text-align: center;
+            max-width: none;
+            padding: 0 0 35px;
+        }
+        
+    </style>
+    
+}
+
+<div class="container notice-container">
+    @using (Html.BeginForm("EventBundle", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { @id = "crossSale" }))
+    {
+        if (Model.SellItemsAvailable.EventProducts == null)
+        {
+            if (notStart.Contains("Register"))
+            {
+                <img src=@Url.Content("~/Images/ConcertItems/Joker-xue-concert-mayflower-web2.jpg") style="width:100%"/>
+                <h4>
+                    @Html.Raw(notStart)
+                </h4>
+
+            }
+            else if (notStart.Contains("sales is End"))
+            {
+                <img src=@Url.Content("~/Images/ConcertItems/Joker-xue-concert-mayflower-web2.jpg") style="width:100%" />
+            }
+            else
+            {
+                <h4>
+                    @Html.Raw(notStart)
+                </h4>
+                        }
+
+            <div class="text-center mt-3">
+                <div>
+                    
+                        <div class="btn-container">
+                            <a class="btn btn-info btn-sm" style="background-color:red"  href="@Url.Action("Simpleregister", "Member")">Register</a>
+                        </div>
+                    
+                </div>
+            </div>
+        }
+        else
+        {
+
+        }
+
+    }
+</div>
+
+@section scripts{
+}
+
+

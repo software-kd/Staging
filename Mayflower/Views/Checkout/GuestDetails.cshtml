@@ -1,0 +1,394 @@
+﻿@using Alphareds.Module.Model;
+@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.CheckoutProduct
+
+@{
+    string tripid = Request.QueryString["tripid"];
+    string affiliationId = Request.QueryString["affiliationId"];
+    string previousAction = Request.QueryString["previousUrl"];
+    string returnAction = "";
+    ViewBag.tripid = tripid;
+
+    if (!string.IsNullOrEmpty(previousAction))
+    {
+        if (previousAction == "SavedSearch")
+        {
+            returnAction = Url.Action("SavedSearch", "Account");
+        }
+        else
+        {
+            returnAction = Url.Action("NotFound", "Error", new { tripid, affiliationId });
+        }
+    }
+    else
+    {
+        if (Model.Flight != null && !Model.IsDynamic)
+        {
+            returnAction = Url.Action("Search", "Flight", new { tripid, affiliationId });
+        }
+        else if ((Model.Flight == null || Model.IsDynamic) && Model.Hotel != null)
+        {
+            returnAction = Url.Action("Search", "Hotel", new { tripid, affiliationId });
+        }
+        else
+        {
+            returnAction = Url.Action("NotFound", "Error", new { tripid, affiliationId });
+        }
+    }
+
+    ViewBag.Title = "Guest Details";
+    ViewBag.HeaderRed = true;
+    //ViewBag.CheckSession = true;
+    ViewBag.ReturnAction = returnAction;
+    ViewBag.UsePopupLoginBox = true;
+    ViewBag.IsHotelonly = Model.Flight == null && Model.Hotel != null;
+    ViewBag.IsFlightonly = Model.Flight != null && Model.Hotel == null;
+    ViewBag.IsFlightBooking = Model.Flight != null && Model.Products.OrderBy(x => x.ProductSeq).FirstOrDefault().ProductType == ProductTypes.Flight;
+
+    if (ViewBag.IsFlightBooking)
+    {
+        ViewBag.FlightSupplier = Model.Flight.FlightInfo.Supplier;
+        ViewBag.IsDomestic = Model.Flight.SearchFlightInfo.isDomesticFlight;
+    }
+
+    int counter = 0;
+}
+
+@section style{
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/v2responsive.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/ars-style.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/bootstrap.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/CSS/crosssell/style.css")" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+    <link rel="stylesheet" href="@Url.Content("~/CSS/hotel/bootstrap-carousel.css")">
+    <link href="@Url.Content("~/CSS/checkout/style.min.css")" rel="stylesheet" />
+}
+
+@if (Model.IsDynamic)
+{
+    <style>
+        .s2_filer_container {
+            width: 100%;
+            background-color: #fff;
+            border-bottom: 1px solid #d9d9d9;
+            border-top: 1px solid #d9d9d9;
+            margin-top: 50px;
+        }
+
+        .col-lg-offset-2 {
+            width: 100% !important;
+            margin-left: 11% !important;
+        }
+
+        .section-tabs .nav-wizard {
+            margin: 0px !important;
+            max-width: 100% !important;
+        }
+
+        @@media screen and (min-device-width : 992px)and (max-width : 1200px) {
+            .addons > .container > .section-tabs > .col-md-offset-1 {
+                margin-left: unset !important;
+            }
+        }
+
+        @@media screen and (min-width : 768px) and (max-width : 991px) {
+            .nav-pills.nav-wizard > li > a > .visible-sm {
+                display: none !important;
+            }
+
+            .nav-pills.nav-wizard > li > a > .visible-xs {
+                display: block !important;
+            }
+
+            .nav-pills.nav-wizard > li > a {
+                width: 70px !important;
+            }
+        }
+    </style>
+}
+<style>
+    /*for frequentFlyer pop out*/
+    @@media screen and (max-width : 900px) {
+        .viewmorehotel_container.setwidth {
+            width: 300px !important;
+        }
+    }
+
+    .frequentFlyerClick:hover {
+        cursor: pointer;
+        background-color: aquamarine;
+    }
+
+    .fullcover_div_FFPO {
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        position: fixed;
+        overflow-y: auto;
+        top: 0;
+        left: 0;
+        z-index: 999999;
+        display: none;
+    }
+
+    .loadingBackground {
+        background-image: url('../Images/mayflower_loading.gif');
+        background-repeat: no-repeat;
+        background-position: center center;
+        height: 510px;
+        background-color: white;
+        background-size: 100px;
+        display: none;
+    }
+
+    .viewmorehotel_container.setwidth {
+        width: 400px;
+    }
+</style>
+@Html.Partial("~/Views/Checkout/SharedPartials/_ProductSummary.cshtml", Model)
+
+<div id="fareRulesClass" style="display: none;">
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesView.cshtml", new List<Alphareds.Module.Model.FlightSegmentFareRule>())
+</div>
+
+<div class="nav-book-progress">
+    @Html.Partial("~/Views/Checkout/SharedPartials/_ProgressBar.cshtml", Model)
+
+    <!-- GUEST DETAIL BOX START -->
+    <div class="s3-1_guestdetail_box">
+        <h2>@(ViewBag.IsHotelonly ? "Contact Details" : "Guest Details")</h2>
+    </div>
+    <div class="s3-1_guestdetail_box" style="overflow: auto;">
+        <ul class="ulforhotels">
+            <li class="s3-1_inactive_cd s3-1_activli" value="contactform">Contact<br>Details</li>
+            @if (ViewBag.IsHotelonly == true)
+            {
+                List<RoomDetail> roomList = Model.Hotel.RoomDetails;
+                foreach (var item in roomList)
+                {
+                    counter += 1;
+                    string selector = "guest" + counter.ToString() + "form";
+                    <li class="s3-1_inactive_guest" value="@selector">
+                        <div class="igb1">ROOM</div>
+                        <div class="igb2">@counter.ToString("D2")</div>
+                        <div class="igb3 igbguest">Guest</div>
+                    </li>
+                }
+                counter = 0;
+            }
+            @if (ViewBag.IsFlightonly == true || ViewBag.IsFlightBooking == true)
+            {
+                List<string> guestValue = new List<string>();
+                foreach (var item in Model.Flight.FlightInfo.SupplierFlightInfo.PricingInfo.FareBreakDown.Where(x => x.PassengerTypeQuantity > 0))
+                {
+                    for (int i = 0; i < item.PassengerTypeQuantity; i++)
+                    {
+                        guestValue.Add(item.PassengerTypeCode);
+                    }
+                }
+
+                foreach (var item in guestValue)
+                {
+                    counter += 1;
+                    string selector = "guest" + counter.ToString() + "form";
+                    <li class="s3-1_inactive_guest" value="@selector" style="position: relative">
+                        <div class="igb1">GUEST</div>
+                        <div class="igb2">@counter.ToString("D2")</div>
+                        <div class="igb3">@UtilitiesService.GetPassengerTypeName(item)</div>
+
+                        @if (Core.IsForStaging)
+                        {
+                            <img class="assign-trv" data-trv="@selector" src="/images/i-icon.png" style="width: 16px;height: 16px;position: absolute;bottom: 6%;right: 5%;filter: brightness(100);" alt="">
+                        }
+                    </li>
+                }
+                counter = 0;
+            }
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <!-- GUEST DETAIL BOX END -->
+    <div class="cdhs_heading" id="headingforsmall">Contact Details</div>
+</div>
+
+<!-- FORM CONTAINER START -->
+<div class="s3-1_form" id="bookingDetailForm">
+    <div class="s3-1_form_inner">
+
+        @if (Model.PromoCodeFunctions.GetFrontendFunction.ForeignPurchase)
+        {
+            <p style="color: #eb1c24;font-size: 15px;">
+                * This package is only applicable to non-Malaysian. Mayflower reserves the right to validate passport details before accepting and confirming this booking.
+            </p>
+        }
+
+        @using (Html.BeginForm("GuestDetails", "Checkout", new { tripid, affiliationId }, FormMethod.Post, new { @id = "checkoutDetailForm" }))
+        {
+            @Html.Partial("~/Views/Checkout/SharedPartials/_FormContactDetail.cshtml", Model ?? new CheckoutProduct())
+
+            if ((Model.Flight != null && Model.Hotel == null) || ViewBag.IsFlightBooking == true)
+            {
+                // Flight Only Form Here
+                <div id="formFlightDtl">
+                    @Html.Partial("~/Views/Checkout/SharedPartials/_FormFlightDetail.cshtml", Model ?? new CheckoutProduct())
+                </div>
+            }
+
+            if (Model.Flight == null && Model.Hotel != null)
+            {
+                // Hotel Only Form Here
+                @Html.Partial("~/Views/Checkout/SharedPartials/_FormRoomDetail.cshtml", Model.Hotel ?? new ProductHotel())
+            }
+        }
+    </div>
+</div>
+@Html.Partial("~/Views/Checkout/SharedPartials/_FrequentFlyerPopOut.cshtml", UtilitiesService.GetAllAirlines)
+@Html.Partial("~/Views/Shared/MasterThemes/_PopOutModal.cshtml")
+@Html.Partial("~/Views/Shared/MasterThemes/_LoadingModal.cshtml")
+
+    <div class="modal fade" id="promptMsg" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="border-radius: 0">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Info</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" id="confirm-paylater" class="btn btn-primary">Proceed</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+@section scripts{
+    @Html.Partial("~/Views/Checkout/_checkoutScripts.cshtml")
+    @Html.Partial("~/Views/Flight/Shared/_FareRulesScriptPartial.cshtml")
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/checkout_validation.js")"></script>
+
+    @if (Core.IsForStaging)
+    {
+        <script>
+            $('.assign-trv').on('click', function (e) {
+                if ($(this).parent('li').hasClass('s3-1_activli')) {
+                    $.ajax({
+                        url: '/checkout/getlasttraveldetails',
+                        dataType: 'json',
+                        method: 'post',
+                        beforeSend: function () { $('#loading-modal').show(); },
+                        complete: function (e) {
+                            $('#loading-modal').hide();
+                            if (e.responseJSON.count > 0) {
+                                alert('[BETA] Select traveller.');
+                            }
+                            else {
+                                alert('[BETA] No recent book traveller.');
+                            }
+                        },
+                    });
+                }
+            });
+        </script>
+    }
+    <script>
+        $(document).on("change", "[name='ContactPerson.TravellerGrpID']", function (e) {
+            var GrpID = $(this).val();
+            if (GrpID != "") {
+                $.getTravellerGrp(GrpID);
+            }
+        });
+        $(document).on("change", "[name*='TravellerDetails'][name$='FrequentTravellerID']", function (e) {
+            var TravellerID = $(this).val();
+            var prefix = $(this).attr('name');
+            var GuestValue = prefix.split('[').pop().split(']').shift();
+            if (TravellerID != "") {
+                $.getTravellerFlyer(TravellerID, GuestValue);
+            }
+        });
+
+        $.getTravellerGrp = function (GrpID) {
+            return $.ajax({
+                type: "GET",
+                url: '/checkout/getTravellerGrpdetails',
+                data: { GrpID: GrpID },
+                dataType: 'html',
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                    $("select[name*='TravellerDetails'][name$='FrequentTravellerID'] option").hide();
+                },
+                complete: function () {
+                    $('#loading-modal').hide();
+                },
+            }).then(function (res) {
+                if (res != null) {
+                    var result = JSON.parse(res);
+                    var i = 0;
+                    result.forEach(function (element) {
+                        $("[name*='TravellerDetails'][name$='FrequentTravellerID'] option[value=" + element + "]").show();
+                        if (element != 0 && i < $('.booking-form').length - 1) {
+                            $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(i).val(element);
+                            $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(i).trigger('change');
+                        }
+                        i++;
+                    });
+                }
+                }, function (res) {
+                    promptSvMsg(res.statusText);
+            }).promise();
+        };
+
+        $.getTravellerFlyer = function (TravellerID, GuestValue) {
+            return $.ajax({
+                type: "GET",
+                url: '/checkout/getTravellerFlyerdetails',
+                data: { TravellerID: TravellerID, GuestValue: GuestValue },
+                dataType: 'html',
+                beforeSend: function () {
+                    $('#loading-modal').show();
+                },
+                complete: function () {
+                    $('#loading-modal').hide();
+                },
+            }).then(function (res) {
+                if (res != null) {
+                    var result = JSON.parse(res);
+                    $("[name*='TravellerDetails'][name$='Title']").eq(GuestValue).val(result.Title);
+                    $("[name*='TravellerDetails'][name$='GivenName']").eq(GuestValue).val(result.GivenName);
+                    $("[name*='TravellerDetails'][name$='Surname']").eq(GuestValue).val(result.Surname);
+                    $("[name*='TravellerDetails'][name$='PassportNumber']").eq(GuestValue).val(result.PassportNumber);
+                    $("select[name*='TravellerDetails'][name$='DOBDays']").eq(GuestValue).val(result.DOBDays);
+                    $("select[name*='TravellerDetails'][name$='DOBMonths']").eq(GuestValue).val(result.DOBMonths);
+                    $("select[name*='TravellerDetails'][name$='DOBYears']").eq(GuestValue).val(result.DOBYears);
+                    $("select[name*='TravellerDetails'][name$='Nationality']").eq(GuestValue).val(result.Nationality);
+                    $("select[name*='TravellerDetails'][name$='PassportExpiryDateDays']").eq(GuestValue).val(result.PassportExpiryDateDays);
+                    $("select[name*='TravellerDetails'][name$='PassportExpiryDateMonths']").eq(GuestValue).val(result.PassportExpiryDateMonths);
+                    $("select[name*='TravellerDetails'][name$='PassportExpiryDateYears']").eq(GuestValue).val(result.PassportExpiryDateYears);
+                    $("select[name*='TravellerDetails'][name$='PassportIssueCountry']").eq(GuestValue).val(result.PassportIssueCountry);
+                    $("select[name*='TravellerDetails'][name$='FrequentTravellerID']").eq(GuestValue).val(result.FrequentTravellerID);
+                    $("select[name*='TravellerDetails'][name$='DOB']").eq(GuestValue).trigger('change');
+                    $("select[name*='TravellerDetails'][name$='Nationality']").eq(GuestValue).trigger('change');
+                    $("select[name*='TravellerDetails'][name$='PassportExpiryDateDays']").eq(GuestValue).trigger('change');
+                    $("select[name*='TravellerDetails'][name$='PassportExpiryDate']").eq(GuestValue).trigger('change');
+                    $("select[name*='TravellerDetails'][name$='DOBDays']").eq(GuestValue).trigger('change');
+                }
+                }, function (res) {
+                    promptSvMsg(res.statusText);
+            }).promise();
+        };
+
+        var promptSvMsg = function (msg) {
+            var c = $('#promptMsg .modal-body');
+            c.html('');
+            c.append('<p>');
+            c.append(msg);
+            c.prepend('</p>')
+            $('#promptMsg').modal({
+                show: true,
+            });
+        };
+    </script>
+}

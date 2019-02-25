@@ -1,0 +1,79 @@
+﻿@using Alphareds.Module.Common;
+@using System.Web.Script.Serialization;
+@using Alphareds.Module.Cryptography;
+@using Alphareds.Module.Model.Database;
+
+@model Alphareds.Module.Model.ProductCarRental.SearchCriteria
+
+@{
+    Alphareds.Module.CarRentalWebService.CRWS.OTA_GetBranchRS locationList = ViewBag.locationList;
+    List<SelectListItem> LocationCodeList = locationList != null && locationList.Success == "true" ? (from a in locationList.GetBranchRSCore.GroupBy(x => new { x.State, x.City }).OrderByDescending(x => x.Key.City == "Langkawi")
+                                                                                                      select new SelectListItem
+                                                                                                      {
+                                                                                                          Text = a.Key.City,
+                                                                                                          Value = a.Key.State,
+                                                                                                          Selected = Model.locationCode == a.Key.State
+                                                                                                      }).ToList() : new List<SelectListItem>();
+    Model.PickupDateTime = DateTime.Now.AddDays(2);
+    Model.ReturnDateTime = Model.PickupDateTime.AddDays(1);
+    int dayAdvance = Convert.ToInt32(Core.GetSettingValue("dayadvance"));
+}
+
+<style>
+    .ffc2_r1_b1 {
+        width: 15%;
+    }
+        div.ui-selectmenu-open {
+        position: absolute;
+        z-index: 65535;
+    }
+    .date_err{
+        margin-left:15%;
+    }
+    .hoteldate{
+        margin-bottom:0px;
+    }
+    .forfield{
+        margin-top:12px;
+    }
+    @@media screen and (max-width : 900px) {
+        .flight_form_container3 {
+            padding-top: 10%;
+        }
+    }
+</style>
+
+@using (Html.BeginForm("GetCarRentalSearch", "CarRental", FormMethod.Post, new { @id = "searchCarRentalForm" }))
+{
+    <div id="search_car">
+        <div class="tabs_content_container">
+            <div class="tl_right searchclose"><img src="@Url.Content("~/images/close.jpg")" width="31" height="29" alt=""></div>
+            <div class="tcc_text1">Car Rental</div>
+
+            <div class="hotel_form_container1">
+                <div class="ffc1_left1"><b>Going to</b></div>
+                <div class="ffc2_r2_b2" style="width:68%">
+                    @Html.DropDownListFor(model => model.locationCode, LocationCodeList, new { @id = "destination", @placeholder = "Enter Destination", autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.locationCode, null, new { @class = "textforerrormsg" })
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="flight_form_container2">
+                <div class="ffc2_r1_b1"><b>From</b></div>
+                <div class="ffc2_r1_b2">@Html.TextBoxFor(model => model.PickupDateTime, "{0:dd/MM/yyyy hh:mm}", new { @id = "datep5"})</div>
+                <div class="ffc2_r1_b3"><b>Till</b></div>
+                <div class="ffc2_r1_b4">@Html.TextBoxFor(model => model.ReturnDateTime, "{0:dd/MM/yyyy hh:mm}", new { @id = "datep6" })</div>
+                @Html.ValidationMessageFor(model => model.PickupDateTime, null, new { @class = "textforerrormsg" })
+                @Html.ValidationMessageFor(model => model.ReturnDateTime, null, new { @class = "textforerrormsg" })
+                <div class="clear"></div>
+            </div>
+            <div class="flight_form_container3">
+                <input name="hotelBtn" type="submit" value="OK,show me!">
+                <div class="ffc3_content">
+                    By clicking on this button, I agree to the Mayflower <br>
+                    terms & conditions and <a href="@Url.Action("PDPA", "Public")" target="_blank">privacy policy</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+}

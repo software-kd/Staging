@@ -1,0 +1,74 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.SearchHotelModel
+@{
+    string tripid = Request.QueryString["tripid"];
+}
+
+@using (Html.BeginForm("GetHotelSearch", "Hotel", new { tripid }, FormMethod.Post))
+{
+    <div class="fullcover_div6 bundle">
+        <div class="modifysearch_white1nn">
+            <div class="tl_right loginclose"><img src="@Url.Content("~/images_hotel/close.jpg")" width="31" height="29" alt=""></div>
+            <div id="search_hotel">
+                <div class="tabs_content_container_lb">
+
+                    <div class="ttcc_text1_lb"><b>I'm looking for</b></div>
+                    <div class="hotel_form_container1">
+                        <div class="ffc1_left1 forlb_align_left"><b>Going to</b></div>
+                        <div class="ffc1_right1">
+                            @Html.TextBoxFor(model => model.Destination, new { @id = "detination", @placeholder = "Enter Destination", disabled = "disabled" })
+                            @Html.HiddenFor(model => model.Destination)
+                            @Html.ValidationMessageFor(model => model.Destination, null, new { @class = "textforerrormsg" })
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="flight_form_container2" style="width:100%">
+                        <div class="ffc2_r1_b1 forlb_align_left hoteldate"><b>From</b></div>
+                        <div class="ffc2_r1_b2 hoteldate">@Html.TextBoxFor(model => model.ArrivalDate, "{0:dd-MMM-yyyy}", new { @id = "checkin_b" })</div>
+                        <div class="ffc2_r1_b3 hoteldate"><b>Till</b></div>
+                        <div class="ffc2_r1_b4 hoteldate">@Html.TextBoxFor(model => model.DepartureDate, "{0:dd-MMM-yyyy}", new { @id = "checkout_b" })</div>
+                        <div class="date_err textforerrormsg"></div>
+                        <div class="clear"></div>
+
+                        <div class="ffc2_r2_b1 forlb_align_left forfield"><b>For</b></div>
+                        <div class="ffc2_r2_b2 forfield">
+                            @Html.DropDownListFor(model => model.NoOfRoom, (List<SelectListItem>)ViewData["ROOM"], null, null)
+                        </div>
+                        <div class="ffc2_r2_b3 forfield">
+                            @Html.DropDownListFor(model => model.NoOfAdult, (List<SelectListItem>)ViewData["ADULT"], null, null)
+                        </div>
+                        <div class="ffc2_r2_b4 forfield">
+                            @Html.DropDownListFor(model => model.NoOfInfant, (List<SelectListItem>)ViewData["CHILD"], null, null)
+                        </div>
+                        <div class="ffc2_r2_b5 forfield">
+                            <img src="@Url.Content("~/images/i-icon.png")" width="13" height="12" alt="" class="tooltip1">
+                            <div class="yellow_toll_tip">
+                                <div class="ttt"><img src="@Url.Content("~/images_hotel/toll_tip_top.png")" width="215" height="13" alt=""></div>
+                                <div class="ttt1">
+                                    <ul>
+                                        <li>Adult 11+ Years Old</li>
+                                        <li>Child 0-11 Years Old</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    @if (Model.BundleExist())
+                    {
+                        <div class="checkbox hidden">
+                            <label><input type="checkbox" name="Bundle" value="@(Model.Bundle ?? "1")" checked></label>
+                        </div>
+                    }
+
+                    <div class="flight_form_container3">
+                        <button type="submit">OK,show me!</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,437 @@
+﻿@model SearchHotelModel
+@using Alphareds.Module.Model
+@using Alphareds.Module.Common
+@using PagedList;
+@using PagedList.Mvc;
+@using Alphareds.Module.ESBHotelComparisonWebService.ESBHotel
+
+@functions{
+    string[] supplierReflec = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.Suppliers).GetEnumNames();
+    bool includeTax = false;
+    bool includeAllNights = false;
+    int totalNightStay = 1;
+    int noOfRooms = 1;
+    Mayflower.General.CustomPrincipal customPrincipal = null;
+}
+
+@{
+    customPrincipal = (Mayflower.General.CustomPrincipal)User;
+
+    // Process empty result here
+    //var hotelList = Model.IPagedHotelList ?? new Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation[] { };
+    var hotelList = Model.IPagedHotelList ?? new List<Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation>().ToPagedList(1, 1);
+    bool hasError = Model?.Result?.Errors != null;
+    string sessionID = ViewBag.TripID ?? Model.CustomerSessionId ?? Guid.NewGuid().ToString();
+    int sliderIndexCounter = 0;
+    bool sessionExp = ViewBag.sessionExp ?? false;
+
+    includeTax = Model?.DisplayHotelSetting?.AsIncludedTax ?? false;
+    includeAllNights = Model?.DisplayHotelSetting?.AsAllNight ?? false;
+    totalNightStay = Model?.TotalStayDays ?? 1;
+    noOfRooms = Model?.NoOfRoom ?? 1;
+
+    PromoCodeFunctions promoCodeFunctions = null;
+    bool pCodeUsed = Model?.IsPromoCodeUsed ?? false;
+
+    if (pCodeUsed && Model?.PromoId != 0)
+    {
+        promoCodeFunctions = new PromoCodeFunctions(Model.PromoId, new Alphareds.Module.Model.Database.MayFlower());
+    }
+}
+
+@foreach (var hotel in hotelList)
+{
+    sliderIndexCounter++;
+    List<string> hotelAddress = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(hotel.locationDescription))
+    {
+        hotelAddress.Add(HttpUtility.HtmlDecode(hotel.locationDescription));
+    }
+
+    if (!string.IsNullOrWhiteSpace(hotel.Addresses?.city))
+    {
+        hotelAddress.Add(HttpUtility.HtmlDecode(hotel.Addresses.city));
+    }
+
+    if (hotelAddress.Count == 0)
+    {
+        hotelAddress.Add("-");
+    }
+
+    List<string> imgRespository = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(hotel.imagesURL?.Big_350x350))
+    {
+        imgRespository.Add(hotel.imagesURL.Big_350x350);
+    }
+
+    if (hotel.imagesURLmore != null && hotel.imagesURLmore?.Length > 0)
+    {
+        foreach (var img in hotel.imagesURLmore)
+        {
+            imgRespository.Add(img);
+        }
+    }
+
+    if (imgRespository.Count == 0)
+    {
+        imgRespository.Add("~/Images_hotel/no-img-01.png");
+    }
+
+    int _counter = 0;
+    <!-- Item single -->
+    <div class="search-item bg-white">
+        <div class="search-item-top shadow">
+            <div class="slider-wrap">
+                @if (hotel.FrontEnd_StarBuyFlag && customPrincipal.IsAgent == false)
+                {
+                    <div class="ht-market-msg"><div class="ht-market-dtlmsg"><img src="~/Images/mayflower_starbuy.gif">&nbsp;&nbsp; @Html.Raw(HttpUtility.HtmlDecode(hotel.FrontEnd_MarketingMsg))</div></div>
+                }
+                @*<div class="ht-market-msg">
+                        <div class="ht-market-dtlmsg">
+                            <img style="margin: 5px 0;" src="~/Images/mayflower_starbuy.gif">
+                            <span>&nbsp;&nbsp; Deal of the day</span>
+                        </div>
+                    </div>*@
+                <div id="carousel-@sliderIndexCounter" class="carousel slide" data-ride="carousel">
+                    @if (imgRespository.Count > 1)
+                    {
+                        <ol class="carousel-indicators">
+                            @foreach (var img in imgRespository)
+                            {
+                                <li data-target="#carousel-@sliderIndexCounter" data-slide-to="@_counter" class="@(_counter == 0 ? "active" : "")"></li>
+                                _counter = _counter == imgRespository.Count ? 0 : _counter += 1;
+                            }
+                        </ol>
+                    }
+                    <div class="carousel-inner">
+                        @foreach (var img in imgRespository)
+                        {
+                            string _url = Url.IsLocalUrl(img) ? Url.Content(img) : img;
+                            <div class="carousel-item @(_counter == 0 ? "active" : "")">
+                                <img class="d-block w-100 show-ht-info" data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))"
+                                     src="@_url" alt="img_slide_@_counter">
+                            </div>
+                            _counter = _counter == imgRespository.Count ? 0 : _counter += 1;
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="mid-content">
+                <div class="mid-top">
+                    <div class="mid-left">
+                        <h2 class="show-ht-info" data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">@Html.Raw(hotel.name)</h2>
+                        <div class="rating-display">
+                            @for (int i = 0; i < Math.Floor(hotel.hotelRating.ToDecimal()); i++)
+                            {
+                                <i class="fa fa-star"></i>
+                            }
+                            @if (Core.IsForStaging || (customPrincipal.IsAgent && Model.IsAgentGroupDisplayAllSupplier))
+                            {
+                                string descSupp = hotel.hotelSupplier == HotelSupplier.Tourplan ? "Mayflower" : hotel.hotelSupplier.ToString();
+                                <small class="text-muted font-italic">&nbsp;&nbsp;(@descSupp)</small>
+                            }
+                        </div>
+                        @*<span class="tag">Special 75% OFF</span>*@
+                    </div>
+                </div>
+                <div class="mid-bottom">
+                    <div>@(hotel.tripAdvisor?.tripAdvisorRating.ToString("n1") ?? "-") </div>
+                    <div class="ht-trip-rate">
+                        <span class="@(hotel.hotelSupplier == HotelSupplier.Expedia ? " show-review" : "" )" data-ht-lon="@(hotel?.Addresses?.longitude)" data-ht-lat="@(hotel?.Addresses?.latitude)"
+                              data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">
+                            @(hotel.tripAdvisor?.tripAdvisorReviewCount.ToString() ?? "-")<br />reviews
+                            @if (hotel.hotelSupplier == HotelSupplier.Expedia || hotel.hotelSupplier == HotelSupplier.EANRapid)
+                            {
+                                <br />
+                                @*<img class="ht-tr-logo" src="~/Images/sp-logo/ht-tr-logo-sm.png" alt="tripadvisor" />*@
+                                <img class="ht-tr-logo" src="~/Images/TripAdvisor/@(hotel.tripAdvisor?.tripAdvisorRating.ToString("n1") ?? "0.00")-MCID-5.png" alt="tripadvisor" />
+                            }
+                        </span>
+                        <br />
+                    </div>
+                    <div>
+                        Location
+                        <span class="ht-map-icon"><i class="fa fa-map-marker text-danger" aria-hidden="true"></i></span>
+                        @if (hotel.hotelSupplier == HotelSupplier.Expedia || hotel.hotelSupplier == HotelSupplier.EANRapid)
+                        {
+                            <span class="ht-trip-rate show-tr-nearby" data-ht-lon="@(hotel?.Addresses?.longitude)" data-ht-lat="@(hotel?.Addresses?.latitude)"
+                                  data-ht-id="@(hotel?.hotelId)" data-ht-sr="@(Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(hotel.hotelSupplier.ToString()))">
+                                (Nearby)
+                            </span>
+                        }
+                        <br /><p class="show-map" role="button" data-name="@hotel.name" data-city="@(hotel.Addresses.city == null ? hotel.Addresses.address4 : hotel.Addresses.city)">@Html.Raw(string.Join(", ", hotelAddress))</p>
+                    </div>
+                </div>
+                @if (Model.IsFixedPrice)
+                {
+                <div class="mt-2">
+                    <i class="fa fa-plane fa-lg default-red"></i><span class="default-red ml-1 htl_ecoflt"><b> Economy flight included</b></span>
+                </div>
+                }
+
+                @*<div class="ht-list-ammen">
+                        <img src="http://www.myiconfinder.com/uploads/iconsets/256-256-d442ab625eb4f7835fd850da51201114.png" alt="" />
+                        <img src="http://www.myiconfinder.com/uploads/iconsets/256-256-d442ab625eb4f7835fd850da51201114.png" alt="" />
+                        <img src="http://www.myiconfinder.com/uploads/iconsets/256-256-d442ab625eb4f7835fd850da51201114.png" alt="" />
+                    </div>*@
+            </div>
+            @*<div class="mid-right map-wrapper type-2 text-left">
+                    <ul>
+                        <li><span><img src="assets/images/icon_pets_allowed.png" alt=""></span> Pets allowed</li>
+                        <li><span><img src="assets/images/icon_spa.png" alt=""></span> Spa</li>
+                        <li><span><img src="assets/images/icon_gym.png" alt=""></span> Gym</li>
+                        <li><span><img src="assets/images/icon_restaurant.png" alt=""></span> Restaurant</li>
+                    </ul>
+                </div>*@
+            @*<div class="map-wrapper" id="google-map"></div>*@
+            <div class="price-div">
+                @if (pCodeUsed && !string.IsNullOrWhiteSpace(hotel.FrontEnd_PromoDesc) && hotel.FrontEnd_PromoId != 0 && hotel.FrontEnd_PromoDesc != "0%" && !hotel.FrontEnd_PromoDesc.Contains(" 0.00"))
+                {
+                    if (promoCodeFunctions != null && promoCodeFunctions.GetFrontendFunction.DisplayPromoEvent)
+                    {
+                        <div class="ht-market-msg-right border shadow">
+                            <div class="ht-market-dtlmsg-right">Special Deal</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ht-market-msg-right border shadow">
+                            <div class="ht-market-dtlmsg-right">
+                                @(promoCodeFunctions != null && promoCodeFunctions.GetFrontendFunction.PackageAutoAppliedHotel ? "Discount Applied" : "Discount Applied")
+                            </div>
+                        </div>
+                    }
+                }
+
+                @{
+                    decimal beforeDisc = CalculateDisplayPrice(hotel.lowRate, hotel.RoomRateDetailsList, false);
+                    decimal afterDisc = CalculateDisplayPrice(hotel.lowRate, hotel.RoomRateDetailsList, true);
+                }
+
+                @if (Core.IsForStaging && Model.IsFixedPrice)
+                {
+                    <p class="default-red">cheapest flight: @Model.FixedPriceFrom.ToString("n2") <br />total hotel: @(afterDisc * noOfRooms)</p>
+                }
+                @{
+                    if (Model.IsFixedPrice && includeAllNights)
+                    {
+                        int ttlpax = Model.NoOfAdult + Model.NoOfInfant;
+                        //beforeDisc = (beforeDisc * noOfRooms) + Model.FixedPriceFrom;
+                        afterDisc = (afterDisc * noOfRooms) + Model.FixedPriceFrom;
+                        //beforeDisc = beforeDisc / ttlpax;
+                        afterDisc = afterDisc / ttlpax;
+                    }
+                }
+
+                <h3>
+                    from
+                    <span>
+                        MYR
+                        @if (!Model.IsFixedPrice && beforeDisc.ToString("n2") != afterDisc.ToString("n2") && beforeDisc > afterDisc && (beforeDisc - afterDisc > 0.10m))
+                        {
+                            <div class="ht-price-off">@beforeDisc.ToString("n2")</div>
+                        }
+                        <span class="ht-desc-price">@afterDisc.ToString("n2")</span>
+                    </span>@(includeAllNights ? "" : "/night")
+                </h3>
+
+                <p>@displayTxtForRate()</p>
+                @*@if (Model.IsFixedPrice)
+                {
+                    <span class="ht-pkglbl btn btn-sm btn-success mb-3 disabled">Package Deals</span>
+                }*@
+
+                @if (!customPrincipal.IsAgent || !Model.IsAgentGroupDisplayAllSupplier)
+                {
+                    @GenerateSupplierPriceList(hotel.hotelSupplier.ToString(), hotel, (customPrincipal.IsAgent && Model.IsAgentGroupDisplayAllSupplier))
+                }
+                else
+                {
+                    <div class="ht-price-emptyblock"></div>
+                }
+            </div>
+            @if (customPrincipal.IsAgent && Model.IsAgentGroupDisplayAllSupplier)
+            {
+                <div class="ht-price-block">
+                    @GenerateSupplierPriceList(hotel.hotelSupplier.ToString(), hotel, customPrincipal.IsAgent)
+                </div>
+            }
+        </div>
+
+        @if (hotel.hotelSupplier == HotelSupplier.Expedia)
+        {
+            <div class="ht-trpadv-container shadow" style="display: none">
+                <div class="trpadv-title">
+                    Reviews
+                    <button type="button" class="close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                @{
+                    ViewBag.HotelID = hotel.hotelId;
+                }
+
+                <div class="trpadv-wrapper">
+                    @Html.Partial("~/Views/Hotel/v2/TripAdvisor/_PropertySummary.cshtml")
+                </div>
+                @*<div class="trpadv-wrapper">
+                        <iframe src="https://www.tripadvisor.com/WidgetEmbed-cdspropertysummary?locationId=21825322&amp;partnerId=176DD3B47F374A79ACF1E7E5AC852AC0&amp;display=true&amp;lang=en"
+                            name="tripadvisor-rating" scrolling="auto" frameborder="no" align="left" width="200" height="410"> </iframe>
+                    </div>*@
+            </div>
+        }
+
+        <div class="room-container">
+
+        </div>
+    </div>
+    <!-- ./Item single -->
+
+
+}
+@if (hotelList.Count == 0 && sessionExp)
+{
+    <div class="fcd_op_inner" style="margin-top:50px">
+        <div><img src="/images/session_clock.jpg" width="126" height="149" alt=""></div>
+        <div class="session_lb_text">Your session has expired!</div>
+        <div class="session_lb_text1">For the latest prices and availability,<br> we need to refresh your result</div>
+        <div class="clear"></div>
+        <a href="/" style="text-decoration:none"><div class="redbacktohome_button">Back to Homepage</div></a>
+        <div class="clear"></div>
+    </div>
+}
+else if (hotelList.Count == 0 && ViewBag.SysErrMsg != null)
+{
+    <div class="s2_main_container">
+        <div class="s2_mc_border_conainer no-result">
+            <div style="height: 360px;width: 100%;margin: 2em 0px;display: table;text-align: center;">
+                <div style="display: table-cell;vertical-align: middle;text-align:center;">
+                    <h2 style="color:#be2e30">@ViewBag.SysErrMsg</h2>
+                    <div class="member_fp_text" style="text-align:left;display:inline-block">
+                        <ul style="margin:auto 2em;font-size: 1.2em;color:#616161">
+                            <li>Please try again later.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (hotelList?.Count > 0 && customPrincipal.IsAgent)
+{
+    <div class="req-supp-pc">
+    </div>
+}
+
+@{
+    // Paging Options
+    var pagedListRenderOptions = new PagedListRenderOptions();
+    pagedListRenderOptions.FunctionToTransformEachPageLink = (liTag, aTag) =>
+    {
+        aTag.Attributes.Add("data-page-no", aTag.InnerHtml); // page number
+aTag.Attributes.Add("class", "page-link"); // bootstrap class
+liTag.InnerHtml = aTag.ToString();
+        return liTag;
+    };
+    pagedListRenderOptions.ContainerDivClasses = new List<string> { "pagination-container" };
+    pagedListRenderOptions.LiElementClasses = new List<string> { "page-item" };
+    pagedListRenderOptions.UlElementClasses = new List<string> { "pagination", "justify-content-center", "m-4" };
+    //pagedListRenderOptions.DisplayEllipsesWhenNotShowingAllPageNumbers = false;
+    pagedListRenderOptions.DisplayLinkToPreviousPage = PagedListDisplayMode.Never;
+    pagedListRenderOptions.DisplayLinkToNextPage = PagedListDisplayMode.Never;
+    pagedListRenderOptions.LinkToFirstPageFormat = "1";
+    pagedListRenderOptions.LinkToLastPageFormat = hotelList.PageCount.ToString();
+    //pagedListRenderOptions.LinkToFirstPageFormat = "First";
+    //pagedListRenderOptions.LinkToPreviousPageFormat = "Previous";
+    //pagedListRenderOptions.LinkToNextPageFormat = "Next";
+    //pagedListRenderOptions.LinkToLastPageFormat = "Last";
+    pagedListRenderOptions.MaximumPageNumbersToDisplay = 6;
+    pagedListRenderOptions.Display = PagedListDisplayMode.IfNeeded;
+}
+
+@Html.PagedListPager(hotelList, page => "javascript:;", pagedListRenderOptions)
+
+@helper GenerateSupplierPriceList(string supplier, Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.HotelInformation hotelInfo, bool isAgent)
+{
+    if (isAgent)
+    {
+        <ul class="ht-price-supp" data-hid="@hotelInfo.hotelId">
+            @foreach (var item in supplierReflec)
+            {
+                if (item != "ExpediaTAAP")
+                {
+                    var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(item);
+                    <li class="@(supplier == item ? "room-trigger": "disabled")" data-rtoken="@hotelInfo.OptionalCode"
+                        data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">
+                        <img src="@Url.Content($"~/Images/ht-supp/{item.Replace(" ", "").ToLower()}.png")" alt="@displayTxt">
+                    </li>
+                }
+            }
+        </ul>
+    }
+    else
+    {
+        var displayTxt = Alphareds.Module.Cryptography.Cryptography.AES.Encrypt(supplier);
+        <a href="#" class="room-trigger btn btn-primary btn--red" data-rtoken="@(hotelInfo.OptionalCode)"
+           data-supp="@displayTxt" data-hotelid="@hotelInfo.hotelId" data-pid="@(hotelInfo.hotelId.Replace(" ", "-"))">Show Rooms</a>
+    }
+}
+
+@functions {
+    decimal CalculateDisplayPrice(decimal lowRate, Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.RoomRateDetails[] roomRateDetails, bool displayRateAfterDisc)
+    {
+        decimal _returnPrice = lowRate;
+
+        if (roomRateDetails?.Length > 0)
+        {
+            var allRateInfo = roomRateDetails.SelectMany(x => x.RateInfos);
+            /*
+            _returnPrice = allRateInfo.Min(x =>
+                // Include all night, all room qty, all tax setting
+                //includeAllNights && includeTax && displayRateAfterDisc ? x.chargeableRateInfo.total.ToDecimal() + x.chargeableRateInfo.GST.ToDecimal() :
+
+                // include all night setting
+                includeAllNights ? ((displayRateAfterDisc ? x.chargeableRateInfo.nightlyRateTotal.ToDecimal() : x.Rooms.SelectMany(s => s.ChargeableNightlyRates).Sum(s => s.baseRate.ToDecimal())) / noOfRooms)
+                    + (includeTax ? (((x.chargeableRateInfo.surchargeTotal.ToDecimal()
+                    + x.chargeableRateInfo.GST.ToDecimal()) / noOfRooms)).RoundToDecimalPlace() : 0)
+                    - (displayRateAfterDisc ? (Math.Abs(x.chargeableRateInfo.Frontend_TotalDiscAmt) / noOfRooms).RoundToDecimalPlace() : 0)
+
+                // include/exclude tax setting
+                : (displayRateAfterDisc ? x.chargeableRateInfo.averageRate.ToDecimal() : x.chargeableRateInfo.averageBaseRate.ToDecimal() + (Math.Abs(x.chargeableRateInfo.Frontend_TotalDiscAmt) / noOfRooms / totalNightStay).RoundToDecimalPlace()) + (includeTax ? (((x.chargeableRateInfo.surchargeTotal.ToDecimal() + x.chargeableRateInfo.GST.ToDecimal()) / noOfRooms) / totalNightStay).RoundToDecimalPlace() : 0));
+*/
+            _returnPrice = allRateInfo.Min(x =>
+                includeAllNights && includeTax ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AllInRate : x.chargeableRateInfo.RatePerRoom.AllInBaseRate)
+                : includeAllNights ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AllNightRate : x.chargeableRateInfo.RatePerRoom.AllNightBaseRate)
+                : includeTax ? (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.IncludeTaxRate : x.chargeableRateInfo.RatePerRoom.IncludeTaxBaseRate)
+                : (displayRateAfterDisc ? x.chargeableRateInfo.RatePerRoom.AvgRate : x.chargeableRateInfo.RatePerRoom.BaseAvgRate)
+                );
+        }
+
+        return _returnPrice;
+    }
+
+    string displayTxtForRate()
+    {
+        string _txt = "tax excluded";
+        if (Model.IsFixedPrice && includeAllNights)
+        {
+            _txt = "per person includes flight + hotel, taxes and fees";
+        }
+        else if (includeAllNights && includeTax)
+        {
+            _txt = "all in";
+        }
+        else if (includeAllNights)
+        {
+            _txt = "all nights";
+        }
+        else if (includeTax)
+        {
+            _txt = "tax included";
+        }
+
+        return _txt;
+    }
+}

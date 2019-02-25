@@ -1,0 +1,293 @@
+﻿
+@model Alphareds.Module.Model.TravellerGroupInsert
+@{
+    ViewBag.Title = "Add New Traveller";
+    ViewBag.RenderRedLine = true;
+    string returnUrl = Url.Action(ViewContext.RouteData.Values["Action"].ToString(), ViewContext.RouteData.Values["Controller"].ToString());
+    bool IsAgent = User.Identity.Name != "" ? Alphareds.Module.Common.Core.GetUserType(User.Identity.Name) == "AGT" : false;
+}
+
+@section style{
+
+    <link href="@Url.Content("~/CSS/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+    <style>
+        .ct_inner_b0 {
+            width: 30%;
+        }
+
+        .ct_inner_b1 {
+            width: 8%;
+        }
+
+        .ct_inner_b2 {
+            padding-right: 15%;
+        }
+
+        .ct_inner_row :after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .ct_inner_column {
+            float: left;
+        }
+
+        .ct_inner_rectangle {
+            width: 30%;
+            height: 400px;
+            border: 1px solid #000;
+            background-position: center;
+            background-color: #ffffff;
+            overflow-y: scroll;
+        }
+
+        .ct_inner_grayfont {
+            font-family: "Conv_Ubuntu-Light";
+            font-size: 16px;
+            color: #5d5d5d;
+        }
+
+        .ct_submit_button {
+            width: 100%;
+            background-color: #eb1c24;
+            height: 60px;
+            font-size: 14px;
+            color: #fff;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+            border-radius: 30px;
+            border: 1px;
+            margin-top: 50px;
+            width: 70%;
+            margin-left: 15%;
+        }
+
+        .ct_inner_option {
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            border-bottom: 0.1px solid #e3e5e8;
+            font-family: "Conv_Ubuntu-Light";
+        }
+
+        option::selection {
+            color: white;
+            background: #eb1c24;
+        }
+
+        option:hover {
+            color: white;
+            background: #eb1c24;
+            cursor: pointer;
+        }
+
+        .ct_inner_select {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #000;
+        }
+    </style>
+}
+
+@if (User.Identity.IsAuthenticated && !IsAgent)
+{
+
+using (Html.BeginForm("CreateTraveller", "Tools", FormMethod.Post, new { id = "createtvl" } ))
+{
+
+    <div class="member_profile_heading_container">
+        <div class="mphc_t1">Traveller Group</div>
+        <div class="mphc_t2">Add New Traveller Group</div>
+        @Html.ValidationMessage("Error", new { style = "font-size: 22px;font-style: italic;" })
+
+    </div>
+
+    <div class="member_profile_container">
+        <div style="padding-top:20px;">
+            <span class="ct_inner_b2 ct_inner_column">&nbsp</span>
+            <span class="ct_inner_b0 ct_inner_grayfont">Group Name</span>
+        </div>
+
+        <div>
+            <span class="ct_inner_b2 ct_inner_colum">&nbsp</span>
+            <span>@Html.TextBoxFor(model => model.GroupName, new { @class = "s3-1_full_textbox_name_com ct_inner_b0", style = "padding-top:20px;padding-bottom:20px;",
+                 data_val_required = "Group Name is required.",
+                 data_val_regex = "Please use only letters (A-Z, a-z, 0-9). (Spacing not allow on first/last characters.)",
+                 data_val_regex_pattern = "^(([a-zA-Z0-9]+\\s)*[a-zA-Z0-9]+)$",
+                 data_val_length = "Group Name length must be below 50 characters.",
+                 data_val_length_max = "50",
+                 data_val = "true" })</span>            
+        </div>
+        <div>
+            <span class="ct_inner_b2 ct_inner_column">&nbsp</span>
+            <span class="ct_inner_b0 ct_inner_grayfont">@Html.ValidationMessageFor(model => model.GroupName, null, new { @class = "textforerrormsg" ,style = "clear:none" })</span>
+        </div>
+        
+        <div style="padding-top:50px"></div>
+
+        <div class="ct_inner_row">
+            <div class="ct_inner_b2 ct_inner_column">
+                <p>&nbsp</p>
+            </div>
+            <div class="ct_inner_b0 ct_inner_grayfont ct_inner_column">
+                <p>Frequent Traveller List</p>
+            </div>
+            <div class="ct_inner_b1 ct_inner_column">
+                <p>&nbsp</p>
+            </div>
+
+            <div class="ct_inner_b0 ct_inner_grayfont ct_inner_column">
+                <p>Selected Frequent Traveller</p>
+            </div>
+
+            <div class="ct_inner_b2 ct_inner_column">
+                <p>&nbsp</p>
+            </div>
+        </div>
+
+        <div class="ct_inner_row">
+            <div class="ct_inner_b2 ct_inner_column">
+                <p>&nbsp</p>
+            </div>
+            <div class="ct_inner_b0  ct_inner_column ct_inner_grayfont">
+                
+
+                    @*Call Frequent Traveller from database*@
+                    @Html.Action("_CreateTraveller", "Tools")
+
+
+
+                
+            </div>
+
+
+            <div class="ct_inner_b1 ct_inner_column" style="height:400px;">
+                <div class="ct_inner_row " style="height:50%; padding-top:90%;">
+                    <img src="~/Images/arrow_left.png" style="outline:none;" id="btnLeft" type="image" />
+                </div>
+                <div class="ct_inner_row" style="height:50%;padding-top:10%;">
+                    <img src="~/Images/arrow_right.png" style="outline:none;" id="btnRight" type="image" />
+                </div>
+
+            </div>
+            <div class="ct_inner_b0  ct_inner_column ct_inner_grayfont">
+                <select multiple="multiple" id="SelectedGrp" name="@Html.IdFor(m => m.SelectedGrp)" selected="false"class="ct_inner_select">
+                </select>
+            </div>
+
+            <div class="ct_inner_b2 ct_inner_column">
+                <p>&nbsp</p>
+            </div>
+
+        </div>
+
+
+        <div>
+            <button type="submit" id="btnSubmit" value="submit" name="btnAddGroup" class="ct_submit_button mem_marbotzero add-cursor-pointer">Submit</button>
+        </div>
+
+    </div>
+    }
+}
+else if (User.Identity.IsAuthenticated && IsAgent)
+{
+    Response.Redirect(Url.Action("Index", "Home"));
+}
+else
+{
+    Response.Redirect(string.Format("{0}{1}{2}", Url.Action("Login", "Account"), "?returnUrl=", returnUrl));
+}
+@section scripts{
+    <script type="text/javascript">
+        var list;
+        (function () {
+            $('#btnRight').click(function (e) {
+                var selectedOpts = $('#ListBox option:selected');
+                var sOptsCount = selectedOpts.length;
+                var sGrpCount = $('#SelectedGrp option').length;
+                var totalCount = sOptsCount + sGrpCount;
+                //count before insert
+
+                if (totalCount <= 7) {
+                    $('#SelectedGrp').append($(selectedOpts).clone());
+                    $(selectedOpts).remove();
+                    e.preventDefault();
+                    var listcount = $('#SelectedGrp option').length;
+                    if (listcount >= 7) {
+                        $('#btnRight').css("display", "none");
+                    }
+                }
+                else {
+                    //$('#ListBox option:selected').prop('selected', false);
+                    alert("Cannot choose more than 7 Frequent Travellers");
+                }
+            });
+
+            $('#btnLeft').click(function (e) {
+                var selectedOpts = $('#SelectedGrp option:selected');
+                $('#ListBox').append($(selectedOpts).clone());
+                $(selectedOpts).remove();
+                e.preventDefault(); 
+                //var Opts = $('#SelectedGrp option');
+                //list = Opts.toArray();
+                var listcount = $('#SelectedGrp option').length;
+                if (listcount < 7) {
+                    $('#btnRight').css("display", "block");
+                }
+                
+            });
+
+            $('#ListBox').dblclick(function (e) {
+                var selectedOpts = $('#ListBox option:selected');
+                var sOptsCount = selectedOpts.length;
+                var sGrpCount = $('#SelectedGrp option').length;
+                var totalCount = sOptsCount + sGrpCount;
+                //count before insert
+
+                if (totalCount <= 7) {
+                    $('#SelectedGrp').append($(selectedOpts).clone());
+                    $(selectedOpts).remove();
+                    e.preventDefault();
+                    var listcount = $('#SelectedGrp option').length;
+                    if (listcount >= 7) {
+
+                        $('#btnRight').css("display", "none");
+                    }
+                }
+                else {
+                    //$('#ListBox option:selected').prop('selected', false);
+                    alert("Cannot choose more than 7 Frequent Travellers");
+                }
+            });
+
+            $('#SelectedGrp').dblclick(function (e) {
+                var selectedOpts = $('#SelectedGrp option:selected');
+                $('#ListBox').append($(selectedOpts).clone());
+                $(selectedOpts).remove();
+                e.preventDefault();
+                //var Opts = $('#SelectedGrp option');
+                //list = Opts.toArray();
+                var listcount = $('#SelectedGrp option').length;
+                if (listcount < 7) {
+                    $('#btnRight').css("display", "block");
+                }
+
+            });
+
+
+            $('#btnSubmit').click(function () {
+                $('#SelectedGrp option').prop('selected', true);
+            });
+
+            $('#createtvl').on('submit', function (e) {
+                var selectedOpts = $('#SelectedGrp option');
+                
+                    var _val = $('selectedOpts').serialize();
+
+                //e.preventDefault();
+            });
+        }(jQuery));
+    </script>
+}
+

@@ -1,0 +1,164 @@
+﻿@using Alphareds.Module.Common;
+@model Alphareds.Module.Model.SearchHotelModel
+@{
+    string tripid = Request.QueryString["tripid"];
+
+    Model.NoOfRoom = Model.NoOfRoom == 0 ? 1 : Model.NoOfRoom;
+    Model.NoOfAdult = Model.NoOfAdult == 0 ? 2 : Model.NoOfAdult;
+}
+@if (Model.IsDynamic)
+{
+    using (Html.BeginForm("GetDPHotelSearch", "Hotel", new { tripid, newsearch = "1" }, FormMethod.Post))
+    {
+        <!-- Top filter -->
+        <div class="filter-wrap">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="top-filter justify_center">
+                            <div class="filter-item">
+                                <div class="form-group autocomplete">
+                                    <div class="typeahead__container">
+                                        @Html.TextBoxFor(model => model.Destination, new{ @id = "destination", @placeholder = "Enter Destination",
+                                               data_provide = "typeahead", @class = "dt-hotel ht-dest form-control", autocomplete = "off"
+                                           })
+                                    </div>
+                                </div>
+                                <div class="err-msg-area">
+                                    @Html.ValidationMessageFor(model => model.Destination, null, new { @class = "textforerrormsg" })
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <button class="btn">Update</button>
+                            </div>
+                        </div>
+                        <div class="top-filter">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ./Top filter -->
+    }
+}
+else
+{
+    using (Html.BeginForm("GetHotelSearch", "Hotel", new { tripid, newsearch = "1" }, FormMethod.Post))
+    {
+        <!-- Top filter -->
+        <div class="filter-wrap">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="top-filter">
+
+
+                            <div class="filter-item">
+                                <div class="form-group autocomplete">
+                                    <div class="typeahead__container">
+                                        @Html.TextBoxFor(model => model.Destination, new { @id = "destination", @placeholder = "Enter Destination",
+                                       data_provide = "typeahead",
+                                       @class = "dt-hotel ht-dest form-control", autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="err-msg-area">
+                                    @Html.ValidationMessageFor(model => model.Destination, null, new { @class = "textforerrormsg" })
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1" style="border: none;background-color: transparent;">
+                                                <img src="/images/assets/icon_calendar.png" alt="">
+                                            </span>
+                                        </div>
+                                        <input type="text" class="daterange form-control" data-type="dtPicker" value="@($"{Model.ArrivalDate.ToString("dd MMM yyyy")} - {Model.DepartureDate.ToString("dd MMM yyyy")}")" />
+                                        @Html.HiddenFor(model => model.ArrivalDate, new { @class = "dt-hotel dtFrom" })
+                                        @Html.HiddenFor(model => model.DepartureDate, new { @class = "dt-hotel dtTo" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-item">
+                                <div class="custom-drop form-group">
+                                    <a href="#" class="drop-trigger form-control">
+                                        <span data-type="NoOfRoom">@Model.NoOfRoom @(Model.NoOfRoom > 1 ? "Rooms" : "Room")</span>,
+                                        <span data-type="NoOfAdult"> @Model.NoOfAdult @(Model.NoOfRoom > 1 ? "Adults" : "Adult")</span>,
+                                        <span data-type="NoOfInfant"> @Model.NoOfInfant @(Model.NoOfRoom > 1 ? "Kids" : "Kid")</span>
+                                        <input type="hidden" class="dt-hotel ht-rooms" name="NoOfRoom" data-type="NoOfRoom" value="@Model.NoOfRoom" />
+                                        <input type="hidden" class="dt-hotel ht-adults" name="NoOfAdult" data-type="NoOfAdult" value="@Model.NoOfAdult" />
+                                        <input type="hidden" class="dt-hotel ht-kids" name="NoOfInfant" data-type="NoOfInfant" value="@Model.NoOfInfant" />
+                                        @*@Html.HiddenFor(model => model.NoOfRoom, new { data_type = "NoOfRoom" })
+                            @Html.HiddenFor(model => model.NoOfAdult, new { data_type = "NoOfAdult" })
+                            @Html.HiddenFor(model => model.NoOfInfant, new { data_type = "NoOfInfant" })*@
+                                    </a>
+                                    <ul>
+                                        <li>
+                                            <span>Rooms</span>
+                                            <span>
+                                                <a href="#" class="count-minus" data-type="NoOfRoom" data-label="Room" data-max="8" data-min="1"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                                <span data-type="NoOfRoom">@Model.NoOfRoom</span>
+                                                <a href="#" class="count-plus" data-type="NoOfRoom" data-label="Room" data-max="8" data-min="1"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span>Adults</span>
+                                            <span>
+                                                <a href="#" class="count-minus" data-type="NoOfAdult" data-label="Adult" data-max="24" data-min="1"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                                <span data-type="NoOfAdult">@Model.NoOfAdult</span>
+                                                <a href="#" class="count-plus" data-type="NoOfAdult" data-label="Adult" data-max="24" data-min="1"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span>Kids</span>
+                                            <span>
+                                                <a href="#" class="count-minus" data-type="NoOfInfant" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_minus.png" alt=""></a>
+                                                <span data-type="NoOfInfant">@Model.NoOfInfant</span>
+                                                <a href="#" class="count-plus" data-type="NoOfInfant" data-label="Kid" data-max="16" data-min="0"><img src="/images/assets/icon_options_plus.png" alt=""></a>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="hide invisible hidden">
+                                    @Html.HiddenFor(x => x.PromoCode)
+                                    @Html.HiddenFor(x => x.IsFixedPrice)
+                                </div>
+                            </div>
+
+                            <div class="filter-item">
+                                <button class="btn">Update</button>
+                            </div>
+                        </div>
+
+                        @if (Core.IsForStaging)
+                        {
+                            <a href="javascript:;" data-target="#advance-search" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="advance-search">Advance Search</a>
+                            <div class="top-filter">
+                                <div class="mb-4 collapse" id="advance-search">
+                                    @{
+                                        var supplier = typeof(Alphareds.Module.ESBHotelComparisonWebService.ESBHotel.SearchSupplier).GetProperties();
+                                        foreach (var item in supplier)
+                                        {
+                                            if (item.PropertyType.Name == "Boolean" && item.Name != "Expedia" && item.Name != "ExpediaTAAP")
+                                            {
+                                                bool isChecked = Model.SupplierIncluded == null ? true : (bool)item.GetValue(Model.SupplierIncluded);
+
+                                                <div class="form-check form-check-inline">
+                                                    <label class="form-check-label">@Html.CheckBox(item.Name, isChecked, new { @class = "form-check-input" }) @item.Name</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @*@Html.Partial("~/Views/Hotel/DevelopmentViews/_AdvancedSearch.cshtml", Model)*@
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ./Top filter -->
+    }
+}

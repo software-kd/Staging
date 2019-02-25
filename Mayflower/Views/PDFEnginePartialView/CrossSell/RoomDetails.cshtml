@@ -1,0 +1,51 @@
+﻿@using Alphareds.Module.Common;
+@using Alphareds.Module.Model.Database;
+@using Alphareds.Module.ServiceCall;
+
+@model BookingHotel
+
+@{
+    var grpRoom = Model.RoomPaxHotels.Where(x => x.IsContactPerson.HasValue && !x.IsContactPerson.Value).GroupBy(x => new { x.RoomTypeDescription, x.ItineraryNumber });
+    int counter = 1;
+}
+
+<tbody>
+    @foreach (var room in grpRoom.OrderByDescending(x => x.Count()))
+    {
+        List<string> ssrList = new List<string>();
+        var roomHeader = room.FirstOrDefault() ?? new RoomPaxHotel();
+        <tr>
+            <td colspan="3">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="340">
+                            <span class="font-red room-name">@(room.Key.RoomTypeDescription)x @room.Count()</span>
+                            <br /> <span class="customer-name">Guest Name: @(roomHeader.TitleCode.ToTitleCase()). @((roomHeader.FullName != null ? roomHeader.FullName.ToTitleCase() : null) ?? "-")</span>
+                        </td>
+                        <td width="300"><span class="font-red confirm-no">@room.Key.ItineraryNumber/#@(roomHeader.RoomConfirmationNumber ?? "-")</span></td>
+                        <td width="300">
+                        <span class="request">
+                            -
+                            @*@foreach (var ssr in roomHeader.RoomPaxSpecialRequests)
+                            {
+                                ssrList.Add(ssr.SpecialRequestHotel.SpecialRequest + "-" + ssr.SpecialRequestValue);
+                            }
+                            @if(ssrList.Count > 0)
+                            {
+                                @:@string.Join("<br/>", ssrList)
+                            }
+                            else
+                            {
+                                @:"-"
+                            }*@
+                        </span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="note">Cancellation Policies: @(roomHeader.CancellationPolicy ?? "-")</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    }
+
+</tbody>

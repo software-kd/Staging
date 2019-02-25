@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRQ" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BritishAirways.OrderCancelRQ" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="OrderCancelRQ">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ExpectedRefundAmount" nillable="true" type="tns:ExpectedRefundAmount" />
+      <xs:element minOccurs="0" name="Party" nillable="true" type="tns:Party" />
+      <xs:element minOccurs="0" name="Query" nillable="true" type="tns:Query" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OrderCancelRQ" nillable="true" type="tns:OrderCancelRQ" />
+  <xs:complexType name="ExpectedRefundAmount">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Total" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ExpectedRefundAmount" nillable="true" type="tns:ExpectedRefundAmount" />
+  <xs:complexType name="Party">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Sender" nillable="true" type="tns:Sender" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Party" nillable="true" type="tns:Party" />
+  <xs:complexType name="Sender">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TravelAgencySender" nillable="true" type="tns:TravelAgencySender" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Sender" nillable="true" type="tns:Sender" />
+  <xs:complexType name="TravelAgencySender">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Contacts" nillable="true" type="tns:Contacts" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TravelAgencySender" nillable="true" type="tns:TravelAgencySender" />
+  <xs:complexType name="Contacts">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Contact" nillable="true" type="tns:Contact" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Contacts" nillable="true" type="tns:Contacts" />
+  <xs:complexType name="Contact">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="EmailContact" nillable="true" type="tns:EmailContact" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Contact" nillable="true" type="tns:Contact" />
+  <xs:complexType name="EmailContact">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="EmailContact" nillable="true" type="tns:EmailContact" />
+  <xs:complexType name="Query">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="OrderID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Query" nillable="true" type="tns:Query" />
+</xs:schema>
