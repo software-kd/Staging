@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Meals>
+  <Meal code="VRCB" name="Kabali Vegetable Biryani" totalAvailable="0">
+    <code>VRCB</code>
+    <name>Kabali Vegetable Biryani</name>
+    <totalAvailable>0</totalAvailable>
+  </Meal>
+  <Meal code="NLCB" name="Pak Nasser's Nasi Lemak" totalAvailable="0">
+    <code>NLCB</code>
+    <name>Pak Nasser's Nasi Lemak</name>
+    <totalAvailable>0</totalAvailable>
+  </Meal>
+  <Meal code="LSCB" name="Chicken Lasagne" totalAvailable="0">
+    <code>LSCB</code>
+    <name>Chicken Lasagne</name>
+    <totalAvailable>0</totalAvailable>
+  </Meal>
+  <Meal code="GCCB" name="Thai Green Curry Chicken with Rice" totalAvailable="0">
+    <code>GCCB</code>
+    <name>Thai Green Curry Chicken with Rice</name>
+    <totalAvailable>0</totalAvailable>
+  </Meal>
+  <Meal code="CRCB" name="Uncle Chin's Chicken Rice" totalAvailable="0">
+    <code>CRCB</code>
+    <name>Uncle Chin's Chicken Rice</name>
+    <totalAvailable>0</totalAvailable>
+  </Meal>
+</Meals>

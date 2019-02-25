@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4262AB55-DF79-4C8B-A088-CC912FD6BDAC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>HotelBookingHandler</RootNamespace>
+    <AssemblyName>HotelBookingHandler</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <PublishUrl>D:\Alpha Reds\HotelRequery\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ProductName>Mayflower Hotel Requery Booking</ProductName>
+    <PublisherName>Alphareds Solution Sdn Bhd</PublisherName>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>7A200A8EABA0FEE8082C7A3D103569E1C636B2D8</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>HotelBookingHandler_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\NLog.4.5.4\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BookingQuery.cs" />
+    <Compile Include="Functions\ExtensionMethod.cs" />
+    <Compile Include="Functions\ItineraryLog.cs" />
+    <Compile Include="MayflowerHotelBookingHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MayflowerHotelBookingHandler.Designer.cs">
+      <DependentUpon>MayflowerHotelBookingHandler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PaymentRespondModels.cs" />
+    <Compile Include="PaymentQuery.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="HotelBookingHandler_TemporaryKey.pfx" />
+    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MayflowerHotelBookingHandler.resx">
+      <DependentUpon>MayflowerHotelBookingHandler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\Alphareds.Library.DatabaseHandler\Alphareds.Library.DatabaseHandler.csproj">
+      <Project>{93aee181-e182-4580-ad2f-c1443175ed50}</Project>
+      <Name>Alphareds.Library.DatabaseHandler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.CommonController\Alphareds.Module.CommonController.csproj">
+      <Project>{aa252c8d-6ca8-46c7-a972-edde4a25d0ac}</Project>
+      <Name>Alphareds.Module.CommonController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.Common\Alphareds.Module.Common.csproj">
+      <Project>{FC2C2437-D2F7-4D2F-A759-05196C317C80}</Project>
+      <Name>Alphareds.Module.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.EANRapidHotels\Alphareds.Module.EANRapidHotels.csproj">
+      <Project>{8f94f6bb-50bd-4154-bd09-c5a7c5b46524}</Project>
+      <Name>Alphareds.Module.EANRapidHotels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.ESBHotelComparisonWebService\Alphareds.Module.ESBHotelComparisonWebService.csproj">
+      <Project>{286f3ca5-8894-46a9-a849-d6caf7f51050}</Project>
+      <Name>Alphareds.Module.ESBHotelComparisonWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.ExpediaHotels\Alphareds.Module.ExpediaHotelsWebService.csproj">
+      <Project>{11c65841-1c6a-4585-b545-0849539a4062}</Project>
+      <Name>Alphareds.Module.ExpediaHotelsWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.ExpediaTAAPWebService\Alphareds.Module.ExpediaTAAPWebService.csproj">
+      <Project>{7b012b1c-5083-4a7c-91c2-d2732e5d7e0e}</Project>
+      <Name>Alphareds.Module.ExpediaTAAPWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.HotelBedsWebService\Alphareds.Module.HotelBedsWebService.csproj">
+      <Project>{cc005248-c5c7-4526-ac7b-fd30c6270c54}</Project>
+      <Name>Alphareds.Module.HotelBedsWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.HotelController\Alphareds.Module.HotelController.csproj">
+      <Project>{B10C0EF0-F305-4329-92C0-AA36D7F00F45}</Project>
+      <Name>Alphareds.Module.HotelController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.JacTravelWebService\Alphareds.Module.JacTravelWebService.csproj">
+      <Project>{4975f26d-2dbf-495e-a1a1-3038bcf6669c}</Project>
+      <Name>Alphareds.Module.JacTravelWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.Model\Alphareds.Module.Model.csproj">
+      <Project>{6a832675-a4c7-403c-801f-ef8790cf50eb}</Project>
+      <Name>Alphareds.Module.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.PaymentController\Alphareds.Module.PaymentController.csproj">
+      <Project>{b8d9e3f1-e4aa-4fed-93f3-22f81be1bb00}</Project>
+      <Name>Alphareds.Module.PaymentController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.PDFEngineWebService\Alphareds.Module.PDFEngineWebService.csproj">
+      <Project>{12d0aefc-3bbf-4aa9-be69-b082a0cf6177}</Project>
+      <Name>Alphareds.Module.PDFEngineWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.ServiceCall\Alphareds.Module.ServiceCall\Alphareds.Module.ServiceCall.csproj">
+      <Project>{4f8ea063-8d27-4f45-b382-62b89abc60d3}</Project>
+      <Name>Alphareds.Module.ServiceCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Module\Alphareds.Module.TourplanWebService\Alphareds.Module.TourplanWebService.csproj">
+      <Project>{ecbf6dc2-5b9d-4fab-9d43-49be8f2dbcb0}</Project>
+      <Name>Alphareds.Module.TourplanWebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PaymentQueueHandler\PaymentQueueHandler.csproj">
+      <Project>{7b82ef59-7386-4a8a-bc9f-16430a605521}</Project>
+      <Name>PaymentQueueHandler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+</Project>

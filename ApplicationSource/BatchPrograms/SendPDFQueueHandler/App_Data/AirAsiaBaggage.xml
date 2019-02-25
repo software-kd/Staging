@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Baggages>
+  <Baggage code="PBAA" unit="kg" weight="15">
+    <code>PBAA</code>
+    <unit>kg</unit>
+    <weight>15</weight>
+  </Baggage>
+  <Baggage code="PBAB" unit="kg" weight="20">
+    <code>PBAB</code>
+    <unit>kg</unit>
+    <weight>20</weight>
+  </Baggage>
+  <Baggage code="PBAC" unit="kg" weight="25">
+    <code>PBAC</code>
+    <unit>kg</unit>
+    <weight>25</weight>
+  </Baggage>
+  <Baggage code="PBAD" unit="kg" weight="30">
+    <code>PBAD</code>
+    <unit>kg</unit>
+    <weight>30</weight>
+  </Baggage>
+  <Baggage code="PBAF" unit="kg" weight="40">
+    <code>PBAF</code>
+    <unit>kg</unit>
+    <weight>40</weight>
+  </Baggage>
+  <Baggage code="PBPB" unit="pieces" weight="2" weight2="20" unit2="kg">
+    <code>PBPB</code>
+    <unit>pieces</unit>
+    <weight>2</weight>
+    <unit2>kg</unit2>
+    <weight2>20</weight2>
+  </Baggage>
+  <Baggage code="PBPA" unit="piece" weight="1" weight2="20" unit2="kg">
+    <code>PBPA</code>
+    <unit>piece</unit>
+    <weight>1</weight>
+    <unit2>kg</unit2>
+    <weight2>20</weight2>
+  </Baggage>
+</Baggages>

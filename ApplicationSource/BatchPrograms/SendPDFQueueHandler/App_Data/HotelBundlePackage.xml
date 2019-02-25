@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<HotelBundles>
+  <Package id="1" startDate="2017-10-23" endDate="2017-10-28" outStartDate="2017-10-29" outEndDate="2017-11-03"
+           eventDate="2017-10-28" eventDesc="MAYDAY" BundleType="TPConcert">
+    <!--Staging-->
+    <hotelId>KULACHSKL01??????</hotelId>
+    <hotelId>KCHACABEKCH??????</hotelId>
+    <hotelId>KULACASCKUL??????</hotelId>
+    <!--Production-->
+    <!--<hotelId>KULACSWIINNMAY???</hotelId>
+    <hotelId>KULACSANIKLMAY???</hotelId>
+    <hotelId>KULACHO99KLMAY???</hotelId>-->
+  </Package>
+  <Package id="2" startDate="2017-09-15" endDate="2017-09-17" outStartDate="2017-09-18" outEndDate="2017-09-20"
+           eventDate="2017-09-17" eventDesc="G-DRAGON" BundleType="TPConcert">
+    <!--Production-->
+    <hotelId>KULACSWIINNGDC???</hotelId>
+    <hotelId>KULACHO99KLGDC???</hotelId>
+    <hotelId>KULACTHE5KLGDC???</hotelId>
+  </Package>
+</HotelBundles>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Mayflower>
+  <CabinClass>
+    <!--<cabin cabincode="P" Name="Premium First Class Cabin" ><C>P</C><N>Premium First</N></cabin>-->
+	  <cabin cabincode="F" Name="First Class Cabin" ><C>F</C><N>First</N></cabin>
+    <!--<cabin cabincode="J" Name="Premium Business Class Cabin" ><C>J</C><N>Premium Business</N></cabin>-->
+	  <cabin cabincode="C" Name="Business Class Cabin" ><C>C</C><N>Business</N></cabin>
+    <cabin cabincode="Y" Name="Economy Class Cabin" ><C>Y</C><N>Economy</N></cabin>
+    <cabin cabincode="S" Name="Premium Economy Class Cabin" ><C>S</C><N>Premium Economy</N></cabin>
+  </CabinClass>	
+</Mayflower>

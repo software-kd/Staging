@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SSRs>
+  <Baggage>
+    <SSR Type="Baggage" code="PBAA" unit="kg" weight="15">
+      <code>PBAA</code>
+      <Type>Baggage</Type>
+      <name>Up to 15 kg</name>
+      <weights>
+        <weight>
+          <unit>kg</unit>
+          <value>15</value>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBAB" unit="kg" weight="20">
+      <code>PBAB</code>
+      <Type>Baggage</Type>
+      <name>Up to 20 kg</name>
+      <weights>
+        <weight>
+          <unit>kg</unit>
+          <value>20</value>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBAC" unit="kg" weight="25">
+      <code>PBAC</code>
+      <Type>Baggage</Type>
+      <name>Up to 25 kg</name>
+      <weights>
+        <weight>
+          <unit>kg</unit>
+          <value>25</value>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBAD" unit="kg" weight="30">
+      <code>PBAD</code>
+      <Type>Baggage</Type>
+      <name>Up to 30 kg</name>
+      <weights>
+        <weight>
+          <unit>kg</unit>
+          <value>30</value>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBAF" unit="kg" weight="40">
+      <code>PBAF</code>
+      <Type>Baggage</Type>
+      <name>Up to 40 kg</name>
+      <weights>
+        <weight>
+          <unit>kg</unit>
+          <value>40</value>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBPB" unit="pieces" weight="2" >
+      <code>PBPB</code>
+      <Type>Baggage</Type>
+      <name>2 pieces unit of checked baggage (max 20 kg each)</name>
+      <weights>
+        <weight>
+          <unit>pieces</unit>
+          <weight>2</weight>
+        </weight>
+        <weight>
+          <unit>kg</unit>
+          <weight>20</weight>
+        </weight>
+      </weights>
+    </SSR>
+    <SSR Type="Baggage" code="PBPA" unit="piece" weight="1" >
+      <code>PBPA</code>
+      <Type>Baggage</Type>
+      <name>1 piece unit of checked baggage (max 20 kg)</name>
+      <weights>
+        <weight>
+          <unit>piece</unit>
+          <weight>1</weight>
+        </weight>
+        <weight>
+          <unit2>kg</unit2>
+          <weight2>20</weight2>
+        </weight>
+      </weights>
+    </SSR>
+  </Baggage>
+  <Meal>
+    <SSR Type="Meal" code="KCCB" name="Kung Pao Chicken with Rice" totalAvailable="0">
+      <code>KCCB</code>
+      <Type>Meal</Type>
+      <name>Kung Pao Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="NLCB" name="Pak Nasser's Nasi Lemak" totalAvailable="0">
+      <code>NLCB</code>
+      <Type>Meal</Type>
+      <name>Pak Nasser's Nasi Lemak</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="LSCB" name="Chicken Lasagne" totalAvailable="0">
+      <code>LSCB</code>
+      <Type>Meal</Type>
+      <name>Chicken Lasagne</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="GCCB" name="Thai Green Curry Chicken with Rice" totalAvailable="0">
+      <code>GCCB</code>
+      <Type>Meal</Type>
+      <name>Thai Green Curry Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CRCB" name="Uncle Chin's Chicken Rice" totalAvailable="0">
+      <code>CRCB</code>
+      <Type>Meal</Type>
+      <name>Uncle Chin's Chicken Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="TFCB" name="Vegan Tofu with Rice Pilaf (V)" totalAvailable="0">
+      <code>TFCB</code>
+      <Type>Meal</Type>
+      <name>Vegan Tofu with Rice Pilaf (V)</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="LICB" name="Lil' Star Combo: Mini Pizza + Snacks" totalAvailable="0">
+      <code>LICB</code>
+      <Type>Meal</Type>
+      <name>Lil' Star Combo: Mini Pizza + Snacks</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="KCMX" name="Kung Pao Chicken with Rice" totalAvailable="0">
+      <code>KCMX</code>
+      <Type>Meal</Type>
+      <name>Kung Pao Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="MYMX" name="Pak Nasser's Nasi Lemak" totalAvailable="0">
+      <code>MYMX</code>
+      <Type>Meal</Type>
+      <name>Pak Nasser's Nasi Lemak</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="LSMX" name="Chicken Lasagne" totalAvailable="0">
+      <code>LSMX</code>
+      <Type>Meal</Type>
+      <name>Chicken Lasagne</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="ASMX" name="Thai Green Curry Chicken with Rice" totalAvailable="0">
+      <code>ASMX</code>
+      <Type>Meal</Type>
+      <name>Thai Green Curry Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="ORMX" name="Uncle Chin's Chicken Rice" totalAvailable="0">
+      <code>ORMX</code>
+      <Type>Meal</Type>
+      <name>Uncle Chin's Chicken Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="TFMX" name="Vegan Tofu with Rice Pilaf (V)" totalAvailable="0">
+      <code>TFMX</code>
+      <Type>Meal</Type>
+      <name>Vegan Tofu with Rice Pilaf (V)</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="LLTX" name="Lil' Star Combo: Mini Pizza + Snacks" totalAvailable="0">
+      <code>LLTX</code>
+      <Type>Meal</Type>
+      <name>Lil' Star Combo: Mini Pizza + Snacks</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="KCTX" name="Kung Pao Chicken with Rice" totalAvailable="0">
+      <code>KCTX</code>
+      <Type>Meal</Type>
+      <name>Kung Pao Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="NLTX" name="Pak Nasser's Nasi Lemak" totalAvailable="0">
+      <code>NLTX</code>
+      <Type>Meal</Type>
+      <name>Pak Nasser's Nasi Lemak</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CLTX" name="Chicken Lasagne" totalAvailable="0">
+      <code>CLTX</code>
+      <Type>Meal</Type>
+      <name>Chicken Lasagne</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="GCTX" name="Thai Green Curry Chicken with Rice" totalAvailable="0">
+      <code>GCTX</code>
+      <Type>Meal</Type>
+      <name>Thai Green Curry Chicken with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="UCTX" name="Uncle Chin's Chicken Rice" totalAvailable="0">
+      <code>UCTX</code>
+      <Type>Meal</Type>
+      <name>Uncle Chin's Chicken Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="VGTX" name="Vegan Tofu with Rice Pilaf (V)" totalAvailable="0">
+      <code>VGTX</code>
+      <Type>Meal</Type>
+      <name>Vegan Tofu with Rice Pilaf (V)</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="LLCB" name="Lil' Star Combo: Mini Pizza + Snacks" totalAvailable="0">
+      <code>LLCB</code>
+      <Type>Meal</Type>
+      <name>Lil' Star Combo: Mini Pizza + Snacks</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+
+
+    <SSR Type="Meal" code="BCMX" name="Ashok's Butter Masala Chicken Biryani" totalAvailable="0">
+      <code>BCMX</code>
+      <Type>Meal</Type>
+      <name>Ashok's Butter Masala Chicken Biryani</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="BMMX" name="Ashok's Butter Masala Chicken Biryani" totalAvailable="0">
+      <code>BMMX</code>
+      <Type>Meal</Type>
+      <name>Ashok's Butter Masala Chicken Biryani</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+
+
+    <SSR Type="Meal" code="LLMX" name="Lil’ Star Combo: Mini Pizza + Mini Chicken Bites + Snacks" totalAvailable="0">
+      <code>LLMX</code>
+      <Type>Meal</Type>
+      <name>Lil’ Star Combo: Mini Pizza + Mini Chicken Bites + Snacks</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="VRCB" name="Kabali Vegetable Biryani" totalAvailable="0">
+      <code>VRCB</code>
+      <Type>Meal</Type>
+      <name>Kabali Vegetable Biryani</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="BRCB" name="Bukhara Chicken Biryani" totalAvailable="0">
+      <code>BRCB</code>
+      <Type>Meal</Type>
+      <name>Bukhara Chicken Biryani</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CVCB" name="Chicken Vindaloo Biryani" totalAvailable="0">
+      <code>CVCB</code>
+      <Type>Meal</Type>
+      <name>Chicken Vindaloo Biryani</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="WCCB" name="Sesame Chicken Wrap" totalAvailable="0">
+      <code>WCCB</code>
+      <Type>Meal</Type>
+      <name>Sesame Chicken Wrap</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="SDCB" name="Assorted Sandwiches" totalAvailable="0">
+      <code>SDCB</code>
+      <Type>Meal</Type>
+      <name>Assorted Sandwiches</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="DSMX" name="Glutinous Rice with Chicken and Dim Sum Combo" totalAvailable="0">
+      <code>DSMX</code>
+      <Type>Meal</Type>
+      <name>Glutinous Rice with Chicken and Dim Sum Combo</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="SGCB" name="Scallop Congee with Youtiao" totalAvailable="0">
+      <code>SGCB</code>
+      <Type>Meal</Type>
+      <name>Scallop Congee with Youtiao</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="RAMX" name="Roasted Chicken with Stuffing and Cranberry Gravy" totalAvailable="0">
+      <code>RAMX</code>
+      <Type>Meal</Type>
+      <name>Roasted Chicken with Stuffing and Cranberry Gravy</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="SSMX" name="Sweet and Sour Chicken Meatballs with Garlic Rice" totalAvailable="0">
+      <code>SSMX</code>
+      <Type>Meal</Type>
+      <name>Sweet and Sour Chicken Meatballs with Garlic Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="PKMX" name="Vegetarian Chicken with Pumpkin Rice" totalAvailable="0">
+      <code>PKMX</code>
+      <Type>Meal</Type>
+      <name>Vegetarian Chicken with Pumpkin Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="BFMX" name="Kimchi Beef Fried Rice" totalAvailable="0">
+      <code>BFMX</code>
+      <Type>Meal</Type>
+      <name>Kimchi Beef Fried Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="GFMX" name="Miso Chicken with Garlic Rice" totalAvailable="0">
+      <code>GFMX</code>
+      <Type>Meal</Type>
+      <name>Miso Chicken with Garlic Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="RSTX" name="Tasty Grilled Chicken with Baked Jasmine Rice" totalAvailable="0">
+      <code>RSTX</code>
+      <Type>Meal</Type>
+      <name>Tasty Grilled Chicken with Baked Jasmine Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="JPTX" name="Japanese Chicken Teriyaki  with Rice" totalAvailable="0">
+      <code>JPTX</code>
+      <Type>Meal</Type>
+      <name>Japanese Chicken Teriyaki  with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CBCB" name="ML Noi's Basil Fried Chicken on Rice" totalAvailable="0">
+      <code>CBCB</code>
+      <Type>Meal</Type>
+      <name>ML Noi's Basil Fried Chicken on Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="JSCB" name="Japanese-Style Salt and Chilli Salmon" totalAvailable="0">
+      <code>JSCB</code>
+      <Type>Meal</Type>
+      <name>Japanese-Style Salt and Chilli Salmon</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="NPCB" name="Nasi Padang Uda Ratman" totalAvailable="0">
+      <code>NPCB</code>
+      <Type>Meal</Type>
+      <name>Nasi Padang Uda Ratman</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="NKCB" name="Nasi Kuning Manado" totalAvailable="0">
+      <code>NKCB</code>
+      <Type>Meal</Type>
+      <name>Nasi Kuning Manado</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="PSMX" name="Smoked Chicken Pizza Sandwich" totalAvailable="0">
+      <code>PSMX</code>
+      <Type>Meal</Type>
+      <name>Smoked Chicken Pizza Sandwich</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CACB" name="Chicken Adobo ala Mariles" totalAvailable="0">
+      <code>CACB</code>
+      <Type>Meal</Type>
+      <name>Chicken Adobo ala Mariles</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="PACB" name="Maan's Pasta Arrabiata" totalAvailable="0">
+      <code>PACB</code>
+      <Type>Meal</Type>
+      <name>Maan's Pasta Arrabiata</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="MSDX" name="Chicken Satay" totalAvailable="0">
+      <code>MSDX</code>
+      <Type>Meal</Type>
+      <name>Chicken Satay</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CTHL" name="Chicken Teriyaki with Mushroom Sauce" totalAvailable="0">
+      <code>CTHL</code>
+      <Type>Meal</Type>
+      <name>Chicken Teriyaki with Mushroom Sauce</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="GCHL" name="Green Curry with Rice" totalAvailable="0">
+      <code>GCHL</code>
+      <Type>Meal</Type>
+      <name>Green Curry with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="JBHL" name="Japanese Bento" totalAvailable="0">
+      <code>JBHL</code>
+      <Type>Meal</Type>
+      <name>Japanese Bento</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="BFHL" name="Breakfast Frittata" totalAvailable="0">
+      <code>BFHL</code>
+      <Type>Meal</Type>
+      <name>Breakfast Frittata</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="VCHL" name="Vegetable Curry with Rice" totalAvailable="0">
+      <code>VCHL</code>
+      <Type>Meal</Type>
+      <name>Vegetable Curry with Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="SFHL" name="Seafood Fried Noodle" totalAvailable="0">
+      <code>SFHL</code>
+      <Type>Meal</Type>
+      <name>Seafood Fried Noodle</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="RSHL" name="Rice with Shrimp and Bok Choy" totalAvailable="0">
+      <code>RSHL</code>
+      <Type>Meal</Type>
+      <name>Rice with Shrimp and Bok Choy</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="PMHL" name="Pasta Marinara" totalAvailable="0">
+      <code>PMHL</code>
+      <Type>Meal</Type>
+      <name>Pasta Marinara</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="JCHL" name="Japanese Shrimp Curry" totalAvailable="0">
+      <code>JCHL</code>
+      <Type>Meal</Type>
+      <name>Japanese Shrimp Curry</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="MFHL" name="Malaysian Fried Rice" totalAvailable="0">
+      <code>MFHL</code>
+      <Type>Meal</Type>
+      <name>Malaysian Fried Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="CRHL" name="Chicken Rendang with Basmathi Rice" totalAvailable="0">
+      <code>CRHL</code>
+      <Type>Meal</Type>
+      <name>Chicken Rendang with Basmathi Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="VBHL" name="Vegetable Curry with Biryani Rice" totalAvailable="0">
+      <code>VBHL</code>
+      <Type>Meal</Type>
+      <name>Vegetable Curry with Biryani Rice</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+    <SSR Type="Meal" code="BBHL" name="Rice with Beef in Black Sauce" totalAvailable="0">
+      <code>BBHL</code>
+      <Type>Meal</Type>
+      <name>Rice with Beef in Black Sauce</name>
+      <totalAvailable>0</totalAvailable>
+    </SSR>
+  </Meal>
+</SSRs>
